@@ -25,5 +25,6 @@ class PrototypeManager
     private:
       vector <GameData *> registry;
 };
+extern PrototypeManager * prototypeManager;
 
 #endif

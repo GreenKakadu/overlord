@@ -17,7 +17,8 @@ void * BinaryPattern::operator new(size_t size)
 
 void  BinaryPattern::operator delete(void * deadObject, size_t size)
 {
-	DELETE_PATTERN<BinaryPattern>(deadObject, size);
+//  cout<< "Destroyed Binary pattern \n"; 
+  DELETE_PATTERN<BinaryPattern>(deadObject, size);
 }
 
 
@@ -25,6 +26,14 @@ void BinaryPattern::print(ostream &out) const
 {
   reporter_->print(out, param1_, param2_);
 }
+
+void BinaryPattern::clean()
+{
+  param1_->clean();
+  param2_->clean();
+}
+
+
 
 BinaryPattern  * BinaryPattern::headOfFreeList;
 

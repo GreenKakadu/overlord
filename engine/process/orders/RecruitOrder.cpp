@@ -12,7 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include "RaceElementData.h"
+#include "RaceElement.h"
 #include "IntegerData.h"
 #include "RecruitOrder.h"
 #include "UnaryPattern.h"
@@ -26,19 +26,21 @@
 #include "RaceRule.h"
 #include "RecruitRequest.h"
 #include "NewRecruitRequest.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern RulesCollection <RaceRule>      races;
-extern UnitEntity     sampleUnit;  
 const UINT RecruitOrder:: INVALID_RECRUIT_REPORT_FLAG = 0x01;
 extern Reporter * unableRecruitReporter;
 extern Reporter * recruitInvalidReporter; 
 extern Reporter * recruitForeignUnitReporter; 
 extern Reporter * recruitMaxUnitSizeReporter;  
 extern Reporter * recruitMixedRaceReporter;
-extern Reporter * unrecruitableRaceReporter; 
+extern Reporter * unrecruitableRaceReporter;
+
+//RecruitOrder instantiateRecruitOrder;
+RecruitOrder * instantiateRecruitOrder = new RecruitOrder();
+
 RecruitOrder::RecruitOrder()
 {
   keyword_ = "recruit";
+  registerOrder_();
   description = string("RECRUIT unit-id number race price-per-figure \n") +
   "Immediate, leader only.  Attempts to recruit from the local population up to\n" +
   "the number of figures indicated, spending the designated amount per figure,\n" +
@@ -59,6 +61,9 @@ RecruitOrder::RecruitOrder()
 
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
+
 STATUS
 RecruitOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
 {
@@ -79,11 +84,14 @@ RecruitOrder::loadParameters(Parser * parser, vector <AbstractData *>  &paramete
 
 }
 
+
+
 ORDER_STATUS
-RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Order * orderId)
+RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
+  Order * orderId = unit->getCurrentOrder();
 
   if(!unit->getRace()->mayRectuit())
   {
@@ -119,7 +127,7 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Or
     {
 
    // Submit request
-  unit->getLocation()->addMarketRequest(new NewRecruitRequest(unit,orderId, number,race,price,placeholder));
+  unit->getLocation()->addMarketRequest(new NewRecruitRequest(unit, unit->getCurrentOrder(), number,race,price,placeholder));
 
       return IN_PROGRESS;
     }
@@ -160,20 +168,24 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Or
    // one leader per unit
    if(race != newUnit ->getRace())
    {
-      unit->addReport(new BinaryPattern(recruitMaxUnitSizeReporter,newUnit,new RaceElementData(race, number)));
+//QQQ
+      unit->addReport(new BinaryPattern(recruitMaxUnitSizeReporter,newUnit,
+                      new RaceElement(race, number)));
 		  return INVALID;
     }
     
   }
 
    // Submit request
-  unit->getLocation()->addMarketRequest(new RecruitRequest(unit,orderId, number,race,price,newUnit));
+  unit->getLocation()->addMarketRequest(new RecruitRequest(unit, unit->getCurrentOrder(), number,race,price,newUnit));
 
       return IN_PROGRESS;
 }
 
+
+
 ORDER_STATUS
-RecruitOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId, int result)
+RecruitOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -187,12 +199,12 @@ RecruitOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &par
   if ( amount > result)
   {
     par1->setValue(amount - result);
-    entity->updateOrderResults(FAILURE,orderId);
+    entity->updateOrderResults(FAILURE);
 //  cout << "Saving order for "<< unit->printName() <<"=[ ";
 //  orderId->save(cout);
     return FAILURE;
   }
-  entity->updateOrderResults(SUCCESS,orderId);
+  entity->updateOrderResults(SUCCESS);
 //  cout << "Order completed for "<< unit->printName() <<".\n";
   return SUCCESS;
 }

@@ -31,25 +31,23 @@ public:
       RaceRule ( const RaceRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
- //     void     print();
-  /** Returns number of items that may be equiped in this category. */
   int getEquipCapacity( EquipmentSlotVariety * type);
-//  friend void UnitEntity::updateEquipement();
   inline string getPluralName() const{return pluralName_;}
-         void   setPluralName(const string name);
-  inline int getWeight() const {return weight_;}
-	inline void setWeight(int weight) {weight_ = weight;}
+          void   setPluralName(const string name);
+  virtual void printDescription(ReportPrinter & out);
+  virtual void printTypeSpecificDescription(ReportPrinter & out){}
+  inline   int getWeight() const {return weight_;}
+	inline  void setWeight(int weight) {weight_ = weight;}
   virtual LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
   virtual bool teacherRequired(SkillRule * skill, UnitEntity * unit);
-  virtual bool mayMove();
-  /** No descriptions */
+  virtual bool mayMove(UnitEntity * unit);
   int getBonus(SkillRule * skill);
   inline  EntityStatistics * getStats()  {return &stats;}
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
-  /** No descriptions */
   virtual bool mayWork();
   virtual bool mayRectuit();
   virtual bool mayTrade();
+  virtual bool mayHoldTitles(){return false;}
   virtual bool mayTransferFigures();
    vector< EquipSlot *>& getAllEquipmentSlots();
   /** Amounts of efforts teacher should spend in order to teach this student. */
@@ -61,6 +59,7 @@ public:
     vector< BonusElement> intristicSkillBonuses_;
 		MovementMode<int> capacity_;
 	  string pluralName_;
+    int controlPointsFraction_;
 		int weight_;
     int hiringCost_;
     int hiringProbability_;
@@ -69,5 +68,6 @@ public:
     private:
 	
 };
-
+extern RaceRule       sampleRace;
+extern RulesCollection <RaceRule>      races;
 #endif

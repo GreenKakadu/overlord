@@ -19,7 +19,7 @@ GameInfo::GameInfo()
 	unitsFile_ = string("units");
 	locationsFile_ = string("locations");
 	factionsFile_ = string("factions");
-  newUnitPrefix_ = string("new");
+  newEntityPrefix_ = string("new");
   daysInMonth = 30;
 	runMode = NORMAL;
 }
@@ -104,19 +104,34 @@ void GameInfo::init(const char * filename)
       		 factionsFile_ = parser->getParameter();
       		continue;
     		}
+ 	if (parser->matchKeyword("BUILDINGSFILE"))
+    		{
+      		 buildingsFile_ = parser->getParameter();
+      		continue;
+    		}
+  	if (parser->matchKeyword("FILE"))
+    		{
+      		 factionsFile_ = parser->getParameter();
+      		continue;
+    		}
  	if (parser->matchKeyword("DAYS_IN_TURN"))
     		{
       		daysInMonth = parser->getInteger();
       		continue;
     		}
- 	if (parser->matchKeyword("NEW_UNIT_PREFIX"))
+ 	if (parser->matchKeyword("NEW_ENTITY_PREFIX"))
     		{
-      		newUnitPrefix_ = parser->getWord();
+      		newEntityPrefix_ = parser->getWord();
       		continue;
     		}
  	if (parser->matchKeyword("RUN_MODE"))
     		{
       		 runMode = static_cast<RUNMODE> (parser->getInteger());
+      		continue;
+    		}
+ 	if (parser->matchKeyword("NPC"))
+    		{
+      		npcFactions_.push_back(parser->getWord());
       		continue;
     		}
 
@@ -138,17 +153,31 @@ STATUS GameInfo::save()
   outfile << "# Overlord game info " <<endl;
   time ( &rawtime );
   outfile << "#  Version"<<  version_ << " " <<ctime(&rawtime) <<endl;
-  if(!game_.empty()) outfile << "GAME  " << game_ << endl;
-   if(!name_.empty()) outfile << "NAME  " << name_ << endl;
-    if(!description_.empty()) outfile << "DESCRIPTION  " << description_ << endl;
-    if(turn != 0) outfile << "TURN  " << turn +1 << endl;
-   if(!version_.empty()) outfile << "VERSION  " << version_ << endl;
-   if(!serverEMail_.empty()) outfile << "EMAIL  " << serverEMail_ << endl;
-   if(!deadline_.empty()) outfile << "DEADLINE  " << deadline_ << endl;
-   if(!gameDir_.empty()) outfile << "GAMEDIR  " << gameDir_ << endl;
-   if(!playersDir_.empty()) outfile << "PLAYERSDIR  " << playersDir_ << endl;
-   if(!newUnitPrefix_.empty()) outfile << " NEW_UNIT_PREFIX " << newUnitPrefix_ << endl;
 
+  if(!game_.empty()) outfile         << "GAME  " << game_ << endl;
+  if(!name_.empty()) outfile         << "NAME  " << name_ << endl;
+  if(!description_.empty()) outfile  << "DESCRIPTION  " << description_ << endl;
+  if(turn != 0) outfile << "TURN  "  << turn +1 << endl;
+  if(!version_.empty()) outfile      << "VERSION  " << version_ << endl;
+  if(!serverEMail_.empty()) outfile  << "EMAIL  " << serverEMail_ << endl;
+
+  if(daysInMonth) outfile  << "DAYS_IN_TURN  " << daysInMonth << endl;
+  if(runMode != NORMAL) outfile  << "RUN_MODE  " << runMode << endl;
+   
+  if(!unitsFile_.empty()) outfile     << "UNITSFILE  " << unitsFile_ << endl;
+  if(!locationsFile_.empty()) outfile << "LOCATIONSFILE  " << locationsFile_ << endl;
+  if(!factionsFile_.empty()) outfile  << "FACTIONSFILE  " << factionsFile_ << endl;
+  if(!buildingsFile_.empty()) outfile << "BUILDINGSFILE  " << buildingsFile_ << endl;
+
+  if(!deadline_.empty()) outfile      << "DEADLINE  " << deadline_ << endl;
+  if(!gameDir_.empty()) outfile       << "GAMEDIR  " << gameDir_ << endl;
+  if(!playersDir_.empty()) outfile    << "PLAYERSDIR  " << playersDir_ << endl;
+  if(!newEntityPrefix_.empty()) outfile << "NEW_ENTITY_PREFIX " << newEntityPrefix_ << endl;
+  for (vector <string>::iterator iter = npcFactions_.begin(); 
+          iter !=npcFactions_.end(); ++iter)
+          {
+            outfile << "NPC " << (*iter)<<endl;
+          }
 
 	 outfile.close();
 	return OK;
@@ -196,6 +225,13 @@ return &factionsFile_;
 string * GameInfo::getLocationsFile() {
 return &locationsFile_;
 }
+
+string * GameInfo::getBuildingsFile()
+{
+return &buildingsFile_;
+}
+
+
 bool GameInfo::isNewEntityName(const string &tag, FactionEntity * faction)
 {
   // New Entity name should be [fxxx][Px][nnn]
@@ -204,10 +240,10 @@ bool GameInfo::isNewEntityName(const string &tag, FactionEntity * faction)
   // nnn - number
   //// faction tag may be omited for your's own units. In this case
  // cout << "["<<tag<<"] is tested for being new unit placeholder\n";
-  string::size_type factionTagSize = tag.find(newUnitPrefix_,0); //
+  string::size_type factionTagSize = tag.find(newEntityPrefix_,0); //
   if(factionTagSize == string::npos)
    {
-//     cout <<  "["<<newUnitPrefix_<<"] not found in tag string\n";
+//     cout <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
     return false;
     }
 //     string tempTag = tag.substr(0,factionTagSize);
@@ -220,3 +256,17 @@ bool GameInfo::isNewEntityName(const string &tag, FactionEntity * faction)
 //    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";
   return false;
 }
+
+
+
+bool GameInfo::isNPCFaction(FactionEntity * faction)
+{
+  for (vector <string>::iterator iter = npcFactions_.begin(); 
+          iter !=npcFactions_.end(); ++iter)
+          {
+           if ((*iter) == faction->getTag())
+            return true;
+          }
+  return false;
+}
+

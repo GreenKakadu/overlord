@@ -22,16 +22,15 @@ class BasicCollection {
 public:
 	  BasicCollection(DataStorageHandler * handler){ bindHandler(handler);}
 	  virtual ~BasicCollection();
-	virtual GameData* findByTag        (const string &tag);
-	virtual GameData* findByIndex      (const long intindex);
+	virtual GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+	virtual GameData* findByIndex      (const long intindex, bool errorReportEnabled = true);
 	virtual NewEntityPlaceholder * findPlaceholder(const string &tag);
   virtual void       add  ( GameData * /*const*/ newRule);
   virtual bool      isValidTag (const string &tag)  ;//const;
   virtual bool      checkDataType    (const string &tag);
-	virtual long int       size()                       const;  // replace with size
-  virtual long int       getIndex    (const string &tag);
+	virtual long       size()                       const;  
+  virtual long       getIndex    (const string &tag);
   virtual void    redimention (long intsize);
-  virtual void    print(){} ; // not needed
           void    bindHandler(DataStorageHandler * handler);
   inline  DataStorageHandler * getStorageHandler() const { return handler_;}
           void setCollectionKeyword(const string &keyword) {collectionKeyword_ =keyword; }// not needed

@@ -21,6 +21,10 @@ class Entity;
 
 /**
   *@author Alex Dribin
+   NewEntityPlaceholder is an object that provides temporary alias name
+   for new-created unit so that one may address to this new-created unit
+   before it's real name is known. getRealEntity will return pointer to
+   new-created unit if it was already created or 0
   */
 
 class NewEntityPlaceholder : public AbstractData  {

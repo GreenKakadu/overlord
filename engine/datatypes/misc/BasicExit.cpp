@@ -35,10 +35,13 @@ BasicExit::BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEn
 
 
 
+/*
+ *
+ */
 void BasicExit::print()
 {
 	cout << "    Exit" << dir_->printName() << " to" << destination_->printName();
-  UINT i;
+  int i;
   int days;
   bool firstMode= true;
   for(i=0; i < movementModes.size(); i++)
@@ -60,10 +63,14 @@ void BasicExit::print()
 }
 
 
-void BasicExit::report(ostream & out)
+/*
+ * Outputs exit information for use in reports 
+ */
+void BasicExit::report(ReportPrinter & out)
 {
-	out << "    Exit" << dir_->printName() << " to" << destination_->printName();
-  UINT i;
+  out.incr_indent();
+  out << "Exit "; out.incr_indent(); out.incr_indent(); out<< dir_->printName() << " to " << destination_->printName();
+  int i;
   int days;
   bool firstMode= true;
   for(i=0; i < movementModes.size(); i++)
@@ -72,21 +79,26 @@ void BasicExit::report(ostream & out)
     if( days )
       {
         if(firstMode)
-          out << " "<< days<< " days of" << (movementModes[i])->getName();
+          out << " "<< days<< " days of " << (movementModes[i])->getName();
         else
-         out <<", "<< days<< " of" << (movementModes[i])->getName();
+         out <<", "<< days<< " of " << (movementModes[i])->getName();
          firstMode = false;
        }
 
     }
 
   out<<"."<<endl;
+  out.decr_indent();
+  out.decr_indent();
+  out.decr_indent();
 
 }
 
 
 
-/** No descriptions */
+/*
+ * 
+ */
 void BasicExit::save(ostream & out)
 {
 	out << "EXIT " << dir_->getTag() << " " << destination_->getTag()  <<endl;
@@ -94,11 +106,11 @@ void BasicExit::save(ostream & out)
 
 
 
+/*
+ *  returns travel time for  mode
+ */
 int BasicExit::getTravelTime(MovementVariety * mode)
 {
-//MovementVariety * walkingMode = movementModes["walk"];
-// if(walkingMode == 0)
-//  cout << "oooooooooooooooooooooooops!\n";
  int time1 = origin_->getTerrain()->getTravelTime(mode);
  int time2 = destination_->getTerrain()->getTravelTime(mode);
 
@@ -114,7 +126,5 @@ int BasicExit::getTravelTime(MovementVariety * mode)
  if((time1) && (time2))
     return (time1 +3 * time2) / 4;
  else   
-  return 0;
-
-   // returns travel time for  mode
+  return 0;   
 }

@@ -25,8 +25,14 @@ TravelElement::TravelElement(MovementVariety *    movingMode,
    time_ =   time;
    totalTravelTime_ = totalTravelTime;
 }
+
+
+
 TravelElement::~TravelElement(){
 }
+
+
+
 TravelElement *    TravelElement::readElement( Parser *parser)
 {
   MovementVariety *    movingMode = movementModes[parser->getWord()];
@@ -48,6 +54,9 @@ TravelElement *    TravelElement::readElement( Parser *parser)
   return (new TravelElement(movingMode,origin,destination,
   time, totalTravelTime));
 }
+
+
+
 void TravelElement::save(ostream & out)
 {
   out << "MOVING "<<movingMode_->getTag() << " " << origin_->getTag();
@@ -55,12 +64,18 @@ void TravelElement::save(ostream & out)
   out << totalTravelTime_ << ".\n";
   
 }
+
+
+
 void TravelElement::print(ostream & out)
 {
   out << movingMode_->getName() << " " << origin_->printName(); 
   out << " to "<< destination_->printName() << " " <<time_ << " days from ";
   out << totalTravelTime_ << ".\n";
 }
+
+
+
 void TravelElement::retreat()
 {
   LocationEntity * temp = origin_;
@@ -74,10 +89,16 @@ void TravelElement::advance()
 {
  time_ --;
 }
+
+
+
 bool TravelElement::isCrossingBorder()
 {
  return( time_ == totalTravelTime_/2);
 }
+
+
+
 bool TravelElement::isArrived()
 {
  if (time_)
@@ -86,9 +107,12 @@ bool TravelElement::isArrived()
   return true;
   
 }
+
+
+
 int  TravelElement::getModeIndex() const
 {
-    UINT i;
+    int i;
     for( i = 0; i< movementModes.size();i++)
     {
        if(movementModes[i] == movingMode_)

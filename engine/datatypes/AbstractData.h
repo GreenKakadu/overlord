@@ -23,6 +23,9 @@ public:
   virtual string printName(){return "";}
 	AbstractData(){}
    virtual void saveAsParameter (ostream &out){}
+   virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.
+                         // For  non-persistent objects derived from AbstractData
+                         // it  destructs object.
   protected:
 };
 

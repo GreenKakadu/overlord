@@ -16,19 +16,21 @@
 #ifndef SCALED_INTEGER_H
 #define SCALED_INTEGER_H
 #include <iostream>
+#include "AbstractData.h"
 using namespace std;
 class Parser;
 
 
-/**Integer scaled by scale factor for keeping fractional parts
+/**Rational Number
   *@author Alex Dribin
   */
 
-class Rational {
+class Rational :public AbstractData {
 public: 
 	Rational(int numenator = 0, int denominator = 1);
+	Rational(const Rational & rational);
 	~Rational();
-  static int scaleFactor;
+  inline void clean(){ delete this;}
   friend const Rational operator + (const Rational& leftArgument, const Rational& rightArgument);
   friend const Rational operator - (const Rational& leftArgument, const Rational& rightArgument);
   friend const Rational operator * (const Rational& leftArgument, const Rational& rightArgument);
@@ -38,15 +40,18 @@ public:
   friend       ostream& operator << ( ostream &out,  Rational rightArgument);
   friend       Rational operator += ( Rational& leftArgument, const Rational& rightArgument);
   friend       Rational operator -= ( Rational& leftArgument, const Rational& rightArgument);
-//   Rational& operator  = (const Rational& rightArgument);
-//  friend const     bool operator == (const Rational& leftArgument, const Rational& rightArgument);
-//  friend const     bool operator != (const Rational& leftArgument, const Rational& rightArgument);
-//  friend const     bool operator >= (const Rational& leftArgument, const Rational& rightArgument);
-//  friend const     bool operator <= (const Rational& leftArgument, const Rational& rightArgument);
+  friend const     bool operator == (const Rational& leftArgument, const Rational& rightArgument);
+  friend const     bool operator == (const Rational& leftArgument, const int& rightArgument);
+  friend const     bool operator != (const Rational& leftArgument, const Rational& rightArgument);
+  friend const     bool operator >= (const Rational& leftArgument, const Rational& rightArgument);
+  friend const     bool operator <= (const Rational& leftArgument, const Rational& rightArgument);
   friend const     bool operator  > (const Rational& leftArgument, const Rational& rightArgument);
-//  friend const     bool operator  < (const Rational& leftArgument, const Rational& rightArgument);
+  friend const     bool operator  < (const Rational& leftArgument, const Rational& rightArgument);
   const int getValue() const;
   int roundDown() const;
+  int roundUp() const;
+  inline int getNumenator() const {return numenator_;}
+  inline int getDenominator() const {return denominator_;}
   bool isInteger();
   string printName();
   static int findGCD(int x, int y);
@@ -58,5 +63,6 @@ private:
   int numenator_;
   int denominator_;  
 };
+  ostream& operator << ( ostream &out,  Rational rightArgument);
 
 #endif

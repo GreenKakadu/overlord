@@ -10,7 +10,6 @@
 #define CREATURE_RACE_H
 
 #include "RaceRule.h"
-
 /**
   *@author Alex Dribin
   */
@@ -21,9 +20,9 @@ public:
       CreatureRaceRule ( const CreatureRaceRule * prototype );
     	~CreatureRaceRule(){}
        STATUS     initialize      ( Parser *parser);
+      void printTypeSpecificDescription(ReportPrinter & out);
       GameData * createInstanceOfSelf();
       bool mayWork();
-
 };
-
+extern CreatureRaceRule   sampleCreatureRaceRule;
 #endif

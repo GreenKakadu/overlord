@@ -9,33 +9,33 @@
 #define CRAFT_USING_H
 
 #include <vector>
-#include "BasicUsingStrategy.h"
+#include "BasicProductionStrategy.h"
 class ToolUseElement;
+class ItemElement;
 
 /**Producting skills
   *@author Alex Dribin
   */
 class ItemRule;
 class Entity;
+class UnitEntity;
 
-class CraftUsingStrategy : public BasicUsingStrategy  {
+class CraftUsingStrategy : public BasicProductionStrategy  {
 public: 
-      CraftUsingStrategy ( const string & keyword, GameData * parent): BasicUsingStrategy(keyword, parent){}
+      CraftUsingStrategy ( const string & keyword, GameData * parent): BasicProductionStrategy(keyword, parent){}
       CraftUsingStrategy ( const CraftUsingStrategy * prototype );
 		 ~CraftUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      bool use(UnitEntity * unit, Order * OrderId);
-      void reportUse(USING_RESULT result, UnitEntity * unit, Order * OrderId);
-      USING_RESULT mayUse(UnitEntity * unit, SkillRule * skill);
+      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
+      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      void reportUse(USING_RESULT result, PhysicalEntity * tokenEntity);
       void extractKnowledge (Entity * recipient, int parameter = 0);
-private:      
+      void printSkillDescription(ostream & out);
+private:
       ItemRule * productType_;
       int productionDays_;
-      ItemRule * resourceType_ ;
-      int resourceNumber_ ;
-      int productNumber_ ;
-      vector <ToolUseElement *> tools_;
 };
+extern CraftUsingStrategy       sampleCraftUsing;
 
 #endif

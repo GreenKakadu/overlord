@@ -10,19 +10,28 @@
 #include "DirectionVariety.h"
 
 
-ExplicitExit::ExplicitExit(DirectionVariety * dir, LocationEntity * dest, MovementMode <int> standardTravelTime)
+ExplicitExit::ExplicitExit(LocationEntity * origin, DirectionVariety * dir,
+        LocationEntity * dest, MovementMode <int> standardTravelTime) :
+        BasicExit(origin,dir, dest)
 {
- dir_ = dir;
- destination_ = dest;
  standardTravelTime_ = MovementMode<int>(standardTravelTime);
 }
 
 
+
+/*
+ *  prints description of exit for debugging purposes.
+ */
 void ExplicitExit::print()
 {
 	cout << "exit  " << dir_->printName() << " to " << destination_->printName() << endl;
 }
-/** No descriptions */
+
+
+
+/*
+ * Saves exit data. Used for generation location data
+ */
 void ExplicitExit::save(ostream & out)
 {
   UINT i;
@@ -34,4 +43,14 @@ void ExplicitExit::save(ostream & out)
 		}
 		
 		out << endl;
+}
+
+
+
+/*
+ * 
+ */
+int ExplicitExit::getTravelTime(MovementVariety * mode)
+{
+ return standardTravelTime_[mode];
 }

@@ -22,6 +22,7 @@ class MarketRequest;
 class LocalMarketRequest;
 class LocationEntity;
 class FactionEntity;
+class UnitEntity;
 
 /**
   *@author Alex Dribin
@@ -40,13 +41,16 @@ public:
    void  save(ostream &out);
    void  report(FactionEntity * faction, ostream &out);
    void setLocation(LocationEntity * location);
+   void setMerchantPrince(UnitEntity *prince){ merchantPrince_ = prince;}
+   UnitEntity * getMerchantPrince() const {return merchantPrince_;}
 protected:
    MarketConflict * marketConflict_;
    vector <LocalMarketRequest *> sellRequests_;
    vector <LocalMarketRequest *> buyRequests_;
    vector <LocalMarketRequest *> recruitRequests_;
    LocationEntity * location_;
+   UnitEntity * merchantPrince_;
 };
 typedef vector<LocalMarketRequest *>::iterator RequestIterator;
-
+extern MarketStrategy     sampleMarket;
 #endif

@@ -32,10 +32,13 @@ extern Reporter * overloadReporter;
 extern Reporter * noMovementAbilityReporter;
 extern Reporter *	invaliDirectionReporter;
 
+//MoveOrder instantiateMoveOrder;
+MoveOrder * instantiateMoveOrder = new MoveOrder();
 
 MoveOrder::MoveOrder(){
 
   keyword_ = "move";
+  registerOrder_();
   description = string("MOVE direction|location-id \n") +
   "Full-day, leader/creature-only, one-shot.  This order executes if you are in\n" +
   "a location from which the specified direction is available, or from which the\n" +
@@ -50,10 +53,12 @@ MoveOrder::MoveOrder(){
   orderType_   = STACK_ORDER;
 }
 
+
+
 STATUS MoveOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsUnit(entity))
+   if(!entityIsPhysicalEntity(entity))
             return IO_ERROR;
             
    const string tag = parser->getWord();
@@ -85,13 +90,27 @@ STATUS MoveOrder::loadParameters(Parser * parser,
     return OK;
 }
 
-ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+
+
+// Currently MOVE supports only one parameter.
+// Later parameter list like MOVE L123 N NE SE should be supported.
+// take parsing from Caravan, execute one-by one, delete executed locations
+// from parameters list. return IN-PROGRESS and SUCCESS only if the end of 
+// parameters list reached
+ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
 
-  UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-  assert(unit);
-    
-  LocationEntity * location = unit->getGlobalLocation();
+  PhysicalEntity * tokenEntity = dynamic_cast<PhysicalEntity *>(entity);
+  assert(tokenEntity);
+  return move(tokenEntity,parameters[0]);
+}
+
+
+ORDER_STATUS MoveOrder::move(PhysicalEntity * tokenEntity, AbstractData *parameter)
+{
+  Order * orderId = tokenEntity->getCurrentOrder();
+   
+  LocationEntity * location = tokenEntity->getGlobalLocation();
       
   if (location == 0)
      {  // Unit is already moving may be special message?
@@ -99,8 +118,8 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
       }
 
   BasicExit * exit = 0;
-  string parValue = parameters[0]->printName();
-	LocationEntity * destination   =  dynamic_cast<LocationEntity *>(parameters[0]);
+  string parValue = parameter->printName();
+	LocationEntity * destination   =  dynamic_cast<LocationEntity *>(parameter);
   if( destination != 0)
     { 
       exit = location->findExit(destination);
@@ -110,7 +129,7 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
     {  
   // directions are relative to current positions
   // That's why they can't be calculated on loading
-      DirectionVariety * direction =   dynamic_cast< DirectionVariety*>(parameters[0]);
+      DirectionVariety * direction =   dynamic_cast< DirectionVariety*>(parameter);
       if( direction != 0)
         {
           exit = location->findExit(direction);
@@ -119,39 +138,36 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
     }
   if (exit == 0)
      {  // direction is wrong or location not connected
-      entity->addReport(new UnaryPattern(invaliDirectionReporter, new StringData(parValue)));
+      tokenEntity->addReport(new UnaryPattern(invaliDirectionReporter, new StringData(parValue)));
  		  return INVALID;
       }
 
 //=================
-   if(!unit->getRace()->mayMove())
+   if(!tokenEntity->mayMove())
    {
-      // Followers may move with scouting!
-      unit->addReport(new BinaryPattern(cantMoveReporter,unit,unit->getRace()) );
+      tokenEntity->addReport(new BinaryPattern(cantMoveReporter,tokenEntity,tokenEntity->getType()) );
  		  return INVALID;
    }
-	if (unit->isTraced())
-    cout <<"== TRACING " <<unit->printName()<< " ==> Attempts to move\n";
+	if (tokenEntity->isTraced())
+    cout <<"== TRACING " <<tokenEntity->printName()<< " ==> Attempts to move\n";
 
- // Can't move while shopping - obsolete
- unit->stayStack();
- // Can't enter unfinished buildings - obsolete
-
+ tokenEntity->leaveStaying();
+ 
  int weight=0;
  int time = 0;
  int totalTravelTime = 999;
  MovementVariety * movingMode = 0;
  MovementMode<int> capacity;
- unit->calculateStackWeight(weight);
+ tokenEntity->calculateTotalWeight(weight);
  int i;
  int bestCapacity = 0;
  MovementVariety * bestMode = 0;
 
  for(i = 0; i < movementModes.size(); i++)
   {
-   unit->calculateStackCapacity(capacity[i], i);
+   tokenEntity->calculateTotalCapacity(capacity[i], i);
    time = exit->getTravelTime(movementModes[i]);
-// cout <<"++++++++ MOVING: "<< unit->printName() <<" "<< movementModes[i]->printName()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+// cout <<"++++++++ MOVING: "<< tokenEntity->printName() <<" "<< movementModes[i]->printName()<<" capacity "<< capacity[i]<<" time " << time<<endl;
    if(time == 0)
     continue;
     if(capacity[i] > bestCapacity)
@@ -159,7 +175,13 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
         bestCapacity = capacity[i];
         bestMode = movementModes[i];
     }
-   time = unit->calculateTravelTime(time , weight, capacity[i]);
+    if(weight > capacity[i])
+    {
+      if(movementModes[i] == walkingMode) // only walking entity may be Overloaded 
+        time = tokenEntity->calculateTravelTime(time , weight, capacity[i]);
+      else
+        time = 0;
+    }
    if(time == 0)
     continue;
  // 5. Conditions (Skill) may be demanded to enter
@@ -177,8 +199,8 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
         {
           if(!orderId->getReportingFlag(NO_MOVEMENT_ABILITY_REPORT_FLAG ))
             {
-              unit->addReport(new BinaryPattern(noMovementAbilityReporter,
-                              unit,exit->getDestination()));     
+              tokenEntity->addReport(new BinaryPattern(noMovementAbilityReporter,
+                              tokenEntity,exit->getDestination()));     
               orderId->setReportingFlag(NO_MOVEMENT_ABILITY_REPORT_FLAG);
             }
   	      return FAILURE;
@@ -189,7 +211,7 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
           if(!orderId->getReportingFlag(OVERLOADING_REPORT_FLAG ))
             {
         
-              unit->addReport(new QuartenaryPattern(overloadReporter, unit,
+              tokenEntity->addReport(new QuartenaryPattern(overloadReporter, tokenEntity,
                                     new IntegerData(weight),
                                     new IntegerData(bestCapacity),
                                     new StringData(bestMode->getName())));
@@ -200,11 +222,11 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
         }
     }
     orderId->clearReportingFlag(OVERLOADING_REPORT_FLAG);
-   TravelElement * moving = new TravelElement(movingMode,unit->getLocation(),exit->getDestination(),
+   TravelElement * moving = new TravelElement(movingMode,tokenEntity->getLocation(),exit->getDestination(),
                                 totalTravelTime, totalTravelTime);
-   unit->unstack();
-   unit->setUnitMoving(moving);
-   unit->setStackMoving(moving);
+   tokenEntity->setEntityMoving(moving);
 	    return SUCCESS;
 
 }
+
+

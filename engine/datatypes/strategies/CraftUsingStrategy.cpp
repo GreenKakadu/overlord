@@ -6,7 +6,8 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CraftUsingStrategy.h"
-#include "ItemElementData.h"
+#include "ItemElement.h"
+#include "SkillUseElement.h"
 #include "ItemRule.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
@@ -18,7 +19,7 @@ extern Reporter * productionReporter;
 
 extern RulesCollection    <ItemRule>     items;
 
-CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ): BasicUsingStrategy(prototype)
+CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ): BasicProductionStrategy(prototype)
 {
   productNumber_ = 1; 
 }
@@ -48,13 +49,8 @@ CraftUsingStrategy::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("CONSUME") )
     {
-      resourceType_ = items[parser->getWord()];
-      resourceNumber_ =  parser->getInteger();
-      if( (resourceNumber_ == 0) ||  (resourceType_ == 0) )
-        {
-        cout << "Error while reading CONSUME \n";
-        return IO_ERROR;
-        }
+			if(parser->matchElement())
+			  resources_.push_back(new ItemElement(parser));
       return OK;
     }
 
@@ -79,34 +75,122 @@ CraftUsingStrategy::initialize        ( Parser *parser )
 
 
 
-bool CraftUsingStrategy::use(UnitEntity * unit, Order * OrderId)
+USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useRestrictionCounter)
 {
+   USING_RESULT result;
+// Production modifiers:
+
+// Tools accelerate production
   vector <ToolUseElement *>::iterator iter;
-  Rational dailyProduction(productNumber_ * unit->getFiguresNumber(), productionDays_);
+  int effectiveProductionRate = unit->getFiguresNumber();
   for(iter = tools_.begin(); iter != tools_.end();iter++)
   {
-    dailyProduction = dailyProduction + dailyProduction * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+  }
+
+
+  SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
+
+  int cycleCounter  = unit->addSkillUse(dailyUse);
+  if(cycleCounter == 0) // In the middle of the production cycle
+  {
+     return USING_IN_PROGRESS;
+  }
+
+  else // The old  production cycle is finished. Do we want to start new?
+  {
+    int resourcesAvailable = checkResourcesAvailability(unit);
+    
+    if( resourcesAvailable < cycleCounter)
+        cycleCounter = resourcesAvailable;
+    int effectiveProduction = cycleCounter * productNumber_;
+    if( (useRestrictionCounter != 0) && (effectiveProduction  >= useRestrictionCounter) ) // limited number of new cycles
+      {  
+        effectiveProduction = useRestrictionCounter;
+        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
+        if(cycleCounter >1)
+          consumeResources(unit,cycleCounter-1);
+         result = USING_COMPLETED; 
+        useRestrictionCounter = 0;
+      unit->getCurrentOrder()->setCompletionFlag(true);
+      }
+        
+    else 
+    {
+      consumeResources(unit,cycleCounter-1);
+      if(dailyUse->getDaysUsed() > 0)
+        unit->addSkillUse(dailyUse);
+      useRestrictionCounter = useRestrictionCounter - effectiveProduction;
+         result = USING_IN_PROGRESS;
     }
 
-  Rational hadBefore = unit->getItemAmount(productType_);
-  unit->addToInventory(productType_, dailyProduction );
-  Rational nowHas = hadBefore + dailyProduction;
-  int added = nowHas.getValue() - hadBefore.getValue();
-  if(added !=0)
-  {  
-    if(!unit->isSilent())
-      {
-        unit->addReport(
-        new BinaryPattern(productionReporter, unit,
-        new ItemElementData(productType_,added))
+    unit->addToInventory(productType_, effectiveProduction);
+      if(!unit->isSilent())
+        {
+//QQQ
+          unit->addReport(
+          new BinaryPattern(productionReporter, unit,
+          new ItemElement(productType_,effectiveProduction))
                   );
-      }
-    unit->getLocation()->addReport(
-    new BinaryPattern(productionReporter, unit,
-    new ItemElementData(productType_,added))
+      unit->getLocation()->addReport(
+      new BinaryPattern(productionReporter, unit,
+      new ItemElement(productType_,effectiveProduction))
         /*, 0, observation condition*/);
+    }
+    return result;
   }
-  return true;
+}
+
+
+
+USING_RESULT CraftUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
+{
+/** We may be in the middle of production. Then we anyway may continue.*/
+/** Otherwise we'll need resources */
+
+ if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
+  {
+    if(checkResourcesAvailability(unit) == 0)
+      {
+        return NO_RESOURCES;
+      }
+     else
+     {
+        consumeResources(unit,1);
+        return  USING_OK;
+     }
+  }
+    return  USING_OK;
+
+
+ 
+
+//  vector <ToolUseElement *>::iterator iter;
+//  Rational dailyProduction(productNumber_ * unit->getFiguresNumber(), productionDays_);
+//  for(iter = tools_.begin(); iter != tools_.end();iter++)
+//  {
+//    dailyProduction = dailyProduction + dailyProduction * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+//  }
+
+//  Rational  currentAmount = unit->getItemAmount(productType_);
+// Check for new production cycle + check for production counter
+//  if( currentAmount.isInteger() )
+//  {
+//      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
+//      {
+//        return NO_RESOURCES;
+//       }
+//   }
+//  else if( (currentAmount + dailyProduction).getValue() > currentAmount.getValue() )
+//    {
+//      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
+//      {
+//        // no resources but old production in progress
+//        dailyProduction =  currentAmount + 1 - currentAmount.getValue();
+//        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
+//        }
+//    }
+//    return  USING_OK;
 }
 
 
@@ -117,13 +201,13 @@ void    CraftUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
   {
     if(recipient->addKnowledge(productType_))
       productType_->extractKnowledge(recipient);
-  }   
+  }
 
-  if(resourceType_)
-  {
-  if(recipient->addKnowledge(resourceType_))
-    resourceType_->extractKnowledge(recipient);
-  }  
+  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+      if(recipient->addKnowledge((*iter)->getItemType()))
+        (*iter)->getItemType()->extractKnowledge(recipient);
+    }
 
   for(vector <ToolUseElement *>::iterator iter = tools_.begin(); iter != tools_.end(); ++iter)
     {
@@ -131,44 +215,34 @@ void    CraftUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
       {
         if(recipient->addKnowledge((*iter)->getItemType()))
           (*iter)->getItemType()->extractKnowledge(recipient);
-       } 
-     }   
+       }
+     }
 }
 
-USING_RESULT CraftUsingStrategy::mayUse(UnitEntity * unit, SkillRule * skill)
+
+
+void CraftUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
 {
-  vector <ToolUseElement *>::iterator iter;
-  Rational dailyProduction(productNumber_ * unit->getFiguresNumber(), productionDays_);
-  for(iter = tools_.begin(); iter != tools_.end();iter++)
-  {
-    dailyProduction = dailyProduction + dailyProduction * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-    }
-  Rational  currentAmount = unit->getItemAmount(productType_);
-
-  if( currentAmount.isInteger() )
-  {
-      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
-      {
-//        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
-        return NO_RESOURCES;
-        }
-
-   }
-  else if( (currentAmount + dailyProduction).getValue() > currentAmount.getValue() )
+  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
-      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
-      {
-        // no resources but old production in progress
-        dailyProduction =  currentAmount + 1 - currentAmount.getValue();
-        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
-        }
+      if (tokenEntity->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
+        tokenEntity->addReport(new BinaryPattern(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
     }
-    return  USING_OK;
 }
 
-
-
-void CraftUsingStrategy::reportUse(USING_RESULT result, UnitEntity * unit, Order * OrderId)
+void CraftUsingStrategy::printSkillDescription(ostream & out)
 {
-        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
+  BasicProductionStrategy::printSkillDescription(out);
+
+ if(!productType_)
+    return;
+ else
+
+ out << " Use produces: " << productNumber_<<" ";
+ if(productNumber_ > 1)
+  out << productType_->getPluralName()<< " " << productType_->printTag();
+ else
+  out << productType_->printName();
+
+  out<<" in "<< productionDays_ <<" days.";
 }

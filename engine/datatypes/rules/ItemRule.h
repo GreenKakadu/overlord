@@ -15,20 +15,16 @@
 class EquipmentSlotVariety;
 class SkillLevelElement;
 class BasicCondition;
+class UnitEntity;
 
 class ItemRule : public Rule  {
 public:
-      ItemRule ( const string & keyword, GameData * parent);//: GameData(keyword, parent);//{}
-      ItemRule ( const ItemRule * prototype );// : GameData(prototype);//{}
-//      ItemRule ();
+      ItemRule ( const string & keyword, GameData * parent);
+      ItemRule ( const ItemRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
- //     void     print();
-  /** No descriptions */
   inline string getPluralName() const{return pluralName_;}
-  /** No descriptions */
-//  inline void   setPluralName(const string name) { pluralName_ = name;}
-  /** No descriptions */
+    void printDescription(ReportPrinter & out);
   inline EquipmentSlotVariety * getEquipSlot() const {return equipSlot_ ;}
   /** gets nimber of equipement slots item demands to be equiped */
   inline int getNumEquipSlotsRequired() const {return numEquipSlotsRequired_;}
@@ -38,7 +34,7 @@ public:
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
   inline int getEquipCapacity(int modeIndex){return equipCapacity_[modeIndex];}
         void extractKnowledge (Entity * recipient, int parameter = 0);
-//	inline void setWeight(int weight) {weight_ = weight;}
+        void applyEquipementEffects(UnitEntity * unit, int number);
     protected:
 	  string pluralName_;
 	  EquipmentSlotVariety * equipSlot_;
@@ -47,6 +43,7 @@ public:
 		int price_ ;
 		BasicCondition * equipCondition_;
 		SkillLevelElement *useSkill_;
+		SkillLevelElement *learningLevelBonus_;
 		bool unique_;
 		bool special_;
 		bool magic_;
@@ -57,4 +54,7 @@ public:
     private:
 };
 extern ItemRule * cash; // special value
+extern ItemRule       sampleItem;
+#include "RulesCollection.h"
+extern RulesCollection <ItemRule>      items;
 #endif

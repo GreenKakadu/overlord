@@ -7,13 +7,23 @@
  ***************************************************************************/
 #include "TerrainRule.h"
 #include "SkillRule.h"
-#include "RulesCollection.h"
+
+//TerrainRule   sampleTerrain   ("TERRAIN",  &sampleGameData);
+BasicRulesCollection  terrains(new DataStorageHandler("terrains"));
 extern RulesCollection <SkillRule>      skills;
+
+
+
+TerrainRule * findTerrainByTag(const string &tag)
+{
+ return GET_FROM_COLLECTION<TerrainRule>(&terrains,tag);
+}
 
 TerrainRule::TerrainRule ( const TerrainRule * prototype ) : Rule(prototype)
 {
   optimalPopulation_ =0;
   landWalk_ =0;
+  buildEnabled_ = true;
   }
 
 
@@ -26,18 +36,8 @@ GameData * TerrainRule::createInstanceOfSelf()
 STATUS 
 TerrainRule::initialize        ( Parser *parser )
 {
-
+  GameData::initialize(parser);
 	
-  if (parser->matchKeyword ("NAME") )
-    {
-      setName(parser->getText());
-      return OK;
-    }
-  if (parser->matchKeyword("DESCRIPTION"))
-    {
-      setDescription(parser->getText());
-      return OK;
-    }
   if (parser->matchKeyword ("OPTIMA") )
     {
       optimalPopulation_ = parser->getInteger();
@@ -46,6 +46,11 @@ TerrainRule::initialize        ( Parser *parser )
   if (parser->matchKeyword ("LANDWALK") )
     {
       landWalk_ = skills[parser->getWord()];
+      return OK;
+    }
+  if (parser->matchKeyword ("NOBUILD") )
+    {
+      buildEnabled_ = false;
       return OK;
     }
   if (parser->matchKeyword ("DAYS") )
@@ -59,17 +64,6 @@ TerrainRule::initialize        ( Parser *parser )
 
  }
 
-void TerrainRule::print()
-{
-    cout  << getName();
-    cout << " [" << getTag()  << "] ";
- if( optimalPopulation_)
-   cout << "Optima "<< optimalPopulation_ <<endl;
- else
-   cout << endl;
-   
-      
-}
 
 
 
@@ -81,3 +75,11 @@ int TerrainRule::getTravelTime(MovementVariety * mode)
 }
 //bool TerrainRule::mayMove(MovementVariety * mode, UnitEntity * unit)
 //{return true;}
+
+
+
+void TerrainRule::printDescription(ReportPrinter & out)
+{
+    out << printName()<< ": "<< getDescription()<<".";    
+    if(! buildEnabled_) out << " Construction of buildings  is not allowed here.";
+}

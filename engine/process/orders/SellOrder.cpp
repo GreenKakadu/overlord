@@ -23,9 +23,13 @@
 #include "IntegerData.h"
 extern Reporter * cantTradeReporter;
 
+//SellOrder instantiateSellOrder;
+SellOrder * instantiateSellOrder = new SellOrder();
+
 
 SellOrder::SellOrder(){
    keyword_ = "sell";
+  registerOrder_();
   description = string("SELL number item-tag [price] \n") +
   "Immediate, leader-only.  This order executes when a unit has at least the\n" +
   "amount of items required, and the local market requires some of the specified\n" +
@@ -42,6 +46,8 @@ SellOrder::SellOrder(){
 
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
 
 STATUS SellOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
@@ -64,7 +70,7 @@ STATUS SellOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -89,7 +95,7 @@ ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &para
  	  return INVALID;
   }
   unit->expose(true);
-  unit->getLocation()->addMarketRequest(new MarketRequest(unit,orderId,amount,item,price,SELL));
+  unit->getLocation()->addMarketRequest(new MarketRequest(unit,unit->getCurrentOrder(),amount,item,price,SELL));
 
   return IN_PROGRESS;
 }
@@ -97,7 +103,7 @@ ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &para
 
 
 ORDER_STATUS
-SellOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId, int result)
+SellOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -108,9 +114,9 @@ SellOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parame
   if ( amount > result)
   {
     par0->setValue(amount - result);
-    entity->updateOrderResults(FAILURE,orderId);
+    entity->updateOrderResults(FAILURE);
     return FAILURE;
   }
-  entity->updateOrderResults(SUCCESS,orderId);
+  entity->updateOrderResults(SUCCESS);
   return SUCCESS;
 }

@@ -21,5 +21,8 @@ public:
 		protected:
     private:
 };
+extern EquipmentSlotVariety      sampleEquipmentSlot;
+#include "VarietiesCollection.h"
+extern VarietiesCollection <EquipmentSlotVariety>      equipments;
 
 #endif

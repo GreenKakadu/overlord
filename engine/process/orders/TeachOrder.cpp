@@ -14,8 +14,9 @@
  ***************************************************************************/
 #include "TeachOrder.h"
 #include "Entity.h"
+#include "IntegerData.h"
 #include "UnitEntity.h"
-#include "SkillLevelElementData.h"
+#include "SkillLevelElement.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
 #include "UnaryPattern.h"
@@ -25,11 +26,16 @@
 #include "PhysicalEntity.h"
 #include "TeachingOffer.h"
 extern Reporter * teachingReporter;
+extern Reporter * teachingReporter2; //debug
 extern EntitiesCollection <UnitEntity>      units;
+
+//TeachOrder instantiateTeachOrder;
+TeachOrder * instantiateTeachOrder = new TeachOrder();
 
 TeachOrder::TeachOrder()
 {
    keyword_ = "teach";
+  registerOrder_();
   description = string("TEACH skill-tag unit-id [unit-id...] \n") +
   "Full-day, leader-only.  This order executes as soon as the specified unit is\n" +
   "present and issues the full-day order STUDY skill-tag.  Spends some time\n" +
@@ -38,6 +44,8 @@ TeachOrder::TeachOrder()
   "a unit to study a particular skill, get to an higher level and learn faster.\n";
     orderType_   = DAY_LONG_ORDER;
 }
+
+
 
 STATUS TeachOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
@@ -48,7 +56,7 @@ STATUS TeachOrder::loadParameters(Parser * parser,
     if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
             return IO_ERROR;
 
-    while (parseOptionalGameDataParameter(entity, parser, units, "unit id", parameters))
+    while (parseOptionalGameDataParameter(entity, parser, units, parameters))
           {}
             
   return OK;
@@ -58,7 +66,7 @@ STATUS TeachOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   PhysicalEntity * teacher = dynamic_cast<PhysicalEntity *>(entity);
   assert(teacher);
@@ -72,7 +80,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
  		return INVALID;
     }
   vector <Entity * > students;
- PROCESSING_STATE  state = orderId->getProcessingState();
+ PROCESSING_STATE  state = entity->getCurrentOrder()->getProcessingState();
 
   switch(state)
    {
@@ -88,7 +96,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
             }
         }
             teacher->addTeachingOffer(new TeachingOffer(teacher, skill, students));
-            orderId->setProcessingState (SUSPEND);
+            entity->getCurrentOrder()->setProcessingState (SUSPEND);
             teacher->getLocation()->setTeacherCounter(true);
             return SUSPENDED;
         break;
@@ -98,19 +106,22 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
      {
         // if this order is not the order that was processed last day
         // we may refrain from reporting
-      if(teacher->getLastOrder() != orderId)
+      if(teacher->getLastOrder() != entity->getCurrentOrder())
         {
+//QQQ
           teacher->addReport(new UnaryPattern (teachingReporter,
-                        new SkillLevelElementData(new SkillLevelElement
-                        (skill,teacher->getSkillLevel(skill)))));
+                        new  SkillLevelElement
+                        (skill,teacher->getSkillLevel(skill))));
+//          teacher->addReport(new BinaryPattern (teachingReporter2, skill,
+//                        new IntegerData(teacher->getSkillLevel(skill))));
         }
-      orderId->setProcessingState (RESUME);
+      entity->getCurrentOrder()->setProcessingState (RESUME);
             return SUSPENDED;
      }
      else
      {
       teacher->getLocation()->setTeacherCounter(false);
-      orderId->setProcessingState (NORMAL_STATE);
+      entity->getCurrentOrder()->setProcessingState (NORMAL_STATE);
       teacher->cancelTeachingOffer();
 // 		  return INVALID;
  		  return FAILURE;
@@ -121,7 +132,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
      case RESUME:
       teacher->cancelTeachingOffer();
       teacher->getLocation()->setTeacherCounter(false);
-      orderId->setProcessingState (NORMAL_STATE);
+      entity->getCurrentOrder()->setProcessingState (NORMAL_STATE);
       return SUCCESS;
         break;
 
@@ -135,14 +146,14 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 
 
 
-void TeachOrder::preProcess_(Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+void TeachOrder::preProcess_(Entity * entity, vector <AbstractData *>  &parameters)
 {
   
 }
 
 
 
-void TeachOrder::doProcess_(Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+void TeachOrder::doProcess_(Entity * entity, vector <AbstractData *>  &parameters)
 {
   
 }

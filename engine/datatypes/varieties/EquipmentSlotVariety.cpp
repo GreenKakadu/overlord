@@ -23,6 +23,11 @@ EquipmentSlotVariety::initialize        ( Parser *parser )
       setName(parser->getText());
       return OK;
     }
+  if (parser->matchKeyword ("PLURAL") )
+    {
+//      setPluralName(parser->getText());
+      return OK;
+    }
   if (parser->matchKeyword("DESCRIPTION"))
     {
       setDescription(parser->getText());

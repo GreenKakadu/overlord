@@ -15,16 +15,27 @@ void * UnaryPattern::operator new(size_t size)
 }
 
 
+
 void  UnaryPattern::operator delete(void * deadObject, size_t size)
 {
 	DELETE_PATTERN<UnaryPattern>(deadObject, size);
 }
 
 
+
 void UnaryPattern::print(ostream &out) const
 {
   reporter_->print(out, param1_);
 }
+
+
+
+void UnaryPattern::clean()
+{
+  param1_->clean();
+}
+
+
 
 UnaryPattern  * UnaryPattern::headOfFreeList;
 

@@ -26,6 +26,15 @@ public:
     {rule_->printLevel(getLevel(),out); out  << " (" <<  parameter1_ /BasicLearningStrategy::getPointsPerDay() <<")";}
   void printNextLevel(ostream & out)
     {rule_->printLevel(getLevel() +1 ,out);}
+  string printName()
+  { 
+    char buffer[12];
+    longtostr(parameter1_/100, buffer);
+    if(parameter1_ > 1)
+      return string( buffer) + " days of "+ rule_->printName();
+    else  
+      return string( buffer) + " day of "+ rule_->printName();
+  } 
    inline SkillRule *   getSkill()      const     {return rule_;}
    inline int          getExpPoints()    const     {return parameter1_;}
    inline void         setExpPoints(int value)     { parameter1_ = value;}
@@ -51,4 +60,5 @@ public:
 	protected:
 
 };
+typedef vector <SkillElement>::iterator SkillIterator;
 #endif

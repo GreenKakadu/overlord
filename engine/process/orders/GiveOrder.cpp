@@ -19,9 +19,11 @@
 #include "UnitEntity.h"
 #include "FactionEntity.h"
 
+//GiveOrder instantiateGiveOrder;
+GiveOrder * instantiateGiveOrder = new GiveOrder();
+
 extern EntitiesCollection <UnitEntity>      units;
 extern RulesCollection <ItemRule>      items;
-extern VarietiesCollection <StanceVariety>    stances;
 extern Reporter *	giveRejectedReporter;
 extern Reporter *	giveReporter;
 extern Reporter *	receiveReporter;
@@ -30,6 +32,7 @@ extern Reporter *	receiveReporter;
 GiveOrder::GiveOrder()
 {
   keyword_ = "give";
+  registerOrder_();
   description = string("GIVE unit-id item-tag [number [kept]] \n") +
   "Immediate.  Attempts to hand the required amount of items to the designated unit.\n" +
   "If no number is specified, attempts to give as much as possible.\n" +
@@ -40,6 +43,8 @@ GiveOrder::GiveOrder()
   "can be given.\n";
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
 
 STATUS
 GiveOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
@@ -73,7 +78,7 @@ GiveOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters,
 //============================================================================
 
 ORDER_STATUS
-GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Order * orderId)
+GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 {
 
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
@@ -84,29 +89,16 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Order
   ItemRule * item          =  dynamic_cast<ItemRule *>(parameters[1]);
   assert(item);
   
-  int given = 0;
-  IntegerData * par2;  
-  if(parameters.size() >2)
-    {
-      par2       =  dynamic_cast<IntegerData *>(parameters[2]);  
-      assert(par2);
-      given                =  par2->getValue();
-    }
+  int given =   getIntegerParameter(parameters,2);
      
-  int kept = 0;
-  if(parameters.size() >3)
-    {
-      IntegerData * par3       =  dynamic_cast<IntegerData *>(parameters[3]);
-      assert(par3);
-      kept                 =  par3->getValue();
-    }  
+  int kept =   getIntegerParameter(parameters,3);
 
 
 
  if (!unit->mayInterract(recipient)) // Not In the same place or can't see
 	  return FAILURE;
 
- if(*(recipient->getFaction()->getStance(unit)) < *(stances["friend"]))
+ if(*(recipient->getFaction()->getStance(unit)) < *friendlyStance)
       {
         // not accepting. Reports to both sides
       unit->addReport(new   ReportRecord(new UnaryPattern(giveRejectedReporter, recipient)) );
@@ -140,23 +132,21 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters, Order
 //                given = 0;
 
 	
-        if (!unit->isSilent() && orderId->isNormalReportEnabled()   )
+        if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
 	  {
-//	    QuartenaryPattern * Message  = new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient);
-	    ReportRecord * currentReport = new ReportRecord(new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient));
-      unit->addReport( currentReport);
+      unit->addReport( new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient));
      }
 
         if (!recipient->isSilent())
 	  {
-//	    QuartenaryPattern * Message  = new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit);
-	    ReportRecord * currentReport = new ReportRecord(new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit));
-      recipient->addReport( currentReport);
+      recipient->addReport( new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit));
 	  }
 
     if(given > reallyGiven)
     {
-        par2->setValue(given - reallyGiven);
+        IntegerData * par       =  dynamic_cast<IntegerData *>(parameters[2]);
+        assert(par);
+        par->setValue(given - reallyGiven);
         return IN_PROGRESS;
     }
         return SUCCESS;

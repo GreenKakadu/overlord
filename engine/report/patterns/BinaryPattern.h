@@ -25,6 +25,7 @@ public:
   static void   operator delete(void * deadObject, size_t size);
 
   void print(ostream &out) const;
+  void clean();
 	static  BinaryPattern * headOfFreeList;
 	union
 	{

@@ -6,6 +6,8 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "BasicCondition.h"
+//BasicCondition  sampleBasicCondition ("CONDITION",      &sampleGameData);
+
 GameData * BasicCondition::createInstanceOfSelf()
 {
    return CREATE_INSTANCE<BasicCondition> (this);

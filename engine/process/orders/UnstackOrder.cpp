@@ -11,8 +11,12 @@
 #include "UnaryPattern.h"
 extern Reporter *	unstackReporter;
 
+//UnstackOrder instantiateUnstackOrder;
+UnstackOrder * instantiateUnstackOrder = new UnstackOrder();
+
 UnstackOrder::UnstackOrder(){
    keyword_ = "unstack";
+  registerOrder_();
   description = string("UNSTACK \n") +
   "Immediate, one-shot.  This order always executes.  When a unit is in a stack,\n" +
   "but not leading the entire stack, the unit departs from the stack.  If\n" +
@@ -21,7 +25,9 @@ UnstackOrder::UnstackOrder(){
   orderType_   = IMMEDIATE_ORDER;
 }
 
-ORDER_STATUS UnstackOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+
+
+ORDER_STATUS UnstackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

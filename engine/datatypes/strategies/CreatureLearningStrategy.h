@@ -19,10 +19,11 @@ class CreatureLearningStrategy : public BasicLearningStrategy  {
 public: 
 	CreatureLearningStrategy( const string & keyword, GameData * parent):
                                          BasicLearningStrategy(keyword, parent){}
-  CreatureLearningStrategy( const CreatureLearningStrategy * prototype ): BasicLearningStrategy(prototype){}
+  CreatureLearningStrategy( const CreatureLearningStrategy * prototype );
 	~CreatureLearningStrategy(){}
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
 };
+extern CreatureLearningStrategy sampleCreatureLearning;
 
 #endif

@@ -27,17 +27,16 @@ class GameData : public BasicData
                     GameData (const GameData * prototype);
    virtual         ~GameData ( ){}
 
-           string   getKeyword()      const;
-           GameData * getParent()       const;
-//           GameData * checkObjectType  ( const string  &keyword); 
-           GameData * createByKeyword(const string &keyword);
+   static        GameData * createByKeyword(const string &keyword);
    virtual GameData * createInstanceOfSelf ();
-   virtual STATUS      initialize ( Parser *parser );
-   virtual void      save (ostream &out);
+     bool isDescendantFrom  (GameData * object);
+   virtual STATUS     initialize ( Parser *parser );
+   virtual void       save (ostream &out);
+
+   inline  string     getKeyword() const{ return keyword_;}
+   inline  GameData * getParent() const { return parent_;}
    
-  /** Checks data consistency */
    virtual STATUS dataConsistencyCheck();
-   static PrototypeManager * prototypeManager;
            bool operator ==  (GameData data2);
 
     protected:
@@ -48,19 +47,19 @@ class GameData : public BasicData
 };
 
 
+/** Macro for cloning */
 template <class T>  GameData * CREATE_INSTANCE(const T * prototype)
 {
       T * object = new T(prototype); 
       return object;
      
 }
+/** Function object for use in STL algorithms (not used yet) */
 #include <functional>
 class TagSearch : public binary_function<GameData *, string *, bool> {
 public:
    bool operator () (const GameData * data, string * tag) const
       { return data->getTag() == *tag; }
 };
-
-
-      
+extern GameData       sampleGameData;
 #endif

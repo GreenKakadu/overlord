@@ -27,5 +27,17 @@ void TertiaryPattern::print(ostream &out) const
   reporter_->print(out, param1_, param2_, param3_ );
 }
 
+
+
+void TertiaryPattern::clean()
+{
+  param1_->clean();
+  param2_->clean();
+  param3_->clean();
+}
+
+
+
+
 TertiaryPattern  * TertiaryPattern::headOfFreeList;
 

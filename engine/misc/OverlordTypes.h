@@ -27,10 +27,13 @@ enum learning_result {
   CANNOT_STUDY_FAILURE  = 2,
   RACE_FAILURE          = 3,
   REQUIREMENT_FAILURE   = 4,
-//  TEACHING_REQUIRED     = 5,
+  TEACHING_REQUIRED     = 5,
 //  TEACHING_FAILURE      = 6,
-  FOLLOWER_CANNOT_STUDY_LEVEL_FAILURE = 7,
-  FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE = 8
+//  FOLLOWER_CANNOT_STUDY_LEVEL_FAILURE = 7,
+  FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE = 8,
+  SKILL_STUDY_LIMIT_FAILURE = 9,
+  ITEM_REQUIRED_FAILURE          = 10,
+  LEARNING_RESULT_ENUM_END          = 20
                    };
 typedef learning_result  LEARNING_RESULT;
 //enum movement_result {
@@ -42,7 +45,13 @@ typedef learning_result  LEARNING_RESULT;
 enum using_result {
   USING_OK           = 0,
   UNUSABLE           = 1,
-  NO_RESOURCES       = 2
+  CANNOT_USE         = 2,
+  CONDITION_FAILURE  = 3,
+  WRONG_TARGET       = 4,
+  TARGET_NOT_EXIST   = 5,
+  NO_RESOURCES       = 6,
+  USING_IN_PROGRESS  = 7,
+  USING_COMPLETED    = 8
                    };
 typedef using_result  USING_RESULT;
 enum processing_state {

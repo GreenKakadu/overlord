@@ -18,18 +18,14 @@ class BasicData : public AbstractData  {
 public: 
 	BasicData(){}
 	~BasicData(){}
-     string   getTag()          const;
-//  inline   string   getTag()          const { return tag_;}
-  inline   string   getName()         const { return name_;}
-  inline   string   getDescription()  const { return description_;}
+          string   getTag()          const;
+  inline  string   getName()         const { return name_;}
+          string   getDescription()  const;
   inline  void     setTag          ( const string  &tag) {  tag_ = tag;}
   inline  void     setName         ( const string  &name){ name_ = name;}
   inline  void     setDescription  ( const string  &description){ description_ = description;}
-  virtual void      print(); // for debugging
-          void      saveAsParameter (ostream &out);
-  /** No descriptions */
+          void     saveAsParameter (ostream &out);
   string printTag() const;
-  /** No descriptions */
   virtual string printName() /*const*/;
     protected:
   static const string l_bracket;

@@ -22,6 +22,7 @@ DataStorageHandler::DataStorageHandler (string * filename)
 {
 	filename_ = filename;
   status = UNDEFINED;
+//cout << "Collection "<< filename << " created.\n";
 }
 
 DataStorageHandler::DataStorageHandler (const char * filename)
@@ -29,6 +30,7 @@ DataStorageHandler::DataStorageHandler (const char * filename)
   filenameString_ = string(filename);
 	filename_ = &filenameString_;
 	status = UNDEFINED;
+//cout << "Collection "<< string(filename) << " created.\n";
 }
 
 //DataStorageHandler::DataStorageHandler(const char * filename)
@@ -134,7 +136,7 @@ string optionalDerivativeKeyword;
 	    		{
 	      			keyword = collectionKeyword_;
 	    		}
-       	GameData * temp =  GameData::prototypeManager->findInRegistry(keyword) ;
+       	GameData * temp =  /*GameData::*/prototypeManager->findInRegistry(keyword) ;
 			if(temp == 0)
 				{
 					cout << "Can't  find object of type " <<  keyword << " in registry " << endl;
@@ -149,7 +151,7 @@ string optionalDerivativeKeyword;
         }
 
 	  				newObject -> setTag(tag);
-//w	  				if(newObject->checkObjectType(collectionKeyword_))
+//	  				if(newObject->checkObjectType(collectionKeyword_))
 						{
 	    					collection_ -> add (newObject) ;
 //                cout << " After adding "<< newObject->printName();
@@ -172,6 +174,9 @@ if(keyword.empty())
 	}
 return OK;
 }
+
+
+
 STATUS DataStorageHandler::save()
 {
   time_t rawtime;
@@ -205,6 +210,9 @@ STATUS DataStorageHandler::save()
 
 return OK;
 }
+
+
+
 STATUS DataStorageHandler::initializeData()
 {
  GameData * currentObject = 0;
@@ -248,11 +256,12 @@ STATUS DataStorageHandler::initializeData()
 return OK;
 }
 
+
 void  DataStorageHandler::print()
 {
     cout << "====================== "<< collectionKeyword_  << " (" << collection_ -> size() << ") ======================" <<endl;
  //   collection_ -> print();
-UINT i;
+int i;
 for (i=0; i < collection_ -> size() ; i++)
     {
       if (collection_->findByIndex(i) != 0)

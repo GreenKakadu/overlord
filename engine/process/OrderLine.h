@@ -37,7 +37,8 @@ class Order
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
 	ORDER_STATUS completeProcessing(Entity * entity, int result);
-	void save(ostream &out); 
+	void save(ostream &out);
+	void print(ostream &out);
 	void parseModifiers(Parser * parser );
 	bool parse(Parser * parser, Entity * entity );
 //	bool isParsed;
@@ -51,8 +52,10 @@ class Order
   bool isFullDayOrder();
   PROCESSING_STATE getProcessingState() const;
   void setProcessingState(PROCESSING_STATE state);
- inline bool isNormalReportEnabled() const { return !(reportFlags & NO_NORMAL_REPORT_FLAG);}
+  inline bool isNormalReportEnabled() const { return !(reportFlags & NO_NORMAL_REPORT_FLAG);}
   inline bool isErrorReportEnabled() const { return !(reportFlags &  NO_ERROR_REPORT_FLAG);}
+  inline void setCompletionFlag(bool flag) { isCompleted_ = flag;}
+/*  inline*/ bool getCompletionFlag() const;// {return  isCompleted_;}
          void setReportingFlag(UINT flag);
          void clearReportingFlag(UINT flag);
          bool getReportingFlag(UINT flag);
@@ -60,6 +63,7 @@ class Order
 static const  UINT NO_NORMAL_REPORT_FLAG;
 static const  UINT NO_ERROR_REPORT_FLAG;
 	bool isPermanent_;
+  bool isCompleted_;
 	PROCESSING_STATE state_;
   bool whileCondition_;
 	int dayRestricted_;
@@ -73,6 +77,7 @@ static const  UINT NO_ERROR_REPORT_FLAG;
      private:
 
 };
+
 #endif
 
 

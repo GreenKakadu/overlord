@@ -19,10 +19,11 @@ class NormalLearningStrategy : public BasicLearningStrategy  {
 public: 
 	NormalLearningStrategy( const string & keyword, GameData * parent):
                                          BasicLearningStrategy(keyword, parent){}
-  NormalLearningStrategy( const NormalLearningStrategy * prototype ): BasicLearningStrategy(prototype){}
+  NormalLearningStrategy( const NormalLearningStrategy * prototype );
 	~NormalLearningStrategy(){};
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
 };
+extern NormalLearningStrategy   sampleNormalLearning;
 
 #endif

@@ -11,7 +11,6 @@
 #include <vector>
 #include "Variety.h"
 class SkillRule;
-
 class MovementVariety : public Variety  {
 public:
       MovementVariety ( const string & keyword, GameData * parent) : Variety(keyword, parent){}
@@ -22,8 +21,12 @@ public:
     protected:
     private:
 };
+extern MovementVariety   sampleMode;
 extern MovementVariety * walkingMode;
+extern MovementVariety * swimingMode;
 extern MovementVariety * flyingMode;
+#include "VarietiesCollection.h"
+extern VarietiesCollection <MovementVariety> movementModes;
 
 #endif
 

@@ -25,7 +25,8 @@ public:
       bool operator <=  (StanceVariety stance2); 
       bool operator ==  (StanceVariety stance2);
       bool operator >=  (StanceVariety stance2);
-      bool operator >   (StanceVariety stance2);  
+      bool operator >   (StanceVariety stance2);
+       
   /** No descriptions */
   		inline int getCode(){return code_;}
 friend  ostream &operator << ( ostream &out, StanceVariety * stance);
@@ -33,5 +34,10 @@ friend  ostream &operator << ( ostream &out, StanceVariety * stance);
 			int code_;
     private:
 };
-extern StanceVariety *  allied;
+extern StanceVariety     sampleStance;
+extern StanceVariety *  alliedStance;
+extern StanceVariety *  friendlyStance;
+extern StanceVariety *  neutralStance;
+#include "VarietiesCollection.h"
+extern VarietiesCollection <StanceVariety>    stances;
 #endif

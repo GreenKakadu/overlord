@@ -6,16 +6,23 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CreatureLearningStrategy.h"
+CreatureLearningStrategy::CreatureLearningStrategy( const CreatureLearningStrategy * prototype ):
+           BasicLearningStrategy(prototype)
+{
+  name_ = "creature skill";
+}
+
+
+
 GameData * CreatureLearningStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<CreatureLearningStrategy> (this);
 }
+
+
+
 STATUS
 CreatureLearningStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("SPECIALIST") )
-    {
-      return OK;
-    }
-      return OK;
+      return BasicLearningStrategy::initialize(parser);
 }

@@ -8,6 +8,11 @@
 #include "SkillCondition.h"
 #include "UnitEntity.h"
 #include "SkillLevelElement.h"
+//SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
+SkillCondition::SkillCondition(const SkillCondition * prototype):BasicCondition(prototype)
+{
+}
+
 GameData * SkillCondition::createInstanceOfSelf()
 {
    return CREATE_INSTANCE<SkillCondition> (this);
@@ -15,7 +20,7 @@ GameData * SkillCondition::createInstanceOfSelf()
 
 
 
-bool SkillCondition::isSatisfied(UnitEntity * unit)
+bool SkillCondition::isSatisfied(PhysicalEntity * unit)
 {
 	return unit->hasSkill(skillRequirement_);
 }
@@ -28,6 +33,37 @@ STATUS SkillCondition::initialize ( Parser *parser )
   if(skillRequirement_)
       skillRequirement_->getSkill()->bindCondition(this);
   return OK;
+}
+
+
+
+
+
+Rule * SkillCondition::getSubject() const
+{
+  if(skillRequirement_ == 0)
+    return 0;
+  else
+  return skillRequirement_->getSkill();
+}
+
+
+
+SkillRule * SkillCondition::getSkill() const 
+{
+  if(skillRequirement_ == 0)
+    return 0;
+  else
+  return skillRequirement_->getSkill();
+}
+
+
+int  SkillCondition::getLevel() const 
+{
+  if(skillRequirement_ == 0)
+    return 0;
+  else
+  return skillRequirement_->getLevel();
 }
 
 
@@ -53,8 +89,16 @@ void SkillCondition::setSubject(Rule * subject)
 
 
 
-void    SkillCondition::extractKnowledge (Entity * recipient, int parameter = 0)
+void    SkillCondition::extractKnowledge (Entity * recipient, int parameter )
 {
   if(recipient->addSkillKnowledge(skillRequirement_->getSkill(), skillRequirement_->getLevel()))
     skillRequirement_->getSkill()->extractKnowledge(recipient, skillRequirement_->getLevel());
+}
+
+
+
+ostream & SkillCondition::print(ostream & out)
+{
+   skillRequirement_->print(out);
+   return  out;
 }

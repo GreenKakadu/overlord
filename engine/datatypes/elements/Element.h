@@ -9,14 +9,14 @@ Template for implementation of small objects demanding efficient memory use.
 #ifndef ELEMENT_H
 #define ELEMENT_H
 #include <stdlib.h>
+#include "AbstractData.h"
 class Entity;
 extern const int BLOCK_SIZE;
 extern void longtostr(unsigned long u, char *out);
-
-template <class R, class P> class Element2 {
+template <class R, class P> class Element2 : public AbstractData {
 public: 
-	  Element2(R * rule, P parameter){	rule_ = rule;	parameter1_ = parameter;}
-	  Element2(const Element2 <R,P> &element){	rule_ = element.getRule();	parameter1_ = element.getParameter1();}
+	  Element2(R * rule, P parameter) {	rule_ = rule;	parameter1_ = parameter;}
+	  Element2(const Element2 <R,P> &element): AbstractData(){	rule_ = element.getRule();	parameter1_ = element.getParameter1();}
 	 virtual ~Element2(){};
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
@@ -85,10 +85,10 @@ template <class R, class P> void  Element2<R,P>::operator delete (void * deadObj
 
 
  
-template <class R, class P1, class P2> class Element3 {
+template <class R, class P1, class P2> class Element3  : public AbstractData{
 public:
 	  Element3(R * rule, P1 par1, P2 par2){rule_ = rule;	parameter1_ = par1;	parameter2_ = par2;}
-	  Element3(const Element3 <R,P1,P2> &element){	rule_ = element.getRule();	parameter1_ = element.getParameter1(); parameter2_ = element.getParameter2();}
+	  Element3(const Element3 <R,P1,P2> &element): AbstractData() {	rule_ = element.getRule();	parameter1_ = element.getParameter1(); parameter2_ = element.getParameter2();}
 	 virtual ~Element3(){};
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
@@ -103,7 +103,7 @@ public:
    inline bool operator !=  (Element3 <R,P1,P2>  rule2)  {return this->rule_ != rule2.getRule();}
    inline bool operator <   (Element3 <R,P1,P2>  rule2)  {return this->rule_->getTag() < rule2.getRule()->getTag();}
    inline bool operator >   (Element3 <R,P1,P2>  rule2)  {return this->rule_->getTag() > rule2.getRule()->getTag();}
-   virtual inline bool isValidElement() {return (rule_ != 0);}
+   virtual inline bool isValidElement() const {return (rule_ != 0);}
 	static Element3<R,P1,P2>  * headOfFreeList;
   /**  */
 protected:

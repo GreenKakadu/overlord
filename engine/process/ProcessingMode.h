@@ -34,5 +34,8 @@ In Non-Repetitive mode only one attempt of order execution will be done. */
 protected:
 	ORDER_TYPE orderType_;
 };
+extern ProcessingMode   immediateOrders;
+extern ProcessingMode   stackOrders;
+extern ProcessingMode 	dayOrders;
 
 #endif

@@ -22,12 +22,15 @@ public:
     	~LeaderRaceRule(){}
        STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
+      void printTypeSpecificDescription(ReportPrinter & out);
    LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
        bool teacherRequired(SkillRule * skill, UnitEntity * unit);
        bool mayRectuit();
        bool mayTrade();
        bool mayTransferFigures();
-      int getLearningCapacity();
+       bool mayHoldTitles();
+       int getLearningCapacity();
 };
+extern LeaderRaceRule     sampleLeaderRaceRule;
 
 #endif

@@ -26,4 +26,6 @@ class OrderPrototypesCollection {
     private:
   
 };
+extern OrderPrototypesCollection * orderPrototypesCollection;
+
 #endif

@@ -16,22 +16,47 @@
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
+#include "OrderPrototypesCollection.h"
 extern Reporter *	invalidOrderReporter;
 extern Reporter *	invalidParameterReporter;
 extern Reporter *	missingParameterReporter;
 extern Reporter *	unknownParameterReporter;
-
+extern OrderPrototypesCollection  * orderPrototypesCollection;
 extern GameInfo game;
 
 OrderPrototype::OrderPrototype()
 {
  orderType_ =DEFAULT;
+ mayInterrupt_ = false;
 }
 
-OrderPrototype::~OrderPrototype()
+
+
+/*
+ * All orders should register themself in OrderPrototypesCollection
+ * if OrderPrototypesCollection doesn't exist yet it should be created.
+ */
+ 
+bool OrderPrototype::registerOrder_()
 {
-
+  if(orderPrototypesCollection == 0)
+    orderPrototypesCollection = new  OrderPrototypesCollection();
+ if(orderPrototypesCollection->find(keyword_) ==0)
+ {
+    orderPrototypesCollection->add(this);
+//    cout << "Order  [" << keyword_  << "]  registered \n";
+    return true;
+ }
+ else
+//  cout << "Order  [" << keyword_  << "] was already registered once\n";
+ return false;
 }
+
+
+
+/*
+ * All orders know how to save themself into entity's data and orders template
+ */  
 
 STATUS
 OrderPrototype::save(ostream &out)
@@ -40,40 +65,48 @@ OrderPrototype::save(ostream &out)
   return OK;
 }
 
+/*
+ * Interface: All orders know how to parse, interpret and check their parameters 
+ */  
+
 STATUS
 OrderPrototype::loadParameters(Parser * , vector <AbstractData *>  &, Entity * )
 {
-  /* check parameters: wrong parameter type */
-  /* check parameters: missing parameter */
-  /* check parameters: Rule/Entity doesn't exist <- option */
-  /* check parameters: wrong Rule/Entity type */
   return OK;
+}
 
-}
-string
-OrderPrototype::getKeyword() const
-{
-  return keyword_;
-}
+
+
+
+/*
+ * Interface: All orders know how to process themlelf 
+ */  
 
 ORDER_STATUS
-OrderPrototype::process(Entity * , vector < AbstractData*>  & , Order * )
+OrderPrototype::process(Entity * , vector < AbstractData*>  & )
 {
   return SUCCESS;
-
 }
 
 
 
+/*
+ * Interface: Some orders may require two-stage processing. Here is second stage. 
+ */  
+
 ORDER_STATUS
-OrderPrototype::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId, int result)
+OrderPrototype::completeProcessing (Entity * entity, 
+							vector <AbstractData *>  &parameters, int result)
 {
   return FAILURE;
 }
 
 
 
-
+/*
+ * Some orders may be executed only once per day.
+ * Determines if this order is of sich kind  
+ */  
 bool OrderPrototype::isFullDayOrder()
 {
   if((orderType_ == STACK_ORDER) ||(orderType_ == DAY_LONG_ORDER))
@@ -83,7 +116,14 @@ bool OrderPrototype::isFullDayOrder()
 }
 
 
-bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode,Entity * entity)
+/*
+ * Sometimes order may not be processed for some reasons.
+ * Entity may be unable to follow orders (dead, demoralized, paralized)
+ * Entity may be busy (moving)
+ * Determines if order may be processed  
+ */  
+bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode,
+									Entity * entity)
 {
   	if ( !processingMode-> mayExecute(orderType_))
 		return false;
@@ -91,28 +131,91 @@ bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode,Entity * ent
     if(entity->isUnaccessible())
 		return false;
 
+    if(entity->isBusy() && !mayInterrupt())
+		  return false;
+
     return true;
 }
 
 
+/* 
+ * Some orders may be processed even while entity is busy
+ * Determines if this order may be executed while entity is busy
+ */ 
+bool OrderPrototype::mayInterrupt()
+{
+  return mayInterrupt_;
+}
 
-bool OrderPrototype::entityIsUnit(Entity *entity)
+
+/*
+ * Checks that entity is unit. Used for unit-only orders
+ */ 
+bool OrderPrototype::entityIsUnit(Entity *entity, PARSING_MODE mode)
 {
    UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   if(unit==0)  // Wrong Entity type
 				{
-         entity->addReport(new BinaryPattern(invalidOrderReporter, new StringData(keyword_), new StringData("units")));
+         if(mode == NORMAL_PARSING)
+          entity->addReport(new BinaryPattern(invalidOrderReporter, new StringData(keyword_), new StringData("units")));
          return false;
 				}
    return true;
 }
-bool OrderPrototype::parseGameDataParameter(Entity *entity, Parser * parser, BasicCollection & collection, const string & parameterTypeName, vector <AbstractData *>  &parameters)
+
+
+/*
+ * Checks that entity is unit or construction.
+ */ 
+bool OrderPrototype::entityIsPhysicalEntity(Entity *entity, PARSING_MODE mode)
+{
+   PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  if(unit==0)  // Wrong Entity type
+				{
+         if(mode == NORMAL_PARSING) 
+          entity->addReport(new BinaryPattern(invalidOrderReporter, new StringData(keyword_), new StringData("units or constructions")));
+         return false;
+				}
+   return true;
+}
+
+
+/*
+ * Checks that entity is faction. Used for faction-only orders
+ */ 
+bool OrderPrototype::entityIsFaction(Entity *entity, PARSING_MODE mode )
+{
+   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
+  if(faction==0)  // Wrong Entity type
+				{
+         if(mode == NORMAL_PARSING)
+          entity->addReport(new BinaryPattern(invalidOrderReporter, new StringData(keyword_), new StringData("factions")));
+         return false;
+				}
+   return true;
+}
+
+
+/*
+ * Tries to get a word from the parser and to interpret it as a tag 
+ * of GameData object stored in collection.
+ * parameterTypeName is provided for error reporting.
+ */ 
+bool OrderPrototype::parseGameDataParameter(Entity *entity, Parser * parser, 
+				BasicCollection & collection, const string & parameterTypeName, 
+				vector <AbstractData *>  &parameters)
 {
    return parseGameDataParameter(entity, parser->getWord(),collection,parameterTypeName,parameters);
 }
 
 
 
+/*
+ * Tries to interpret a "tag" as a tag of GameData object stored in collection.
+ * parameterTypeName is provided for error reporting.
+ * Take into account that tag parameter may be also new unit placeholder.
+ * This procedure performs also check of parameter validity.
+ */ 
 bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, BasicCollection & collection, const string & parameterTypeName, vector <AbstractData *>  &parameters)
 {
    if (tag.size() == 0)  // Missing parameter
@@ -132,11 +235,23 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, B
        }   
   return (checkParameterTag(entity, tag,  collection, parameters));
 }
-bool OrderPrototype::checkParameterTag(Entity *entity,const string & tag, BasicCollection & collection, vector <AbstractData *>  &parameters)
+
+
+
+/* 
+ * Performs  check of parameter validity.
+ * Check includes:
+ * - Checking parameter as possible new entity placeholder
+ * We don't want to let player to detect valid unknown tags so 
+ * no error on unexisting tag will be returned but we'll give him
+ * warning when he uses unknown tag
+ */ 
+bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag, 
+			BasicCollection & collection, vector <AbstractData *>  &parameters)
 {
 //   cout << "[][]== checking tag "<<tag << endl;
-   GameData* item = collection.findByTag(tag);
-  if( item == 0) // Entity doesn't exist but it may be new entity placeholder
+   GameData* item = collection.findByTag(tag,false);
+  if( item == 0) // Data doesn't exist but it may be new entity placeholder
 		{
 //      UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
 //      if(unit!=0)
@@ -187,7 +302,11 @@ bool OrderPrototype::checkParameterTag(Entity *entity,const string & tag, BasicC
 
 
 
-bool OrderPrototype::parseIntegerParameter(Parser * parser, vector <AbstractData *>  &parameters)
+/*
+ * Tries to get a word from the parser and to interpret it as an integer 
+ */
+bool OrderPrototype::parseIntegerParameter(Parser * parser, 
+										vector <AbstractData *>  &parameters)
 {
   if(parser -> matchInteger())
 		{
@@ -197,7 +316,14 @@ bool OrderPrototype::parseIntegerParameter(Parser * parser, vector <AbstractData
   return false;
 }
 
-bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity, Parser * parser, BasicCollection & collection, const string & parameterTypeName, vector <AbstractData *>  &parameters)
+/*
+ * Tries to parse a word and to interpret is as a tag of GameData object 
+ * stored in collection. Return no error if this interpretation fails
+ * This procedure performs also check of parameter validity.
+ */ 
+bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity, 
+					Parser * parser, BasicCollection & collection, 
+					vector <AbstractData *>  &parameters)
 {
    string tag = parser->matchWord();
    if (tag.size() == 0) 
@@ -209,38 +335,21 @@ bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity, Parser * par
 				{
          return false;
 				}
-
-   parser->getWord();
-
-  return checkParameterTag(entity, tag,  collection, parameters);
-//   GameData* item = collection.findByTag(tag);
-//  if( item == 0) // Entity doesn't exist but it may be new entity placeholder
-//				{
-//          NewEntityPlaceholder * placeholder = collection.findPlaceholder(tag);
-//          if(placeholder == 0)  // this is not placeholder. Entity doesn't exist but we don't want to let player to know that
-//            {
-//            StringData * dummy = new StringData(tag);
-//   		      parameters.push_back(dummy);
-//           }
-//           else
-//           {
-//            GameData* entity = placeholder->getRealEntity();
-//             if(entity) // We can get real entity id from placeholder
-//   		          parameters.push_back(entity);
-//             else   // placeholder is still empty
-//   		          parameters.push_back(placeholder);
-//           }
-//				}
-//   else
-//				{
-//   		     parameters.push_back(item);
-//				}
-//   return true;
+  if(!checkParameterTag(entity, tag,  collection, parameters))
+				{
+         return false;
+				}
+  parser->getWord();
+  return true;
 }
 
 
-
-int OrderPrototype::getIntegerParameter(vector <AbstractData *>  &parameters, int parIndex)
+/*
+ * Tries to interpret parIndex'th parameter in order parameters as integer
+ * returns value or 0 on error.
+ */ 
+int OrderPrototype::getIntegerParameter(vector <AbstractData *>  &parameters, 
+										unsigned int parIndex)
 {
   IntegerData * par;
   if(parameters.size() > parIndex)
@@ -252,3 +361,31 @@ int OrderPrototype::getIntegerParameter(vector <AbstractData *>  &parameters, in
    return 0;
 }
 
+
+
+bool OrderPrototype::parseStringParameter(Entity *entity, Parser * parser, 
+						vector <AbstractData *>  &parameters)
+{
+ 	string stringParameter = parser->getParameter();
+ 	if(stringParameter.empty())
+ 	{
+        entity->addReport(new BinaryPattern(missingParameterReporter, 
+        					new StringData(keyword_), new StringData("string"))); 		
+        return false;
+ 	}
+   parameters.push_back( new StringData (stringParameter));
+  return true;
+}
+
+
+
+bool OrderPrototype::parseOptionalStringParameter(Entity *entity, Parser * parser, 
+						vector <AbstractData *>  &parameters, const char * stringParameter)
+{
+		if(parser ->matchKeyword(stringParameter))
+		{
+      		parameters.push_back( new StringData (stringParameter));
+      		return true;
+		}
+  return false;
+}

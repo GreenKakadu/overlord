@@ -6,8 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "EquipOrder.h"
-#include "ItemElementData.h"
-#include "SkillLevelElementData.h"
+#include "SkillLevelElement.h"
 #include "StringData.h"
 #include "IntegerData.h"
 #include "UnaryPattern.h"
@@ -15,14 +14,19 @@
 #include "TertiaryPattern.h"
 #include "UnitEntity.h"
 #include "ItemRule.h"
-const UINT EquipOrder::SKILL_REQUIRED_REPORT_FLAG = 0x01;
+#include "ItemElement.h"
+const unsigned EquipOrder::SKILL_REQUIRED_REPORT_FLAG = 0x01;
 extern Reporter *	unequipReporter;
 extern Reporter *	equipReporter;
 extern Reporter *	unequipableReporter;
 extern Reporter *	equipSkillReporter;
 
+EquipOrder * instantiateEquipOrder = new EquipOrder();
+//EquipOrder  instantiateEquipOrder;
+
 EquipOrder::EquipOrder(){
    keyword_ = "equip";
+  registerOrder_();
   description = string("EQUIP item-tag [number] \n") +
   "Immediate.  Executes if the unit has the required skill to equip the item,\n" +
   "and enough items.  The items are equipped, or unequipped if some items were\n" +
@@ -36,6 +40,8 @@ EquipOrder::EquipOrder(){
 
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
 
 STATUS EquipOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
@@ -73,7 +79,8 @@ STATUS EquipOrder::loadParameters(Parser * parser,
 }
 
 
-ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+
+ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -95,14 +102,14 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
     if(!equipCondition->isSatisfied(unit))
     {
      // Unit has no skill to equip item
-     if(!orderId->getReportingFlag( SKILL_REQUIRED_REPORT_FLAG))
+     if(!unit->getCurrentOrder()->getReportingFlag( SKILL_REQUIRED_REPORT_FLAG))
       {
-//        unit->addReport(new BinaryPattern(equipSkillReporter,new SkillLevelElementData(skillRequired),item));
-        orderId->setReportingFlag( SKILL_REQUIRED_REPORT_FLAG);
+//        unit->addReport(new BinaryPattern(equipSkillReporter,new SkillLevelElement(skillRequired),item));
+        unit->getCurrentOrder()->setReportingFlag( SKILL_REQUIRED_REPORT_FLAG);
       }
         return FAILURE;
      }
-    orderId->clearReportingFlag(SKILL_REQUIRED_REPORT_FLAG);
+    unit->getCurrentOrder()->clearReportingFlag(SKILL_REQUIRED_REPORT_FLAG);
     }
    int number;        
    int result;
@@ -129,11 +136,13 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
         if (result < number) // only some part of items equiped
               {
                 //numToEquip->setValue(number - result);
-		            unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElementData(item,result))));
+//QQQ
+		            unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))));
 // 		            return FAILURE;
                   return SUCCESS;
               }
-		     unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElementData(item,result))) );
+//QQQ
+		     unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))) );
          return SUCCESS;
       }
     else  // equip all available
@@ -144,7 +153,8 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
               {
  		            return FAILURE;
               }
-		     unit->addReport(new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElementData(item,result))) );
+//QQQ
+		     unit->addReport(new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))) );
          return SUCCESS;
        }
 

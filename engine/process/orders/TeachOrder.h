@@ -27,10 +27,10 @@ public:
 	TeachOrder();
 	~TeachOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
     protected:
-   void preProcess_(Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
-   void doProcess_(Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+   void preProcess_(Entity * entity, vector <AbstractData *>  &parameters);
+   void doProcess_(Entity * entity, vector <AbstractData *>  &parameters);
 };
 
 #endif

@@ -34,6 +34,9 @@ bool BasicCompetitiveRequest::isEqualTo(BasicCompetitiveRequest * request)
     return false;
   return (this->getType() == request->getType());
 }
+
+
+
 bool BasicCompetitiveRequest::isValid()
 {
   if(unit_== 0)

@@ -11,8 +11,14 @@ EntityStatistics::EntityStatistics()
 {
   clearStats();
 }
+
+
+
 EntityStatistics::~EntityStatistics(){
 }
+
+
+
 /** Does Initialization of stats data */
 STATUS EntityStatistics::initialize(Parser * parser)
 {
@@ -95,21 +101,51 @@ void EntityStatistics::save(ostream &out)
   if(stealth_) out<< " ste: " << stealth_<< ",";
   if(observation_) out<< " obs: " << observation_<< ".";
 }
+
+
+
 void EntityStatistics::print(ostream &out)
-{  out << "Stats: ";
-  if(initiative_) out<< " init: " << initiative_<<",";
-  if(melee_) out<< " att: " << melee_<< ",";
-  if(missile_) out<< " miss: " << missile_<< ",";
-  if(defence_) out<< " def: " << defence_<< ",";
-  if(damage_) out<< " dmg: " << damage_<< ",";
-  if(numOfHits_) out<< " hits: " << numOfHits_<< ",";
-  if(life_) out<< " life: " << life_<< ",";
-  if(mana_) out<< " mana: " << mana_<< ",";
-//  if(upkeep_) out<< ": " << upkeep_; // upkeep calculation
-  if(controlPoints_) out<< " CP: " << controlPoints_<< ",";
-  if(stealth_) out<< " ste: " << stealth_<< ",";
-  if(observation_) out<< " obs: " << observation_<< ".";
+{
+   bool isFirst = true;
+  printThisStat_(initiative_, "init", isFirst, out);
+  printThisStat_(melee_, "att", isFirst, out);
+  printThisStat_(missile_, "miss", isFirst, out);
+  printThisStat_(defence_, "def", isFirst, out);
+  printThisStat_(damage_, "dmg", isFirst, out);
+  printThisStat_(numOfHits_, "hits", isFirst, out);
+  printThisStat_(life_, "life", isFirst, out);
+  printThisStat_(mana_, "mana", isFirst, out);
+  printThisStat_(controlPoints_, "CP", isFirst, out);
+  printThisStat_(stealth_, "ste", isFirst, out);
+  printThisStat_(observation_, "obs", isFirst, out);
+//  if(initiative_) out<< " init: " << initiative_<<",";
+//  if(melee_) out<< " att: " << melee_<< ",";
+//  if(missile_) out<< " miss: " << missile_<< ",";
+//  if(defence_) out<< " def: " << defence_<< ",";
+//  if(damage_) out<< " dmg: " << damage_<< ",";
+//  if(numOfHits_) out<< " hits: " << numOfHits_<< ",";
+//  if(life_) out<< " life: " << life_<< ",";
+//  if(mana_) out<< " mana: " << mana_<< ",";
+////  if(upkeep_) out<< ": " << upkeep_; // upkeep calculation
+//  if(controlPoints_) out<< " CP: " << controlPoints_<< ",";
+//  if(stealth_) out<< " ste: " << stealth_<< ",";
+//  if(observation_) out<< " obs: " << observation_; 
+  out << ". ";
 }
+
+void  EntityStatistics::printThisStat_(int thisStat, const char * name, bool & isFirst, ostream &out)
+{
+    if(thisStat)
+      {
+          if(!isFirst)
+              out <<", ";
+          else
+            isFirst = false;
+          
+          out<< name<<": " << thisStat;
+       }
+}
+
 void EntityStatistics::addStats(EntityStatistics * stats)
 {
  	initiative_ += stats->getInitiative();
@@ -127,6 +163,9 @@ void EntityStatistics::addStats(EntityStatistics * stats)
 
     
 }
+
+
+
 void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, int denominator)
 {
   
@@ -144,6 +183,9 @@ void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, 
 	observation_ += (stats->getObservation()* numenator) / denominator;
   
 }
+
+
+
 void EntityStatistics::clearStats()
 {
 	initiative_ = 0;
@@ -160,3 +202,32 @@ void EntityStatistics::clearStats()
 	observation_= 0;
 }
 
+bool EntityStatistics::empty()
+{
+	if(initiative_ != 0)
+    return false;
+	if(melee_!= 0)
+    return false;
+	if(defence_!= 0)
+    return false;
+	if(damage_!= 0)
+    return false;
+	if(numOfHits_!= 0)
+    return false;
+	if(missile_!= 0)
+    return false;
+	if(life_!= 0)
+    return false;
+	if(mana_!= 0)
+    return false;
+	if(upkeep_!= 0)
+    return false;
+	if(controlPoints_!= 0)
+    return false;
+	if(stealth_!= 0)
+    return false;
+	if(observation_!= 0)
+    return false;
+
+    return true;
+}

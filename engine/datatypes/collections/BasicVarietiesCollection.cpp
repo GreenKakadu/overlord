@@ -10,28 +10,31 @@
 #include "BasicVarietiesCollection.h"
 #include "Variety.h"
 #include "DataStorageHandler.h"
+extern bool ciStringCompare(const string& s1,const string& s2);
 BasicVarietiesCollection::~BasicVarietiesCollection()
 {
   // delete handler_; // <- check
 }
 
 
-GameData* BasicVarietiesCollection::findByTag (const string &tag)
+GameData* BasicVarietiesCollection::findByTag (const string &tag, bool errorReportEnabled)
 {
 VarietiesIterator iter;
  for (iter = begin(); iter != end(); iter++)
    {
-      if ((*iter) ->getTag() == tag)
+      if (!ciStringCompare((*iter) ->getTag() , tag))
        return  (*iter);
    }
 
+  if(errorReportEnabled)
  cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
  return 0 ;
 }
-GameData* BasicVarietiesCollection::findByIndex (const  long int index)
+GameData* BasicVarietiesCollection::findByIndex (const  long int index, bool errorReportEnabled)
 {
 	if ( index <= size())
          return data_[index];
+  if(errorReportEnabled)
  cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }

@@ -26,12 +26,13 @@ public:
    inline SkillRule *   getSkill()      const     {return rule_;}
    inline int          getBonusPoints()    const     {return parameter1_;}
    inline void         setBonusPoints(int value)     { parameter1_ = value;}
-   inline bool isValidElement() const {return (( rule_ == 0 ) || (parameter1_ == 0));}
+   inline bool isValidElement() const {return (( rule_ != 0 ) && (parameter1_ != 0));}
 //   inline void         setSkill(SkillRule * rule) { rule_ = rule;}
    void save(ostream & out)
     {out << rule_->getTag() << " " <<  parameter1_   << endl;}
-
-  static BonusElement  * read (Parser * parser)
+    void print(ostream & out)
+    {out << parameter1_ - 100 <<"% to " << rule_->getName();}
+  static BonusElement  * readElement (Parser * parser)
       {
         SkillRule * skill = skills[parser->getWord()];
         int bonusPoints = parser->getInteger();

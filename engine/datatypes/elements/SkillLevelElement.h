@@ -19,26 +19,43 @@ class SkillLevelElement : public BasicSkillLevelElement {
 public:
 	SkillLevelElement(SkillRule * rule, int level) : BasicSkillLevelElement (rule,level){}
  ~SkillLevelElement(){}
-  void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
-  void print(ostream & out)
-    {rule_->printLevel(parameter1_,out);}
-  void report(ostream & out)
-    {rule_->printLevel(parameter1_,out);}
-  void printNextLevel(ostream & out)
-    {rule_->printLevel(parameter1_ +1 ,out);}
+  string printName() { return rule_->printLevel(parameter1_); }
   inline bool operator ==  (SkillLevelElement  rule2)  {return ( (rule_ == rule2.getRule()) && (parameter1_ == rule2.getLevel()) );}
   inline bool operator !=  (SkillLevelElement  rule2)  {return ( (rule_ != rule2.getRule())||(parameter1_ != rule2.getLevel()) );}
   inline bool operator >   (SkillLevelElement  rule2)  {return ( (rule_->getTag() > rule2.getRule()->getTag())|| (parameter1_ >rule2.getLevel()) );}
   inline bool operator <   (SkillLevelElement  rule2)  {return ( (rule_->getTag() < rule2.getRule()->getTag())|| (parameter1_ <rule2.getLevel()) );}
+   inline SkillRule *   getSkill()      const     {return rule_;}
+   inline int          getLevel()    const     {return parameter1_;}
+   inline  void         setLevel(int level)         {parameter1_ = level;}
+   inline  EntityStatistics * getStats()  {return rule_->getStats(parameter1_);}
+	protected:
+
+
+
+  public:
+void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
+void print(ostream & out)
+    {rule_->printLevel(parameter1_,out);}
+void report(ostream & out)
+    {rule_->printLevel(parameter1_,out);}
+void printNextLevel(ostream & out)
+    {rule_->printLevel(parameter1_ +1 ,out);}
+
 friend  ostream &operator << ( ostream &out, SkillLevelElement element)
 {
   element.save(out);
 	return out;
 }
+
+
+
 inline bool skillEqual ( SkillLevelElement * skill1, SkillLevelElement * skill2)
 {
   return( skill1->getSkill() == skill2->getSkill() && skill1->getLevel() == skill2->getLevel());
 }
+
+
+
 inline bool skillLessThan ( SkillLevelElement * skill1, SkillLevelElement * skill2)
 {
   if(skill1->getSkill() == skill2->getSkill())
@@ -48,18 +65,21 @@ inline bool skillLessThan ( SkillLevelElement * skill1, SkillLevelElement * skil
   else
     return false;
 }
-   inline SkillRule *   getSkill()      const     {return rule_;}
-   inline int          getLevel()    const     {return parameter1_;}
-   inline  EntityStatistics * getStats()  {return rule_->getStats(parameter1_);}
-   void  getAllDerivatives(vector <SkillLevelElement *> & derivatives)
-   {
+
+
+
+void  getAllDerivatives(vector <SkillLevelElement *> & derivatives)
+{
      int level;
      for(level = 0; level <= parameter1_; level++)
       rule_->getDerivatives(derivatives, level);
-     }
+}
 //   inline void         setSkill(SkillRule * rule) { rule_ = rule;}
-  static SkillLevelElement  * readElement (Parser * parser)
-      {
+
+
+
+static SkillLevelElement  * readElement (Parser * parser)
+{
         int level;
         string skillTag = parser->matchWord();
         if (skillTag.empty())
@@ -75,8 +95,8 @@ inline bool skillLessThan ( SkillLevelElement * skill1, SkillLevelElement * skil
           else
             level = 1;
         return new SkillLevelElement(skill, level);
-      }
-	protected:
+}
 
 };
+typedef vector <SkillLevelElement *>::iterator SkillLevelIterator;
 #endif

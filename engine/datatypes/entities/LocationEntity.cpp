@@ -5,6 +5,7 @@
     copyright            : (C) 2002 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
+#include <algorithm>
 #include "LocationEntity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
@@ -23,24 +24,22 @@
 #include "SkillLevelElement.h"
 #include "ItemElement.h"
 #include "ResourceElement.h"
+#include "TitleElement.h"
 #include "EvenConflict.h"
 #include "MarketConflict.h"
 #include "MarketStrategy.h"
 #include "PrototypeManager.h"
+#include "ConstructionEntity.h"
+#include "ConstructionRule.h"
+#include "BonusElement.h"
 
-extern EntitiesCollection <UnitEntity>     units;
-extern EntitiesCollection <LocationEntity> locations;
-extern RulesCollection    <TerrainRule>    terrains;
-extern RulesCollection    <RaceRule>        races;
-extern VarietiesCollection    <DirectionVariety>  directions;
-extern RulesCollection    <TitleRule>     titles;
-extern VarietiesCollection <MovementVariety> movementModes;
-extern MarketStrategy     sampleMarket;
+extern TerrainRule * findTerrainByTag(const string &tag);
 
-LocationEntity::LocationEntity ( const LocationEntity * prototype ) : PhysicalEntity(prototype)
+LocationEntity::LocationEntity ( const LocationEntity * prototype ) : Entity(prototype)
 {
   terrain_ = 0;
-  location_ = this;
+  owner_ = 0;
+//  location_ = this;
   dailyConflict_ = new EvenConflict(this); // default
   monthlyConflict_ = new EvenConflict(this); // default
   market_ = dynamic_cast<MarketStrategy *>(sampleMarket.createInstanceOfSelf ());
@@ -48,6 +47,9 @@ LocationEntity::LocationEntity ( const LocationEntity * prototype ) : PhysicalEn
   totalMarketValue_ = 0;
   studentCounter_ = 0;
   teacherCounter_ = 0;
+  landPrice_ = 0;
+  landTotal_= 100;
+  landFree_ = landTotal_;
 }
 
 GameData * LocationEntity::createInstanceOfSelf()
@@ -73,13 +75,29 @@ string temp;
 	}
       if (parser->matchKeyword("TERRAIN"))
 	{
-	  setTerrain(parser->getWord());
+//	  setTerrain(terrains[parser->getWord()]);
+	  setTerrain(findTerrainByTag(parser->getWord()));
+	  return OK;
+	}
+  if (parser->matchKeyword("LAND"))
+	{
+	  landTotal_ = parser->getInteger();
+	  return OK;
+	}
+      if (parser->matchKeyword("OWNER"))
+	{
+	  setOwner(factions[parser->getWord()]);
 	  return OK;
 	}
       if (parser->matchKeyword("UNIT"))
 	{
 	  addUnit(units[ parser->getWord()]);
 	  return OK;
+	}
+      if (parser->matchKeyword("CONSTRUCTION"))
+	{
+	  addConstruction(buildingsAndShips[ parser->getWord()]);
+    return OK;
 	}
       if (parser->matchKeyword("POPULATION"))
 	{
@@ -104,10 +122,16 @@ string temp;
 	  optima_ = (parser->getInteger());
 	  return OK;
 	}
+      if (parser->matchKeyword("LANDPRICE"))
+	{
+	  landPrice_ = (parser->getInteger());
+	  return OK;
+	}
       if (parser->matchKeyword("TITLE"))
 	{
-	  title_= titles[parser->getWord()];
-    titleOwner_ = units[parser->getWord()];
+    TitleElement * title = TitleElement::readElement(parser);
+    if(title)
+      addTitle(title);
 	  return OK;
 	}
       if (parser->matchKeyword("RESOURCE"))
@@ -117,9 +141,16 @@ string temp;
           resources_.push_back(newResource);
 	  return OK;
 	}
+      if (parser->matchKeyword("ITEM"))
+	{
+        ItemElement newItem = ItemElement::readItemElement(parser);
+        if(newItem.isValidElement())
+          localItems_.push_back(newItem);
+	  return OK;
+	}
       if (parser->matchKeyword("SKILL"))
 	{
-        BonusElement * newBonus = BonusElement::read(parser);
+        BonusElement * newBonus = BonusElement::readElement(parser);
         if(newBonus)
           skillBonuses_.push_back(newBonus);
 	  return OK;
@@ -186,28 +217,33 @@ string temp;
 	  	return OK;
 
 		int days;
-		UINT i;
 		MovementVariety * mode;
 		MovementMode <int> travelTimes;
-		for(i=0;i<movementModes.size();i++)
+		for(int i=0;i<movementModes.size();i++)
 		 {
-			if(parser->matchInteger())
+			if(parser->matchInteger())  // old Overlord compartibility
+      {
 					days = parser->getInteger();
-			else
-					break;
-
-			if(parser->matchInteger())    // old Overlord compartibility
       		mode = movementModes[parser->getInteger()];
+      }
 			else
+      {
 					mode =  movementModes[parser->getWord()];
+					days = parser->getInteger();
+      }    
 
 			if (mode == 0)
+       {
+         cout << "Failed to read EXPLICIT EXIT data for " << this<<endl;
 					break;
-				travelTimes[mode] = parser->getInteger();
+       }
+          
+			 travelTimes[mode] = days;
+       
 			}
 				
 
-		exits_.push_back ( new ExplicitExit(dir,dest,travelTimes));
+		exits_.push_back ( new ExplicitExit(this,dir,dest,travelTimes));
  	}
        if (parser->matchKeyword("EXIT_SKILL"))
  	{
@@ -219,7 +255,7 @@ string temp;
 		if(dest == 0)
 	  	return OK;
 		int days;
-		UINT i;
+		int i;
 		string tempName;
 		MovementVariety * mode;
 		MovementMode <int> travelTimes;
@@ -263,7 +299,7 @@ string temp;
   if (parser->matchKeyword("MARKET_TYPE"))
     {
         string keyword = parser->getWord();
-       	GameData * temp =  GameData::prototypeManager->findInRegistry(keyword);
+       	GameData * temp =  /*GameData::*/prototypeManager->findInRegistry(keyword);
 			if(temp == 0)
 				{
 					cout << "Unknown market type " << keyword  << " for location " << printName()<< endl;
@@ -290,16 +326,27 @@ LocationEntity::save(ostream &out)
   out << keyword_ << " " <<tag_ << endl;
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
- // out << endl;
+  out<< "TERRAIN " << this->getTerrain()->getTag()<< endl;
+  if(getOwner()) out << "OWNER " << owner_->getTag()<<endl;
   if(optima_) out << "OPTIMA " << optima_<<endl;
   if(population_) out << "POPULATION " << population_<<endl;
   if(wages_) out << "WAGES " << wages_<<endl;
-  if(title_) out << "TITLE " << title_;
-  if(titleOwner_) out << titleOwner_->printTag();
-
+  if(landPrice_)  out << "LANDPRICE " << landPrice_ <<endl;
+                  out << "LAND " <<   landTotal_ <<endl;
 
    market_->save(out);
    
+
+  if(!titles_.empty())
+    {
+      for( TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+      {
+        out << "TITLE ";
+        (*iter)->save(out);
+        out << endl;
+      }
+    }
+
   ResourceElementIterator resourceIter;
   for ( resourceIter = resources_.begin(); resourceIter != resources_.end(); resourceIter++)
     {
@@ -311,9 +358,17 @@ LocationEntity::save(ostream &out)
         out << "SKILL " ;
         (*bonusIter)->save(out);
     }
+  for (ConstructionIterator iter  = constructions_.begin(); iter != constructions_.end(); iter++)
+    {
+        out << "CONSTRUCTION " << (*iter)->getTag() << endl;
+    }
   for (UnitIterator unitIter  = units_.begin(); unitIter != units_.end(); unitIter++)
     {
         out << "UNIT " << (*unitIter)->getTag() << endl;
+    }
+  for (ItemElementIterator iter  = localItems_.begin(); iter != localItems_.end(); ++iter)
+    {
+        out << "ITEM "; (*iter).save(out);
     }
   if(climate_) out << "CLIMATE " << climate_<<endl;
   if(economy_) out << "ECONOMY " << economy_<<endl;
@@ -329,40 +384,39 @@ LocationEntity::save(ostream &out)
     {
            (*iter1)->save(out);
     }
-                                                      out<<endl;
+  out<<endl;
 }
 
 
 
-void LocationEntity::print() // For debugging
+/*
+ * Checks data consistency
+ */
+void    LocationEntity::preprocessData()
 {
-    cout  << getName();
-    cout << " [" << getTag()  << "] "<< endl;
-
-  vector<Order *>::iterator iter;
-  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
-    {
-           (*iter)->save(cout);
-    }
-
+  if(terrain_ == 0)
+  {
+    cout << this<<" has no  terrain defined. This may cause program to crash\n";
+  }
 }
 
 
 
-/** No descriptions */
-void LocationEntity::setTerrain(const string &tag)
+/*
+ * Sets location owned
+ */
+void LocationEntity::setOwner(FactionEntity * owner)
 {
-	 terrain_ = terrains[tag];
-	if( terrain_ == 0)
-	{
-		cout << "Wrong terrain tag ["<<tag<<"] in locations" <<endl;
-		exit(1);
-	}
+  owner_ = owner;
+  if(owner)
+  owner->addVisitedLocation(this);
 }
 
 
 
-/** Adds Unit to location */
+/*
+ * Adds Unit to location
+ */
 void LocationEntity::addUnit(UnitEntity * unit)
 {
 	// may demand additional actions (update of location and unit's data)
@@ -374,7 +428,9 @@ void LocationEntity::addUnit(UnitEntity * unit)
 
 
 
-/** Removes Unit from location */
+/*
+ * Removes Unit from location
+ */
 void LocationEntity::removeUnit(UnitEntity * unit)
 {
 		if(unit == 0)
@@ -390,22 +446,39 @@ void LocationEntity::removeUnit(UnitEntity * unit)
 
 
 /** prints  report for Entity (stats, posessions, private events) */
-void LocationEntity::report(FactionEntity * faction, ostream & out)
+void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
 {
   bool isFirst = true;
   out << printName() << " " <<terrain_->getName();
-  // out << " lands of "<<owner;
+  if(getOwner())
+  {
+    out << " lands of ";
+//  if(title)
+//  out <<getTitleHolder()->printFullName()<< " of ";
+    out <<getOwner()->printName();
+  }
   out << endl;
       faction->addKnowledge(terrain_);
   // Climate out << "This turn was  next turn should be "
-  // Location Description
-  // Location Title:
+  if(!description_.empty()) out<<description_;
+
+  // Location Titles: (report titles)
+  if(!titles_.empty())
+    {
+      for( TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+      {
+        (*iter)->report(out);
+        out << " ";
+        faction->addKnowledge((*iter)->getTitle());
+      }
+    }
+  
   if(population_)
     {
       out<< "Population: " << population_;
       if(race_)
       {
-        out<< race_->printName();
+        out<<" "<<race_->getPluralName();
       faction->addKnowledge(race_);
       }
       out << ". Wages: $" << wages_ << ", entertainment: $"
@@ -413,10 +486,11 @@ void LocationEntity::report(FactionEntity * faction, ostream & out)
 
       if(market_) market_->report(faction,out);
     }
+
   if(!resources_.empty())
   {
     out<< "Resources: ";
-    for(ResourceIterator iter = resources_.begin(); iter != resources_.end(); ++ iter)
+    for(ResourceElementIterator iter = resources_.begin(); iter != resources_.end(); ++ iter)
     {
       if( isFirst)
       {
@@ -454,23 +528,21 @@ void LocationEntity::report(FactionEntity * faction, ostream & out)
     out << ".\n";
  }
 
-//  out<< "Skills bonuces: ";
-//  isFirst = true;
-//  for(BonusIterator iter2 = skillBonuses_.begin(); iter2 != skillBonuses_.end(); ++ iter2)
-//  {
-//    if( isFirst)
-//      {
-//        isFirst = false;
-//      }
-//      else
-//        {
-//          out << ", ";
-//        }
-//      (*iter2)->report(out);
-//      faction->addSkillKnowledge((*iter2)->getSkill());
-//    }
-//    out << ".\n";
-
+   if(!skillBonuses_.empty())
+    {
+      out << " Skill bonuses: ";
+      for ( vector< BonusElement*>::iterator iter = skillBonuses_.begin();
+            iter != skillBonuses_.end(); iter++)
+		    {
+          if( iter != skillBonuses_.begin())
+            {
+              out << ", ";
+            }
+          (*iter)->print(out);
+          faction->addSkillKnowledge((*iter)->getSkill(), 1);
+        }
+      out <<". ";
+    }
 
 
   out << "Directions: \n";
@@ -479,17 +551,44 @@ void LocationEntity::report(FactionEntity * faction, ostream & out)
   {
     (*iter)->report(out); 
   }
+    out << "\n";
 
 
   int localObservation  = getFactionalObservation(faction);
- // if faction has unit - units 
+
+  out << "Buildings: \n";
+
+  for(ConstructionIterator iter= constructions_.begin(); iter != constructions_.end(); iter++)
+  {
+   faction->addKnowledge((*iter)->getConstructionType());
+    if((*iter)->getFaction() == faction)
+      (*iter)->privateReport(out);
+    else
+      (*iter)->publicReport(localObservation, out);
+  }
+    out << "\n";
+  if(!localItems_.empty())
+    {
+      out << "Here are items laying on the ground: \n";
+      for(ItemElementIterator iter= localItems_.begin(); iter != localItems_.end(); iter++)
+        {
+            if(iter != localItems_.begin())
+              out << ", ";
+            out <<(*iter).printName();
+        }
+      out << ".\n";
+    }
+  out << "Units: \n";
   for(UnitIterator iter= units_.begin(); iter != units_.end(); iter++)
   {
-    // special case for own unit
-    (*iter)->publicReport(localObservation, out);
+    if((*iter)->getFaction() == faction)
+      (*iter)->privateReport(out);
+    else
+      (*iter)->publicReport(localObservation, out);
   }
-// Buildings
 }
+
+
 
 int LocationEntity::getFactionalObservation(FactionEntity * faction)
 {
@@ -509,6 +608,8 @@ int LocationEntity::getFactionalObservation(FactionEntity * faction)
   }
  return maxLocalObservation;
 }
+
+
 
 /** No descriptions */
 int LocationEntity::getBonus(SkillRule * skill)
@@ -588,23 +689,40 @@ int  LocationEntity::getResource(ItemRule * item)
 
 Rational  LocationEntity::getAvailableResource(ItemRule * item)
 {
-//        cout << "Looking for available " <<item->printName()<< " at " <<printName()<<endl;
   ResourceElementIterator iter;
   for(iter = resources_.begin(); iter != resources_.end();iter++)
   {
   if ( (*iter)->getResource() == item)
       {
-////        cout << "   ...have " <<(*iter)->getResource()->printName()<<endl;
-//        ((*iter)->getAvailableResource()).save(cout); cout << " of " <<item->printName()<< " at " <<printName()<<endl;
-////        cout << (*iter)->getAvailableResource() << " of " <<item->printName()<< " at " <<printName()<<endl;
         return (*iter)->getAvailableResource();
       }
   }
-//  ResourceElement  newResource (item, 1);
-// 	ResourceElementIterator iter = find(resources_.begin(), resources_.end(), &newResource);
-//	if(iter != resources_.end())
-//		return (*iter)->getAvailableResource();
-//	else
+     return 0;
+}
+
+
+
+Rational  LocationEntity::takeAvailableResource(ItemRule * item, Rational amount)
+{
+  ResourceElementIterator iter;
+  Rational currentAmount;
+  for(iter = resources_.begin(); iter != resources_.end();iter++)
+  {
+  if ( (*iter)->getResource() == item)
+      {
+         currentAmount  = (*iter)->getAvailableResource();
+        if(currentAmount >= amount)
+          {
+            (*iter)->setAvailableResource(currentAmount-amount) ;
+            return amount;
+          }
+        else
+        {
+            (*iter)->setAvailableResource(0);
+            return currentAmount;
+        }  
+      }
+  }
      return 0;
 }
 
@@ -688,8 +806,17 @@ void LocationEntity::harvestResource(ItemRule * item, Rational& num)
 
 STATUS LocationEntity::prepareData()
 {
-//  /*if(market_) */market_->setLocation(this);
-  return OK;
+  for(ConstructionIterator iter= constructions_.begin(); iter != constructions_.end(); iter++)
+  {
+    landFree_ -= (*iter)->getLandUse();
+  }
+  if  (landFree_ < 0 )
+    {
+     cout << "ERROR: buildings use too many land \n";
+     return IO_ERROR; 
+    }
+  else  
+    return OK;
 }
 
 
@@ -707,6 +834,9 @@ int LocationEntity::getStudentCounter() const
 }
 bool LocationEntity::ordersToBeRepeated() const
 {
+  assert(studentCounter_ >= 0);
+  assert(teacherCounter_ >= 0);
+  
 //  cout << "students: " <<studentCounter_ << " teachers: " <<teacherCounter_<<endl;
   return (studentCounter_ || teacherCounter_);
 }
@@ -744,5 +874,306 @@ bool LocationEntity::mayInterract(UnitEntity * unit)
    else
         return true;
 
+}
+
+void LocationEntity::addConstruction(ConstructionEntity * construction)
+{
+  if(construction == 0)
+			return;
+//      cout << "Construction "<< construction->printName() <<" was added to " <<printName()<<endl;
+	   constructions_.push_back(construction);
+		construction->setLocation(this);
+}
+
+
+
+void LocationEntity::removeConstruction(ConstructionEntity * construction)
+{
+		if(construction == 0)
+			return;
+    ConstructionIterator iter = find(constructions_.begin(),constructions_.end(),construction);
+    if( iter == constructions_.end())
+			return;
+
+     constructions_.erase( iter);
+     construction->setLocation(0);
+}
+
+
+
+bool LocationEntity::useLand(int landSize)
+{
+  if (landSize < landFree_)
+    return false;
+  else  
+    landFree_ -= landSize;
+  return true;  
+}
+
+
+
+void LocationEntity::freeLand(int landSize)
+{
+    landFree_ += landSize;
+}
+
+
+// Titles ========================================================
+void LocationEntity::addTitle(TitleElement * title)
+{
+  titles_.push_back(title);
+  // activate title benefits
+}
+
+
+
+void LocationEntity::removeTitle(TitleElement * title)
+{
+  TitleIterator iter = find(titles_.begin(), titles_.end(), title);
+  if(iter == titles_.end())
+			return;
+
+   titles_.erase( iter);
+  // desactivate title benefits
+}
+
+
+
+void LocationEntity::deleteTitle(TitleRule * titleType)
+{
+  TitleElement * title = findTitle(titleType);
+  title->getTitleHolder()->removeTitle(title);
+  removeTitle(title);
+  delete title;
+}
+
+
+
+
+TitleElement * LocationEntity::findTitle(TitleRule * titleType)
+{
+  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+  {
+    if((*iter)->getTitle() == titleType)
+      return (*iter);
+  }
+		return 0;
+}
+//========================================================================
+//            PathFinding
+//========================================================================
+/*
+ * Examine all adjacient locations.
+ * Calculate total travel time for each adjacient location.
+ * Ignore adjacient location if it is unpassable.
+ * Ignore adjacient location if it is marked as "closed"
+ *       (i.e. shortest path to it was already found)
+ * Ignore adjacient location if we already know better path (totalDistance_)
+ * Insert into adjacient location into priority queue
+ *        (according to it's totalDistance_)
+ */
+void LocationEntity::examineNeighboringLocations(int &currentDistance,
+                    vector <LocationEntity *> &openList,
+                    vector <LocationEntity *> & examinedLocations)
+{
+  int localDistance;
+  int distanceToNeighbourNew;
+  int distanceToNeighbourOld;
+  LocationEntity * currentNeighbour;
+  
+  for(ExitIterator iter= exits_.begin(); iter != exits_.end(); iter++)
+  {
+      currentNeighbour = (*iter)->getDestination();
+//cout<< "     Examining "<< currentNeighbour->printTag();
+      if(currentNeighbour->isClosed()) // Shortest way to this location
+        {                               // was already found
+//cout<< " - it is already closed\n";
+          continue;
+        }
+
+      localDistance = (*iter)->getTravelTime(walkingMode);
+      if( localDistance == 0) // Location can't be entered
+        {                      // from this direction
+//cout<< " - it is unpassable\n";
+          continue;
+        }
+
+      distanceToNeighbourNew = currentDistance + localDistance;
+      distanceToNeighbourOld =  currentNeighbour->getDistance();
+      if(distanceToNeighbourOld == 0)  // Location was never examined
+                                       // and not in the open list yet;
+        {
+//cout<< " - it never was examined. New distance is set to "<< distanceToNeighbourNew<<"\n";
+          currentNeighbour->setDistance(distanceToNeighbourNew);
+          examinedLocations.push_back(currentNeighbour);
+          openList.push_back(currentNeighbour);
+          continue;
+        }
+
+      if( distanceToNeighbourNew < distanceToNeighbourOld)
+        {
+//cout<< " - New distance is set to "<< distanceToNeighbourNew<<"\n";
+          currentNeighbour->setDistance(distanceToNeighbourNew);
+          continue;
+        }
+//cout<< " - Better path is known \n";
+//      if(distanceToNeighbourNew > maxDistance)
+//        continue;
+
+    }
+}
+
+
+
+bool betterDistance( const locPtr & loc1, const locPtr & loc2)
+{
+  return (loc1->getDistance() < loc2->getDistance());
+}
+
+
+
+int LocationEntity::findWalkingDistance(LocationEntity * start, LocationEntity * end, int maxDistance = 64000)
+{
+  LocationEntity * current = start;
+  vector <LocationEntity *> examinedLocations;
+  int currentDistance  = 0;
+  vector <LocationEntity *> openList;
+  current->markClosed();
+  current->setDistance(0);
+  examinedLocations.push_back(current);
+
+  while(current->getDistance()< maxDistance)
+  {
+//cout<< " Current location is "<<current->printTag() <<"\n";
+    current->examineNeighboringLocations(currentDistance, openList,
+                                examinedLocations);
+
+//cout << " Before sorting: ";
+//    for(vector <LocationEntity *>::iterator iter = openList.begin();iter !=openList.end();++iter)
+//      cout<< (*iter)->printTag() <<" ";
+//      cout<<endl;
+//    std::nth_element(openList.begin(),openList.begin(),openList.end(),betterDistance);
+    std::sort(openList.begin(),openList.end(),betterDistance);
+//cout << " After sorting: ";
+//    for(vector <LocationEntity *>::iterator iter = openList.begin();iter !=openList.end();++iter)
+//      cout<< (*iter)->printTag() <<" ";
+//      cout<<endl;
+
+   if(openList.empty())
+   {
+    currentDistance =  0;
+//    cout<< " No way!\n";
+            break;
+   }
+   current = *(openList.begin());
+//   cout<< " Next is "<<current->printTag() <<"\n";
+   openList.erase(openList.begin());
+
+   currentDistance  = current->getDistance();
+   if( current == end)
+    {
+      cout<< " Done! Distance is "<< currentDistance<<"\n";
+      break;
+    }
+   current->markClosed();
+  } // end of while loop
+
+ openList.clear();
+
+ for(vector <LocationEntity *>::iterator iter = examinedLocations.begin();
+                  iter != examinedLocations.end(); ++iter)
+ {
+   (*iter)->clearClosed();
+   (*iter)->setDistance(0);
+ }
+
+ examinedLocations.clear();
+ if(currentDistance >  maxDistance)
+  {  //  Path not found
+//    cout << "Path too long\n";
+    return 0;
+  }
+ else
+  return  currentDistance;
+
+}
+
+
+
+void LocationEntity::setMarketPrince(UnitEntity * prince)
+{
+  market_->setMerchantPrince(prince);
+}
+
+
+
+UnitEntity * LocationEntity::getMarketPrince()
+{
+  return market_->getMerchantPrince();
+}
+
+
+
+bool LocationEntity::promoteUnit(UnitEntity * unit1,UnitEntity * unit2)
+{
+  UnitIterator u1 = find(units_.begin(), units_.end(), unit1);
+  UnitIterator u2 = find(units_.begin(), units_.end(), unit2);
+  if(u1 >= u2)
+    return false;
+  if(u1 == units_.end() || u2 == units_.end())   
+    return false; 
+  units_.erase(u2);
+  units_.insert(u1,unit2);
+  return true;  
+}
+
+
+
+void LocationEntity::addLocalItem(ItemRule * item, int number)
+{
+  for (ItemElementIterator iter  = localItems_.begin(); iter != localItems_.end(); ++iter)
+    {
+        if((*iter).getItemType() == item)
+                {
+                 (*iter).setItemNumber((*iter).getItemNumber()+ number);
+                      return;
+                }
+    }
+  localItems_.push_back(ItemElement(item,number));   
+}
+
+
+
+void LocationEntity::removeLocalItem(ItemRule * item, int number)
+{
+  for (ItemElementIterator iter  = localItems_.begin(); iter != localItems_.end(); ++iter)
+    {
+        if((*iter).getItemType() == item)
+        {
+          if((*iter).getItemNumber() > number)
+                    {
+                      (*iter).setItemNumber((*iter).getItemNumber()-number);
+                      return;
+                    }
+          else
+          {          
+            localItems_.erase(iter);
+            return;
+          }
+        }
+    }
+    cout << "ERROR on attempt to take " << number<<" of local "<<*item<<" from "<<*this<<endl;
+}
+
+
+
+int LocationEntity::hasLocalItem(ItemRule * item)
+{
+  for (ItemElementIterator iter  = localItems_.begin(); iter != localItems_.end(); ++iter)
+    {
+        if((*iter).getItemType() == item)
+                return (*iter).getItemNumber();
+    }
+  return 0;
 }
 

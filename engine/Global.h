@@ -33,7 +33,9 @@
 #include "CombatUsingStrategy.h"
 #include "SummonUsingStrategy.h"
 #include "BuildUsingStrategy.h"
+#include "ConstructionUsingStrategy.h"
 #include "MarketStrategy.h"
+#include "ConstructionRule.h"
 
 #include "TerrainRule.h"
 #include "RuleIndex.h"
@@ -43,6 +45,7 @@
 #include "PhysicalEntity.h"
 #include "FactionEntity.h"
 #include "LocationEntity.h"
+#include "ConstructionEntity.h"
 // #include "GameEntity.h"
 #include "GameInfo.h"
 // Varieties
@@ -50,6 +53,7 @@
 #include "MovementVariety.h"
 #include "DirectionVariety.h"
 #include "StanceVariety.h"
+#include "ConstructionWorksVariety.h"
 // Order processing
 
 #include "OrderPrototype.h"
@@ -58,68 +62,13 @@
 #include "TravelElement.h"
 
 #include "IntegerData.h" 
-#include "ItemElementData.h"
-#include "RaceElementData.h"
+#include "ItemElement.h"
 #include "Rational.h"
-#include "SkillLevelElementData.h"   
+#include "BasicExit.h"
 
 
-extern GameInfo game;
 extern int currentDay;
 extern bool testMode;
-//extern const unsigned SCALE_FACTOR;
-//extern const int BLOCK_SIZE;
-
-// Samples of objects
-extern GameData       sampleGameData;
-extern BasicCondition  sampleBasicCondition;
-extern ObservationCondition  sampleObservationCondition;
-extern SkillCondition  sampleSkillCondition;
-extern TerrainRule    sampleTerrain;
-extern TitleRule      sampleTitle;
-extern RaceRule       sampleRace;
-extern ItemRule       sampleItem;
-extern SkillRule      sampleSkill;
-extern EquipmentSlotVariety      sampleEquipmentSlot;
-extern Entity         sampleEntity;
-extern PhysicalEntity         samplePhysicalEntity;
-extern UnitEntity     sampleUnit;
-extern FactionEntity  sampleFaction;
-extern MovementVariety  sampleMode;
-extern StanceVariety     sampleStance;
-// Sample Strategys
-extern BasicLearningStrategy    sampleLearning;
-extern MagicLearningStrategy    sampleMagicLearning;
-extern NormalLearningStrategy   sampleNormalLearning;
-extern CreatureLearningStrategy sampleCreatureLearning;
-extern BasicUsingStrategy         sampleUsing;
-extern HarvestUsingStrategy     sampleHarvestUsing;
-extern CraftUsingStrategy       sampleCraftUsing;
-extern SummonUsingStrategy      sampleSummonUsing;
-extern CombatUsingStrategy      sampleCombatUsing;
-extern BuildUsingStrategy       sampleBuildUsing;
-// Rule Collections
-extern RulesCollection <TerrainRule>   terrains;
-extern RulesCollection <TitleRule>     titles;
-extern RulesCollection <ItemRule>      items;
-extern RulesCollection <SkillRule>     skills;
-extern RulesCollection <RaceRule>      races;
-// Entities Collections
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <FactionEntity>   factions;
-extern EntitiesCollection <LocationEntity>  locations;
-// Varieties Collections
-extern VarietiesCollection <MovementVariety> movementModes;
-extern VarietiesCollection <DirectionVariety>     directions;
-extern VarietiesCollection <StanceVariety>    stances;
-extern VarietiesCollection <EquipmentSlotVariety>      equipments;
-// Strategies
-//extern RulesCollection <LearningRule>      learning;
-// Order processing
-extern OrderPrototypesCollection orderPrototypesCollection;
-extern ProcessingMode   immediateOrders;
-extern ProcessingMode   stackOrders;
-extern ProcessingMode 	dayOrders;
 // Functions
 extern bool ciStringCompare(const string& s1,const string& s2);
 extern bool matchItemElement(Parser * parser);

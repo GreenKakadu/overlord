@@ -7,24 +7,29 @@
  ***************************************************************************/
 
 #include "BasicLearningStrategy.h"
-#include "UnitEntity.h"
+#include "PhysicalEntity.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
 #include "BonusElement.h"
 #include "TeachingOffer.h"
+#include "ConstructionEntity.h"
+#include "ConstructionRule.h"
 
 BasicLearningStrategy::BasicLearningStrategy ( const BasicLearningStrategy * prototype ) : Strategy(prototype)
 {
-   racial_ = 0;
+   racialClass_ = 0;
    special_ = false;
    itemRequired_ = 0;
    bonusItem_ = 0;
 }
 
+
+
 GameData * BasicLearningStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<BasicLearningStrategy> (this);
 }
+
 
 
 STATUS
@@ -37,52 +42,75 @@ BasicLearningStrategy::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("WISDOM") )
     {
-//       = parser->get();
+      bonusItem_   = InventoryElement::readElement(parser);
       return OK;
     }
   if (parser->matchKeyword ("ENABLE") )
     {
-//       = parser->getInteger();
+      itemRequired_   = InventoryElement::readElement(parser);
       return OK;
     }
   if (parser->matchKeyword ("STUDENT") )
     {
-//       = parser->getInteger();
+      // Skill is available for some race class only
+      string type = parser->getWord();
+      if(!type.empty())
+       racialClass_ = dynamic_cast<Rule *>(createByKeyword(type)) ;
       return OK;
     }
       return OK;
 
 
 }
-bool BasicLearningStrategy::teacherRequired(Entity * unit, SkillRule * skill) 
+
+
+
+bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill) 
 {
   if( special_ )
     {
         return true;
     }
 
-    return unit->teacherRequired(skill);
+    return entity->teacherRequired(skill);
 }
-/** No descriptions */
-LEARNING_RESULT BasicLearningStrategy::mayLearn(UnitEntity * unit, SkillRule * skill) const
-{
-    LEARNING_RESULT  result = unit->getRace()->mayLearn(skill, unit);
 
-      if (result != LEARNING_OK)  
+
+/*
+ * Ability of entity to study skill  
+ *  Level limitations also taken into considerations
+ */
+LEARNING_RESULT BasicLearningStrategy::mayStudy(PhysicalEntity * tokenEntity, SkillRule * skill) const
+{
+// Check that Entity is able to study this skill at current level
+    LEARNING_RESULT  result = tokenEntity->mayLearn(skill);
+
+      if (result != LEARNING_OK)
         return   result;
 
-  if( (racial_ != 0) && (racial_ != unit->getRace()))
-    return RACE_FAILURE;
-      SkillLevelElement * requirement = skill->getRequirement(unit->getSkillLevel(skill));
+
+// Some skills may be studied only by specific races or types of Entities
+  if( (racialClass_ != 0) && !tokenEntity->isOfType(racialClass_))
+      return RACE_FAILURE;
+      
+// Some skills may require item in order to be studied
+   if(itemRequired_)
+   {
+      if(!tokenEntity->isEquiped(itemRequired_))
+          return ITEM_REQUIRED_FAILURE;
+      
+   }
+
+      SkillLevelElement * requirement = skill->getRequirement(tokenEntity->getSkillLevel(skill));
   if(requirement)
     {
-      if ( ! unit->hasSkill(requirement)) 
+      if ( ! tokenEntity->hasSkill(requirement)) 
         return REQUIREMENT_FAILURE;
     }
   // Special case of magecraft skill limitations will be considered in
   // special MagecraftLearningStrategy 
 
-  if(unit->hasSkill(skill->getMax()) )
+  if(tokenEntity->hasSkill(skill->getMax()) )
     return MAX_LEVEL_FAILURE;         
 return LEARNING_OK;
 }
@@ -92,8 +120,20 @@ return LEARNING_OK;
 int BasicLearningStrategy::leaderBonus_ = 10;
 int BasicLearningStrategy::expBase_ = 100;
 
-int 
-BasicLearningStrategy::calculateLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher)
+
+
+int BasicLearningStrategy::calculateLearningExperience(PhysicalEntity * tokenEntity, SkillRule * skill, TeachingOffer * teacher)
+{
+  UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
+  if(unit)
+    return calculateUnitLearningExperience(unit,skill,teacher);
+  else
+    return 0;  
+}
+
+
+
+int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher)
 {
  int exp = BasicLearningStrategy::expBase_; // normal base 100 points for a day,
  UnitEntity * leader;
@@ -103,10 +143,15 @@ BasicLearningStrategy::calculateLearningExperience(UnitEntity * unit, SkillRule 
    // apply study bonuses:
    // 1. Location bonus
    exp += unit -> getLocation()->getBonus(skill);
+   ConstructionEntity * building = unit ->getContainingConstruction();
+   if(building)
+   {
+    exp += building->getConstructionType()->getBonus(skill);
+   }
    // 2. Stack leader bonus
    for (leader = unit->getLeader(); leader != 0; leader = leader->getLeader() )
     {
-      if (leader->hasSkill(skill, unit->getSkillLevel(skill)))
+      if (leader->hasSkillLevel(skill, unit->getSkillLevel(skill)))
         {
             exp += BasicLearningStrategy::leaderBonus_;
             break;
@@ -114,8 +159,10 @@ BasicLearningStrategy::calculateLearningExperience(UnitEntity * unit, SkillRule 
     }
    // 3. Climate bonus
    // 4. Title Bonus
-   // 5. Race Bonus
-   exp += unit->getRace()->getBonus(skill); 
+   exp += unit->getTitleBonus(skill);
+   // 5. Race Bonus - may be negative
+   if(unit->getRace()->getBonus(skill))
+    exp += unit->getRace()->getBonus(skill) - 100;
    // 6. Item Bonus
    if(bonusItem_ != 0)
    exp += (20 * bonusItem_->getEquipedNumber())/(unit->getFiguresNumber());
@@ -126,48 +173,30 @@ BasicLearningStrategy::calculateLearningExperience(UnitEntity * unit, SkillRule 
    if(unit->isGuarding())
     exp /= 2;
    // add experience
+   if(exp < 0)
+      exp = 0;
    return  exp;
 }
 
 
 
-//void BasicLearningStrategy::addLearningExperience(UnitEntity * unit, SkillRule * skill, int exp);
-//{
-//   if(unit->isTraced())
-//   {
-//    cout <<"== TRACING " <<unit->printTag()<< " ==>  " << skill.getExpPoints()<<" learning experience added to " << skill.getSkill()->printTag()<<endl;
-//   }
-//    unit->addSkill(skill);
-//   // add experience to parent skills
-//   int exp = skill.getExpPoints()/10;
-//
-//   int level = unit->getSkillLevel(skill.getSkill());
-//   int tryLevel;
-//   for (tryLevel = 0; tryLevel<= level ; tryLevel++)
-//    {
-//      SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
-//      if(requirement != 0)
-//        {
-//          SkillElement recursive(requirement->getSkill(),exp);
-//          addRecursiveLearningExperience(unit,recursive);
-//        }
-//     }
-//      //  problem with teaching requests
-//}
-
-
-
-void BasicLearningStrategy::addLearningExperience(UnitEntity * unit, SkillElement & skill)
+void BasicLearningStrategy::addLearningExperience(PhysicalEntity * tokenEntity, SkillElement & skill)
 {
-   if(unit->isTraced())
+   if(tokenEntity->isTraced())
    {
-    cout <<"== TRACING " <<unit->printTag()<< " ==>  " << skill.getExpPoints()<<" learning experience added to " << skill.getSkill()->printTag()<<endl;
+    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" learning experience added to " << skill.getSkill()->printTag()<<endl;
    }
-    unit->addSkill(skill);
+   // This is additional check. Really ability of entity to learn was
+   // already checked before studying started, but for the cases of group
+   // study (like staff training) study may start if at least some entities
+   // may learn. Entities unable to learn should not benefit from that
+   if(tokenEntity->mayLearn(skill.getSkill()) != LEARNING_OK)
+    return;
+    tokenEntity->addSkill(skill);
    // add experience to parent skills
    int exp = skill.getExpPoints()/10;
 
-   int level = unit->getSkillLevel(skill.getSkill());
+   int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
    for (tryLevel = 0; tryLevel<= level ; tryLevel++)
     {
@@ -175,27 +204,27 @@ void BasicLearningStrategy::addLearningExperience(UnitEntity * unit, SkillElemen
       if(requirement != 0)
         {
           SkillElement recursive(requirement->getSkill(),exp);
-          addRecursiveLearningExperience(unit,recursive);
+          addRecursiveLearningExperience(tokenEntity,recursive);
         }
      }  
       //  problem with teaching requests
 }
-void BasicLearningStrategy::addRecursiveLearningExperience(UnitEntity * unit, SkillElement  & skill)
+void BasicLearningStrategy::addRecursiveLearningExperience(PhysicalEntity * tokenEntity, SkillElement  & skill)
 {
-   if(unit->isTraced())
+   if(tokenEntity->isTraced())
    {
-    cout <<"== TRACING " <<unit->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive learning experience added to " << skill.getSkill()->printTag()<<endl;
+    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive learning experience added to " << skill.getSkill()->printTag()<<endl;
    }
-    unit->addSkill(skill);
+    tokenEntity->addSkill(skill);
     
-   int level = unit->getSkillLevel(skill.getSkill());
+   int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
    for (tryLevel = 0; tryLevel< level ; tryLevel++)
     {
       SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
       if(requirement != 0)
         {
-          addRecursiveLearningExperience(unit,skill);
+          addRecursiveLearningExperience(tokenEntity,skill);
         }
      }
   

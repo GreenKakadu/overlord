@@ -11,6 +11,7 @@
 #include <vector>
 #include "BasicData.h"
 #include "MovementElement.h"
+#include "ReportPrinter.h"
 
 using namespace std;
 class LocationEntity;
@@ -25,17 +26,12 @@ public:
 	BasicExit(){};
 	BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEntity * dest);
 	virtual ~BasicExit(){};
-  /** No descriptions */
-//  virtual void read(Parser * parser);
   virtual void save(ostream & out);
   virtual void print();
-  virtual void report(ostream & out);
-  /** No descriptions */
+  virtual void report(ReportPrinter & out);
   virtual inline LocationEntity * getDestination() const {return destination_;}
   virtual inline DirectionVariety * getDirection() const {return dir_;}
-  /** No descriptions */
   virtual int getTravelTime(MovementVariety * mode);
-   /** No descriptions */
     protected:
     DirectionVariety * dir_;
 		LocationEntity * destination_;

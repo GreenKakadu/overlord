@@ -1,7 +1,11 @@
 # Overlord faction data
-# Ver 0.21 23.03.2003
+# Ver 0.3 21.12.2003
 
 KEYWORD FACTION 999
+
+FACTION f004
+NAME Imperial Forces
+
 
 FACTION f001
 NAME Black Guards
@@ -66,6 +70,25 @@ STANCE f002 ally
 ORDER 3 TEST 0 # ==================Faction order
 ORDER 3 TEST 1 # ==================Faction order
 ORDER 3 TEST 2 # ==================Faction order
+SKILL_KNOWLEDGE mane 1
+SKILL_KNOWLEDGE cmbt 2
+SKILL_KNOWLEDGE mart 1
+SKILL_KNOWLEDGE fana 1
+SKILL_KNOWLEDGE blde 1
+SKILL_KNOWLEDGE mele 1
+SKILL_KNOWLEDGE arch 1
+SKILL_KNOWLEDGE parr 1
+SKILL_KNOWLEDGE mane 3
+SKILL_KNOWLEDGE cava 1
+SKILL_KNOWLEDGE tact 1
+SKILL_KNOWLEDGE taxe 1
+KNOWLEDGE coin
+KNOWLEDGE whrs
+KNOWLEDGE plai
+KNOWLEDGE man
+KNOWLEDGE ldr
+KNOWLEDGE ston
+
 
 FACTION f003
 NAME Mages

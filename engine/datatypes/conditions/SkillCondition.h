@@ -18,17 +18,24 @@ class Rule;
 class SkillCondition : public BasicCondition  {
 public: 
   SkillCondition(const string & keyword, GameData * parent ): BasicCondition(keyword, parent){}
-  SkillCondition(const SkillCondition * prototype): BasicCondition(prototype){}
+  SkillCondition(const SkillCondition * prototype);
 	~SkillCondition(){delete skillRequirement_;}
   STATUS      initialize ( Parser *parser );
   GameData * createInstanceOfSelf();
-  bool isSatisfied(UnitEntity * unit);
+  bool isSatisfied(PhysicalEntity * unit);
   void conditionHandler(Entity * entity);
   void setSubject(Rule * subject);
-  void extractKnowledge (Entity * recipient, int parameter);
+  void extractKnowledge (Entity * recipient, int parameter = 0);
+  SkillLevelElement * getSkillLevel() const {return skillRequirement_;}
+  Rule * getSubject() const ;
+  SkillRule * getSkill() const ;
+  int  getLevel() const ;
+  ostream & print(ostream & out);
+  string printName(){return skillRequirement_->printName();}
 protected:
 	SkillLevelElement * skillRequirement_;
   ItemRule * subject_;
 };
+extern SkillCondition  sampleSkillCondition;
 
 #endif

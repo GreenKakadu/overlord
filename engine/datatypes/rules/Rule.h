@@ -9,6 +9,8 @@
 #define RULE_H
 #include <vector>
 #include "GameData.h"
+#include "ReportPrinter.h"
+
 class BasicCondition;
 class Entity;
 
@@ -19,6 +21,7 @@ public:
       void bindCondition(BasicCondition * condition);
       void checkConditions(Entity * entity);
   virtual void     extractKnowledge (Entity * recipient, int parameter = 0);
+  virtual void printDescription(ReportPrinter & out);
 protected:
 	virtual ~Rule(){}
   inline  void     setTag          ( const string  &tag) {  tag_ = tag;}

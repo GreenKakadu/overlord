@@ -6,12 +6,15 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "FollowerRaceRule.h"
+//FollowerRaceRule   sampleFollowerRaceRule =   FollowerRaceRule("FOLLOWER", &sampleRace);
 
 FollowerRaceRule::FollowerRaceRule ( const FollowerRaceRule * prototype ) : RaceRule(prototype)
 {
   hiringCost_ = 500;
   hiringProbability_ = 100;
   hiringMax_ = 100;
+  controlPointsFraction_ = 20;
+  name_ = "follower";
 }
 
 GameData * FollowerRaceRule::createInstanceOfSelf()
@@ -51,21 +54,47 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
 }
 bool FollowerRaceRule::teacherRequired(SkillRule * skill, UnitEntity * unit)
 {
-  // if it is a combat skill and level >= 2
-  if(skill->isCombatSkill() && unit->getSkillLevel(skill) >= 2)
-    return true;
-
-  // if it is any other skill and level >= 1
-  if( unit->getSkillLevel(skill) >= 1)
-    return true;
-  else
-  return false;
+  if(skill->isCombatSkill())  // if it is a combat skill and level >= 2
+   {
+    if(unit->getSkillLevel(skill) >= 2)
+      return true;
+    else
+      return false;
+   }
+  else // if it is any other skill and level >= 1
+  {
+    if( unit->getSkillLevel(skill) >= 1)
+      return true;
+    else
+    return false;
+  } 
 }
 
 
 
+/*
+ *  Intristic ability of unit to study skill
+ *  Level limitations also taken into considerations
+ */
+extern SkillRule * combatSkill; 
 LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 {
+  int  level = unit->getSkillLevel(skill);
+// Follower may not study magic skills
+   if(skill->isMagicSkill())
+     return CANNOT_STUDY_FAILURE;
+
+// Follower may not study non-combat skill above 1-st level
+// and combat skill above 2-nd level
+  if(level >= 1)
+  {
+   if(!skill->isCombatSkill())
+     return TEACHING_REQUIRED;
+   else
+    if(level >=2)
+     return TEACHING_REQUIRED;
+  }
+  
   if (!skillCompartibilityCheck( skill, unit) )
    return FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE;
  
@@ -74,9 +103,13 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 
 }
 
-bool FollowerRaceRule::mayMove()
+bool FollowerRaceRule::mayMove(UnitEntity * unit)
 {
-  return false;
+  SkillRule * scouting = skills["scou"];
+  if (unit->hasSkillLevel(scouting,1))
+    return true;
+  else  
+    return false;
 }
 
 /** How many seats occupies this entity in the class. Number of entities that can be tought by one teacher determined by this value. */
@@ -84,3 +117,11 @@ int FollowerRaceRule::getLearningCapacity()
 {
   return 2;
 }
+
+
+
+void FollowerRaceRule::printTypeSpecificDescription(ReportPrinter & out)
+{
+  out << " This is a follower.";
+}
+

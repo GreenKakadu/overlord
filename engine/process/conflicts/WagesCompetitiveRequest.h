@@ -17,7 +17,6 @@
 #define WAGES_COMPETITIVE_REQUEST_H
 
 #include "BasicCompetitiveRequest.h"
-//class ItemElement;
 class AbstractData;
 class Reporter;
 class ItemRule;
@@ -29,12 +28,10 @@ class ItemRule;
 class WagesCompetitiveRequest : public BasicCompetitiveRequest  {
 public: 
 //	WagesCompetitiveRequest(UnitEntity * unit, int requestedSalary);
-//	WagesCompetitiveRequest(UnitEntity * unit, ItemElement * resource);
 	WagesCompetitiveRequest(UnitEntity * unit, Order * orderId, Rational& amount);
 	~WagesCompetitiveRequest();
 //   bool operator ==  (WagesCompetitiveRequest request);
     bool isEqualTo (BasicCompetitiveRequest * request);
-//   inline ItemElement * getResource() const {return resource_;}
 //   inline int getSalaryRequest() const {return requestedSalary_;}
    Rational getValue() const;
    void setValue(const Rational& value);
@@ -44,7 +41,6 @@ public:
   static Reporter * workPublicReporter;
   static Reporter * workPrivateReporter;
 protected:
-//  ItemRule * resourceType_;
   Rational resourceAmount_;
 //  int requestedSalary_;
 };

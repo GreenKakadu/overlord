@@ -25,8 +25,8 @@ public:
     BasicEntitiesCollection (DataStorageHandler * handler,
                                           long int dimensions);
   virtual ~BasicEntitiesCollection();
-	        GameData* findByTag        (const string &tag);
-	        GameData* findByIndex      (const long int index);
+	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+	        GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
           bool          isValidTag   (const string &tag)  ;//const;
           long int        getIndex     (const string &tag)  ;
   virtual void             add      (GameData* /*const*/ newEntity);

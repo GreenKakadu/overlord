@@ -1,13 +1,171 @@
-Structures: building and using       
-Ownership of buildings or locations
-Guarding/Patrolling
-Titles
-Combat.
-Location developement
-Weather and season effects
-FX
-Reporting
+Overlord Engine ToDo list:
 
-Alias names for units
-Checker.
+Last updated 30.12.2003
+	
+==================================================================================
+	Alpha version features:
+
+-FX (including thievery/assasination)
+-Combat.
+-Effects
+-combat-related Orders
+-Guarding/Patrolling/Stances
+  -- Start/Stop Guarding
+	-- Attacks due to stances
+	-- Restrict actions on guarded territory
+-Upkeep
+-faction statistics
+-Location developement
+-Weather and season effects
+-CP
+ -- calculation
+ -- CP limitation
+
+   Post-Alpha features:
+
+- Alias names for units
+- Checker.
+=================================================================================
+Things to do:
+
+- title cancellation
+- Conditional order reporting (! ?)
+- Define static type of reporter (ERROR, NORMAL...) for use in conditional order reporting.
+
+Things to check:
+
+- check all orders that have unit parameters for using 	DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+
+Features to change/improve:
+
+- when disbanding unit allow restacking of followers (like in eject order)
+- Smart Drowning
+- item bonuses to level limit : applyEquipementEffects()
+- skill bonuses to level limit
+- controlled monsters of oathing units should oath too.
+- faster movement (i.e. mode remains the same but movement is faster)
+- let SEE order accept [faction] parameter
+- let GET order interpret missing unit/location parameter as current location.
+- Conditions (Skill) may be demanded to enter location/Building
+- add/remove Unit/Entity to locations
+- create SkillEquipCondition and SkillTitleCondition <- not urgent as no leader supposed to use forget
+
+Solutions  to change/improve:
+
+- worseThan functions instead of <= ect for stances
+- Rename PhysicalEntity into TokenEntity
+- Provide order-id whenever possible, use it to filter !-like report modificators
+  for that provide static field defining report type (sucess, fail, invalid) in Reporter and ability in ReportPattern to read it
+- consider writing special collection (template?) supporting load/save/report/add/remove/has pattern
+  it requires unified interface to all GameData and Element objects.
+- Incorporate possibility of placeholders into tokens so that it becomes invisible from outside
+  (make all placeholders/alias completely internal)
+
+We have: AbstractData - Integer + String + GameData + Elements
+         BasicData -   Now: tagged/named objects - GameData + BasicExit.
+May be it should be : Elements derived from BasicData. Basic data has no tag/name/Description fields
+	(move to GameData). They provide unified interface for Gamedata and Elements. Method sameAs() or
+	full set of comparison methods so that we can search Rule in RuleElement.
+
+Save(out) - saves to file
+printName - produces readable id standard for reports and outputs <- rename to print
+print() - what it does now?
+
+	print(out) - rename to report(out)
+report(out) == out<< print()
+out << == out<< print()
+hierachy of reporting: routines that will be used for reporting both in Units and Constructions
+
+- elements may be as parameters (they may be saved, parsed) ???
+ But use of elements in reports should be avoided because they may report not their current state
+  but the state at the time of report printing.
+==========================================================================================
+Known Bugs/features:
+
+4. orders given to new units. Placeholders
+   should have place for orders and when they
+	 are transformed into unit they should copy that orders.
+
+7. STANCE FRIEND as order to set default stance is not supported
+ ( it is also not requered and not documented)
+ Problem is in distinguishing correct and incorrect varieties values
+8. OATH transfers unit to a new faction but old faction doesn't
+ receive report of unit actions duiring turn.
+9.	As reports generated at the end of turn, changing entity name have backward effect.
+10.	Unit enters location in post-turn phase. so AT commands works only on the next day.
+22.
+23.
+
+Known Porting problems:
+
+1. In Visual Studio 7.0 compillation parsing works incorrectly.
+2. Memory leaks under Windows.
+
+Orders implementation status:
+																	( * - means known bugs)
+
+* EMAIL    ---- implemented ---- tested
+* NAME     ---- implemented ---- tested
+* PASSWORD ---- implemented ---- tested
+* RESIGN   ---- implemented ---- tested
+* SETTING  ---- implemented ---- tested
+* RESHOW   ---- implemented ---- tested
+
+* ACCEPT   ---- implemented ---- tested
+* AT       ---- implemented ---- tested
+* ATTACK --pars--
+* BESTOW   ---- implemented ---- tested
+* BUY      ---- implemented ---- tested
+* CANCEL   ---- implemented ---- *
+* CARAVAN  ---- implemented ---- tested
+* CHRISTEN ---- implemented ---- tested
+* CLAIM    ---- implemented ---- tested
+* COMBAT
+* DAY      ---- implemented ---- tested
+* DESCRIBE ---- implemented ---- tested
+* DISBAND  ---- implemented ---- tested
+* DROP     ---- implemented ---- tested
+* EJECT    ---- implemented ---- tested
+* ENTER    ---- implemented ---- tested
+* EQUIP    ---- implemented ---- tested
+* FORGET   ---- implemented ---- tested
+* GET      ---- implemented ---- tested
+* GIVE     ---- implemented ---- tested
+* GUARD	--pars--
+* HAVE     ---- implemented ---- tested
+* LEADER   ---- implemented ---- tested
+* LEADING  ---- implemented ---- tested
+* LEAVE    ---- implemented ---- tested
+* MARCH	 --pars--
+* MERGE    ---- implemented ---- tested
+* MOVE     ---- implemented ---- tested
+* NAME     ---- implemented ---- tested *
+* OATH     ---- implemented ---- tested *
+* PATROL  --pars--
+* PILLAGE --pars--
+* PROMOTE  ---- implemented ---- tested
+* RECRUIT  ---- implemented ---- tested
+* RETREAT  ---- implemented ---- tested
+* SEE      ---- implemented ---- tested
+* SELL     ---- implemented ---- tested
+* SETTING  ---- implemented ---- tested
+* SIZE     ---- implemented ---- tested
+* SKILL    ---- implemented ---- tested
+* SPLIT    ---- implemented ---- tested
+* STACK    ---- implemented ---- tested
+* STANCE   ---- implemented ---- tested *
+* STAY     ---- implemented ---- tested
+* STUDY    ---- implemented ---- tested
+* SYNCHRO  ---- implemented ---- tested
+* SWAP     ---- implemented ---- tested
+* TACTIC  --pars--
+* TARGET   ---- implemented ---- tested
+* TEACH    ---- implemented ---- tested
+* UNSTACK  ---- implemented ---- tested
+* USE      ---- implemented ---- tested
+* WAIT     ---- implemented ---- tested
+* WITHDRAW ---- implemented ---- tested
+* WORK     ---- implemented ---- tested
+* YIELD	   ---- implemented ---- tested
+
 

@@ -12,6 +12,7 @@
 class Entity;
 class UnitEntity;
 class Rule;
+class PhysicalEntity;
 
 class BasicCondition : public GameData{
 public: 
@@ -19,11 +20,14 @@ public:
   BasicCondition(const BasicCondition * prototype): GameData(prototype){}
   
 	virtual     ~BasicCondition(){}
-  virtual bool isSatisfied(UnitEntity * ){return true;}
+  virtual bool isSatisfied(PhysicalEntity * entity){return true;}
   virtual void conditionHandler(Entity * entity){}
   virtual void setSubject(Rule * subject){}
+  virtual Rule * getSubject()const{return 0;}
   virtual void extractKnowledge (Entity * recipient, int parameter = 0);
+  virtual ostream & print(ostream & out) {return out;}
           GameData * createInstanceOfSelf();
 };
+extern BasicCondition  sampleBasicCondition; 
 
 #endif

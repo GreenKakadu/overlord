@@ -13,7 +13,7 @@
  *                                                                                            *
  ***************************************************************************/
 #include "IntegerData.h"
-#include "RaceElementData.h"
+#include "RaceElement.h"
 #include "NewRecruitRequest.h"
 #include "NewEntityPlaceholder.h"
 #include "RaceRule.h"
@@ -95,11 +95,12 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
         cout  <<"== TRACING " << "New unit created: "<<newUnit->printName() <<" \n";
        
     // report new unit created
+//QQQ
     newUnit ->addReport(new BinaryPattern (newRecruitReporter,
-                        newUnit, new RaceElementData (race_ , amount)));
+                        newUnit, new RaceElement (race_ , amount)));
                             
     unit_->addReport(new QuartenaryPattern(recruiterReporter, unit_,
-                    new RaceElementData(race_ , amount),
+                    new RaceElement(race_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults
      orderId_->completeProcessing(unit_,amount);

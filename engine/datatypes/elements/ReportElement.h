@@ -23,18 +23,23 @@ class ReportElement : public  BasicReportElement  {
 public:
 	ReportElement(ReportPattern * pattern, Entity* destination, int time = currentDay)  : BasicReportElement (pattern,destination,time)
 			{}
-	~ReportElement(){}
-//  /** No descriptions */
-  void print(ostream &out) const
-			{	out << "Day " << parameter2_ << " ";	rule_->print(out);}
-  /** No descriptions */
+	~ReportElement(){/*getRecord()->clean();*/}
+  void print(ReportPrinter &out) const
+			{
+        out << "Day " << parameter2_ << " ";
+        out.incr_indent();	rule_->print(out); out.decr_indent();
+//        cout << "HHHHHHHHHH Day " << endl;//parameter2_<< " ";//rule_->print(cout);
+        }
+//  void printDebug(ostream &out) const
+//			{
+//        out << "Day " << parameter2_ << " "; rule_->print(out);
+//      }
   inline ReportPattern * getRecord() const {return rule_;}
 	inline Entity *        getDestination() const {return parameter1_;}
 
 };
+typedef vector< ReportElement *>::iterator  ReportIterator;
 
-
-/** No descriptions */
 
 
 //#ifndef REPORTELEMENTEXPLICIT_H

@@ -10,7 +10,6 @@
 #include "Entity.h"
 #include "OrderPrototype.h"
 #include "OrderPrototypesCollection.h"
-extern OrderPrototypesCollection orderPrototypesCollection;
 extern int currentDay;
 extern bool testMode;
 
@@ -20,13 +19,14 @@ Order::Order(const string & order, Entity * entity)
 //  isParsed = false;
   Parser * parser = new Parser(order);
   executedOnDay_ = 0;
+  isCompleted_ = false;
   dayRestricted_ = 0;
   state_ = NORMAL_STATE;
 	whileCondition_ = false;
 	ifConditionLevel = 0;
 	reportFlags = 0;
 	isPermanent_ = false;
-  repetitionCounter_ = 1;
+  repetitionCounter_ = 0;
   parseModifiers(parser);
 	parse(parser, entity);
 	comment_ = parser->getText();
@@ -34,22 +34,22 @@ Order::Order(const string & order, Entity * entity)
 }
 const UINT Order::NO_NORMAL_REPORT_FLAG = 0x01;
 const UINT Order::NO_ERROR_REPORT_FLAG = 0x02;
+bool Order::getCompletionFlag() const {return  isCompleted_;}
+
+
+
 Order::~Order()
 {
-
- vector<AbstractData *>::const_iterator iterator;
-
-// delete parser_;
-#ifdef TEST_MODE
+//#ifdef TEST_MODE
 //   if(testMode)  cout << "Order deleted" << endl;
-#endif
-// if(isParsed)
-//  {
-     for (iterator = parameters_.begin(); iterator != parameters_.end(); iterator++)
+//#endif
+
+ for (vector<AbstractData *>::iterator iterator = parameters_.begin();
+                  iterator != parameters_.end(); ++iterator)
        {
-	 //delete *iterator;  Can't delete GameData objects!
+	        (*iterator)->clean();  
        }
-//   }
+
 }
 
 
@@ -118,10 +118,10 @@ bool
 Order::parse(Parser * parser, Entity * entity )
 {
   string tempKeyword = parser -> getWord();
- 	orderPrototype_ = orderPrototypesCollection.find (tempKeyword);
+ 	orderPrototype_ = orderPrototypesCollection->find (tempKeyword);
 	if( orderPrototype_ == 0)
 			{
-     			cout  << "=xx= Parsing failed for order "<< tempKeyword << parser -> getText()<<endl;
+     			cout  << "=xx= Parsing failed for order "<< tempKeyword << " "<<parser -> getText()<<endl;
   				return false;
 			}
 	else
@@ -173,7 +173,11 @@ if( orderPrototype_ == 0)
     }
   
 	if((dayRestricted_ == 0) || (dayRestricted_== currentDay))
-	result	=orderPrototype_ -> process(entity, parameters_,this);
+  {
+    entity->setCurrentOrder(this);
+	  result	=orderPrototype_ -> process(entity, parameters_);
+    entity->setCurrentOrder(0);
+   }
 	 else
 		return FAILURE;
 	if((result == SUCCESS) ||(result == IN_PROGRESS))
@@ -185,17 +189,31 @@ if( orderPrototype_ == 0)
     return result;
 }
 
+
+
 ORDER_STATUS 
 Order::completeProcessing(Entity * entity, int result)
 {
-  return orderPrototype_ -> completeProcessing(entity, parameters_,this,result);
+  entity->setCurrentOrder(this);
+  ORDER_STATUS status	= orderPrototype_ -> completeProcessing(entity, parameters_,result);
+  entity->setCurrentOrder(0);
+  return status;
 }
+
+
 void
 Order::save(ostream &out)
 {
+    out << "ORDER ";
+    print(out);
+}
+
+
+void
+Order::print(ostream &out)
+{
  vector< AbstractData *>::const_iterator iterator2;
 	int i;
-      out << "ORDER ";
       if(dayRestricted_ != 0)    out << DAY_SPECIFIC_ORDER_SYMBOL << dayRestricted_<<" ";
       if(isPermanent_)    out << PERMANENT_ORDER_SYMBOL;
       for(i = 0; i< ifConditionLevel; i++)

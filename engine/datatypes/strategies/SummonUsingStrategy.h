@@ -20,5 +20,6 @@ public:
       SummonUsingStrategy ( const SummonUsingStrategy * prototype ): BasicUsingStrategy(prototype){}
 		 ~SummonUsingStrategy(){};
 };
+extern SummonUsingStrategy      sampleSummonUsing;
 
 #endif

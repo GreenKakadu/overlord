@@ -41,9 +41,9 @@ public:
       longtostr(parameter1_,buffer);
 //		  sprintf(buffer,"%d",parameter1_);// May use hand-made convertor itoa
     if( parameter1_ > 1)
-      return  string(buffer)/*+ " "*/ + rule_->getPluralName()  + rule_->printTag();
+      return  string(buffer) + " " + rule_->getPluralName()  + rule_->printTag();
     else
-      return string(buffer)/*+ " " */+ rule_->printName();
+      return string(buffer) + " " + rule_->printName();
   }
 
    inline ItemRule *   getResource()      const     {return rule_;}

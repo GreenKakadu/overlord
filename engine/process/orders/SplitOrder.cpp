@@ -18,7 +18,7 @@
 #include "UnitEntity.h"
 #include "BinaryPattern.h"
 #include "EntitiesCollection.h"
-#include "RaceElementData.h"
+#include "RaceElement.h"
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
@@ -26,8 +26,11 @@ extern Reporter * newSplitReporter;
 extern Reporter * splitterReporter;
 extern EntitiesCollection <UnitEntity>      units;
 
+SplitOrder instantiateSplitOrder;
+
 SplitOrder::SplitOrder(){
   keyword_ = "split";
+  registerOrder_();
   description = string("SPLIT unit-id [number]\n") +
   "Immediate, follower/creature-only.  This orders executes when a unit has a\n"+
   "least number+1 figures.  The unit-id, which must be a new unit id, is created\n"+
@@ -39,6 +42,9 @@ SplitOrder::SplitOrder(){
 
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
+
 STATUS SplitOrder::loadParameters(Parser * parser, vector <AbstractData *>
           &parameters, Entity * entity )
 {
@@ -51,8 +57,11 @@ STATUS SplitOrder::loadParameters(Parser * parser, vector <AbstractData *>
 
             return OK;
 }
+
+
+
 ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
-          &parameters, Order * orderId)
+          &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -96,13 +105,13 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
             newUnit->addSkill(*iter);
           }
        // items  - equipped only
-        vector < InventoryElement > transferedItems =  unit->updateEquipement();
-  InventoryElementIterator iterEquip;
+        vector < InventoryElement *> transferedItems =  unit->updateEquipement();
+        InventoryElementIterator iterEquip;
 
         for (iterEquip = transferedItems.begin(); iterEquip != transferedItems.end(); ++iterEquip)
 		      {
-            ItemRule * item = (*iterEquip).getItemType();
-            int num = (*iterEquip).getItemNumber();
+            ItemRule * item = (*iterEquip)->getItemType();
+            int num = (*iterEquip)->getItemNumber();
             newUnit->addToInventory(item,num);
             unit->takeFromInventoryExactly(item,num);
             newUnit->equipItem(item,num);
@@ -113,11 +122,12 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
        newUnit->recalculateStats();
 //        cout << "New unit created: "<<newUnit->printName() <<" \n";
 
+//QQQ
     newUnit ->addReport(new BinaryPattern (newSplitReporter,
-                        newUnit, new RaceElementData ( race, number)));
+                        newUnit, new RaceElement ( race, number)));
 
     unit->addReport(new BinaryPattern(splitterReporter, unit,
-                    new RaceElementData(race, number) ));
+                    new RaceElement(race, number) ));
   return SUCCESS;
 
      }

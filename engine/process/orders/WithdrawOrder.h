@@ -16,7 +16,7 @@ class WithdrawOrder : public OrderPrototype  {
 public: 
 	WithdrawOrder();
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
     protected:
 static const  UINT WITHDRAW_RESTRICTED_REPORT_FLAG;
 

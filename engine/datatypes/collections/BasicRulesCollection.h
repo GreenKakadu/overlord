@@ -24,8 +24,8 @@ class BasicRulesCollection : public BasicCollection{
 public:
 	  BasicRulesCollection(DataStorageHandler * handler):BasicCollection(handler){}
   virtual ~BasicRulesCollection();
-	        GameData* findByTag        (const string &tag);
-	        GameData* findByIndex      (const long int index);
+	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+	        GameData* findByIndex      (const long int index, bool errorReportEnabled= true);
           void          add          (GameData * /*const*/ newRule)   ;
           bool          isValidTag   (const string &tag)  ;//const;
           long int       getIndex     (const string &tag)  ;
@@ -40,5 +40,22 @@ private:
 
 };
 
+
+
+template <class T>  T * GET_FROM_COLLECTION(BasicRulesCollection * collection, const string &tag)
+{
+  GameData * rawData = collection->findByTag(tag);
+  if(rawData == 0)
+  {
+      return 0;
+  }
+  T * castedData = dynamic_cast<T*>(rawData);
+  if(castedData == 0)
+  {
+      cout << "Casting failed for " << collection->printName() << "["<<tag<<"]"<<endl;
+      return 0;
+  }
+   return castedData;
+}
 #endif
 

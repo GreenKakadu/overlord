@@ -37,13 +37,13 @@ void BasicCollection::bindHandler(DataStorageHandler * handler)
 
 
 
-long int  BasicCollection::size() const
+long  BasicCollection::size() const
 {
   return 0;
   
 }
-GameData* BasicCollection::findByTag        (const string &tag){return 0;}
-GameData* BasicCollection::findByIndex      (const long int index){return 0;}
+GameData* BasicCollection::findByTag        (const string &tag, bool errorReportEnabled){return 0;}
+GameData* BasicCollection::findByIndex      (const long int index, bool errorReportEnabled){return 0;}
 
 
 void BasicCollection::add  ( GameData * /*const*/ newRule)
@@ -52,7 +52,7 @@ void BasicCollection::add  ( GameData * /*const*/ newRule)
 
 
 
-long int  BasicCollection::getIndex (const string &tag)
+long   BasicCollection::getIndex (const string &tag)
 {
   return 0;
 }

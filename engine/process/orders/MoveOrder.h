@@ -8,6 +8,7 @@
 #ifndef MOVE_ORDER_H
 #define MOVE_ORDER_H
 #include "OrderPrototype.h"
+class PhysicalEntity;
 
 /**
   *@author Alex Dribin
@@ -18,7 +19,8 @@ public:
 	MoveOrder();
 	~MoveOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  static ORDER_STATUS move(PhysicalEntity * tokenEntity, AbstractData * parameter);
     protected:
 static const  UINT OVERLOADING_REPORT_FLAG;
 static const  UINT NO_MOVEMENT_ABILITY_REPORT_FLAG;

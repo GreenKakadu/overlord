@@ -24,10 +24,11 @@
 
 class StringData : public AbstractData  {
 public: 
-	StringData(string Data){Data_ = Data;}
+	StringData(const string &Data){Data_ = Data;}
 	~StringData(){}
   inline void saveAsParameter (ostream &out) {out << " "<<Data_;}
   inline string printName()  {return Data_;}
+  inline void clean(){ delete this;}
   protected:
   string Data_;
 };

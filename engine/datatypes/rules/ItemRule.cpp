@@ -10,6 +10,8 @@
 #include "SkillLevelElement.h"
 #include "BasicCondition.h"
 #include "Entity.h"
+#include "UnitEntity.h"
+//ItemRule      sampleItem      ("ITEM",     &sampleGameData);
 
 extern VarietiesCollection <EquipmentSlotVariety>      equipments;
 
@@ -21,6 +23,7 @@ ItemRule::ItemRule ( const ItemRule * prototype ) : Rule(prototype)
 		 equipSlot_ = 0;
 		 equipCondition_ = 0;
 		 useSkill_ = 0;
+     learningLevelBonus_ = 0;
 		 unique_ = false;
 		 special_ = false;
 		 magic_ = false;
@@ -106,7 +109,7 @@ ItemRule::initialize        ( Parser *parser )
 						if(movementModes.isValidTag(modeTag))
 							{
 								equipCapacity_[modeTag]  = parser->getInteger();
-							}
+							}                            
 					}
       return OK;
     }
@@ -138,7 +141,16 @@ if (parser->matchKeyword("USE_SKILL"))
 			if (skill == 0)
 					return OK;
 			else
-					useSkill_ = new SkillLevelElement(skill,parser->getInteger());	
+					useSkill_ = new SkillLevelElement(skill,parser->getInteger());
+      return OK;
+    }
+if (parser->matchKeyword("LEVEL_BONUS"))
+    {
+			SkillRule *skill = skills[parser->getWord()];
+			if (skill == 0)
+					return OK;
+			else
+					learningLevelBonus_ = new SkillLevelElement(skill,parser->getInteger());
       return OK;
     }
 if (parser->matchKeyword("SPECIAL"))
@@ -156,10 +168,6 @@ if (parser->matchKeyword("MAGIC"))
 
  }
 
-//void ItemRule::print()
-//{
-//    cout  << getName() << " [" << getTag()  << "] "<< endl;
-// }
 
 
 void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
@@ -173,3 +181,75 @@ void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
     equipCondition_->extractKnowledge(recipient);
 }
 
+
+
+void ItemRule::printDescription(ReportPrinter & out)
+{
+  out << printName()<< ": ";
+  if(weight_)
+  {
+    out <<"weight "  <<weight_ ;
+    bool isFirst = true;
+    for(int i =0 ; i < movementModes.size(); ++i)
+    {
+      if(capacity_[i])
+          {
+            if(isFirst)
+              {
+                out << ", capacity: ";
+                isFirst = false;
+              }
+              else
+                out << ", ";
+
+              out << capacity_[i]<< "/" << (movementModes[i])->getName();
+              if(equipCapacity_[i])
+                out << " ("<<equipCapacity_[i]<< " while equiped)";
+          }
+            
+
+      }
+      out<<". ";
+    }
+  out << getDescription()<<".";
+
+  if(stats.getUpkeep())
+    out << " Additional upkeep $" << stats.getUpkeep()<<" per item.";
+
+  if(stats.getControlPoints())
+    out << " Required control " << stats.getControlPoints()<<" per item.";
+
+  if(equipCondition_)
+  {
+    out << " Equipped with "; equipCondition_->print(out); out<<".";
+  }
+
+   if(equipSlot_)
+   {
+     out << " Equipment category: " << equipSlot_->getName();
+     if(numEquipSlotsRequired_ > 1)
+        out << " ( requires "<< numEquipSlotsRequired_ << " "<< equipSlot_->getName() << " to equip )";
+     out<<".";
+   }
+   if(!stats.empty())
+   {
+      out << " Equipment gives "; stats.print(out);
+   }
+}
+
+
+
+void ItemRule::applyEquipementEffects(UnitEntity * unit, int number)
+{
+  if(learningLevelBonus_)
+  {
+    if(unit->getFiguresNumber() <= number)
+    {
+      unit->addLearningLevelBonus(learningLevelBonus_);
+    }
+    else
+    {
+      unit->removeLearningLevelBonus(learningLevelBonus_);
+    }
+  }
+}

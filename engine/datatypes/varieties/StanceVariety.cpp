@@ -7,6 +7,18 @@
  ***************************************************************************/
 #include "StanceVariety.h"
 
+//StanceVariety * findStanceByTag(const string &tag)
+//{
+// return GET_FROM_COLLECTION<StanceVariety>(&stances,tag);
+//}
+
+
+StanceVariety *  alliedStance;
+StanceVariety *  friendlyStance;
+StanceVariety *  neutralStance;
+
+
+
 GameData * StanceVariety::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<StanceVariety> (this);
@@ -36,11 +48,17 @@ StanceVariety::initialize        ( Parser *parser )
       return OK;
 
  }
+
+
+
 ostream &operator << ( ostream &out, StanceVariety * stance)
 {
 	out << stance->getTag() << " ";
 	return out;
 }
+
+
+
 bool StanceVariety::operator <   (StanceVariety stance2)
 {
   return this->code_ <  stance2.getCode();
@@ -66,4 +84,5 @@ bool StanceVariety::operator >   (StanceVariety stance2)
 {
   return this->code_ >  stance2.getCode();
 }
+
 

@@ -15,7 +15,7 @@
 #include "RecruitRequest.h"
 #include "RaceRule.h"
 #include "IntegerData.h"
-#include "RaceElementData.h"
+#include "RaceElement.h"
 #include "QuartenaryPattern.h"
 #include "BinaryPattern.h"
 
@@ -79,10 +79,11 @@ void RecruitRequest::answerMarketRequest(int price, int amount)
    targetUnit_ ->addNewFigures(amount);
     assert(unit_->takeFromInventoryExactly(cash, price * amount));
     // report to targetUnit_
+//QQQ
     targetUnit_ ->addReport(new BinaryPattern(recruitedReporter,
-                            new RaceElementData(race_ , amount), targetUnit_));
+                            new RaceElement(race_ , amount), targetUnit_));
     unit_->addReport(new QuartenaryPattern(recruiterReporter, unit_,
-                    new RaceElementData(race_ , amount),
+                    new RaceElement(race_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults
      orderId_->completeProcessing(unit_,amount);

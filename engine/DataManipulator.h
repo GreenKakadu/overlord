@@ -17,7 +17,7 @@
 //#include "../collections/OrderPrototypesCollection.h"
 //#include "../entities/Entity.h"
 //#include "../rules/Rule.h"
-class OrderPrototypesCollection;
+//class OrderPrototypesCollection;
 class BasicEntitiesCollection;
 class BasicRulesCollection;
 class BasicVarietiesCollection;
@@ -37,17 +37,10 @@ public:
   void processCompetitiveRequests(ProcessingMode * processingMode);
   STATUS checkOrders();
   //void saveOrders();
-
-  /** No descriptions */
   void prepareData();
-  /** No descriptions */
-  void addOrderPrototypes(OrderPrototypesCollection *orderPrototypesCollection);
-  /** Performs daily update of mana, time-lasting effects, item decay  */
   void dailyUpdate();
   void dailyPreProcessData();
-  /** Loading, initialization of data.
-Consistency checks
-Pre-calculations */
+  void turnPostProcessing();
   void turnPreProcessing();
 protected:
 private:

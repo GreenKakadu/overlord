@@ -18,11 +18,12 @@ public:
   static ObservationCondition * createObservationCondition(int observationLevel);
   STATUS      initialize ( Parser *parser );
   GameData * createInstanceOfSelf();
-  bool isSatisfied(UnitEntity * unit);
+  bool isSatisfied(PhysicalEntity * unit);
   inline void setObservationCondition(int observation) {observationRequired_ = observation;}
   inline int getObservationCondition() const {return observationRequired_;}
 protected:
   int observationRequired_;
 };
+extern ObservationCondition  sampleObservationCondition;
 
 #endif

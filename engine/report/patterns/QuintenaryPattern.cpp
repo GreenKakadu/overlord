@@ -33,4 +33,16 @@ void QuintenaryPattern::print(ostream &out) const
   reporter_->print(out, param1_, param2_, param3_ , param4_ , param5_ );
 }
 
+void QuintenaryPattern::clean()
+{
+  param1_->clean();
+  param2_->clean();
+  param3_->clean();
+  param4_->clean();
+  param5_->clean();
+}
+
+
+
+
 QuintenaryPattern  * QuintenaryPattern::headOfFreeList;

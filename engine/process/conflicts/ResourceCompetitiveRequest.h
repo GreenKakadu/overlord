@@ -11,7 +11,6 @@
 /** Request for some action requiring limited resourse of items
   *@author Alex Dribin
   */
-class ItemElement;
 class AbstractData;
 class ItemRule;
 class Rational;
@@ -24,7 +23,6 @@ public:
 	ResourceCompetitiveRequest(UnitEntity * unit, Order * orderId, ItemRule * resource,  Rational& amount);
 	~ResourceCompetitiveRequest();
 //  virtual bool isEqualTo (BasicCompetitiveRequest * request);
-//   ItemElement * getResource() const;
    Rational getValue() const;
    AbstractData * getType() const;
   Rational getTotalAvailableValue() const;

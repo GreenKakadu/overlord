@@ -14,8 +14,8 @@
  ***************************************************************************/
 #include "UnitEntity.h"
 #include "ItemRule.h"
+#include "ItemElement.h"
 #include "IntegerData.h"
-#include "ItemElementData.h"
 #include "MarketRequest.h"
 #include "QuartenaryPattern.h"
 extern Reporter * buyReporter;
@@ -131,8 +131,9 @@ void MarketRequest::answerMarketRequest(int price, int amount)
     unit_->addToInventory(item_,amount);
     assert(unit_->takeFromInventoryExactly(cash, price * amount));
     // report
+//QQQ
     unit_->addReport(new QuartenaryPattern(buyReporter, unit_,
-                    new ItemElementData(item_ , amount),
+                    new ItemElement(item_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults
      orderId_->completeProcessing(unit_,amount);
@@ -144,8 +145,9 @@ void MarketRequest::answerMarketRequest(int price, int amount)
         cout <<"== TRACING " << unit_->printName()<< " sells " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
     assert(unit_->takeFromInventoryExactly(item_,amount));
     unit_->addToInventory(cash, price * amount);
+//QQQ
     unit_->addReport(new QuartenaryPattern(sellReporter, unit_,
-                    new ItemElementData(item_ , amount),
+                    new ItemElement(item_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
      orderId_->completeProcessing(unit_,amount);
     return;

@@ -11,27 +11,8 @@
 #include "Global.h"
 #include "DataManipulator.h"
 
-#include "WithdrawOrder.h"
-#include "RecruitOrder.h"
-#include "TestOrder.h"
-#include "MoveOrder.h"
-#include "UseOrder.h"
-#include "AcceptOrder.h"
-#include "GiveOrder.h"
-#include "StudyOrder.h"
-#include "StackOrder.h"
-#include "UnstackOrder.h"
-#include "EquipOrder.h"
-#include "BuyOrder.h"
-#include "SellOrder.h"
-#include "DisbandOrder.h"
-#include "MergeOrder.h"
-#include "SplitOrder.h"
-#include "TeachOrder.h"
 #include "DataStorageHandler.h"
-
 #include "MovementVariety.h"
-extern RuleIndex ruleIndex;
 
 DataManipulator::DataManipulator()
 {
@@ -40,21 +21,21 @@ DataManipulator::DataManipulator()
    addVarieties  (&directions);
    addVarieties  (&stances);
    addVarieties  (&equipments);
+   addVarieties  (&construction_works);
     
    ruleIndex.addRules (&terrains);
    ruleIndex.addRules (&titles);
    ruleIndex.addRules (&skills);
    ruleIndex.addRules (&items);
    ruleIndex.addRules (&races);
+   ruleIndex.addRules (&constructions);
 
 
 //... add more collections
    addEntities  (&units);
    addEntities  (&factions);
    addEntities  (&locations);
-
-
-   addOrderPrototypes(&orderPrototypesCollection);
+   addEntities  (&buildingsAndShips);
 
 }
 
@@ -119,8 +100,12 @@ STATUS DataManipulator::load()
 
   cash = items["coin"];
   walkingMode = movementModes["walk"];
+  swimingMode = movementModes["swim"];
   flyingMode = movementModes["fly"];
-  allied =  stances["ally"]; 
+  alliedStance =    stances["ally"];
+  friendlyStance =  stances["friend"];
+  neutralStance =   stances["neutral"];
+//  combatSkill = skills[""];
  return status;
 }
 
@@ -176,7 +161,7 @@ void DataManipulator::print()
   EntitiesIterator iter;
   for( ruleIter = ruleIndex.getAllRules().begin(); ruleIter != ruleIndex.getAllRules().end(); ruleIter++)
 	   {
-        for_each((*ruleIter)->begin(), (*ruleIter)->end(), mem_fun (&Rule::print) );
+        for_each((*ruleIter)->begin(), (*ruleIter)->end(), mem_fun (&Rule::printName) );
      }
   for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {
@@ -193,7 +178,6 @@ void DataManipulator::print()
 
 void DataManipulator::processOrders(ProcessingMode * processingMode )
 {
-  vector <UnitEntity *>::iterator localIter;
   bool localChanges;
   long int i;
   if(processingMode == 0)
@@ -201,7 +185,16 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
       cout << "Error: Unspecified processing mode" <<endl;
       return;
       }
-// process orders for units per Location
+// process Faction orders
+
+   for ( i=0; i < factions.size();i++)
+   {
+    if(factions[i] ==0)
+          continue;
+     
+     (factions[i])->process(processingMode);
+    }
+// process orders for tokenEntities per Location
       
    for ( i=0; i < locations.size();i++)
    {
@@ -211,15 +204,30 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
     while(localChanges)
     {        
       localChanges = false;
-      for ( localIter = (locations[i])->unitsPresent().begin();
+      for ( vector <UnitEntity *>::iterator localIter = (locations[i])->unitsPresent().begin();
            localIter != (locations[i])->unitsPresent().end(); localIter++)
         {
+
           if(*localIter == 0)
+              continue;
+
+          if((*localIter)->isHidden())
               continue;
 
           if( (*localIter) ->process(processingMode))
             localChanges = true;            
         }
+        
+      for ( vector <ConstructionEntity *>::iterator localIter = (locations[i])->constructionsPresent().begin();
+           localIter != (locations[i])->constructionsPresent().end(); localIter++)
+        {
+          if(*localIter == 0)
+              continue;
+
+          if( (*localIter) ->process(processingMode))
+            localChanges = true;
+        }
+
         if ((locations[i])->ordersToBeRepeated() )  // forced repetition regardless to mode and results
           {
             localChanges = true;
@@ -318,35 +326,12 @@ void DataManipulator::prepareData()
 
 
 
-/** No descriptions */
-void
-DataManipulator::addOrderPrototypes(OrderPrototypesCollection *orderPrototypesCollection)
-{
-  orderPrototypesCollection ->   add(new UseOrder);
-  orderPrototypesCollection ->   add(new MoveOrder);
-  orderPrototypesCollection ->   add(new AcceptOrder);
-  orderPrototypesCollection ->   add(new GiveOrder);
-  orderPrototypesCollection ->   add(new StudyOrder);
-  orderPrototypesCollection ->   add(new StackOrder);
-  orderPrototypesCollection ->   add(new UnstackOrder);
-  orderPrototypesCollection ->   add(new EquipOrder);
-  orderPrototypesCollection ->   add(new WithdrawOrder);
-  orderPrototypesCollection ->   add(new RecruitOrder);
-  orderPrototypesCollection ->   add(new TestOrder);
-  orderPrototypesCollection ->   add(new SellOrder);
-  orderPrototypesCollection ->   add(new BuyOrder);
-  orderPrototypesCollection ->   add(new DisbandOrder);
-  orderPrototypesCollection ->   add(new MergeOrder);
-  orderPrototypesCollection ->   add(new SplitOrder);
-  orderPrototypesCollection ->   add(new TeachOrder);
 
 
 
-}
-
-
-
-/** Performs daily update of mana, time-lasting effects, item decay  */
+/*
+ * Performs daily update of mana, time-lasting effects, item decay  
+ */
 void DataManipulator::dailyUpdate()
 {
 // cout <<"Manipulator Daily report"<<endl;
@@ -381,9 +366,11 @@ void DataManipulator::dailyUpdate()
 
 
 
-/** Loading, initialization of data.
-Consistency checks
-Pre-calculations */
+/*
+ * Loading, initialization of data.
+ * Consistency checks
+ * Pre-calculations 
+ */
 void DataManipulator::turnPreProcessing()
 {
   EntitiesCollectionIterator collIter;
@@ -489,3 +476,16 @@ void DataManipulator::dailyPreProcessData()
 
 
 
+void DataManipulator::turnPostProcessing()
+{
+  EntitiesCollectionIterator collIter;
+  EntitiesIterator iter;
+  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+	   {
+      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+        {
+            if(*iter )
+               (*iter) ->postProcessData();
+        }
+		}
+}

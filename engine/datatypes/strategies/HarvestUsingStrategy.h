@@ -16,11 +16,11 @@
 /**Harvesting skill
   *@author Alex Dribin
   */
-//class ItemElement;
 class ItemRule;
 class Rational;
 class ToolUseElement;
 class Order;
+class UnitEntity;
 
 class HarvestUsingStrategy : public BasicUsingStrategy  {
 public: 
@@ -29,20 +29,21 @@ public:
 		 ~HarvestUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT mayUse(UnitEntity * unit, SkillRule * skill);
-      bool use(UnitEntity * unit, Order * OrderId);
-      void reportUse(USING_RESULT result, UnitEntity * unit, Order * OrderId);
+      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
+      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      void reportUse(USING_RESULT result, PhysicalEntity * tokenEntity);
       Rational getDailyProduction(); // should return scaled int
       inline ItemRule * getHarvestedResource(){return resourceHarvested_;}
       inline ItemRule * getConsumedResource(){return resourceConsumed_;}
       void extractKnowledge (Entity * recipient, int parameter = 0);
+      void printSkillDescription(ostream & out);
     protected:
      ItemRule * resourceHarvested_;
      ItemRule * resourceConsumed_;
       int  harvest_;     
-//    ItemElement * harvest_;
       int days_;
       vector <ToolUseElement *> tools_;
 };
+extern HarvestUsingStrategy     sampleHarvestUsing;
 
 #endif

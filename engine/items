@@ -1,5 +1,5 @@
 # Overlord Item definitions
-# Ver 0.23 13.07.2003
+# Ver 0.24 02.09.2003
 
 KEYWORD ITEM
 
@@ -419,113 +419,6 @@ EQUIP_CONDITION SKILL_CONDITION cook 1
 DAMAGE 1
 INITIATIVE -2
 PRICE 65
-
-ITEM fshi
-NAME fishing boat
-PLURAL fishing boats
-DESCRIPTION A small boat, suited for a few valiant sailors
-WEIGHT 500
-EQUIP_CAPACITY 3 800
-EQUIP_CONDITION SKILL_CONDITION sail 1
-EQUIP_CATEGORY 4
-PRICE 640
-
-ITEM lgbt
-NAME longboat
-PLURAL longboats
-DESCRIPTION Medium-sized boat, suited for small expeditions
-WEIGHT 3000
-EQUIP_CAPACITY 3 5000
-EQUIP_CONDITION SKILL_CONDITION sail 2
-EQUIP_CATEGORY 4
-EQUIP_MEN 5
-PRICE 2800
-
-ITEM gall
-NAME galleon
-PLURAL galleons
-DESCRIPTION The largest sized boat, for long hauls and commerce
-WEIGHT 10000
-EQUIP_CAPACITY 3 18000
-EQUIP_CONDITION SKILL_CONDITION sail 2
-EQUIP_CATEGORY 4
-EQUIP_MEN 15
-PRICE 6700
-
-ITEM trir
-NAME trireme
-PLURAL triremes
-DESCRIPTION The basic warship, triremes require many rowers but provide a fighting bonus to their crew, and all soldiers all aboard
-WEIGHT 1500
-EQUIP_CAPACITY 3 3000
-EQUIP_CONDITION SKILL_CONDITION sail
-EQUIP_CATEGORY 4
-EQUIP_MEN 10
-MELEE 2
-DEFENSE 1
-PRICE 2300
-
-ITEM wgal
-NAME war galley
-PLURAL war galleys
-DESCRIPTION The best warship, war galleys require some rowers and provide an extra fighting bonus of +2 melee, +1 missile and +1 initiative to all soldiers aboard if the battle occurs at sea
-WEIGHT 3000
-EQUIP_CAPACITY 3 5000
-EQUIP_CONDITION SKILL_CONDITION sail
-EQUIP_CATEGORY 4
-EQUIP_MEN 10
-MELEE 2
-DEFENSE 1
-PRICE 5000
-
-ITEM mgal
-NAME magical galley
-PLURAL magical galley
-DESCRIPTION This warship works under the control of a mage, and provide a fighting bonus to all soldiers aboard
-WEIGHT 1500
-EQUIP_CAPACITY 3 3000
-EQUIP_CONDITION SKILL_CONDITION mage
-EQUIP_CATEGORY 4
-MELEE 2
-DEFENSE 3
-PRICE 5600
-
-ITEM flsh
-NAME flying ship
-PLURAL flying ships
-DESCRIPTION This wonder of the airs works like a boat, but sails thru the skies
-WEIGHT 3000
-EQUIP_CAPACITY 2 5000
-EQUIP_CONDITION SKILL_CONDITION airs 1
-EQUIP_CATEGORY 4
-PRICE 8400
-
-ITEM mong
-NAME hot hair baloon
-PLURAL hot hair baloons
-DESCRIPTION Striking terror in the heart of peasants, this contraption is very light, yet flies very high with a limited crew
-WEIGHT 100
-EQUIP_CAPACITY 2 500
-EQUIP_CONDITION SKILL_CONDITION scou 1
-EQUIP_CATEGORY 4
-PRICE 2000
-
-ITEM mshi
-NAME small ship
-PLURAL small ship
-DESCRIPTION A small ship, magically enchanted not to require any direction
-WEIGHT 200
-EQUIP_CAPACITY 3 400
-EQUIP_CATEGORY 4
-PRICE 1280
-
-ITEM mlbt
-NAME magic ship
-PLURAL magic ships
-DESCRIPTION This self-supporting ship works without a crew
-WEIGHT 3000
-CAPACITY 3 5000
-PRICE 7000
 
 ITEM fbot
 NAME floating boots
@@ -1525,65 +1418,6 @@ NAME dimensional door
 TYPE 3
 FX 127
 
-ITEM evtblwd
-NAME wood structure
-PLURAL wood structures
-TYPE 3
-DESCRIPTION The basic wood beams supporting a structure or a floor. Typically require 1 wood to make
-ITEM evtblst
-NAME stonework
-PLURAL stonework
-TYPE 3
-DESCRIPTION The basic stone making up walls and floors. Typically require 1 stone to make
-ITEM evtblmi
-NAME fortification
-PLURAL fortifications
-TYPE 3
-DESCRIPTION Stonework applied to military uses. Typically require 1 stone to make
-ITEM evtblir
-NAME iron reinforcement
-PLURAL iron reinforcements
-TYPE 3
-DESCRIPTION Metal rods to strengthed military fortifications and other strong buldings. Typically require 1 iron to make
-ITEM evtblhi
-NAME hide streched
-PLURAL hides streched
-TYPE 3
-DESCRIPTION Hides, tanned and stretched over a frame for a basic coverage. Typically require 1 hide to make
-ITEM evtblky
-NAME magical consecration
-PLURAL magical consecrations
-TYPE 3
-DESCRIPTION The turning of the key on the final day of a magical structure. Require 1 mage key to effect
-ITEM evtmcir
-NAME circle drawing
-TYPE 3
-DESCRIPTION The making of a magic protecting circle, for high levels spells. Require 1 mystic stone to power
-ITEM evtbldc
-NAME silver decoration
-PLURAL silver decorations
-TYPE 3
-DESCRIPTION The silvery plates and engraving on prestige buildings. Typically require 1 silver to make
-ITEM evtbltx
-NAME tax lease
-PLURAL tax lease
-TYPE 3
-DESCRIPTION The special permission to activate a tax building. Require 1 gold to pay
-ITEM evtblks
-NAME key stonework
-PLURAL key stoneworks
-TYPE 3
-DESCRIPTION Specifically placed key stones are required for advanced buildings. Require 1 key stone cut from granite to make
-ITEM evtblwl
-NAME wall foundations
-PLURAL wall foundations
-TYPE 3
-DESCRIPTION The drawn wall foundations allow the direction of protecting wall
-ITEM evtblpf
-NAME tree rigging
-PLURAL tree riggings
-TYPE 3
-DESCRIPTION The basic placement on branches and various hides
 ITEM effmktg
 TYPE 2
 NAME market study

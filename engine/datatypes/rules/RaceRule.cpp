@@ -11,6 +11,7 @@
 #include "PrototypeManager.h"
 extern RulesCollection <SkillRule>     skills;
 extern VarietiesCollection <EquipmentSlotVariety>      equipments;
+//RaceRule      sampleRace      ("RACE",     &sampleGameData);
 
 equip_slot::equip_slot(EquipmentSlotVariety * slotRule, int  cap)
 {
@@ -18,6 +19,7 @@ equip_slot::equip_slot(EquipmentSlotVariety * slotRule, int  cap)
   capacity = cap;
 	if(capacity == 0)
 				capacity = 1;  // default
+
 }
 equip_slot::~equip_slot()
 {
@@ -25,6 +27,7 @@ equip_slot::~equip_slot()
 RaceRule::RaceRule ( const RaceRule * prototype ) : Rule(prototype)
 {
 	weight_ = 0;
+  controlPointsFraction_ = 20;
   hiringCost_ = 50;
   hiringProbability_ = 1000;
   hiringMax_ = 1000;
@@ -62,7 +65,7 @@ RaceRule::initialize        ( Parser *parser )
       setName(parser->getText());
       return OK;
     }
-  if (parser->matchKeyword("TEXT"))
+  if (parser->matchKeyword("DESCRIPTION"))
     {
       setDescription(parser->getText());
       return OK;
@@ -157,13 +160,11 @@ RaceRule::initialize        ( Parser *parser )
 
  }
 
-//void RaceRule::print()
-//{
-//    cout  << getName() << " [" << getTag()  << "] "<< endl;
-// }
 
 
-/** Returns number of items that may be equiped in this category. */
+/*
+ * Returns number of items that may be equiped in this category.
+ */
 int RaceRule::getEquipCapacity(EquipmentSlotVariety *  type)
 {
  EquipSlotIterator iter;
@@ -189,6 +190,11 @@ int RaceRule::getBonus(SkillRule * skill){
   return 0;
 }
 
+
+/*
+ *  Intristic ability of unit to study skill
+ *  Level limitations also taken into considerations
+ */
 LEARNING_RESULT RaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 {
    cout <<  keyword_ << " considered as a basic Student "<<endl;
@@ -207,7 +213,7 @@ void   RaceRule::setPluralName(const string name)
 
 
 
-bool RaceRule::mayMove()
+bool RaceRule::mayMove(UnitEntity * unit)
 {
   return true;
 }
@@ -261,11 +267,8 @@ void    RaceRule::extractKnowledge (Entity * recipient, int parameter)
     {
       if((*iter).getSkill())
       {
-        if((*iter).getSkill())
-          {
             if(recipient->addSkillKnowledge((*iter).getSkill(),(*iter).getLevel()))
                 (*iter).getSkill()->extractKnowledge(recipient, (*iter).getLevel());
-          }
       }
   }
 
@@ -274,11 +277,91 @@ void    RaceRule::extractKnowledge (Entity * recipient, int parameter)
     {
       if((*iter).getSkill())
       {
-        if((*iter).getSkill())
-          {
-            if(recipient->addSkillKnowledge((*iter).getSkill(),0))
-                (*iter).getSkill()->extractKnowledge(recipient, 0);
-          }
+        if(recipient->addSkillKnowledge((*iter).getSkill(),1))
+          (*iter).getSkill()->extractKnowledge(recipient, 1);
+
       }
   }
+}
+
+
+
+void RaceRule::printDescription(ReportPrinter & out)
+{
+  out << printName()<< ": ";
+  if(weight_)
+  {
+    out <<"weight "  <<weight_ ;
+    bool isFirst = true;
+    for(int i =0 ; i < movementModes.size(); ++i)
+    {
+      if(capacity_[i])
+          {
+            if(isFirst)
+              {
+                out << ", capacity: ";
+                isFirst = false;
+              }
+              else
+                out << ", ";
+
+              out << capacity_[i]<< "/" << (movementModes[i])->getName();
+          }
+
+
+      }
+      out<<". ";
+    }
+  out << getDescription()<<".";
+
+  printTypeSpecificDescription(out);
+
+  if(hiringCost_)
+      out << " Base recruit price: $" << hiringCost_<< " .";
+  
+  if(stats.getUpkeep())
+    out << " Upkeep $" << stats.getUpkeep()<<" per figure.";
+
+  if(stats.getControlPoints())
+  {
+    out << " Required  " << stats.getControlPoints()<<" control per each ";
+    if( controlPointsFraction_ > 1)
+      out << controlPointsFraction_<<" figures.";
+    else
+      out << controlPointsFraction_<<" figure.";
+  }
+    
+   if(!stats.empty())
+   {
+      out << " Stats: "; stats.print(out);
+   }
+
+   if(!intristicSkills_.empty())
+    {
+      out << " Skills: ";
+      for (SkillIterator iter = intristicSkills_.begin(); iter != intristicSkills_.end(); iter++)
+		    {
+          if( iter != intristicSkills_.begin())
+            {
+              out << ", ";
+            }
+          (*iter).print(out);
+        }
+      out <<". ";
+    }
+
+   if(!intristicSkillBonuses_.empty())
+    {
+      out << " Skill bonuses: ";
+      for ( vector< BonusElement>::iterator iter = intristicSkillBonuses_.begin();
+            iter != intristicSkillBonuses_.end(); iter++)
+		    {
+          if( iter != intristicSkillBonuses_.begin())
+            {
+              out << ", ";
+            }
+          (*iter).print(out);
+        }
+      out <<". ";
+    }
 }

@@ -21,10 +21,10 @@ using namespace std;
 class ReportPattern {
 public: 
   virtual void print(ostream &) const{}
+  virtual void clean() {}
 
 protected:
 	ReportPattern(){}
-//	ReportPattern(BasicReporter * reporter, GameData * par){rule_ = reporter; parameter_ = par;}
 	virtual ~ReportPattern(){}
 };
 

@@ -9,9 +9,11 @@
 #ifndef STANCE_ELEMENT_H
 #define STANCE_ELEMENT_H
 
+#include   <vector>
 #include "Element.h"
 class StanceVariety;
 
 typedef  Element2<StanceVariety,Entity *> StanceElement;
+typedef vector<StanceElement>::iterator StanceIterator;
 
 #endif

@@ -6,6 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "ReportRecord.h"
+#include "ReportPattern.h"
 extern int currentDay;
 
 ReportRecord::ReportRecord(ReportPattern * report, Order *  order, BasicCondition * condition)
@@ -16,16 +17,21 @@ ReportRecord::ReportRecord(ReportPattern * report, Order *  order, BasicConditio
 //	cout << ".....Report created...... |"<< reportMessage->print(cout);
 }
 
-ReportRecord::~ReportRecord(){}
-/** No descriptions */
-//void ReportRecord::setReport( char *  record){
-// report_  = (record);///*const_cast<char *>*/ (record.c_str()); //
-//}
+
+
+/*
+ * Cleans report pattern parameters.
+ * Cleaning deletes parameter objects if they are non-permanent
+ */
+ReportRecord::~ReportRecord()
+{
+//  reportMessage->clean();
+}
 
 
 
 /** No descriptions */
-bool ReportRecord::observableBy(UnitEntity * unit) const
+bool ReportRecord::observableBy(PhysicalEntity * unit) //const
 {
   if(observationCriteria_)
     return(observationCriteria_->isSatisfied(unit));
@@ -33,9 +39,3 @@ bool ReportRecord::observableBy(UnitEntity * unit) const
    return true; 
 }
 
-
-
-/** No descriptions */
-//void ReportRecord::print(ostream &out){
-//out <<  "Day " <<day_ << " : " <<report_ << endl;
-//}

@@ -27,7 +27,7 @@ public:
 	MergeOrder();
 	~MergeOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
 };
 
 #endif

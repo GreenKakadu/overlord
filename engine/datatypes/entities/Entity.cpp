@@ -7,6 +7,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include "Entity.h"
+#include "UnitEntity.h"
 #include "ReportRecord.h"
 #include "ReportElement.h"
 #include "InventoryElement.h"
@@ -26,7 +27,7 @@ bool  Entity::process(ProcessingMode * processingMode)
 
 {
   bool orderWasExecuted = false;
-  vector<Order *>::iterator currentIterator ;
+  OrderIterator currentIterator ;
   ORDER_STATUS result;
 #ifdef TEST_MODE
    if(testMode) 	cout<< "Processing orders for Entity " << printName() <<endl;
@@ -50,14 +51,17 @@ bool  Entity::process(ProcessingMode * processingMode)
    return orderWasExecuted;
 }
 
-bool Entity::updateOrderResults(ORDER_STATUS result, Order * OrderId)
-{
- vector<Order *>::iterator  currentIterator = find(orders_.begin(), orders_.end(), OrderId);
- return processOrderResults(result,currentIterator);
 
+
+bool Entity::updateOrderResults(ORDER_STATUS result)
+{
+ OrderIterator  currentIterator = find(orders_.begin(), orders_.end(), currentOrder_);
+ return processOrderResults(result,currentIterator);
 }
 
-bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator & currentIterator)
+
+
+bool Entity::processOrderResults(ORDER_STATUS result, OrderIterator & currentIterator)
 {
   assert (result != SUSPENDED);
 
@@ -84,8 +88,13 @@ bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator 
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Result of order processing is Success" << endl;
 #endif
-	    				postProcess(result, currentIterator);
-
+	    				postProcessOrder(result, currentIterator);
+              if((*currentIterator)->getCompletionFlag())
+	      				{
+				    			  delete (*currentIterator);
+		    					  currentIterator = orders_.erase(currentIterator);
+				 					  break;
+		  					}
 	    				if ((*currentIterator) -> repetitionCounter() > 1)
 	      				{
          					(*currentIterator)->decrementRepetitionCounter()  ;
@@ -101,7 +110,7 @@ bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator 
 
 	    				else
 	      				{
-				    			(*currentIterator) -> ~Order();
+				    			  delete (*currentIterator);
 		    					  currentIterator = orders_.erase(currentIterator);
 		  					}
 							break;
@@ -119,7 +128,7 @@ bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator 
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Result of order processing is Invalid" << endl;
 #endif
-	    				postProcess(result, currentIterator);
+	    				postProcessOrder(result, currentIterator);
 
 				    	(*currentIterator) -> ~Order();
 		    			currentIterator = orders_.erase(currentIterator);
@@ -130,6 +139,30 @@ bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator 
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Order is in progress" << endl;
 #endif
+//              if((*currentIterator)->getCompletionFlag())
+//	      				{
+//				    			  delete (*currentIterator);
+//		    					  currentIterator = orders_.erase(currentIterator);
+//				 					  break;
+//		  					}
+
+          if ((*currentIterator)->isPermanent())
+	      				{
+									currentIterator++;
+				 					break;
+	      				}
+	    				if ((*currentIterator) -> repetitionCounter() == 1)
+	      				{
+				    			delete (*currentIterator);
+		    					  currentIterator = orders_.erase(currentIterator);
+		  					}
+	    				if ((*currentIterator) -> repetitionCounter() > 1)
+	      				{
+         					(*currentIterator)->decrementRepetitionCounter()  ;
+									currentIterator++;
+				 					break;
+	      				}
+
 	    				break;
             }
 			case SUSPENDED:
@@ -140,12 +173,20 @@ bool Entity::processOrderResults(ORDER_STATUS result, vector<Order *>::iterator 
 }
 
 
-
+/*
+ * When order completed  state of all conditional orders depending on it
+ * should be reexamined:  
+ * For successfuly completed orders "-" modifiers should be removed and
+ * orders with "+" removed.
+ * For orders completed with invalid status  "+" modifiers should be
+ * removed and orders with "-" removed.
+ 
+ */
 void 	    
-Entity::postProcess(ORDER_STATUS result, vector<Order *>::iterator  iter)
+Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 
 {
-  vector<Order *>::iterator    currentIterator = iter;
+  OrderIterator    currentIterator = iter;
   currentIterator++;	
   for ( ; currentIterator != orders_.end(); )
     {
@@ -174,7 +215,7 @@ Entity::postProcess(ORDER_STATUS result, vector<Order *>::iterator  iter)
 #ifdef TEST_MODE
    if(testMode) 		cout << "====+++ Order deleted (condition failed)"<<endl;
 #endif
-				    	(*currentIterator) -> ~Order();
+				    	delete (*currentIterator);
 		    			currentIterator = orders_.erase(currentIterator);
 	      			}
 	      		else
@@ -223,10 +264,13 @@ Entity::postProcess(ORDER_STATUS result, vector<Order *>::iterator  iter)
 }
 
 
+
 GameData * Entity::createInstanceOfSelf()
 {
    return CREATE_INSTANCE<Entity> (this);
 }
+
+
 
 STATUS
 Entity::initialize        ( Parser *parser )
@@ -251,6 +295,9 @@ Entity::initialize        ( Parser *parser )
 	  return OK;
 
 }
+
+
+
 void
 Entity::save(ostream &out)
 {
@@ -258,12 +305,14 @@ Entity::save(ostream &out)
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
   out << endl;
-  vector<Order *>::iterator iter;
-  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
+  for (OrderIterator iter = orders_.begin(); iter != orders_.end(); iter++)
     {
            (*iter)->save(out);
     }
 }
+
+
+
 ostream &operator << ( ostream &out, Entity * entity)
 {
   out << entity->getTag() << " ";
@@ -271,9 +320,12 @@ ostream &operator << ( ostream &out, Entity * entity)
 }
 
 
+
 void  Entity::loadOrders()
 
 {
+//cout << "Loading orders for "<< printName()<<endl;
+
 //
 //  vector<Order *>::iterator iter;
 //  for ( iter = orders_.begin(); iter !=  orders_.end(); iter++)
@@ -284,19 +336,6 @@ void  Entity::loadOrders()
 
 }
 
-void Entity::print() // For debugging
-{
-    cout  << printName()<< endl;
-
-  vector<Order *>::iterator iter;
-  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
-    {
-           (*iter)->save(cout);
-    }
-
-}
-
-
 
 
 
@@ -306,16 +345,22 @@ void Entity::addOrder(Order * newOrder)
 }
 
 
-/** No descriptions */
+
+/*
+ * delete all entity's orders
+ */
 void Entity::clearOrders()
 {
-  vector<Order *>::iterator iter;
+  OrderIterator iter;
   for ( iter = orders_.begin(); iter != orders_.end(); iter++)
     {
            delete (*iter);
     }
   orders_.clear();
 }
+
+
+
 STATUS Entity::prepareData()
 {
 //	STATUS status = OK;
@@ -334,75 +379,48 @@ void Entity::preprocessData()
 
 
 
+void Entity::postProcessData()
+{
+}
+
+
+
 void Entity::dailyPreProcess()
 {
 }
 
-///** initialize secondary navigation system in OrderNode collection */
-//void Entity::prepareOrders()
-//{
-//  OrderModifier * currentModifier;
-//  OrderNode * lastValidOrderNode =0;
-//  vector<OrderNode *>::iterator iter;
-//#ifdef TEST_MODE
-//      //if(testMode) cout << "Pre-processing orders for entity " << getTag() <<endl;
-//#endif
-//
-//  for ( iter = orders_.begin(); iter != orders_.end(); )
-//    {
-//
-//#ifdef TEST_MODE
-//     //if(testMode) (*iter)->getOrder()->save(cout);
-//#endif
-////    cout <<"==== "; (*iter)->getOrder()->save(cout);
-//
-//      currentModifier =  (*iter)->getOrder()->getTopConditionModifier();
-//      if (currentModifier == 0)
-//	{
-////    cout <<"====  No conditional modifiers" <<endl;
-//	  (*iter) -> setActive(true);
-//	  if (lastValidOrderNode !=0)
-//	    {
-//	      lastValidOrderNode->setNext( (*iter) );
-//	      (*iter) -> setLast(lastValidOrderNode);
-//	    }
-//	
-//	  lastValidOrderNode = (*iter);
-//		iter++;
-//	  continue;
-//	}
-//      else		
-//	{
-//	  if (lastValidOrderNode ==0)
-//	    {// all conditional orders at the beginning are mistake and should be deleted
-//	      (*iter)  ->  ~OrderNode();
-//	      iter = orders_.erase(iter);
-//	    }
-//	  else
-//	    {
-//	      (*iter) -> setActive(false);
-//			iter++;
-//	    }	
-//	}
-//
-//    }
-//}
+
 /** Adds public report */
+
+
+
 void Entity::addReport(ReportRecord * report)
 {
+if (!isSilent())
 	publicReports_.push_back(report);
 // cout << "Added report "; report->print(cout);
 }
+
+
+
 void Entity::addReport(ReportPattern * report,Order *  orderId, BasicCondition * observationCriteria)
 {
-publicReports_.push_back(new  ReportRecord(report, orderId, observationCriteria));
+if (!isSilent())
+  publicReports_.push_back(new  ReportRecord(report, orderId, observationCriteria));
 }
 /** No descriptions */
+
+
+
 void Entity::dailyUpdate()
 {
 }
-#include "entities/UnitEntity.h"
- /** No descriptions */
+
+
+
+/*
+ * Unit tries to obtain public reports from given entity 
+ */
 void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extractedReports)
 {
 //	cout << "Extracting Reports for [" <<tag_ <<"] " << unit->printTag()<< endl;
@@ -417,26 +435,42 @@ void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extra
 			}			
 	}
 }
-/** Returns reference to Entity, which contains reports about this */
+
+
+
+/*
+ * Returns reference to Entity, to whom entity's events should be reported
+ */
 Entity * Entity::getReportDestination(){
 return 0;
 }
+
+
+
 /** prints  report for Entity (stats, posessions, private events) */
-void Entity::report(FactionEntity * faction, ostream &out){
+void Entity::report(FactionEntity * faction, ReportPrinter &out){
  out  << printName()<<endl;
 // Stats
 // Posessions
  reportEvents(out);
 }
+
+
+
 /** prints list of events related to this Entity */
-void Entity::reportEvents(ostream &out)
+void Entity::reportEvents(ReportPrinter &out)
 {
+    out.incr_indent();
    vector<ReportElement *>::iterator iter;
   for ( iter = collectedReports_.begin(); iter != collectedReports_.end(); iter++)
     {
-		out << "    "; (*iter)->print(out);
+		 (*iter)->print(out);
 	}
+    out.decr_indent();
 }
+
+
+
 /** Transforms public reports into collected reports and cleans all unused public reports. */
 void Entity::finalizeReports()
 {
@@ -478,6 +512,9 @@ void Entity::finalizeReports()
 							(new ReportElement((*iter1)->reportMessage,this));
 		}
 }
+
+
+
 /** cleans all unused public reports. */
 void Entity::cleanReports()
 {
@@ -490,16 +527,26 @@ void Entity::cleanReports()
 }
 
 
+
 bool      Entity::defaultAction()
 {
   return false;
 }
 
 
+
 bool Entity::mayInterract(UnitEntity * unit)
 {
         return false;
 }
+
+
+
+bool Entity::mayInterractPhysicalEntity(PhysicalEntity * tokenEntity)
+{
+        return false;
+}
+
 
 
 void Entity::clearTeachingOffers()
@@ -509,11 +556,15 @@ void Entity::clearTeachingOffers()
 }
 
 
+
 void Entity::addTeachingOffer(TeachingOffer * offer)
 {
  teachingOffers_.push_back(offer);
 // cout <<*offer << " added to "<< *this<<endl;
 }
+
+
+
 int Entity::getSkillLevel(SkillRule  * const skill)
 {
 //	SkillIterator iter;
@@ -526,6 +577,9 @@ int Entity::getSkillLevel(SkillRule  * const skill)
 //		}
   return 0;
 }
+
+
+
 TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
 {
   vector <TeachingOffer  *>::iterator iter;
@@ -538,6 +592,9 @@ TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
     }
  return 0;
 }
+
+
+
 bool Entity::checkTeachingConfirmation()
 {
   vector <TeachingOffer  *>::iterator iter;
@@ -549,12 +606,15 @@ bool Entity::checkTeachingConfirmation()
   cout << "ERROR."<< printName() <<" Can't find his own teachingOffers\n";
   return false;
 }
+
 /** How many seats occupies this entity in the class. Number of entities that can be tought by one teacher determined by this value. */
 
 int Entity::getLearningCapacity()
 {
   return 10000; // very big. can't study
 }
+
+
 
 bool Entity::teacherRequired(SkillRule * skill) 
 {

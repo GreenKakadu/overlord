@@ -8,7 +8,6 @@
 #include "WithdrawOrder.h"
 #include "Reporter.h"
 #include "StringData.h"
-#include "ItemElementData.h"
 #include "TertiaryPattern.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
@@ -20,11 +19,12 @@
 #include "RulesCollection.h"
 #include "TerrainRule.h"
 #include "ItemRule.h"
+#include "ItemElement.h"
 #include "IntegerData.h"
 #include "StringData.h"
 const UINT WithdrawOrder:: WITHDRAW_RESTRICTED_REPORT_FLAG= 0x01;
 
-extern RulesCollection <TerrainRule>   terrains;
+//extern RulesCollection <TerrainRule>   terrains;
 extern RulesCollection    <ItemRule>     items;
 
 extern Reporter * withdrawInvalidReporter; 
@@ -34,9 +34,12 @@ extern Reporter * withdrawUnitReporter;
 extern Reporter * withdrawFactionReporter;
 extern Reporter * withdrawFundEmptyReporter;
 
+//WithdrawOrder instantiateWithdrawOrder;
+WithdrawOrder * instantiateWithdrawOrder = new WithdrawOrder();
 
 WithdrawOrder::WithdrawOrder(){
   keyword_ = "withdraw";
+  registerOrder_();
   description = string("WITHDRAW  amount [item]\n") +
  string( "Immediate.  This order executes automatically if you are in a city location.\n") +
   "It withdraws as many coins (or items if specified) as possible from your faction funds, up to the\n" +
@@ -46,7 +49,11 @@ WithdrawOrder::WithdrawOrder(){
   "Withdrawing is not mandatory; any time a unit in a city requires coins for\n" +
   "an action, it will withdraw automatically from the faction funds to cover\n" +
   "any lack of coins.\n";
-  } 
+  orderType_   = IMMEDIATE_ORDER;
+  mayInterrupt_ = true;
+} 
+
+
 
 STATUS
 WithdrawOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
@@ -61,17 +68,22 @@ WithdrawOrder::loadParameters(Parser * parser, vector <AbstractData *>  &paramet
                                 new StringData(" integer ")));
         return IO_ERROR;
       }
-  parseOptionalGameDataParameter(entity, parser, items, "item tag", parameters);
+  parseOptionalGameDataParameter(entity, parser, items, parameters);
   return OK;
 
 }
+
+
+
 ORDER_STATUS
-WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
+  Order * orderId = unit->getCurrentOrder();
 // May withdraw only in city (or bank)
-   if(unit->getLocation()->getTerrain() != terrains["city"])
+//   if(unit->getLocation()->getTerrain() != terrains["city"])
+   if(unit->getLocation()->getTerrain() != terrains.findByTag("city",false))
    {
      if(!orderId->getReportingFlag(WITHDRAW_RESTRICTED_REPORT_FLAG ))
       {
@@ -112,8 +124,9 @@ WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters, O
       return INVALID;
       }
     unit->addToInventory(item,realAmount);
-        unit->addReport(new UnaryPattern(withdrawUnitReporter, new ItemElementData(item, realAmount)));
-        unit->getFaction()->addReport(new BinaryPattern(withdrawFactionReporter, new ItemElementData(item, realAmount), unit));
+//QQQ
+        unit->addReport(new UnaryPattern(withdrawUnitReporter, new ItemElement(item, realAmount)));
+        unit->getFaction()->addReport(new BinaryPattern(withdrawFactionReporter, new ItemElement(item, realAmount), unit));
     if( amount > realAmount)
       {
         unit->getFaction()->addReport(new UnaryPattern(withdrawFundEmptyReporter, item));

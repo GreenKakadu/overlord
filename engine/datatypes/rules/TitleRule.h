@@ -11,68 +11,61 @@
 #define TITLE_H
 #include "Rule.h"
 #include "GameData.h"
-//#include "Skill.h"
+class LocationEntity;
+class UnitEntity;
+class SkillCondition;
+class SkillLevelElement;
+class BonusElement;
 
 class TitleRule : public Rule
 {
     public:
-      TitleRule (const string & keyword, GameData * parent );
+      TitleRule (const string & keyword, GameData * parent ): Rule(keyword, parent){}
 			TitleRule (const TitleRule * prototype );
-
-      //   Skill*      getSkill()        const;
-      int         getCost()          const;
-      int         getControl()       const;
-      int         getType()          const;
-      int         getRange()         const;
-      
-      //        void setSkill       ( Skill *skill);
-      void setCost        ( int cost);
-      void setControl     ( int control);
-      void setType        ( int type);
-      void setRange       ( int range);
-      virtual STATUS initialize      ( Parser *parser);
-      
+      void       printDescription(ReportPrinter & out);
+      virtual    STATUS initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
-      void print();
+
+      int  getCost()    const  {  return cost_;}
+      int  getControl() const  {  return control_;}
+      int  getType()    const  {  return type_;}
+      int  getRange()   const  {  return range_;}
+      void  setCost        ( int cost)      {  cost_=cost;}
+      void  setControl     ( int control) {  control_=control;}
+      void  setType        ( int type)      {  type_=type;}
+      void  setRange       ( int range)    {  range_=range;}
+      inline SkillCondition *    getClaimingCondition()      const     {return condition_;}
+
+      void extractKnowledge (Entity * recipient, int parameter = 0);
+      SkillLevelElement * getLearningLevelBonus() {return learningLevelBonus_;}
+      BonusElement *      getStudyBonus() {return studyBonus_;}
+      virtual bool contest(UnitEntity *  titleHolder, UnitEntity * contender,
+                                          LocationEntity * location);
+      AbstractData * getContestCriteria(UnitEntity * unit);                                    
+      virtual void activateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
+      virtual void desactivateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
+      int markTerritoryOwned(LocationEntity * start,
+                  UnitEntity * titleHolder, int distance );
     protected:
-      //   Skill  *skill_;             // reference to skill  needed posses this title
    int cost_;                  //cost to challenge for the title
    int control_;               //number of control points title added to faction
    int type_;                  //There are type 0 through type 3.
    int range_;                 //the number of hexes dominated by this title
-
+   SkillCondition *  condition_;
+   SkillLevelElement *  learningLevelBonus_;
+   BonusElement * studyBonus_;
    private:
 };
+extern TitleRule      sampleTitle;
 
-
-class MinorTitleRule : public TitleRule
+class MerchantPrinceTitleRule : public TitleRule
 {
 public:
-   MinorTitleRule (const string & keyword, GameData * parent ) : TitleRule(keyword, parent){}
-   MinorTitleRule (const MinorTitleRule * prototype  ): TitleRule(prototype){}
+   MerchantPrinceTitleRule (const string & keyword, GameData * parent ) : TitleRule(keyword, parent){}
+   MerchantPrinceTitleRule (const MerchantPrinceTitleRule * prototype  ): TitleRule(prototype){}
    GameData * createInstanceOfSelf();
-private:
-};
-
-
-
-class MajorTitleRule : public TitleRule
-{
-public:
-   MajorTitleRule (const string & keyword, GameData * parent ) : TitleRule(keyword, parent){}
-   MajorTitleRule (const MajorTitleRule * prototype   ): TitleRule(prototype){}
-   GameData * createInstanceOfSelf();
-private:
-};
-
-
-
-class StandardTitleRule : public TitleRule
-{
-public:
-   StandardTitleRule (const string & keyword, GameData * parent ) : TitleRule(keyword, parent){}
-   StandardTitleRule (const StandardTitleRule  * prototype   ) : TitleRule(prototype){}
-   GameData * createInstanceOfSelf();
+   void activateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
+   void desactivateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
 private:
 };
 
@@ -84,8 +77,13 @@ public:
    OverlordTitleRule (const string & keyword, GameData * parent ) : TitleRule(keyword, parent){}
    OverlordTitleRule (const OverlordTitleRule * prototype   ) : TitleRule(prototype){}
    GameData * createInstanceOfSelf();
-   void print();
+   bool contest(UnitEntity *  titleHolder, UnitEntity * contender,
+                                          LocationEntity * location);
+   void activateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
+   void desactivateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
 private:
 };
+#include "RulesCollection.h"
+extern RulesCollection <TitleRule>     titles;
 
 #endif

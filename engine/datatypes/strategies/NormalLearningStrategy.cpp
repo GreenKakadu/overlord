@@ -6,16 +6,24 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "NormalLearningStrategy.h"
+
+NormalLearningStrategy::NormalLearningStrategy( const NormalLearningStrategy * prototype ):
+           BasicLearningStrategy(prototype)
+{
+  name_ = "creature skill";
+}
+
+
+
 GameData * NormalLearningStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<NormalLearningStrategy> (this);
 }
+
+
+
 STATUS
 NormalLearningStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("SPECIALIST") )
-    {
-      return OK;
-    }
-      return OK;
+      return BasicLearningStrategy::initialize(parser);
 }

@@ -10,10 +10,13 @@
 #include "TestOrder.h"
 #include "UnaryPattern.h"
 
+//TestOrder instantiateTestOrder;
+TestOrder * instantiateTestOrder = new TestOrder();
 
 TestOrder::TestOrder()
 {
   keyword_ = "test";
+  registerOrder_();
   description = "TEST <result> [0,1,2] \n";
   orderType_   = IMMEDIATE_ORDER;
 // All reporters should be created here
@@ -24,10 +27,13 @@ TestOrder::TestOrder()
 	failureReporter_ = new Reporter("Test Failure for ","");
 }
 
+
+
 TestOrder::~TestOrder()
 {
 cout << "TEST Order prototype deleted" <<endl;
 }
+
 
 
 STATUS
@@ -36,11 +42,15 @@ TestOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters,
   parseIntegerParameter(parser, parameters);
   return OK;
 }
+
+
+
 ORDER_STATUS
-TestOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+TestOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
 //  if ( !processingMode-> mayExecute(orderType_))
 //		return FAILURE;
+  Order * orderId = entity->getCurrentOrder();
 
   entity_ =  entity;
   IntegerData * par1       =  dynamic_cast<IntegerData *>(parameters[0]);

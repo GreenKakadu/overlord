@@ -19,10 +19,11 @@ class MagicLearningStrategy : public BasicLearningStrategy  {
 public: 
 	MagicLearningStrategy( const string & keyword, GameData * parent):
                                          BasicLearningStrategy(keyword, parent){}
-  MagicLearningStrategy( const MagicLearningStrategy * prototype ): BasicLearningStrategy(prototype){}                                       
+  MagicLearningStrategy( const MagicLearningStrategy * prototype );                                      
 	~MagicLearningStrategy(){}
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
 };
+extern MagicLearningStrategy    sampleMagicLearning;
 
 #endif

@@ -1,144 +1,24 @@
 # Overlord Building definitions
-# Ver 0.21 31.03.2003
+# Ver 0.24 01.09.2003
 
-KEYWORD TERRAIN
+KEYWORD BUILDING
 
-BUILDING mgld
-NAME mage's guild
-TYPE 2
-RESOURCE evtblco 1
-RESOURCE evtblks 10
-RESOURCE evtblst 300
-RESOURCE evtblwd 50
-FX 25
+BUILDING B1
+NAME New Market
+CONSTRUCTION mrkt
+ORDER @TEACH rela U122
+SKILL rela 30000
+TRACED
 
-BUILDING mrkt
-NAME marketplace
-TYPE 2
-RESOURCE evtblst 50
-RESOURCE evtblwd 50
+BUILDING B2
+NAME  Fishing Eagle
+CONSTRUCTION fshi
+OWNER f001
+TRACED
 
-BUILDING guld
-NAME guild hall
-TYPE 2
-RESOURCE evtblst 20
-RESOURCE evtblwd 80
-FX 23
+BUILDING B3
+NAME  Eagle Fort
+CONSTRUCTION fort
+RESOURCE stonwk 1
+OWNER f001
 
-BUILDING bank
-NAME bank
-TYPE 2
-RESOURCE evtblwd 50
-RESOURCE evtblst 50
-RESOURCE evtblks 50
-RESOURCE evtblir 25
-RESOURCE evtbldc 5
-
-BUILDING tave
-NAME tavern
-TYPE 2
-RESOURCE evtblwd 75
-RESOURCE evtblst 25
-FX 27
-
-BUILDING taxo
-NAME tax office
-TYPE 2
-RESOURCE evtblwd 30
-RESOURCE evtblst 30
-RESOURCE evtblks 15
-RESOURCE evtbltx 1
-
-BUILDING mine
-NAME mine
-TYPE 2
-RESOURCE evtblwd 75
-FX 10
-
-BUILDING fsry
-NAME fishery
-TYPE 2
-RESOURCE evtblwd 50
-RESOURCE evtblst 25
-TOKEN fish
-FX 18
-
-BUILDING farm
-NAME farm
-TYPE 2
-RESOURCE evtblwd 90
-FX 49
-
-BUILDING dock
-NAME docks
-TYPE 2
-RESOURCE evtblwd 100
-RESOURCE evtblst 100
-
-BUILDING barr
-NAME barracks
-TYPE 2
-RESOURCE evtblwd 100
-RESOURCE evtblst 50
-FX 24
-
-BUILDING gtow
-NAME guard tower
-TYPE 2
-RESOURCE evtblir 10
-RESOURCE evtblmi 50
-RESOURCE evtblst 50
-RESOURCE evtblwd 40
-DEFENSE 3
-INITIATIVE -1
-
-BUILDING fort
-NAME fortress
-TYPE 2
-RESOURCE evtblir 50
-RESOURCE evtblmi 150
-RESOURCE evtblst 150
-RESOURCE evtblwd 100
-
-BUILDING cast
-NAME castle
-TYPE 1
-OPTIMA 150
-RESOURCE evtblir 90
-RESOURCE evtblks 10
-RESOURCE evtblmi 250
-RESOURCE evtblst 250
-RESOURCE evtblwd 150
-
-BUILDING mcir
-NAME mage circle
-TYPE 2
-RESOURCE evtmcir 1
-
-BUILDING tent
-NAME tent
-TYPE 2
-RESOURCE evtblhi 15
-RESOURCE evtblwd 15
-FX 26
-
-BUILDING ceme
-NAME cemetary
-TYPE 2
-FX 64
-RESOURCE evtblwd 50
-RESOURCE evtblst 50
-
-BUILDING wall
-NAME protecting wall
-TYPE 2
-RESOURCE evtblwl 1
-RESOURCE evtblmi 100
-RESOURCE evtblks 100
-
-BUILDING pfrm
-NAME tree platforms
-TYPE 2
-RESOURCE evtblpf 1
-RESOURCE evtblhi 100
-RESOURCE evtblwd 200

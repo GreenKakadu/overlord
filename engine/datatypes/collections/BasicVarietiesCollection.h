@@ -24,8 +24,8 @@ class BasicVarietiesCollection : public BasicCollection{
 public:
 	  BasicVarietiesCollection(DataStorageHandler * handler):BasicCollection(handler){}
   virtual ~BasicVarietiesCollection();
-	        GameData* findByTag        (const string &tag);
-	        GameData* findByIndex      (const long int index);
+	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+	        GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
           void          add          (GameData * /*const*/ newVariety)   ;
           bool          isValidTag   (const string &tag)  ;//const;
           long int       getIndex     (const string &tag)  ;

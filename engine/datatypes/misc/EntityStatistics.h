@@ -54,6 +54,7 @@ public:
         void addStats(EntityStatistics * stats);
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
         void clearStats();
+        bool empty();
 protected:
 	int initiative_;
 	int melee_;
@@ -67,7 +68,8 @@ protected:
 	int controlPoints_;
 	int stealth_;
 	int observation_;
-	
+	void printThisStat_(int thisStat, const char * name, bool & isFirst, ostream &out);
 };
+
 
 #endif

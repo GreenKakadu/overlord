@@ -14,10 +14,12 @@
 class ExplicitExit : public BasicExit  {
 public: 
 	ExplicitExit(){}
-	ExplicitExit(DirectionVariety * dir, LocationEntity * dest, MovementMode <int> standardTravelTime);
+	ExplicitExit(LocationEntity * origin, DirectionVariety * dir,
+              LocationEntity * dest, MovementMode <int> standardTravelTime);
 	~ExplicitExit(){}
    void save(ostream & out);
    void print();
+  int getTravelTime(MovementVariety * mode);
     protected:
     MovementMode <int> standardTravelTime_;
 };

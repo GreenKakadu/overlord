@@ -5,17 +5,20 @@
     copyright            : (C) 2001 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
+#include <algorithm>
+#include "IntegerData.h"
 #include "TitleRule.h"
-#include "PrototypeManager.h"
-
-
-TitleRule::TitleRule(const string & keyword, GameData* parent) : Rule(keyword, parent)
-{
-    name_    = "Sample";
-    keyword_   = keyword;
-    parent_   = parent;
-  prototypeManager->addToRegistry(this);
-}
+#include "SkillCondition.h"
+#include "UnitEntity.h"
+#include "LocationEntity.h"
+#include "SkillLevelElement.h"
+#include "BonusElement.h"
+#include "QuintenaryPattern.h"
+//TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
+//MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("MINOR", &sampleTitle);
+//OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
+extern Reporter * failedContestTitleReporter;
+extern Reporter * successContestTitleReporter;
 
 TitleRule::TitleRule(const TitleRule * prototype) : Rule(prototype)
 {
@@ -23,6 +26,8 @@ TitleRule::TitleRule(const TitleRule * prototype) : Rule(prototype)
     control_ = 0;
     type_    = 0;
     range_   = 0;
+    condition_ = 0;
+    learningLevelBonus_ = 0;
 }
 
 
@@ -51,13 +56,8 @@ TitleRule::initialize        ( Parser *parser)
     }
   if (parser->matchKeyword ("SKILL") )
     {
-      //            setSkill(skills[ parser->getWord()]);
-      
-      return OK;
-    }
-  if (parser->matchKeyword ("LEVEL") )
-    {
-      //  setSkill( getSkills()->matchLevel( parser->getInteger() ) );
+      condition_ = new SkillCondition(sampleSkillCondition);
+      condition_->initialize(parser);
       return OK;
     }
   if ( parser->matchKeyword ("COST") )
@@ -75,6 +75,16 @@ TitleRule::initialize        ( Parser *parser)
       setType( parser->getInteger() );
       return OK;
     }
+  if ( parser->matchKeyword ("LEARNING_LEVEL_BONUS") )
+    {
+      learningLevelBonus_ = SkillLevelElement::readElement(parser);
+      return OK;
+    }
+  if ( parser->matchKeyword ("STUDY_BONUS") )
+    {
+      studyBonus_ = BonusElement::readElement(parser);
+      return OK;
+    }
   if ( parser->matchKeyword ("RANGE") )
     {
       setRange( parser->getInteger() );
@@ -86,127 +96,225 @@ TitleRule::initialize        ( Parser *parser)
 
 
 
-// Skill* 
-// TitleRule::getSkill() const  
-//  {
-//    return skill_;
-//  }
-
-void TitleRule::print()
+void TitleRule::printDescription(ReportPrinter & out)
 {
-    cout  << getName();
-    cout << " [" << getTag()  << "] ";
-    cout << " Type:" << getType();
-    cout << " Cost:" << getCost();
-    cout << " Control:" << getControl();
-    cout << " Range:" << getRange()<< endl;
-      
+   out << printName()<< ": "<< getDescription()<<". ";
+    
+   if(range_)   out << "Range "<< range_ <<" days of walking. ";
+   if(cost_)    out << "Costs $"<< cost_ <<". ";
+   
+   if(learningLevelBonus_)
+        out << "Allows owner to learn " << learningLevelBonus_->getLevel()
+            <<" additional levels of all skills derived from "
+            << learningLevelBonus_->getSkill() << " without a teacher. ";
+
+    if(studyBonus_)
+        out << "Allows owner to learn all skills derived from "
+            << studyBonus_->getSkill() << " "<< studyBonus_->getBonusPoints()
+            << "% faster.";
+}
+
+
+bool TitleRule::contest(UnitEntity * titleHolder, UnitEntity * contender,
+                                                LocationEntity * location)
+{
+  SkillRule * skill = condition_->getSkill();
+  int skillExp1 = titleHolder->getSkillPoints(skill) /100;
+  int skillExp2 = contender->getSkillPoints(skill) /100;
+  bool contestResult;
+
+
+ if(titleHolder->getLocation() != location)
+ {
+   contestResult = (skillExp2 *100 / skillExp1 >= 90);
+  }
+ else
+ {
+   contestResult = (skillExp2 *100 / skillExp1 > 110);
+  }
+
+  if(contestResult)
+  {
+  contender->addReport(new QuintenaryPattern(successContestTitleReporter,contender, titleHolder,
+        new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
+  titleHolder->addReport(new QuintenaryPattern(failedContestTitleReporter, titleHolder,contender,
+                      new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+  }
+  else
+  {
+  contender->addReport(new QuintenaryPattern(failedContestTitleReporter,contender, titleHolder,
+        new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
+  titleHolder->addReport(new QuintenaryPattern(successContestTitleReporter, titleHolder,contender,
+                      new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+  }
+  
+  return  contestResult;
 }
 
 
 
-int 
-TitleRule::getCost()    const  
+AbstractData * TitleRule::getContestCriteria(UnitEntity * unit)
 {
-  return cost_;
+//QQQ
+   if(condition_ == 0)
+    return (new AbstractData());
+
+  return  unit->getSkillElement(condition_->getSkill());
 }
 
 
 
-int 
-TitleRule::getControl() const  
+void TitleRule::activateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
 {
-  return control_;
+ if(range_)
+  markTerritoryOwned(location,titleHolder,range_);
 }
 
 
 
-int 
-TitleRule::getType()    const  
+void TitleRule::desactivateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
 {
-  return type_;
+ if(range_)
+  markTerritoryOwned(location,0,range_);
 }
 
 
 
-int 
-TitleRule::getRange()   const  
+int TitleRule::markTerritoryOwned(LocationEntity * start, UnitEntity * titleHolder, int distance )
 {
-  return range_;
+  int counter = 0;
+  LocationEntity * current = start;
+  vector <LocationEntity *> examinedLocations;
+  int currentDistance  = 0;
+  vector <LocationEntity *> openList;
+  FactionEntity * owner;
+  if(titleHolder)
+    owner = titleHolder->getFaction();
+  else
+     owner = 0;
+
+  current->markClosed();
+  current->setDistance(0);
+  examinedLocations.push_back(current);
+  
+  while(current->getDistance() <= distance)
+  {
+    current->setOwner(owner);
+    counter++;
+    current->examineNeighboringLocations(currentDistance, openList,
+                                examinedLocations);
+
+//    std::nth_element(openList.begin(),openList.begin(),openList.end(),betterDistance);
+    std::sort(openList.begin(),openList.end(),betterDistance);
+
+   if(openList.empty())
+   {
+            break;
+   }
+   current = *(openList.begin());
+   openList.erase(openList.begin());
+
+   currentDistance  = current->getDistance();
+   current->markClosed();
+  } // end of while loop
+
+ openList.clear();
+
+ for(vector <LocationEntity *>::iterator iter = examinedLocations.begin();
+                  iter != examinedLocations.end(); ++iter)
+ {
+   (*iter)->clearClosed();
+   (*iter)->setDistance(0);
+ }
+
+ examinedLocations.clear();
+
+ return counter;
+
 }
 
 
 
-
-
-void 
-TitleRule::setCost        ( int cost)      
+void    TitleRule::extractKnowledge (Entity * recipient, int parameter)
 {
-  cost_=cost;
+  if(condition_)
+    condition_->extractKnowledge(recipient);
+    
+  if(learningLevelBonus_)
+  {
+    if(recipient->addSkillKnowledge(learningLevelBonus_->getSkill(), 1))
+      learningLevelBonus_->getSkill()->extractKnowledge(recipient,1);
+  }
+
+  if(studyBonus_)
+  {
+    if(recipient->addSkillKnowledge(studyBonus_->getSkill() , 1))
+      studyBonus_->getSkill()->extractKnowledge(recipient,1);
+  }
 }
-
-
-
-void 
-TitleRule::setControl     ( int control) 
-{
-  control_=control;
-}
-
-
-
-void 
-TitleRule::setType        ( int type)      
-{
-  type_=type;
-}
-
-
-
-void 
-TitleRule::setRange       ( int range)    
-{
-  range_=range;
-}
-
-
-
-
-// void 
-// TitleRule::setSkill( Skill *skill)
-// {
-//   skill_=skill;
-// }
-
-
-void OverlordTitleRule::print()
-{
-    cout  << getName();
-    cout << " [" << getTag()  << "] ";
-    cout << " Type:" << getType();
-    cout << " Cost:" << getCost();
-    cout << " Control:" << getControl();
-    cout << " Range:" << getRange()<< " <-- This is Overlord (Polymorphism test)"<<endl;
-
-}
-
+//============================================================
+//============================================================
+//============================================================
+//============================================================
+//============================================================
+//============================================================
 GameData* OverlordTitleRule::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<OverlordTitleRule> (this);
 }
 
-GameData* StandardTitleRule::createInstanceOfSelf()
+
+
+bool OverlordTitleRule::contest(UnitEntity * titleHolder, UnitEntity * contender,
+                                                LocationEntity * location)
 {
-  return CREATE_INSTANCE<StandardTitleRule> (this);
+   // Battle
+   // report contest
+   return false;
 }
 
-GameData* MajorTitleRule::createInstanceOfSelf()
+
+
+void OverlordTitleRule::activateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
 {
-  return CREATE_INSTANCE<MajorTitleRule> (this);
+ if(range_)
+  markTerritoryOwned(location,titleHolder,range_);
+
 }
 
-GameData* MinorTitleRule::createInstanceOfSelf()
+
+
+void OverlordTitleRule::desactivateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
 {
-  return CREATE_INSTANCE<MinorTitleRule> (this);
+ if(range_)
+  markTerritoryOwned(location,titleHolder,range_);
+ // set NPC1 hostile
+
 }
 
+
+
+GameData* MerchantPrinceTitleRule::createInstanceOfSelf()
+{
+  return CREATE_INSTANCE<MerchantPrinceTitleRule> (this);
+}
+
+
+
+void MerchantPrinceTitleRule::activateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
+{
+  location->setMarketPrince(titleHolder);
+}
+
+
+
+void MerchantPrinceTitleRule::desactivateClaimingEffects(UnitEntity * titleHolder,
+                                        LocationEntity * location)
+{
+  location->setMarketPrince(0);
+}

@@ -6,7 +6,6 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "HarvestUsingStrategy.h"
-#include "ItemElement.h"
 #include "ItemRule.h"
 #include "LocationEntity.h"
 #include "UnitEntity.h"
@@ -14,6 +13,8 @@
 #include "RulesCollection.h"
 #include "ToolUseElement.h"
 #include "BinaryPattern.h"
+#include "ConstructionEntity.h"
+
 extern Reporter * notAvailableReporter;
 
 
@@ -24,6 +25,8 @@ GameData * HarvestUsingStrategy::createInstanceOfSelf()
   return CREATE_INSTANCE<HarvestUsingStrategy> (this);
 }
 
+
+
 STATUS
 HarvestUsingStrategy::initialize        ( Parser *parser )
 {
@@ -31,7 +34,6 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
     {
       resourceConsumed_ = items[parser->getWord()];
       harvest_  = parser->getInteger();
-//      harvest_ =  ItemElement::readElement(parser);
       return OK;
     }
   if (parser->matchKeyword ("PRODUCES") )
@@ -61,21 +63,28 @@ Rational HarvestUsingStrategy::getDailyProduction()
 
 
 
-bool HarvestUsingStrategy::use(UnitEntity * unit, Order * OrderId)
+USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
 {
   Rational request = getDailyProduction() * unit->getFiguresNumber();
   if( request.isEmpty())
   {
 //    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
-    return false;
+    return CANNOT_USE;
   }
   vector <ToolUseElement *>::iterator iter;
   for(iter = tools_.begin(); iter != tools_.end();iter++)
   {
     request = request + request * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-    }
-  unit->getLocation()->addDailyConflictRequest(new ResourceCompetitiveRequest(unit,OrderId,getHarvestedResource(), request));
-  return true;
+  }
+
+  ConstructionEntity * containingConstruction = unit->getContainingConstruction();
+  if(containingConstruction)
+  {    
+    containingConstruction->setProductionBonus(getHarvestedResource(), skill,unit->getSkillLevel(skill));
+  }
+      
+  unit->getLocation()->addDailyConflictRequest(new ResourceCompetitiveRequest(unit,unit->getCurrentOrder(),getHarvestedResource(), request));
+  return USING_COMPLETED;
 }
 
 
@@ -106,7 +115,7 @@ void    HarvestUsingStrategy::extractKnowledge (Entity * recipient, int paramete
 
 
 
-USING_RESULT HarvestUsingStrategy::mayUse(UnitEntity * unit, SkillRule * skill)
+USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {
   Rational request = getDailyProduction();
   if( !harvest_)
@@ -117,8 +126,28 @@ USING_RESULT HarvestUsingStrategy::mayUse(UnitEntity * unit, SkillRule * skill)
   return  USING_OK;
 }
 
-void HarvestUsingStrategy::reportUse(USING_RESULT result, UnitEntity * unit, Order * OrderId)
-{
-    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
 
+
+void HarvestUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
+{
+    tokenEntity->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,tokenEntity->getLocation()));
+
+}
+
+
+
+void HarvestUsingStrategy::printSkillDescription(ostream & out)
+{
+
+ if(!resourceHarvested_)
+    return;
+ else
+
+ out << " Use produces: " << harvest_<<" ";
+ if(harvest_ > 1)
+  out << resourceHarvested_->getPluralName()<< " " << resourceHarvested_->printTag();
+ else
+  out << resourceHarvested_->printName();
+
+  out<<" in "<< days_ <<" days.";
 }

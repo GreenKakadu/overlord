@@ -6,17 +6,31 @@
     copyright            : (C) 2002 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
+#include <algorithm>
 #include "GameData.h"
 #include "ProcessingMode.h"
 #include "PrototypeManager.h"
- /** Used only for creation of sample objects for use in PrototypeManager  */
+GameData       sampleGameData("GameData",0);
+
+
+
+/** Used only for creation of sample objects for use in PrototypeManager  */
 GameData::GameData (const string & keyword, GameData * parent)
 {
   keyword_= keyword; 
   parent_ = parent;
-//	cout << keyword<< " created"<<endl;
+  name_ = keyword;
+  transform (name_.begin() + 1, name_.end(),
+             name_.begin() + 1, (int(*)(int))tolower);
+//	cout << keyword<< " created"<<endl; // Debugging print
+  if( prototypeManager == 0)
+  {
+	  cout << "Prototype Manager created on "<< keyword<< " call"<<endl;
+    prototypeManager = new PrototypeManager;
+  }
   prototypeManager->addToRegistry(this); 
 }
+
 
 
 /** Used in the cloning of new objects  */
@@ -28,48 +42,19 @@ GameData::GameData(const GameData * prototype)
       keyword_ = prototype->getKeyword();
 }
 
-/** Used for checking in downcasts*/
-/** Returns pointer to current object if it is descedant from the object */
-/** identified by keyword and 0 otherwise*/
-//GameData *
-//GameData::checkObjectType( const string  &keyword)
-//{
-////  cout << "checking object type of "<< keyword<<endl;
-//  if ( keyword == getKeyword() )
-//    return this;
-//  GameData * currentParent = getParent();
-//
-//  while (currentParent)
-//    {
-//      if ( currentParent  -> getKeyword() == keyword )
-//	return this;
-//      else
-//	currentParent = currentParent -> getParent();
-//    }
-//    return 0;
-//}
+
+
+
 /** Produces a clone of sample object */
 GameData *
 GameData::createInstanceOfSelf ( )
 {
   return CREATE_INSTANCE<GameData> (this);
 }
-
-
-string 
-GameData::getKeyword() const   
-{
- return keyword_;
-}
-
-GameData *
-GameData::getParent()       const
-{
-  return parent_;
-}
-
  
 
+
+/** initialization  with saved object data */
 STATUS
 GameData::initialize        ( Parser *parser )
 {
@@ -88,6 +73,7 @@ GameData::initialize        ( Parser *parser )
 
 
 
+/**  saving object data */
 void
 GameData::save(ostream &out)
 {
@@ -99,6 +85,7 @@ GameData::save(ostream &out)
 
 
 
+/** Equivalence: objects are equal if their tags are equal */
 bool GameData::operator ==  (GameData data2)
 {
   return this->tag_ == data2.getTag();
@@ -106,12 +93,13 @@ bool GameData::operator ==  (GameData data2)
 
 
 
+/** Creation of object of type specified by keyword  */
 GameData * GameData::createByKeyword(const string &keyword)
 {
  GameData * temp =  prototypeManager->findInRegistry(keyword);
 	if(temp == 0)
 	{
-		cout << "Unknown polymorphic persistent object " << keyword  << endl;
+		cout << "Unknown polymorphic persistent object [" << keyword  <<"]"<< endl;
 		return 0;
 	}
 	else
@@ -119,10 +107,34 @@ GameData * GameData::createByKeyword(const string &keyword)
  		return temp ->createInstanceOfSelf ();
  	}
 }
- /** Checks data consistency */
+
+
+
+/** Checks data consistency */
 STATUS GameData::dataConsistencyCheck(){
 return OK;
 }
 
 
+/** Used for determining place of current object in object hierarchy*/
+/** Checks current object if it is descedant from the object */
+
+
+     bool GameData::isDescendantFrom  (GameData * object)
+{
+  string keyword = object->getKeyword();
+//  cout << "checking object type of "<< keyword<<endl;
+  if ( keyword == getKeyword() )
+    return true;
+  GameData * currentParent = getParent();
+
+  while (currentParent)
+    {
+      if ( currentParent  -> getKeyword() == keyword )
+	return true;
+      else
+	currentParent = currentParent -> getParent();
+    }
+    return false;
+}
 

@@ -24,6 +24,7 @@ public:
   inline int  getValue() const {return value_;}
   inline void setValue(int num)  {value_ = num;}
   void saveAsParameter (ostream &out);
+  inline void clean(){delete this;}
   protected:
   int value_;
   

@@ -23,8 +23,12 @@
 #include "MarketRequest.h"
 extern Reporter * cantTradeReporter;
 
+//BuyOrder instantiateBuyOrder;
+BuyOrder * instantiateBuyOrder = new BuyOrder();
+
 BuyOrder::BuyOrder(){
    keyword_ = "buy";
+  registerOrder_();
   description = string("BUY number item-tag [price] \n") +
   "Immediate, leader-only.  This order executes when a unit has at least the\n" +
   "amount of cash required, and the local market offers at least the specified\n" +
@@ -41,6 +45,8 @@ BuyOrder::BuyOrder(){
 
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
 
 STATUS BuyOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
@@ -63,7 +69,7 @@ STATUS BuyOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -89,7 +95,7 @@ ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &param
  	  return INVALID;
   }
   unit->expose(true);
-  unit->getLocation()->addMarketRequest(new MarketRequest(unit,orderId, amount,item,price,BUY));
+  unit->getLocation()->addMarketRequest(new MarketRequest(unit, unit->getCurrentOrder(), amount,item,price,BUY));
   
   return IN_PROGRESS;
 }
@@ -98,7 +104,7 @@ ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &param
 
 
 ORDER_STATUS
-BuyOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId, int result)
+BuyOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -109,12 +115,12 @@ BuyOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &paramet
   if ( amount > result)
   {
     par0->setValue(amount - result);
-    entity->updateOrderResults(FAILURE,orderId);
+    entity->updateOrderResults(FAILURE);
 //  cout << "Saving order for "<< unit->printName() <<"=[ ";
 //  orderId->save(cout);
     return FAILURE;
   }
-  entity->updateOrderResults(SUCCESS,orderId);
+  entity->updateOrderResults(SUCCESS);
 //  cout << "Order completed for "<< unit->printName() <<".\n";
   return SUCCESS;
 }

@@ -14,70 +14,44 @@
 #include "TertiaryPattern.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidOrderReporter;
 extern Reporter *	invalidParameterReporter;
 extern Reporter *	missingParameterReporter;
 extern Reporter * acceptOwnReporter;
-extern Reporter *	acceptReporter;
+extern Reporter *	acceptReporter; 
+
+AcceptOrder * instantiateAcceptOrder = new AcceptOrder();
 
 AcceptOrder::AcceptOrder(){
   keyword_ = "accept";
+  registerOrder_();
   description = string("ACCEPT [unit-id] \n") +
   "Immediate, special.  This order executes when the designated unit attempts to\n" +
   "STACK itself under your leadership.  The unit is allowed to do so, regardless\n" +
   "of the stance toward its faction.\n";
 
   orderType_   = IMMEDIATE_ORDER;
+  mayInterrupt_ = true;
 }
 
 STATUS AcceptOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-  UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-  if(unit==0)  // Wrong Entity type
-				{
-					cout  << "=<>= ACCEPT: order is available only for units "
-								<< entity->printName() << endl;
-         entity->addReport(new BinaryPattern(invalidOrderReporter, new StringData(keyword_), new StringData("units")));
-         return IO_ERROR;
-				}
-  string followerTag = parser->getWord();
-  if (followerTag.size() == 0)  // Missing parameter
-        {
-					cout  << "=<>= ACCEPT: missing Parameter (unit id expected) for "
-								<< entity->printName() << endl;
-         entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("unit id")));
-         return IO_ERROR;
-        }
-  if (!units.checkDataType(followerTag)) // this can't be a tag
-				{
-					cout  << "=<>= STACK: Wrong  Parameter <"
-								<< followerTag<< "> (unit id expected) for "
-								<< entity->printName() << endl;
-         entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(followerTag), new StringData("unit id")));
-         return IO_ERROR;
-				}
+   if(!entityIsPhysicalEntity(entity))
+            return IO_ERROR;
 
-  UnitEntity * follower = units[followerTag];
-  if( follower == 0) // unit doesn't exist but we don't want to let player to know that
-				{
-          StringData * dummyFollower = new StringData(followerTag);
-   		     parameters.push_back(dummyFollower);
-          return OK;
-				}
+    if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
+            return IO_ERROR;
 
-
-  parameters.push_back(follower);
   return OK;
 
 }
 
-ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &parameters,
-			                      Order * orderId)
+
+
+ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-  assert(unit);
-//  UnitEntity * follower = dynamic_cast<UnitEntity *>(parameters[0]);
+  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+ assert(unit);
 	UnitEntity * follower   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 
   if ( follower == 0) // unit doesn't exist but we don't want to let player to know that
@@ -90,7 +64,7 @@ ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &pa
 		  return SUCCESS;
     } 
 
-  if(unit->isLeading(follower))
+  if(unit->isAccepted(follower))
     {
       unit->clearAccept(follower);
 		  return SUCCESS;

@@ -6,6 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "BasicUsingStrategy.h"
+#include "PhysicalEntity.h"
 #include "UnitEntity.h"
 
 BasicUsingStrategy::BasicUsingStrategy ( const BasicUsingStrategy * prototype ) : Strategy(prototype)
@@ -19,6 +20,8 @@ GameData * BasicUsingStrategy::createInstanceOfSelf()
   return CREATE_INSTANCE<BasicUsingStrategy> (this);
 }
 
+
+
 STATUS
 BasicUsingStrategy::initialize        ( Parser *parser )
 {
@@ -31,17 +34,24 @@ BasicUsingStrategy::initialize        ( Parser *parser )
 
 
 }
-void BasicUsingStrategy::addUsingExperience(UnitEntity * unit, SkillElement & skill)
+
+
+
+void BasicUsingStrategy::addUsingExperience(PhysicalEntity * tokenEntity, SkillElement & skill)
 {
-   if(unit->isTraced())
+   if(tokenEntity->isTraced())
    {
-    cout <<"== TRACING " <<unit->printTag()<< " ==>  " << skill.getExpPoints()<<" using experience added to " << skill.getSkill()->printTag()<<endl;
+    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" using experience added to " << skill.getSkill()->printTag()<<endl;
    }
-    unit->addSkill(skill);
+
+   if(!tokenEntity->mayGainExperience())
+    return;
+
+    tokenEntity->addSkill(skill);
    // add experience to parent skills
    int exp = skill.getExpPoints()/2; // This is the difference from learning
 
-   int level = unit->getSkillLevel(skill.getSkill());
+   int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
    for (tryLevel = 0; tryLevel<= level ; tryLevel++)
     {
@@ -49,61 +59,97 @@ void BasicUsingStrategy::addUsingExperience(UnitEntity * unit, SkillElement & sk
       if(requirement != 0)
         {
           SkillElement recursive(requirement->getSkill(),exp);
-          addRecursiveUsingExperience(unit,recursive);
+          addRecursiveUsingExperience(tokenEntity,recursive);
         }
      }
 
 }
-void BasicUsingStrategy::addRecursiveUsingExperience(UnitEntity * unit, SkillElement  & skill)
-{
-   if(unit->isTraced())
-   {
-    cout <<"== TRACING " <<unit->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive using experience added to " << skill.getSkill()->printTag()<<endl;
-   }
-    unit->addSkill(skill);
 
-   int level = unit->getSkillLevel(skill.getSkill());
+
+
+void BasicUsingStrategy::addRecursiveUsingExperience(PhysicalEntity * tokenEntity, SkillElement  & skill)
+{
+   if(tokenEntity->isTraced())
+   {
+    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive using experience added to " << skill.getSkill()->printTag()<<endl;
+   }
+    tokenEntity->addSkill(skill);
+
+   int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
    for (tryLevel = 0; tryLevel< level ; tryLevel++)
     {
       SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
       if(requirement != 0)
         {
-          addRecursiveUsingExperience(unit,skill);
+          addRecursiveUsingExperience(tokenEntity,skill);
         }
      }
 
 }
+
+
+
 int BasicUsingStrategy::expBase_ = 10;
 
 
 
 int
-BasicUsingStrategy::calculateUsingExperience(UnitEntity * unit, SkillRule * skill)
+BasicUsingStrategy::calculateUsingExperience(PhysicalEntity * tokenEntity, SkillRule * skill)
 {
-// Amount of experience unit getting from skill use may vary but in Overlord it
+// Amount of experience tokenEntity getting from skill use may vary but in Overlord it
 // is constant - 1/10 of base.
 
 
  int exp = BasicUsingStrategy::expBase_;     // normal base 10 points for a day,
 
-   if(unit->isGuarding())
+   if(tokenEntity->isGuarding())
     exp /= 2;
-   // add experience
    return  exp;
 }
 
-USING_RESULT BasicUsingStrategy::mayUse(UnitEntity * unit, SkillRule * skill)
+
+
+USING_RESULT BasicUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {
   return  UNUSABLE;
 }
 
 
-bool BasicUsingStrategy::use(UnitEntity * unit, Order * OrderId)
+
+USING_RESULT BasicUsingStrategy::mayUse(PhysicalEntity * tokenEntity, SkillRule * skill)
+{
+  UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
+  if(unit)
+     return unitMayUse(unit, skill);
+  else
+     return CANNOT_USE;
+}
+
+
+
+USING_RESULT BasicUsingStrategy::use(PhysicalEntity * tokenEntity, SkillRule * skill, int & useCounter)
+{
+  UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
+  if(unit)
+     return unitUse(unit, skill,useCounter);
+  else
+     return CANNOT_USE;
+}
+
+
+
+
+
+
+USING_RESULT BasicUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
 {
   // report Skill can't be used
-  return false;
+  return UNUSABLE;
 }
+
+
+
 
 
 
@@ -113,6 +159,13 @@ void    BasicUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
 
 
 
-void BasicUsingStrategy::reportUse(USING_RESULT result, UnitEntity * unit, Order * OrderId)
+void BasicUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
 {
+}
+
+
+
+int BasicUsingStrategy::getUseDuration()
+{
+  return 1;
 }

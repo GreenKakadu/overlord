@@ -7,6 +7,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include <time.h>
+#include <algorithm>
 #include "GameInfo.h"
 #include "BasicEntitiesCollection.h"
 #include "Entity.h"
@@ -33,20 +34,22 @@ BasicEntitiesCollection::~BasicEntitiesCollection()
 
 
 
-GameData* BasicEntitiesCollection::findByTag (const string &tag)
+GameData* BasicEntitiesCollection::findByTag (const string &tag, bool errorReportEnabled)
 {
   long int index = getIndex(tag);
   if (status == OK)
          return data_[index];
-  else
-// cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
+
+  if(errorReportEnabled)
+   cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
  return 0 ;
 }
-GameData* BasicEntitiesCollection::findByIndex (const long int index)
+GameData* BasicEntitiesCollection::findByIndex (const long int index, bool errorReportEnabled)
 {
 	if (index <= size())
          return data_[index];
- cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+  if(errorReportEnabled)
+  cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }
 
@@ -99,6 +102,7 @@ EntitiesIterator iter;
  return false;
 }
 
+
 void BasicEntitiesCollection::redimention (long int newSize)
 {
   data_.resize(newSize);
@@ -130,7 +134,7 @@ bool BasicEntitiesCollection::checkDataType(const string &tag)
 
 
 /** Note: this method can also find Entity by it's temporary name */
-long int BasicEntitiesCollection::getIndex (const string &tag)
+long  BasicEntitiesCollection::getIndex (const string &tag)
 {
  int i;
  int prefixLen=0;
@@ -157,7 +161,7 @@ long int BasicEntitiesCollection::getIndex (const string &tag)
 		prefixLen=1;
 	}
 
-//  if ( ! ciStringCompareN(tag, game.getNewUnitPrefix(),game.getNewUnitPrefixSize() ) )
+//  if ( ! ciStringCompareN(tag, game.getNewEntityPrefix(),game.getNewUnitPrefixSize() ) )
 //   {
 //     // New Unit tag
 //

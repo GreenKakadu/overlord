@@ -37,5 +37,5 @@ public:
   vector < BasicRulesCollection  *>  rules_;
 };
 typedef vector < BasicRulesCollection  *>::iterator RulesCollectionIterator;
-
+extern RuleIndex ruleIndex;
 #endif

@@ -22,11 +22,12 @@ public:
     	~FollowerRaceRule(){}
        STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
-   LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
+      void printTypeSpecificDescription(ReportPrinter & out);
+      LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
       bool teacherRequired(SkillRule * skill, UnitEntity * unit);
-      bool mayMove();
+      bool mayMove(UnitEntity * unit);
       bool skillCompartibilityCheck(SkillRule * skill, UnitEntity * unit);
       int getLearningCapacity();
 };
-
+extern FollowerRaceRule   sampleFollowerRaceRule;
 #endif

@@ -16,7 +16,7 @@ BasicRulesCollection::~BasicRulesCollection()
 }
 
 
-GameData* BasicRulesCollection::findByTag (const string &tag)
+GameData* BasicRulesCollection::findByTag (const string &tag, bool errorReportEnabled)
 {
 RulesIterator iter;
  for (iter = begin(); iter != end(); iter++)
@@ -24,14 +24,15 @@ RulesIterator iter;
       if ((*iter) ->getTag() == tag)
        return  (*iter);
    }
-
+ if(errorReportEnabled)
  cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
  return 0 ;
 }
-GameData* BasicRulesCollection::findByIndex (const long int index)
+GameData* BasicRulesCollection::findByIndex (const long int index, bool errorReportEnabled)
 {
 	if ( index <= size())
          return data_[index];
+ if(errorReportEnabled)
  cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }

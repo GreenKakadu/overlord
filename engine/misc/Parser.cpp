@@ -11,10 +11,11 @@
 #include <assert.h>
 
 #include "Parser.h"
+//#include "Rational.h"
 Parser::Parser ( const char *input )
 {
  input_ = strcpy ( buffer_, input );
- //status = OK;
+ status = OK;
 }
 
 
@@ -22,14 +23,14 @@ Parser::Parser ( const char *input )
 Parser::Parser ( const string &input )
 {
  input_ = strcpy ( buffer_,input.c_str());
-// status = OK;
+ status = OK;
 }
 
 
 
 Parser::Parser()
 {
-// status = OK;
+ status = OK;
 }
 //============================================================================
 //
@@ -76,7 +77,9 @@ bool  Parser::matchKeyword (const char *keyword)
   if ( isalnum (*scan) ) // the word in the input has the same beginning
                         //  as keyword, but longer.
     return false;
-    
+  if ( *scan == '_' )  // May be part of keyword
+    return false;
+      
   input_ = scan;
   return true;
 }
@@ -177,6 +180,7 @@ char    *scan;
     scan++;
   
     input_=scan;
+    status = OK;
     return Parameter;
 }
 
@@ -217,6 +221,7 @@ char    *scan;
 
   input_=scan;
 
+    status = OK;
     return Word;
 
 }
@@ -294,12 +299,56 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
     }
   if ( (i <  1) || (i >  INTEGER_LENGTH ) ) // At least one
     // but less than 6 digits were found.
-         return 0;
-  buffer[i] = '\0';// Terminate string.
+    {
+      status = IO_ERROR;
+      return 0;
+    }
+    buffer[i] = '\0';// Terminate string.
+    status = OK;
   return atoi (buffer);
 
 }
 
+
+
+//============================================================================
+//
+//      Rational  getRational ()
+//
+// This function is intended for input parsing.
+//
+// It extracts first token from the input and interprets it as rational number
+// writen in the form A (B of C)
+// Input string pointer shifted to the right
+// so that resulting string  it points to starts from the next  symbol after
+//  integer. Returns Rational, prints error message if failed.
+//
+// NOTE: it uses isspace and isdigit macro which are locale-dependent
+//============================================================================
+Rational Parser::getRational ()
+{
+ int num = getInteger();
+
+  if(matchChar('('))
+  {
+    int residue = getInteger();
+    getWord();
+    int denom = getInteger();
+    if(denom == 0)
+    {
+      status = IO_ERROR;
+      return Rational(0);
+    }
+    matchChar(')');
+    status = OK;
+    return Rational(num * denom +  residue,denom);
+  }
+  else
+  {
+    status = OK;
+    return Rational(num);
+  }
+}
 //============================================================================
 //
 //      bool  matchInteger ()
@@ -350,6 +399,7 @@ bool Parser::matchElement()
 //
 // It extracts first token from the input.
 // Then It extracts second token from the input and checks it for being integer
+// and non-zero.
 // in the case of success returns TRUE, else - FALSE
 // Input string pointer is NOT shifted
 //
@@ -386,7 +436,12 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
     }
   if ( (i >=  1) && (i <  INTEGER_LENGTH ) ) // At least one
     // but less than 6 digits were found.
-    return true;
+    {
+     if (atoi(buffer) != 0) 
+        return true;
+     else   
+        return false;
+    }
   else
     return false;
 
@@ -404,6 +459,10 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 string  Parser::getText ()
 {
+  while (isspace (*input_) ) // Skip spacing
+    input_++;
+
+    status = OK;
   return string (input_);
 }
 

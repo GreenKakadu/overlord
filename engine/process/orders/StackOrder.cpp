@@ -17,14 +17,17 @@
 #include "TertiaryPattern.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern VarietiesCollection <StanceVariety>    stances;
 extern Reporter *	invalidParameterReporter;
 extern Reporter *	stackingUnacceptableReporter;
 extern Reporter *	stackReporter;
 extern Reporter *	unstackReporter;
 
+//StackOrder instantiateStackOrder;
+StackOrder * instantiateStackOrder = new StackOrder();
+
 StackOrder::StackOrder(){
    keyword_ = "stack";
+  registerOrder_();
   description = string("STACK [unit-id] \n") +
   "Immediate, one-shot.  This order executes when a unit is at the same location\n" +
   "as the designed unit.  The unit UNSTACKs, if necessary, and stacks under the\n" +
@@ -37,6 +40,9 @@ StackOrder::StackOrder(){
   "anyone specific.\n";
   orderType_   = IMMEDIATE_ORDER;
 }
+
+
+
 STATUS StackOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
@@ -73,7 +79,8 @@ STATUS StackOrder::loadParameters(Parser * parser, vector <AbstractData *>  &par
 }
 
 
-ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId)
+
+ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -107,9 +114,9 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
 //    cout << " accepting " <<endl;
 //    else
 //    cout << " not accepting " <<endl;
-   if((*(leader->getFaction()->getStance(unit)) >= *allied) ||(leader->isAccepting(unit)))
+   if((*(leader->getFaction()->getStance(unit)) >= *alliedStance) ||(leader->isAccepting(unit)))
       {
-        if(unit->unstack());
+        if(unit->unstack())
         {
           entity->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
           if(formerLeader)

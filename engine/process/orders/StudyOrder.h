@@ -23,10 +23,12 @@ public:
 	StudyOrder();
 	~StudyOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
     protected:
-   ORDER_STATUS preProcess_(UnitEntity * unit, SkillRule * skill, int level, Order * orderId);
-   ORDER_STATUS doProcess_(UnitEntity * unit, SkillRule * skill, int level, TeachingOffer *teacher, Order * orderId);
+   ORDER_STATUS preProcess_(UnitEntity * unit, SkillRule * skill, int level);
+   ORDER_STATUS doProcess_(UnitEntity * unit, SkillRule * skill, int level, TeachingOffer *teacher);
+   bool teacherRequired_;
+   static const  unsigned TEACHER_REQUIRED_REPORT_FLAG;
 };
 
 #endif

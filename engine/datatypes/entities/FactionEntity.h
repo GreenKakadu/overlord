@@ -21,6 +21,9 @@ class ItemElement;
 class ItemRule;
 class Rule;
 class BasicRulesCollection;
+class BasicEntitiesCollection;
+class PhysicalEntity;
+class ConstructionEntity;
 
 class FactionEntity : public Entity  {
     public:
@@ -29,35 +32,31 @@ class FactionEntity : public Entity  {
       STATUS  initialize      ( Parser *parser );
        void      save (ostream &out);
       GameData * createInstanceOfSelf();
-      void  print();
   void    preprocessData();
-  /** Loads orders */
+  void    postProcessData();
   void loadOrders();
   inline void setEMail(const string& email) { email_ = email;}
   inline void setPassword(const string& password)  {password_ = password;}
-  /** No descriptions */
   void addVisitedLocation(LocationEntity * location);
-  /** No descriptions */
   void clearVisitedLocations();
-  /** No descriptions */
   void dailyReport();
   /** Adds report to the list if it is different from those, that are already there */
   void updateReports(ReportElement * report);
-  /** No descriptions */
   void saveReport();
-  /** No descriptions */
   void dailyUpdate();
-  /** register unit */
   void addUnit(UnitEntity * unit);
   void removeUnit(UnitEntity * unit);
-  /** No descriptions */
+  void addConstruction(ConstructionEntity * construction);
+  void removeConstruction(ConstructionEntity * construction);
+  STATUS loadFactionOrders(Parser * parser, PhysicalEntity ** entity);
+  PhysicalEntity * currentEntityOrders(BasicEntitiesCollection & collection,
+                                  Parser * parser);
   virtual Entity * getReportDestination();
-  /** No descriptions */
   StanceVariety * getStance(UnitEntity * unit) ;
   StanceVariety * getStance(FactionEntity * entity) ;
-  /** No descriptions */
   void setStance(Entity * entity, StanceVariety * stance);
-  /** No descriptions */
+  void setDefaultStance(StanceVariety * stance) {defaultStance_ = stance;}
+  StanceVariety * getDefaultStance() {return defaultStance_;}
   int  withdraw(ItemRule * item, int number);
   bool mayWithdraw(ItemRule * item, int number);
 //===============================  Knowledge ============
@@ -67,30 +66,53 @@ class FactionEntity : public Entity  {
   Rule * hasKnowledge(Rule * info);
 //SkillLevelElement *   hasSkillKnowledge(SkillLevelElement & info);
   SkillLevelElement * hasSkillKnowledge(SkillRule * knowledge, int level);
-  void reshow(Rule * info, ostream &out);
-  void reshow(BasicRulesCollection  * collection, ostream &out );
+  void reshow(Rule * info, ReportPrinter &out);
+  void reshow(BasicRulesCollection  * collection, ReportPrinter &out );
 //  void reshow(SkillLevelElement & info, ostream &out);
-  void reshowSkill(SkillRule * knowledge, int level, ostream &out);
-  void reshowSkills(ostream &out );
+  void reshowSkill(SkillRule * knowledge, int level, ReportPrinter &out);
+  void reshowSkills(ReportPrinter &out );
   void saveKnowledge(ostream &out);
-  void reportNewKnowledge(ostream &out);
+  void reportNewKnowledge(ReportPrinter &out);
   void loadKnowledge(Parser *parser);
+  void setTotalControlPoints(int totalControlPoints) {totalControlPoints_ = totalControlPoints;}
+  void addTotalControlPoints(int controlPoints) {totalControlPoints_ += controlPoints;}
+  void removeTotalControlPoints(int controlPoints) {totalControlPoints_ -= controlPoints;}
+  int  getTotalControlPoints() const {return totalControlPoints_;}
+  int  getControlPoints() const {return controlPoints_;}
+  bool isExeededControlPoints() const {return totalControlPoints_< controlPoints_;}
+  void setTerseBattleReport(bool value){terseBattleReport_ = value;}
+  bool getTerseBattleReport(){return terseBattleReport_;}
+  void markCollectionToReshow(BasicRulesCollection  * collection);
+  void markKnowledgeToReshow(Rule  * knowledge);
+  inline void markAllSkillsToReshow(){allSkillsToReshow_ = true;}
+  void markSkillToReshow(SkillRule * skill, int level);
+  void resign(FactionEntity * faction = 0);
+  bool isNPCFaction();
     protected:
 	vector<Rule *> knowledge_;
-  int newKnowledge;
+  int newKnowledge; // number of new knowledge learned this turn
 	vector<SkillLevelElement *> skillKnowledge_;
-  int newSkillKnowledge;
-
+  unsigned newSkillKnowledge; // number of new skill learned this turn
+  vector < BasicRulesCollection  *> collectionsToReshow_;
+  vector < Rule  *> knowledgeToReshow_;
+  bool allSkillsToReshow_;
+  vector<SkillLevelElement> skillsToReshow_;
   string email_;
   string password_;
 	StanceVariety * defaultStance_;
-	vector<StanceElement *> stances_;
+	vector<StanceElement> stances_;
   vector<LocationEntity *> visitedLocations_;
   vector<UnitEntity *> loyalUnits_;
+  vector<ConstructionEntity *> loyalConstructions_;
   vector<ItemElement *> funds_;
+  int totalControlPoints_;
+  int controlPoints_;
+  bool terseBattleReport_;
+  bool isResigned_;
     private:
  };
-typedef vector<StanceElement *>::iterator StanceIterator;
-typedef vector<SkillLevelElement *>::iterator SkillLevelIterator; 
 typedef	vector<Rule *>::iterator KnowledgeIterator; 
+extern FactionEntity    sampleFaction;
+#include "EntitiesCollection.h"
+extern EntitiesCollection <FactionEntity>   factions;
 #endif

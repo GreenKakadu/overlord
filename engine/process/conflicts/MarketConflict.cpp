@@ -12,6 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include <algorithm>
 #include "Parser.h"
 #include "MarketConflict.h"
 #include "MarketRequest.h"
@@ -51,7 +52,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
   vector  <MarketRequest *>   buyOffers;
   vector  <BasicCompetitiveRequest *>::iterator iter;
   vector  <MarketRequest *>::iterator marketIter;
-   int totalValue;
+   int totalValue = 0;
    int finalPrice;
 #ifdef TEST_MODE
   if(testMode)   cout << endl<<"<><><><><><><><><><>   Resolving Market conflict at "<<location_->printName()<<endl;

@@ -1,5 +1,5 @@
 # Overlord Terrain definitions
-# Ver 0.21 31.03.2003
+# Ver 0.24 03.10.2003
 
 KEYWORD TERRAIN
 
@@ -54,6 +54,7 @@ OPTIMA 100
 LANDWALK swwk
 DAYS walk 25
 DAYS fly 5
+NOBUILD
 
 TERRAIN ocea
 NAME ocean
@@ -61,6 +62,7 @@ OPTIMA 50
 LANDWALK sail
 DAYS swim 5
 DAYS fly 4
+NOBUILD
 
 TERRAIN lake
 NAME lake
@@ -68,31 +70,35 @@ OPTIMA 40
 LANDWALK sail
 DAYS swim 5
 DAYS fly 4
+NOBUILD
 
 TERRAIN plan
 NAME elemental plane
 OPTIMA 50
 DAYS walk 12
 COVERED
+NOBUILD
 
 TERRAIN astr
 NAME astral plane
 OPTIMA 0
 DAYS walk 12
 COVERED
+NOBUILD
 
 TERRAIN twis
 NAME twisted terrain
 OPTIMA 10
 DAYS walk 25
 COVERED
+NOBUILD
 
 TERRAIN city
 NAME city
 OPTIMA 5000
-RESOURCE evtblir 300
-RESOURCE evtblst 2500
-RESOURCE evtblwd 500
+RESOURCE ironwk 300
+RESOURCE stonwk 2500
+RESOURCE woodwk 500
 DAYS walk 1
 DAYS ride 1
 DAYS fly  1
@@ -100,18 +106,18 @@ DAYS fly  1
 TERRAIN vill
 NAME village
 OPTIMA 1000
-RESOURCE evtblst 800
-RESOURCE evtblwd 200
+RESOURCE stonwk 800
+RESOURCE woodwk 200
 DAYS walk 1
 DAYS ride 1
 DAYS fly  1
 
 TERRAIN mtow
 NAME magical tower
-RESOURCE evtblco 1
-RESOURCE evtblks 10
-RESOURCE evtblst 300
-RESOURCE evtblwd 50
+RESOURCE mconwk 1
+RESOURCE kstnwk 10
+RESOURCE stonwk 300
+RESOURCE woodwk 50
 FX 25
 DAYS walk 1
 DAYS ride 1
@@ -130,9 +136,11 @@ TERRAIN grot
 NAME grotto
 LANDWALK scou
 COVERED
+NOBUILD
 
 
 TERRAIN lsea
 NAME lava sea
 OPTIMA 0
+NOBUILD
 

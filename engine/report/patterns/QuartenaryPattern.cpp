@@ -27,6 +27,18 @@ void QuartenaryPattern::print(ostream &out) const
   reporter_->print(out, param1_, param2_, param3_ , param4_ );
 }
 
+
+
+void QuartenaryPattern::clean()
+{
+  param1_->clean();
+  param2_->clean();
+  param3_->clean();
+  param4_->clean();
+}
+
+
+
 QuartenaryPattern  * QuartenaryPattern::headOfFreeList;
 
 

@@ -20,9 +20,12 @@
 #include "RulesCollection.h"
 #include "LocalRecruitOffer.h"
 #include "FactionEntity.h"
+#include "EntitiesCollection.h"
+#include "UnitEntity.h"
 
 extern RulesCollection    <ItemRule>     items;
 extern RulesCollection    <RaceRule>     races;
+extern EntitiesCollection    <UnitEntity>     units;
 
 MarketStrategy::MarketStrategy( const  MarketStrategy* prototype ) : Strategy(prototype)
 {
@@ -79,6 +82,11 @@ MarketStrategy::initialize        ( Parser *parser )
      }
       return OK;
     }
+  if (parser->matchKeyword ("PRINCE") )
+    {
+      merchantPrince_ = units[parser->getWord()];
+      return OK;
+    }
       return OK;
 }
 
@@ -116,6 +124,9 @@ void  MarketStrategy::save(ostream &out)
  {
    (*iter)->save(out);
  }
+
+ if(merchantPrince_)
+  out << "PRINCE "<< merchantPrince_->getTag()<<endl;
 }
   
 void MarketStrategy::dailyPreProcess()

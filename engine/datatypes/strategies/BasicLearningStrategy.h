@@ -13,6 +13,7 @@
 #include "Strategy.h"
 using namespace std;
 
+class Rule;
 class Entity;
 class UnitEntity;
 class RaceRule;
@@ -21,6 +22,7 @@ class InventoryElement;
 class Parser;
 class SkillRule;
 class TeachingOffer;
+class PhysicalEntity;
 
 /**Rules for learning skill
   *@author Alex Dribin
@@ -35,28 +37,34 @@ public:
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
   /** Calculate amount of experience gained by 1 day of study */
-  virtual int  calculateLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher);
+  virtual int  calculateLearningExperience(PhysicalEntity * unit, SkillRule * skill, TeachingOffer * teacher);
+  virtual int  calculateUnitLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher);
   /** Add learning experience to skill studied by unit*/
-  virtual void addLearningExperience(UnitEntity * unit, SkillElement & skill);
+  virtual void addLearningExperience(PhysicalEntity * unit, SkillElement & skill);
 //  virtual void addLearningExperience(UnitEntity * unit, SkillRule * skill, int experience);
   /**  Add learning experience to all parent skills of a skill studied by unit */
-  virtual void addRecursiveLearningExperience(UnitEntity * unit, SkillElement & skill);
+  virtual void addRecursiveLearningExperience(PhysicalEntity * unit, SkillElement & skill);
   /** No descriptions */
-  virtual  LEARNING_RESULT mayLearn(UnitEntity * unit, SkillRule * skill) const;
+  virtual  LEARNING_RESULT mayStudy(PhysicalEntity * unit, SkillRule * skill) const;
   virtual  bool teacherRequired(Entity * unit, SkillRule * skill);
   // For debugging:====================
   void print() {cout << " Learning: ";}
   static int getPointsPerDay()  {return expBase_;}
   virtual  void extractKnowledge (Entity * recipient, int parameter = 0);
+  inline InventoryElement * getItemRequired() {return itemRequired_;}
+  inline Rule * getRacialClass() {return racialClass_;}
+  inline bool isSpecialist() const {return special_;}
+  inline InventoryElement * getItemRequired () const {return  itemRequired_;}
 protected:
   static int leaderBonus_;
   static int expBase_;
-   RaceRule * racial_;
+   Rule * racialClass_;
    bool special_;
    InventoryElement * itemRequired_;
    InventoryElement * bonusItem_;
 //   SkillElement * max_;
 private:
 };
+extern BasicLearningStrategy    sampleLearning;
 
 #endif

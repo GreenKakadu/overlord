@@ -17,6 +17,7 @@
 #include "Rule.h"
 #include "RuleIndex.h"
 #include "BasicRulesCollection.h"
+extern bool ciStringCompare(const string& s1,const string& s2);
 
 RuleIndex::RuleIndex()
 {
@@ -41,8 +42,11 @@ BasicRulesCollection  * RuleIndex::findRuleCollection(const string& keyword)
   RulesCollectionIterator ruleIter;
   for( ruleIter = rules_.begin(); ruleIter != rules_.end(); ++ruleIter)
 	   {
-        if( keyword == (*ruleIter)->getCollectionKeyword())
+//        cout << " findRuleCollection:: "<<keyword << " in "<< (*ruleIter)->getCollectionKeyword()<<endl;
+        if(!ciStringCompare(keyword, (*ruleIter)->getCollectionKeyword()))
+        {
           return (*ruleIter);
+        }
      }
      cout << "Unknown collection "<< keyword<<endl;
    return 0;
@@ -56,7 +60,7 @@ Rule * RuleIndex::findRule( const string& tag)
   GameData * current;
   for( ruleIter = rules_.begin(); ruleIter != rules_.end(); ++ruleIter)
 	   {
-       current =  (*ruleIter)->findByTag(tag);
+       current =  (*ruleIter)->findByTag(tag,false);
        if(current)
         {
             return dynamic_cast<Rule *>(current);

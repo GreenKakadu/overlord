@@ -21,8 +21,8 @@ public:
 	        EquipOrder();
 	        ~EquipOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
     protected:
-static const  UINT SKILL_REQUIRED_REPORT_FLAG;
+static const  unsigned SKILL_REQUIRED_REPORT_FLAG;
 };
 #endif

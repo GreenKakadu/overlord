@@ -6,11 +6,14 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CreatureRaceRule.h"
+//CreatureRaceRule   sampleCreatureRaceRule =   CreatureRaceRule("CREATURE", &sampleRace);
 CreatureRaceRule::CreatureRaceRule ( const CreatureRaceRule * prototype ) : RaceRule(prototype)
 {
   hiringCost_ = 500;
   hiringProbability_ = 100;
   hiringMax_ = 100;
+  controlPointsFraction_ = 20;
+  name_ = "creature";
 }
 
 GameData * CreatureRaceRule::createInstanceOfSelf()
@@ -32,4 +35,11 @@ CreatureRaceRule::initialize        ( Parser *parser )
 bool CreatureRaceRule::mayWork()
 {
   return false;
+}
+
+
+
+void CreatureRaceRule::printTypeSpecificDescription(ReportPrinter & out)
+{
+  out << " This is a creature.";
 }

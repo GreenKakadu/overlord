@@ -20,14 +20,14 @@ extern ProcessingMode   immediateOrders;
 extern ProcessingMode   stackOrders;
 extern ProcessingMode 	dayOrders;
 #ifndef VERSION
-#define VERSION 0.23
+#define VERSION 0.3
 #endif
 int main(int argc, char *argv[])
 {
   clock_t tick =0;
   tick = clock();
   time_t start, end;
-  double dif1, dif2,dif3;
+  double dif1, dif2 = 0, dif3 = 0;
   time(&start);
   srand ( time(NULL) ); // init random
 
@@ -95,15 +95,14 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 
     cout <<endl<< "Processing immediate orders " <<endl<<endl;
   	dataManipulator.processOrders(&immediateOrders);
-		// process competitive requests resolution for all locations  (take buy recruit)
 
     cout << "Processing stack orders " <<endl<<endl;
  		dataManipulator.processOrders(&stackOrders);
-		// process combat resoution  for all combats
+// process combat resoution  for all combats
 
     cout <<"Processing full day orders " <<endl<<endl;
 	 	dataManipulator.processOrders(&dayOrders);
-		// process competitive requests resolution for all locations  (harvesting)
+
     cout <<"Processing competitive requests " <<endl<<endl;
     dataManipulator.processCompetitiveRequests(0);
     
@@ -130,6 +129,7 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 #ifdef TEST_MODE
 //   if(testMode)  dataManipulator.print();
 #endif
+    dataManipulator.turnPostProcessing();
   	dataManipulator.save();
    	game.save();
 
@@ -154,8 +154,16 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 
 if(currentDay<0) samplePhysicalEntity.cancelTeachingOffer();  // to provide instantiation of samplePhysicalEntity
 
+cout << "The size of sampleGameData is " << sizeof(sampleGameData) <<endl;
+cout << "The size of sampleEntity is " << sizeof(sampleEntity) <<endl;
+cout << "The size of samplePhysicalEntity is " << sizeof(samplePhysicalEntity) <<endl;
+cout << "The size of sampleUnit is " << sizeof(sampleUnit) <<endl;
+cout << "The size of sampleFaction is " << sizeof(sampleFaction) <<endl;
+cout << "The size of sampleLocation is " << sizeof(sampleLocation) <<endl;
 
-
-
+//	cout << " ===================   Pathfinding tests   ====================="<<endl;
+//  cout << "Travel time from L165 to L175 is "<<
+//          locations["L165"]->findExit(locations["L175"])->getTravelTime(walkingMode)<<endl;
+//  locations["L165"]->findWalkingDistance(locations["L165"],locations["L101"],100);
 }
 

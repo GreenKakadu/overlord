@@ -18,22 +18,27 @@
 #include "UnaryPattern.h"
 extern bool ciStringCompare(const std::string& s1,const std::string& s2);
 extern Reporter * disbandReporter;
+
+//DisbandOrder instantiateDisbandOrder;
+DisbandOrder * instantiateDisbandOrder = new DisbandOrder();
  
 DisbandOrder::DisbandOrder(){
 
   keyword_ = "disband";
+  registerOrder_();
   description = string("DISBAND CONFIRM \n") +
   "Instant.  This order disbands your unit\n" +
   "It dissapears with all it's possesions\n";
 
   orderType_   = INSTANT_ORDER;
+  mayInterrupt_ = true;
 }
 STATUS DisbandOrder::loadParameters(Parser * parser, vector <AbstractData *>
                                       &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-
+// May just use matchKeyword here
     string temp = parser->getWord();
     if (ciStringCompare(temp,"confirm"))
 //    if( temp != "confirm")
@@ -45,7 +50,7 @@ STATUS DisbandOrder::loadParameters(Parser * parser, vector <AbstractData *>
 
 
 ORDER_STATUS DisbandOrder::process (Entity * entity, vector <AbstractData *>
-                                          &parameters, Order * orderId)
+                                          &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

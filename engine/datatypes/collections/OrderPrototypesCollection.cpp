@@ -9,25 +9,31 @@
 #include "OrderPrototypesCollection.h"
 #include "OrderPrototype.h"
 extern bool ciStringCompare(const string& s1,const string& s2);
-
+OrderPrototypesCollection *  orderPrototypesCollection;
 
 OrderPrototypesCollection::OrderPrototypesCollection()
 {
+//  cout << "OrderPrototypesCollection created \n";
 }
 OrderPrototypesCollection::~OrderPrototypesCollection()
 {
-  vector<OrderPrototype *>::iterator iter;
-  for (iter=prototypes_.begin(); iter != prototypes_.end(); iter++)
-    {
-	delete (*iter);
-    }
+//  cout << "OrderPrototypesCollection destroyed \n";
+//  vector<OrderPrototype *>::iterator iter;
+//  for (iter=prototypes_.begin(); iter != prototypes_.end(); iter++)
+//    {
+//	delete (*iter);
+//    }
 }
+
+
 
 void
 OrderPrototypesCollection::add(OrderPrototype * prototype)
 {
   prototypes_.push_back(prototype);
 }
+
+
 
 OrderPrototype *
 OrderPrototypesCollection::find(const string & keyword)
@@ -36,11 +42,17 @@ OrderPrototypesCollection::find(const string & keyword)
   // in order to make search faster a vector may be sorted by alphabet
   // and a table of iterators pointing to each  group of orders,
   // starting from the same letter may be done.
+
+//  cout << "Loooking for ["<< keyword <<"] in OrderPrototypesCollection ";
   for (iter=prototypes_.begin(); iter != prototypes_.end(); iter++)
     {
       if (!ciStringCompare((*iter)->getKeyword(), keyword))
-	return (*iter);
+      {
+//          cout << " ... found!\n";
+	      return (*iter);
+      }
     }
+//          cout << " not found!\n";
   /* check order keyword:  nonalpha symbols where keyword expected (possible error in modifier */
   /* check order keyword: unknown keyword */
   return 0;

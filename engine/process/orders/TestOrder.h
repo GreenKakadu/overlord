@@ -19,7 +19,7 @@ public:
 	~TestOrder();
 
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters, Order * orderId);
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
  /** Creates report for  Entity for which this order executed */
   ReportRecord * createPrivateReport(REPORT_TYPE type, Order * orderId);
 /** Creates report for second-party Entities */

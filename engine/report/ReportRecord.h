@@ -17,13 +17,13 @@ using namespace std;
 class ReportPattern;
 class Order;
 class BasicCondition;
+class PhysicalEntity;
 
 class ReportRecord {
 public: 
 	ReportRecord(ReportPattern * report, Order *  orderId = 0, BasicCondition * condition = 0);
 	~ReportRecord();
-  /** No descriptions */
-  bool observableBy(UnitEntity * unit) const;
+  bool observableBy(PhysicalEntity * unit) /*const*/;
 	ReportPattern * reportMessage;
   Order *  orderId;
 

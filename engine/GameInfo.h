@@ -11,6 +11,7 @@
 #include "OverlordTypes.h"
 #include "SystemTypes.h"
 #include <string>
+#include <vector>
 using namespace std;
 class FactionEntity;
 /**This objects keeps both static and dynamic information about current game.
@@ -44,8 +45,11 @@ public:
   string * getUnitsFile() ;
   string * getFactionsFile() ;
   string * getLocationsFile() ;
-  inline string getNewUnitPrefix() const {return newUnitPrefix_;}
-  inline int getNewUnitPrefixSize() const {return newUnitPrefix_.size();}
+  string * getBuildingsFile() ;
+  bool isNPCFaction(FactionEntity * faction);
+  
+  inline string getNewEntityPrefix() const {return newEntityPrefix_;}
+  inline int getNewEntityPrefixSize() const {return newEntityPrefix_.size();}
          bool isNewEntityName(const string &tag, FactionEntity * faction = 0);
    UINT turn;
    int daysInMonth;
@@ -62,12 +66,15 @@ public:
   string gameDir_;
   string playersDir_;
   string turnString_;
-  string newUnitPrefix_;
+  string newEntityPrefix_;
+//  string newConstructionPrefix_;
 // Entities:
 	string unitsFile_;
 	string locationsFile_;
 	string factionsFile_;
-
+  string buildingsFile_;
+  vector <string> npcFactions_;
 };
+extern GameInfo game;
 
 #endif

@@ -22,7 +22,7 @@
 #include "BinaryPattern.h"
 extern RulesCollection    <ItemRule>    items;
 Reporter * WagesCompetitiveRequest::workPublicReporter = new Reporter(""," is working.");
-Reporter * WagesCompetitiveRequest::workPrivateReporter = new Reporter("Working at"," earning "," coins.");
+Reporter * WagesCompetitiveRequest::workPrivateReporter = new Reporter("Working at "," earning "," coins.");
 
 
 WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, Order * orderId, Rational& amount) :BasicCompetitiveRequest(unit,0)

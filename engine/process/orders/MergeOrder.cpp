@@ -14,7 +14,7 @@
  ***************************************************************************/
 #include "MergeOrder.h"
 #include "Entity.h"
-#include "RaceElementData.h"
+#include "RaceElement.h"
 #include "RaceRule.h"
 #include "UnitEntity.h"
 #include "EntitiesCollection.h"
@@ -27,8 +27,12 @@ extern Reporter * mergeRaceErrorReporter;
 extern Reporter * mergeFactionMismatchReporter;
 extern Reporter * mergeReporter;
 
+//MergeOrder instantiateMergeOrder;
+MergeOrder * instantiateMergeOrder = new MergeOrder();
+
 MergeOrder::MergeOrder(){
   keyword_ = "merge";
+  registerOrder_();
   description = string("MERGE unit-id [number]\n") +
   "Immediate, follower/creature-only.  This orders executes when unit-id\n"+
   "is of the same race as unit, belongs to your faction and is present at\n"+
@@ -44,6 +48,8 @@ MergeOrder::MergeOrder(){
   orderType_   = IMMEDIATE_ORDER;
 }
 
+
+
 STATUS MergeOrder::loadParameters(Parser * parser, vector <AbstractData *>
           &parameters, Entity * entity )
 {
@@ -56,8 +62,11 @@ STATUS MergeOrder::loadParameters(Parser * parser, vector <AbstractData *>
 
             return OK;
 }
+
+
+
 ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
-          &parameters, Order * orderId)
+          &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -99,6 +108,8 @@ ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
      }
        // efects
     recipient->updateEquipement();   
-     unit->addReport(new TertiaryPattern(mergeReporter, unit, new RaceElementData(unit->getRace(),number), recipient));
+//QQQ
+     unit->addReport(new TertiaryPattern(mergeReporter, unit,
+          new RaceElement(unit->getRace(),number), recipient));
   return SUCCESS;
 }

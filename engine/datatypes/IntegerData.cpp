@@ -8,13 +8,19 @@
 #include "IntegerData.h"
 extern void longtostr(unsigned long u, char *out);
 
+/** returns name for use in reports and messages
+ * (string)
+ */
 string IntegerData::printName() 
 {
   char buffer[12];
   longtostr(value_,buffer);
-//		  sprintf(buffer,"%d",value_); // May use hand-made convertor itoa
   return string(buffer);
 }
+
+
+
+/** returns integer in a form of parameter accepted by order */
 void      IntegerData::saveAsParameter (ostream &out)
 {
   out <<  " " << value_;
