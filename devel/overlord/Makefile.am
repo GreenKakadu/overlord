@@ -3,12 +3,12 @@ bin_PROGRAMS = overlord
 
 ## INCLUDES were found outside kdevelop specific part
 
-overlord_SOURCES = main.cpp 
+overlord_SOURCES = turn.cpp 
 overlord_LDADD   = 
 
 SUBDIRS = docs 
 
-EXTRA_DIST = main.cpp 
+EXTRA_DIST = turn.cpp 
 
 ####### kdevelop will overwrite this part!!! (end)############
 # set the include path found by configure
