@@ -32,6 +32,8 @@ Things to do:
 - Conditional order reporting ('!'  '?')
 - Define static type of reporter (ERROR, NORMAL...) for use in conditional order reporting.
 
+- unit defeated in battle loses GUARD flag
+
 Things to check:
 
 - check all orders that have unit parameters for using 	DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
@@ -53,12 +55,9 @@ Features to change/improve:
 
 Solutions  to change/improve:
 
-- worseThan functions instead of <= ect for stances
 - Provide order-id whenever possible, use it to filter !-like report modificators
   for that provide static field defining report type (sucess, fail, invalid) in Reporter and ability in ReportPattern to read it
 
-- consider writing special collection (template?) supporting load/save/report/add/remove/has pattern
-  it requires unified interface to all GameData and Element objects.
 
 - Incorporate possibility of placeholders into tokens so that it becomes invisible from outside
   (make all placeholders/alias completely internal)
@@ -98,69 +97,16 @@ Big scale code(200 factios x 100 units 10000 locations)  BCC-compiled with debug
 Orders implementation status:
 																	( * - means known bugs)
 
-* EMAIL    ---- implemented ---- tested
-* NAME     ---- implemented ---- tested
-* PASSWORD ---- implemented ---- tested
-* RESIGN   ---- implemented ---- tested
-* SETTING  ---- implemented ---- tested
-* RESHOW   ---- implemented ---- tested
-
-* ACCEPT   ---- implemented ---- tested
-* AT       ---- implemented ---- tested
-* ATTACK --pars--
-* BESTOW   ---- implemented ---- tested
-* BUY      ---- implemented ---- tested
 * CANCEL   ---- implemented ---- *
-* CARAVAN  ---- implemented ---- tested
-* CHRISTEN ---- implemented ---- tested
-* CLAIM    ---- implemented ---- tested
 * COMBAT
-* DAY      ---- implemented ---- tested
-* DESCRIBE ---- implemented ---- tested
-* DISBAND  ---- implemented ---- tested
-* DROP     ---- implemented ---- tested
-* EJECT    ---- implemented ---- tested
-* ENTER    ---- implemented ---- tested
-* EQUIP    ---- implemented ---- tested
-* FORGET   ---- implemented ---- tested
-* GET      ---- implemented ---- tested
-* GIVE     ---- implemented ---- tested
 * GUARD	--pars--
-* HAVE     ---- implemented ---- tested
-* LEADER   ---- implemented ---- tested
-* LEADING  ---- implemented ---- tested
-* LEAVE    ---- implemented ---- tested
 * MARCH	 --pars--
-* MERGE    ---- implemented ---- tested
-* MOVE     ---- implemented ---- tested
 * NAME     ---- implemented ---- tested *
 * OATH     ---- implemented ---- tested *
 * PATROL  --pars--
 * PILLAGE --pars--
-* PROMOTE  ---- implemented ---- tested
-* RECRUIT  ---- implemented ---- tested
-* RETREAT  ---- implemented ---- tested
-* SEE      ---- implemented ---- tested
-* SELL     ---- implemented ---- tested
-* SETTING  ---- implemented ---- tested
-* SIZE     ---- implemented ---- tested
-* SKILL    ---- implemented ---- tested
-* SPLIT    ---- implemented ---- tested
-* STACK    ---- implemented ---- tested
 * STANCE   ---- implemented ---- tested *
-* STAY     ---- implemented ---- tested
-* STUDY    ---- implemented ---- tested
-* SYNCHRO  ---- implemented ---- tested
-* SWAP     ---- implemented ---- tested
 * TACTIC  --pars--
-* TARGET   ---- implemented ---- tested
-* TEACH    ---- implemented ---- tested
-* UNSTACK  ---- implemented ---- tested
-* USE      ---- implemented ---- tested
-* WAIT     ---- implemented ---- tested
-* WITHDRAW ---- implemented ---- tested
-* WORK     ---- implemented ---- tested
-* YIELD	   ---- implemented ---- tested
 
 Actions:
 

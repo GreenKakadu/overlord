@@ -13,7 +13,7 @@
 #include "GameInfo.h"
 #include "DataManipulator.h"
 #include "BasicCombatManager.h"
-//#include "ReportElement.h" //temp
+#include "ReportPattern.h" //temp
 // tests
 extern GameInfo game;
 extern int currentDay;
@@ -89,7 +89,9 @@ int main(int argc, char *argv[])
   	cout << endl<<"Reading: "<<dif1 << " sec." <<endl;
 		cout <<"......................................................................."<<endl;
 	}
+// Temporary
 
+    ReportPattern::initialize("report_texts");
 //cout << "Number of free positions in ReportElement pool: "<<countList(BasicReportElement::headOfFreeList)<<endl;
 	cout <<endl << endl << " ================= Turn processing ==============="<< endl<<endl;
 

@@ -8,6 +8,8 @@
  ***************************************************************************/
 #include "BasicCombatManager.h"
 #include "TokenEntity.h"
+#include "UnitEntity.h"
+#include "ConstructionEntity.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
 #include "BasicCombatEngine.h"
@@ -51,6 +53,34 @@ void BasicCombatManager::attackAttempt(TokenEntity * attacker,
 
 //   attackers.clear();
 //   defenders.clear();
+}
+
+
+
+void BasicCombatManager::attackAttempt(FactionEntity * attacker,
+                    TokenEntity * defender,OrderLine * orderId)
+{
+  LocationEntity * location = defender->getLocation();
+    for (UnitIterator unitIter  = location->unitsPresent().begin(); unitIter != location->unitsPresent().end(); unitIter++)
+    {
+        if((*unitIter)->getFaction() == attacker)
+        {
+
+          if( (*unitIter)->isGuarding() /* || DEFENSIVE or better */ )
+          attackAttempt(*unitIter,defender,orderId);
+          return;
+        }  
+    }
+  for (ConstructionIterator iter  = location->constructionsPresent().begin(); iter != location->constructionsPresent().end(); iter++)
+    {
+        if((*iter)->getFaction() == attacker)
+        {
+          if( (*iter)->isGuarding() /* || DEFENSIVE or better */ )
+          attackAttempt(*iter,defender,orderId);
+          return;
+        }
+    }
+
 }
 
 

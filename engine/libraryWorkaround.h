@@ -90,7 +90,7 @@ EnchantmentElement sampleEnchantmentElement(0,0);
 // Orders
 //std::cout << "Sample Order  instantiation  start \n";
 
-EnchantmentsAttribute sampleEnchantmentsAttribute;
+EnchantmentAttribute sampleEnchantmentAttribute;
 
 EmailOrder    sampleEmailOrder;     
 PasswordOrder samplePasswordOrder; 

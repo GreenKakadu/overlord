@@ -110,13 +110,21 @@ STATUS DataManipulator::load()
 // Define some global variables for special use
 
   cash = items["coin"];
+    assert (cash);
   food = items["food"];
+   assert(food);
   walkingMode = movementModes["walk"];
+   assert(walkingMode);
   swimingMode = movementModes["swim"];
+   assert(swimingMode);
   flyingMode = movementModes["fly"];
+   assert(flyingMode);
   alliedStance =    stances["ally"];
+   assert(alliedStance);
   friendlyStance =  stances["friend"];
+   assert(friendlyStance);
   neutralStance =   stances["neutral"];
+   assert(neutralStance);
 //  combatSkill = skills[""];
  return status;
 }

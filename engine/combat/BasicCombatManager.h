@@ -12,6 +12,7 @@
 
 class OrderLine;
 class TokenEntity;
+class FactionEntity;
 class BasicCombatEngine;
 
 class BasicCombatManager  {
@@ -20,6 +21,10 @@ public:
     virtual ~BasicCombatManager(){}
     virtual void attackAttempt(TokenEntity * attacker,
                     TokenEntity * defender,OrderLine * orderId = 0);
+    virtual void attackAttempt(FactionEntity * attacker,
+                    TokenEntity * defender,OrderLine * orderId = 0);
+//    virtual void attackAttempt(TokenEntity  * attacker,
+//                    FactionEntity * defender,OrderLine * orderId = 0);
     virtual void process() {}
     virtual void initialize(){}
 
