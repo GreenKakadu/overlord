@@ -1,0 +1,42 @@
+/***************************************************************************
+                          BasicData.h
+                    Basic  Object for game data.
+                             -------------------
+    begin                : Sun Mar 16 2003
+    copyright            : (C) 2003 by Alex Dribin
+    email                : alexliza@netvision.net.il
+ ***************************************************************************/
+#ifndef BASIC_DATA_H
+#define BASIC_DATA_H
+#include "AbstractData.h"
+
+/**Base class for all game data
+  *@author Alex Dribin
+  */
+
+class BasicData : public AbstractData  {
+public: 
+	BasicData(){}
+	~BasicData(){}
+     string   getTag()          const;
+//  inline   string   getTag()          const { return tag_;}
+  inline   string   getName()         const { return name_;}
+  inline   string   getDescription()  const { return description_;}
+  inline  void     setTag          ( const string  &tag) {  tag_ = tag;}
+  inline  void     setName         ( const string  &name){ name_ = name;}
+  inline  void     setDescription  ( const string  &description){ description_ = description;}
+  virtual void      print(); // for debugging
+          void      saveAsParameter (ostream &out);
+  /** No descriptions */
+  string printTag() const;
+  /** No descriptions */
+  virtual string printName() /*const*/;
+    protected:
+  static const string l_bracket;
+  static const string r_bracket;
+           string   tag_;                //unigue object identifier
+           string   name_;               //name of the object
+           string   description_;        //description of the object
+};
+
+#endif

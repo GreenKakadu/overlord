@@ -1,0 +1,414 @@
+<!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="author" content="Alex Dribin">
+  <meta name="description"
+ content="General principles and concepts of Overlord engine design">
+  <meta name="GENERATOR"
+ content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2 i686) [Netscape]">
+  <title>Overlord Design</title>
+</head>
+<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b"
+ alink="#ff0000">
+<div align="center">
+<h3> 1.0 General Concepts.</h3>
+</div>
+<div align="center">
+<pre>General principles and concepts of Overlord engine desig</pre>
+&nbsp; </div>
+<div align="center">
+<h3> 1.1 Overlord Game Engine object paradigm:</h3>
+</div>
+<p><br>
+Imagine, that we have unit A consisting from 20 men, with 20 swords.
+Are we going to represent each man and each sword as separate object?
+Definitely not. We can assume that all men are equal and swords are
+undistinguishable so&nbsp; It's enough to have one object for all men
+and one object for
+all swords and inventory record that we have 20 of them. Such objects
+are
+called <a href="#Rules">Rules</a> and such inventory records - <a
+ href="#Elements"> Elements</a>. At the same time we consider all units
+being
+(potentially) different, so each of them represented by separate
+object. Such objects are called <a href="#Entities">Entities</a>
+.&nbsp; Entities are stored in special&nbsp; <a
+ href="#2.5_Collections.">Collections</a> . Game objects may show very
+complex behaviour - for instance skills may be classified
+by the way, how they can be learned (mundane skills, magic skills,
+creature
+skills etc) and by the way how they are used (craft skill, combat
+skill,
+summoning skill etc). &nbsp;Each type of behaviour may be represented
+by
+<a href="#2.8_Strategies.">Strategy</a> object. Many types of object
+behaviour is conditional, so we would like to have object representing
+these <a href="#2.6_Conditions.">Conditions</a> .&nbsp; In some cases
+configuring game object properties may be more efficiently done with
+use of special objects such as <a href="#2.7_Varieties.">varieties</a>.<br>
+<small style="background-color: rgb(255, 204, 255);"><small><br>
+</small></small>&nbsp; </p>
+<div align="center">
+<h3> 1.2&nbsp;<a name="Polymorphic_Persistence"></a>Polymorphic
+Persistence.</h3>
+</div>
+<p><br>
+Game data (<a href="#Entities">Entities</a>)&nbsp; should be stored
+between turns. <br>
+This means that Entities should be&nbsp; Persistent Objects. <br>
+If we now want to allow polymorphism,&nbsp; Entities&nbsp; should
+be&nbsp; Polymorphic Persistent Objects. </p>
+<p>Polymorphic Persistent Object may be loaded from the disk (database)
+or saved to the disk (database). <br>
+And all derivatives of this object may be loaded from the disk as well.
+What's important here is that one doesn't need to know the type of
+object before loading. Object has built-in procedure of
+self-identification and self-building. <br>
+&nbsp; <br>
+Other polymorphic persistent objects
+(<a
+ href="file:///home/alex/engine/overlord/docs/en/DesignDoc.html#Rules">
+Rules</a>, <a href="#2.8_Strategies.">Strategies</a>, <a
+ href="#2.7_Varieties.">Varieties</a>, <a href="#2.6_Conditions.">Conditions</a>)
+&nbsp;&nbsp; may be also efficiently used for game confuguration.&nbsp;
+</p>
+<div align="center">
+<h2> 2.0 Object classification</h2>
+</div>
+<p><br>
+Data used in Overlord Game Engine may be classified into the following
+cathegories, which are reflected in object names: <br>
+&nbsp; </p>
+<div align="center">
+<h3> 2.1<a name="Rules"></a> Rules.</h3>
+</div>
+Rules represent properties and specifications&nbsp; of game world
+objects. <br>
+Rules provide confugurability of the game world. Rules may be refered
+by tag. <br>
+For Overlord they are: <br>
+&nbsp; - ItemRules - defines&nbsp; properties of items. <br>
+&nbsp; - SkillRules - defines skill properties, learning conditions
+and way they are used. <br>
+&nbsp; - RaceRules - defines racial characteristics, abilities and
+trends <br>
+&nbsp; - TitleRules - defines Titles, their benefits, condition of
+claiming and rules for challenging <br>
+&nbsp; - TerrainRules&nbsp; defines&nbsp; terrain properties (plain,
+forest... ) <br>
+&nbsp; - ConstructionRules - defines&nbsp; properties of Ships and
+Buildings <br>
+&nbsp; - InfoRules - defines specific in-game information that may be
+obtained by units. <br>
+&nbsp; <br>
+&nbsp;
+<div align="center">
+<h3> 2.2.&nbsp;<a name="Entities"></a>Entities.</h3>
+</div>
+Entities are most important game objects. Entities are refered by ID,
+which is prefix + id number. <br>
+For Overlord they are: <br>
+&nbsp; - GameEntity - Instance of the Game World <br>
+&nbsp; - FactionEntity&nbsp; - Factions <br>
+&nbsp; - LocationEntity - Locations <br>
+&nbsp; - UnitEntity&nbsp;&nbsp;&nbsp;&nbsp; - Units <br>
+&nbsp; - SingularityEntity - Global Effects like Tornado, flood or
+plague. <br>
+&nbsp; - ExitEntity&nbsp;&nbsp;&nbsp;&nbsp; - representing transition
+from one location to another <br>
+&nbsp; - ConstructionEntity - Ships and Buildings. <br>
+&nbsp; <br>
+&nbsp;
+<div align="center">
+<h3> 2.3.&nbsp;<a name="Elements"></a>Elements.</h3>
+</div>
+&nbsp; Elements are minor game objects. Element contains reference to
+some Rule&nbsp; (or Entity) and typically one or two Parameters.
+Element allways belongs to some entity&nbsp; and can't exist by
+themselves. There are enormous number of elements and they are the
+biggest part of a&nbsp; game data. On the disk Elements are stored
+inside&nbsp; records of Entity which owns them. Elements may be created
+and deleted.&nbsp; Memory consumption by Elements is a crucial factor.
+That's why custom memory allocator/deallocator should be used for
+Elements instead of standard <b>new </b>/ <b>delete</b>. (these are
+use few extra words for each allocation). Elements <i>equiality </i>is
+determined by equiality of their&nbsp; Rules and Element <i>equivalence
+</i>is determined by both equivalence&nbsp; of their&nbsp; Rules
+and&nbsp; parameters.<br>
+I.e.for&nbsp; two elements Element1 {Rule1; Parameter1;} and &nbsp;
+Element2 {Rule2; Parameter2;}<br>
+Element1 == Element2 if <br>
+&nbsp;&nbsp; &nbsp; &nbsp; Rule1 == Rule2<br>
+and<br>
+Element1 &lt; Element2 if <br>
+( Element1 &lt; Element2) or (( Element1 == Element2) and&nbsp;
+(Parameter1 &lt; Parameter2) <br>
+<br>
+This allows for instance to use STL find to determine either unit has
+any swords in inventory and to use STL searching routines for
+determining either unit's skill knowledge is high enougth. <br>
+<br>
+Elements should be stored in vectors and these vectors may be sorted
+vectors for the case when the speed of the searching is important. (Why
+not maps? Because for relatively small collections sorted vectors are
+more
+memory and speed efficient than associative containers)<br>
+<br>
+In many cases Elements themselves (not references) are stored in
+Element Containers. Copy constructors should be provided.<br>
+<br>
+Examples of Overlord Elements:&nbsp;
+<p>&nbsp; ItemElement (contains ItemRules pointer, amount of items and
+amount of equipped items) <br>
+&nbsp; SkillElement (contains SkillRules pointer and level of
+knowledge) <br>
+&nbsp; RaceElement (contains RaceRules pointer and amount of specimen) <br>
+&nbsp; TitleElement (contains TitleRules pointer and pointer to
+Location Entity)&nbsp; <br>
+&nbsp; StanceElement&nbsp; (contains StanceVariety pointer and pointer
+to target Entity) <br>
+&nbsp; ResourceElement (contains ItemRules pointer and amount of
+resource) <br>
+&nbsp;&nbsp; ReportElements&nbsp; (contains ReportPattern pointer,
+pointer to Entity, producing this report and time, when report was
+created) &nbsp;&nbsp; </p>
+<br>
+<p><br>
+</p>
+<div align="center">
+<h3><a name="2.5_Collections."></a>2.5 <a name="Collections"></a>Collections.</h3>
+</div>
+<br>
+Collections&nbsp; are used for storing similar type of objects. They
+are also supporting some additional operations: They are responsible
+for finding specific object in the collection. Collections&nbsp; are
+also responsible for&nbsp; element insertion or deletion. &nbsp;They
+have no knowledge about the way their elements stored, but they are
+able to load elements from the storage and save them to storage<br>
+Examples of Collections:
+<p> RuleCollection. &nbsp;&nbsp;&nbsp;&nbsp; -&nbsp;&nbsp; Keeps Rule
+objects. One collection per Rule type. This is Unique Associative
+Container.&nbsp;&nbsp; &nbsp;<br>
+EntityCollection &nbsp;&nbsp;&nbsp; - &nbsp; Keeps Entity objects. One
+collection per Entity type.&nbsp; <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+EntityCollection is&nbsp; based on preallocated STL vector with
+Entity's id&nbsp; used as&nbsp; index. <br>
+OrderPrototypesCollection<br>
+VarietiesCollection<br>
+</p>
+<h3><a name="2.6_Conditions."></a>2.6 <a name="Conditions"></a>Conditions.</h3>
+<p>Condition objects may be used in order to provide additional
+generalization to the rules. It's easy to hardcode into Item rule that
+some skill may be demanded for equipping. But what if you want Item,
+that may be equipped only by some race or by holder of some title? Of
+course one can derive a class TitleSpecificItemRule. But then another
+problem appears: if unit looses title item should be unequipped. How
+can it be done? Should we check all equipment each time title(or skill
+or something else ) lost? And not only equipment - there may be more
+dependencies)<br>
+Title, skill or some other ability loss is essentially asyncronous
+event and should be treated with something interrupt-like.<br>
+Condition objects provide generic solution for this problem. Now
+if&nbsp; object defines some part of it's functionality as conditional,
+Condition object generated. Condition object knows which game object it
+depends on and similar to interrupt handlers binding Condition&nbsp;
+provides handling routine and binds it to object it depends on. When
+some change in this object happens it checks conditions binded to it
+and calls their handlers.&nbsp; Note that skill conditions&nbsp; for
+item equipment and title holding are different type of objects because
+they define differenr handling procedures.<br>
+</p>
+<p>&nbsp;<br>
+</p>
+<h3><a name="2.7_Varieties."></a>2.7 <a name="varieties"></a>Varieties.</h3>
+<p>Let's consider geographical directions on the map (East, West,
+North,
+South etc)</p>
+<p>Normally these directions may be represented by enumerated type. But
+we want also to be able to report information about direction used in
+verbal form and also to have verbal input from the player. In addition
+to that
+we may have some special directions that are treated differently (for
+instanse IN_TO_PORTAL direction). &nbsp;Again Polymorphic Persistent
+object are one of possible solutions here. Such objects are called
+varieties here. <br>
+Examplese of Varieties are <br>
+&nbsp;&nbsp;&nbsp; MovementVariety - movement modes (walk, ride, swim,
+fly, climb etc) <br>
+&nbsp;&nbsp;&nbsp; StanceVariety - possible stances between factions
+(allied, friendly, neutral, unfriendly, hostile)<br>
+&nbsp;&nbsp;&nbsp; DirectionVariety - set of directions (N, S, NE, NW,
+SE, SW, IN, OUT etc)<br>
+&nbsp;&nbsp;&nbsp; EquipementSlotVariety - possible equipement slots on
+the body (weapon, shield, helm etc.)<br>
+</p>
+<h3><a name="2.8_Strategies."></a>2.8 <a name="policies"></a>Strategies.</h3>
+<p>&nbsp;&nbsp;&nbsp; Strategy is one of &nbsp;standard <a
+ href="http://www.exciton.cs.rice.edu/JavaResources/DesignPatterns/StrategyPattern.htm">design
+patterns</a>. <br>
+Example of strategies are:<br>
+&nbsp;&nbsp;&nbsp; LearningStrategy - describes skill-specific learning
+demands and limitations<br>
+&nbsp;&nbsp;&nbsp; StudentStrategy - describes race-specific abilities
+to study skills<br>
+&nbsp;&nbsp;&nbsp; UsingStrategy - defines the way how skill is used.<br>
+&nbsp;&nbsp;&nbsp; MarketStrategy - responsible for local trading
+operations. <br>
+&nbsp; <br>
+</p>
+<h2>Order processing&nbsp; </h2>
+<h4> Conflicts.</h4>
+<p> <br>
+Conflict happens when two (or more) entities are trying to perform
+actions that are contradicting each other or just can't be done at the
+same time. Examples:</p>
+<p>&nbsp;&nbsp;&nbsp; Unit trying to enter guarded territory.<br>
+&nbsp;&nbsp;&nbsp; Unit trying to tax on guarded territory<br>
+&nbsp;&nbsp;&nbsp; Several units are harvesting limited resource.<br>
+&nbsp;&nbsp;&nbsp; Several units are buying/selling the same product on
+the
+market.</p>
+<p> In some cases such conflicts may be resolved immediatelly. For
+instance taxing on guarded territory depends on guarding faction
+stances, these stances can't be changed while taxing occurs so conflict
+may be resolved
+instantly. The different situation happens when conflict is determined
+by
+Entities actions performed at the same stage of turn processing. If we
+have
+Location with 5 wood/day resource and 2 units each being able to
+harvest 4 wood/day then the amount of wood each unit will be able to
+harvest will depend on actions of the other unit. </p>
+<p>Currently all conflicts are hosted by Locations but they may be
+assigned to other kinds of entities too. There are different types of
+conflicts. For instanse:<br>
+- Even Conflicts - where all request are equal and limited resource
+distributed
+equally and the rests randomly<br>
+- Market Conflict - requests are served based on market model.<br>
+There are also conflicts that are solved daily and conflicts that are
+solved only on some days(Market Conflict on Market days) or at the end
+of month (wages
+payed)<br>
+</p>
+<h4> Requests.</h4>
+<p> <br>
+When order processing may depend on orders given to the other Entities
+present at the same Location, processing can't be done instantly
+and should be postponed. For that purpose Request is generated. When
+order
+processing is completed and all Requests are submitted, they will be
+sorted,
+conflicts detected and resolved.</p>
+<p>Conflict Resolution.<br>
+</p>
+<p>When it time comes each conflict is <b><i>processed.</i></b> All
+requests
+are sorted by their critical resource type, then for each resource
+conflict
+should be <b><i>resolved.</i></b> Resolution is a procedude deciding
+how
+much of resource should get each request. Then each request gets
+answer.
+Answering request may include&nbsp; requested resource acquisition,
+reporting
+results. In many cases &nbsp;finishing request processing may determine
+order
+processing result (such as SUCCESS or FAILURE) so order processing
+should
+be updated for that unit ( <b><i>completeProcessing</i></b><i><b> </b></i>calling<i><b>
+updateOrderResults</b></i>&nbsp;<b><i></i></b> )<br>
+</p>
+<p><br>
+</p>
+<h2>Report Processing</h2>
+<p><br>
+<br>
+=======<br>
+<br>
+<br>
+Reports:<br>
+Reports are produced by Manipulators. So _what_ to report depends on
+Manipulator, but _how_ to report defined in InfoRules. Each time when
+something that worths to be reported happens, ReportRecord generated. <br>
+ReportRecord is an Element, containig pointer to InfoRule, set of
+parameters (defined in InfoRule) and&nbsp; ObservationCriteria
+Manipulator.<br>
+<br>
+ObservationCriteria Element provides condition that unit&nbsp; should
+meet in order to observe and be able to report some event. These may be:<br>
+&nbsp;&nbsp; Possesing some level of observation<br>
+&nbsp;&nbsp; Possesing some level of skill<br>
+&nbsp;&nbsp; Possessing some item<br>
+implementation of ObservationCriteria Element - TBD.<br>
+<br>
+Events which are seen differently by units with different levels of
+ObservationCriteria (for instance uncommon resources or foreign unit's
+affilations) should be represented by Report Branch: set of reports
+with
+different ObservationCriteria, where each next record adds additional
+info
+for the previous ones.<br>
+<br>
+ReportElement contains pointer to ReportRecord and some additional keys
+for&nbsp; sorting (Unit, Location, Day of report).<br>
+<br>
+<br>
+ReportCollection keeps local ReportRecords of some Location or global
+ReportRecords of whole World. It has tree-like structure, where some
+ReportRecords stored in Report Branches.<br>
+<br>
+ReportElementCollections keeps ReportElements. Should support sorting
+by 2 keys. <br>
+<br>
+Factions may have more than one ReportElementCollections each dedicated
+to some section of faction report.<br>
+&nbsp;&nbsp; For instance:<br>
+&nbsp;&nbsp; &nbsp; &nbsp; Global Reports<br>
+&nbsp;&nbsp; &nbsp; &nbsp; Combat Reports<br>
+&nbsp;&nbsp; &nbsp; &nbsp; Unit Reports (sorted by Unit and Day)<br>
+&nbsp;&nbsp; &nbsp; &nbsp; Location Reports&nbsp; (Sorted by Location
+and Day)<br>
+<br>
+How it works: <br>
+&nbsp;&nbsp; <br>
+Manipulator produces ReportRecord and places it into ReportCollection
+of Location where it happened (local report) or World (global report).
+ReportRecord may be also placed into ReportCollections of adjacient
+Locations
+(may be with more severe&nbsp; ObservationCriteria). At the end of day
+all
+units that are still alive, try to report local events to their
+factions.
+To do that ReportManipulator compares ObservationCriteria with Unit's
+possesions and abilities in the case of success ReportElement containig
+refe<br>
+ence to&nbsp; ReportRecord placed into corresponded faction's
+ReportElementCollections&nbsp; (How to do it efficiently and hoe to
+avoid reporting the same things many times - TBD) <br>
+After the end of turn processing ReportManipulator creates faction
+report, calculates faction statistics, faction ranking, prints into
+report faction statistics, faction ranking, Sorts
+ReportElementCollections for each section and prints them. Then creates
+and prints orders.<br>
+<br>
+<br>
+As most common ObservationCriteria is observation level it may worth to
+create for each faction, temporary collection of all present at the
+location units&nbsp; sorted ReportElementCollections&nbsp; <br>
+<br>
+<br>
+<br>
+<br>
+</p>
+<h2>&nbsp; </h2>
+<p>&nbsp; </p>
+<br>
+<br>
+<br>
+<br>
+</body>
+</html>

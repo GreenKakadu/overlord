@@ -1,0 +1,2776 @@
+# Overlord Item definitions
+# Ver 0.23 13.07.2003
+
+KEYWORD ITEM
+
+ITEM coin
+NAME coin
+PLURAL coins
+CATEGORY 1
+DESCRIPTION The monetary unit
+
+ITEM mana
+NAME mana
+PLURAL mana
+TYPE 2
+DESCRIPTION The magical power unit. Cannot be given or gotten. Its tag is [mana]
+
+ITEM msym
+NAME mystical symbol
+PLURAL mystical symbols
+UNIQUE
+WEIGHT 1
+DESCRIPTION The symbol of the arch-mage. Possession of the mystical symbol is a requirement for the most advanced spells
+
+ITEM fate
+NAME fate point
+PLURAL fate points
+DESCRIPTION Fate points, either in a unit's possession, or in a faction pool, may be used by any single-figure unit with the order FATE
+UNIQUE
+
+ITEM ston
+NAME stone
+PLURAL stones
+DESCRIPTION A cubit of stones, cut and ready for construction
+TOKEN 6
+PRICE 13
+WEIGHT 20
+
+ITEM gran
+NAME granite
+PLURAL granite
+DESCRIPTION Granite is the best stone there is. Skilled masons can use granite to produce military buildings faster
+TOKEN 6
+PRICE 34
+WEIGHT 20
+
+ITEM kstn
+NAME keystone
+PLURAL keystones
+DESCRIPTION Keystones are stone reworked by skilled craftsmen into perfect shapes
+PRICE 120
+WEIGHT 20
+
+ITEM iron
+NAME iron
+PLURAL iron
+DESCRIPTION A set of refined iron ingots, ready for plying and forging into useful items
+TOKEN 6
+PRICE 21
+WEIGHT 8
+
+ITEM silv
+NAME silver
+PLURAL silver
+DESCRIPTION A set of small silver ingots, ready to be worked into beautiful and luxury items, or sold for weight
+TOKEN 10
+PRICE 70
+WEIGHT 3
+HIDDEN
+
+ITEM gold
+NAME gold
+PLURAL gold
+DESCRIPTION An ingot of the noblest and most sought of the metals. Gold serves as money, jewelry, and other enhancements
+TOKEN 20
+PRICE 260
+WEIGHT 1
+HIDDEN
+
+ITEM adam
+NAME adamantium
+PLURAL adamantium
+DESCRIPTION An ingot of adamantium, weighting nothing, yet hardest than iron, sharper than silver, and more precious than gold
+TOKEN 30
+PRICE 400
+WEIGHT 1
+HIDDEN
+
+ITEM gems
+NAME gem
+PLURAL gems
+DESCRIPTION A precious gemstone, highly sought for their worth, beauty, and durability
+TOKEN 30
+PRICE 440
+HIDDEN
+
+ITEM hrbs
+NAME herbs
+PLURAL herbs
+DESCRIPTION Magical herbs, for potions, rituals and other
+TOKEN 10
+LIVE
+PRICE 24
+WEIGHT 1
+
+ITEM mand
+NAME mandrake root
+PLURAL mandrake roots
+DESCRIPTION The elusive mandrake is found mostly in swamps, and only by the skilled herbalist
+TOKEN 20
+PRICE 580
+LIVE
+WEIGHT 1
+HIDDEN
+
+ITEM hide
+NAME hide
+PLURAL hides
+DESCRIPTION The skinned and prepared pelts of animals, for luxury or just clothing
+TOKEN 10
+PRICE 24
+LIVE
+WEIGHT 1
+
+ITEM wood
+NAME wood
+PLURAL wood
+DESCRIPTION Felled, cut and without bothersome twigs, a set of wood logs
+TOKEN 5
+PRICE 12
+LIVE
+WEIGHT 20
+
+ITEM eben
+NAME ebene
+PLURAL ebene
+DESCRIPTION This black, hard wood is only found in the deepest forests
+TOKEN 7
+LIVE
+PRICE 65
+WEIGHT 20
+HIDDEN
+
+ITEM hrse
+NAME horse
+PLURAL horses
+DESCRIPTION The basic mount, suited for fast riding, and light pack duty
+WEIGHT 100
+CAPACITY 0 120
+CAPACITY 1 95
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+INITIATIVE 3
+MELEE -1
+DEFENSE -1
+PRICE 105
+LIVE
+TOKEN 30
+
+ITEM whrs
+NAME war horse
+PLURAL war horses
+DESCRIPTION The basic mounts for war, suited and equipped
+WEIGHT 120
+CAPACITY 0 120
+CAPACITY 1 90
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mane 1
+INITIATIVE 2
+DEFENSE 1
+PRICE 290
+LIVE
+
+ITEM wmnt
+NAME war mount
+PLURAL war mounts
+DESCRIPTION The mounts for the elite cavalry
+WEIGHT 120
+CAPACITY 0 120
+CAPACITY 1 90
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION cava 1
+INITIATIVE 3
+MELEE 1
+DEFENSE 1
+PRICE 380
+LIVE
+
+ITEM pega
+NAME pegasus
+PLURAL pegasi
+DESCRIPTION This delicate-looking winged beauty adds its own skills to the natural flying advantage
+WEIGHT 90
+CAPACITY 2 50
+EQUIP_CAPACITY 2 210
+EQUIP_CATEGORY 2
+INITIATIVE 3
+TOKEN 30
+PRICE 360
+LIVE
+HIDDEN
+
+ITEM shah
+NAME shadow horse
+PLURAL shadow horses
+DESCRIPTION This rare spectral mount allows its user to move unobserved thru shadows
+WEIGHT 100
+CAPACITY 0 120
+CAPACITY 1 95
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+INITIATIVE 2
+STEALTH 2
+LIFE 1
+LIVE
+
+ITEM fste
+NAME fire steed
+PLURAL fire steeds
+DESCRIPTION Infused with the power of fire, these beasts can be directed to attack their foes
+WEIGHT 100
+CAPACITY 0 100
+CAPACITY 1 80
+EQUIP_CAPACITY 0 100
+EQUIP_CAPACITY 1 250
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mane 2
+INITIATIVE 3
+MELEE -1
+COMBAT TARGET UNIT
+COMBAT EFFECT MELEE
+COMBAT RANGE 1
+COMBAT MELEE 15
+COMBAT DAMAGE 10
+COMBAT DAMAGE_TYPE 3
+PRICE 500
+LIVE
+
+ITEM shrs
+NAME stone horse
+PLURAL stone horses
+DESCRIPTION Infused with the power of earth, these beasts allow one to concentrate on battle
+WEIGHT 400
+CAPACITY 0 500
+EQUIP_CAPACITY 0 500
+EQUIP_CATEGORY 2
+INITIATIVE 0
+DEFENSE 1
+PRICE 500
+LIVE
+
+ITEM seah
+NAME sea horse
+PLURAL sea horses
+DESCRIPTION The basic aquatic mount, all scaly and bobbing among the waves
+WEIGHT 100
+CAPACITY 3 95
+EQUIP_CAPACITY 3 200
+EQUIP_CATEGORY 2
+INITIATIVE 3
+MELEE -1
+DEFENSE -1
+LIVE
+TOKEN 30
+PRICE 250
+HIDDEN
+
+ITEM houn
+NAME hunting hound
+PLURAL hunting hounds
+DESCRIPTION A simple beast, loyal to their masters
+WEIGHT 10
+CAPACITY 0 10
+EQUIP_CAPACITY 0 11
+EQUIP_CAPACITY 1 10
+EQUIP_CATEGORY 13
+EQUIP_MAX 2
+UPKEEP 2
+INITIATIVE 1
+DAMAGE 1
+LIVE
+PRICE 85
+TOKEN 30
+HIDDEN
+
+ITEM catt
+NAME cattle
+PLURAL cattle
+DESCRIPTION The basic food animal
+WEIGHT 300
+CAPACITY 0 299
+EQUIP_CAPACITY 0 299
+EQUIP_CATEGORY 1
+LIVE
+PRICE 80
+TOKEN 30
+
+ITEM mule
+NAME mule
+PLURAL mules
+DESCRIPTION The pack animal per excellence, docile and suited for long caravan duty
+WEIGHT 80
+CAPACITY 0 150
+PRICE 130
+LIVE
+
+ITEM food
+NAME food
+PLURAL food
+DESCRIPTION Emergency rations, to be used to feed your harassed troops when they can't buy their own
+WEIGHT 1
+PRICE 10
+EQUIP_CATEGORY 1
+
+ITEM fish
+NAME fish
+PLURAL fishes
+DESCRIPTION The basic staple of the sea, rivers and lakes
+WEIGHT 2
+TOKEN 10
+LIVE
+PRICE 34
+EQUIP_CATEGORY 1
+
+ITEM grai
+NAME grain
+PLURAL grain
+DESCRIPTION Harvested and grounded grain
+WEIGHT 8
+TOKEN 30
+PRICE 80
+LIVE
+EQUIP_CATEGORY 1
+
+ITEM tool
+NAME tool
+PLURAL tools
+DESCRIPTION Tools speed up the skills of artisans, and reduce by 33% the time required to ply their craft
+WEIGHT 1
+PRICE 85
+EQUIP_CATEGORY 3
+
+ITEM plow
+NAME plow
+PLURAL plows
+DESCRIPTION The plow is used by farmers to prepare fields. It reduces by 33% the time required to harvest or plant grain
+WEIGHT 4
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION farm 1
+INITIATIVE -1
+PRICE 65
+
+ITEM pick
+NAME pickaxe
+PLURAL pickaxes
+DESCRIPTION The pickaxe is used by diggers to accelerate their craft. It reduces by 33% the time required to dig stones or metals, precious or not
+WEIGHT 1
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION digg 1
+MELEE 2
+INITIATIVE -1
+PRICE 65
+
+ITEM jham
+NAME jeweler hammer
+PLURAL jeweler hammers
+DESCRIPTION The essential tool in jewelry. It reduces by 33% the time required to produce rings or amulets
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION arti 2
+INITIATIVE -1
+PRICE 50
+
+ITEM hamm
+NAME hammer
+PLURAL hammers
+DESCRIPTION The hammer is used by weapon makers to speed up the work on their products. It reduces by 33% the time required to make weapons that require iron
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION weap 1
+MELEE 2
+INITIATIVE -1
+PRICE 65
+
+ITEM anvi
+NAME anvil
+PLURAL anvils
+DESCRIPTION The anvil is used by armor makers to speed up the work in their trade. It reduces by 33% the time required to make armors that require iron or hide
+WEIGHT 30
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION armo 1
+DEFENSE 2
+INITIATIVE -2
+PRICE 65
+
+ITEM saws
+NAME saw
+PLURAL saws
+DESCRIPTION The saw is used by woodsmen to speed up the work on trees. It reduces by 33% the time required to fall and prepare wood
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION lumb 1
+DAMAGE 1
+INITIATIVE -2
+PRICE 65
+
+ITEM ckry
+NAME cookery
+PLURAL cookery
+DESCRIPTION The various implements used to prepare all kindsn of food. It reduces by 33% the time required to make most food rations, except the most basic ones harvested directly from the land
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION cook 1
+DAMAGE 1
+INITIATIVE -2
+PRICE 65
+
+ITEM fshi
+NAME fishing boat
+PLURAL fishing boats
+DESCRIPTION A small boat, suited for a few valiant sailors
+WEIGHT 500
+EQUIP_CAPACITY 3 800
+EQUIP_CONDITION SKILL_CONDITION sail 1
+EQUIP_CATEGORY 4
+PRICE 640
+
+ITEM lgbt
+NAME longboat
+PLURAL longboats
+DESCRIPTION Medium-sized boat, suited for small expeditions
+WEIGHT 3000
+EQUIP_CAPACITY 3 5000
+EQUIP_CONDITION SKILL_CONDITION sail 2
+EQUIP_CATEGORY 4
+EQUIP_MEN 5
+PRICE 2800
+
+ITEM gall
+NAME galleon
+PLURAL galleons
+DESCRIPTION The largest sized boat, for long hauls and commerce
+WEIGHT 10000
+EQUIP_CAPACITY 3 18000
+EQUIP_CONDITION SKILL_CONDITION sail 2
+EQUIP_CATEGORY 4
+EQUIP_MEN 15
+PRICE 6700
+
+ITEM trir
+NAME trireme
+PLURAL triremes
+DESCRIPTION The basic warship, triremes require many rowers but provide a fighting bonus to their crew, and all soldiers all aboard
+WEIGHT 1500
+EQUIP_CAPACITY 3 3000
+EQUIP_CONDITION SKILL_CONDITION sail
+EQUIP_CATEGORY 4
+EQUIP_MEN 10
+MELEE 2
+DEFENSE 1
+PRICE 2300
+
+ITEM wgal
+NAME war galley
+PLURAL war galleys
+DESCRIPTION The best warship, war galleys require some rowers and provide an extra fighting bonus of +2 melee, +1 missile and +1 initiative to all soldiers aboard if the battle occurs at sea
+WEIGHT 3000
+EQUIP_CAPACITY 3 5000
+EQUIP_CONDITION SKILL_CONDITION sail
+EQUIP_CATEGORY 4
+EQUIP_MEN 10
+MELEE 2
+DEFENSE 1
+PRICE 5000
+
+ITEM mgal
+NAME magical galley
+PLURAL magical galley
+DESCRIPTION This warship works under the control of a mage, and provide a fighting bonus to all soldiers aboard
+WEIGHT 1500
+EQUIP_CAPACITY 3 3000
+EQUIP_CONDITION SKILL_CONDITION mage
+EQUIP_CATEGORY 4
+MELEE 2
+DEFENSE 3
+PRICE 5600
+
+ITEM flsh
+NAME flying ship
+PLURAL flying ships
+DESCRIPTION This wonder of the airs works like a boat, but sails thru the skies
+WEIGHT 3000
+EQUIP_CAPACITY 2 5000
+EQUIP_CONDITION SKILL_CONDITION airs 1
+EQUIP_CATEGORY 4
+PRICE 8400
+
+ITEM mong
+NAME hot hair baloon
+PLURAL hot hair baloons
+DESCRIPTION Striking terror in the heart of peasants, this contraption is very light, yet flies very high with a limited crew
+WEIGHT 100
+EQUIP_CAPACITY 2 500
+EQUIP_CONDITION SKILL_CONDITION scou 1
+EQUIP_CATEGORY 4
+PRICE 2000
+
+ITEM mshi
+NAME small ship
+PLURAL small ship
+DESCRIPTION A small ship, magically enchanted not to require any direction
+WEIGHT 200
+EQUIP_CAPACITY 3 400
+EQUIP_CATEGORY 4
+PRICE 1280
+
+ITEM mlbt
+NAME magic ship
+PLURAL magic ships
+DESCRIPTION This self-supporting ship works without a crew
+WEIGHT 3000
+CAPACITY 3 5000
+PRICE 7000
+
+ITEM fbot
+NAME floating boots
+PLURAL floating boots
+DESCRIPTION This magical contraption looks like a normal pair of boots, but allow walking on the water
+WEIGHT 1
+EQUIP_CAPACITY 3 100
+EQUIP_CATEGORY 10
+MELEE 2
+DEFENSE 3
+PRICE 800
+
+ITEM club
+NAME club
+PLURAL clubs
+DESCRIPTION The simplest weapon, a large carved woodpiece
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+MELEE 1
+DAMAGE 1
+PRICE 33
+
+ITEM gauc
+NAME main gauche
+WEIGHT 2
+DESCRIPTION The small swordlike weapon of choice for the expert swordsman, the main gauche complements the primary weapon
+PRICE 63
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION blde 3
+MELEE 2
+HITS 1
+
+ITEM swrd
+NAME sword
+PLURAL swords
+DESCRIPTION The basic edged weapon for infantry
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+MELEE 3
+DEFENSE 2
+DAMAGE 2
+PRICE 200
+
+ITEM sswd
+NAME silver sword
+PLURAL silver swords
+DESCRIPTION The weapon with an extra edge
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 2
+MELEE 4
+DEFENSE 2
+DAMAGE 3
+PRICE 325
+
+ITEM aswd
+NAME adamantine sword
+PLURAL adamantine swords
+DESCRIPTION Lightweight, and unbreakable weapons
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 5
+DEFENSE 4
+DAMAGE 6
+PRICE 1800
+SPECIAL
+
+ITEM legswrd
+NAME legendary sword
+PLURAL legendary swords
+DESCRIPTION A legendary sword is a unique item, with a unique name, requiring outstanding leaders as owners. Each sword made will have a specific name and a specific tag
+TYPE 2
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+FX 127
+SPECIAL
+
+ITEM fswd
+NAME flaming sword
+PLURAL flaming swords
+DESCRIPTION Imbued with the essence of fire, this weapon damages his ennemies
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+DEFENSE 2
+COMBAT TARGET UNIT
+COMBAT EFFECT MELEE
+COMBAT RANGE 1
+COMBAT BONUS MELEE 4
+COMBAT BONUS INITIATIVE 1
+COMBAT DAMAGE_TYPE 3
+COMBAT DAMAGE 6
+COMBAT BONUS HITS 1
+PRICE 1066
+SPECIAL
+
+ITEM baxe
+NAME battle axe
+PLURAL battle axes
+DESCRIPTION The weapons for agressive fighting
+WEIGHT 7
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+MELEE 3
+DEFENSE 1
+DAMAGE 3
+PRICE 170
+
+ITEM qaxe
+NAME quality axe
+PLURAL quality axes
+DESCRIPTION Those lighter weapons make devastating use under skilled fighter's hands
+WEIGHT 6
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 2
+MELEE 3
+DEFENSE 2
+INITIATIVE 1
+DAMAGE 3
+PRICE 280
+
+ITEM wham
+NAME war hammer
+PLURAL war hammers
+DESCRIPTION The blunt weapons for straight one-on-one massacre
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+MELEE 4
+DAMAGE 4
+PRICE 185
+
+ITEM mwam
+NAME magical war hammer
+PLURAL magical war hammers
+DESCRIPTION This weapon was empowered by the strength of the earth itself
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+COMBAT TARGET UNIT
+COMBAT EFFECT MELEE
+COMBAT RANGE 1
+COMBAT BONUS MELEE 6
+COMBAT BONUS INITIATIVE 1
+COMBAT DAMAGE_TYPE 2
+COMBAT DAMAGE 7
+COMBAT BONUS HITS 1
+PRICE 1000
+SPECIAL
+
+ITEM staf
+NAME fighting staff
+PLURAL fighting staffs
+DESCRIPTION The blunt but effective weapon for the skilled fighter
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mart 1
+MELEE 3
+DEFENSE 2
+INITIATIVE 1
+DAMAGE 1
+PRICE 85
+
+ITEM stfv
+NAME staff of void
+PLURAL staves of void
+DESCRIPTION This staff seems to move of its own accord
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mart 1
+MELEE 4
+DEFENSE 2
+INITIATIVE 4
+DAMAGE 2
+PRICE 720
+SPECIAL
+
+ITEM xbow
+NAME crossbow
+PLURAL crossbows
+DESCRIPTION The great equaliser, simple to master, terribly effective, but slow to use. A unit will RELOAD after using a crossbow
+WEIGHT 7
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch
+MISSILE 6
+COMBAT TARGET UNIT
+COMBAT RANGE 2
+COMBAT EFFECT RANGED
+COMBAT DAMAGE 5
+PRICE 130
+
+ITEM lbow
+NAME longbow
+PLURAL longbows
+DESCRIPTION The basic bow for skilled archers
+WEIGHT 5
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch 2
+MISSILE 3
+COMBAT TARGET UNIT
+COMBAT RANGE 2
+COMBAT EFFECT RANGED
+COMBAT DAMAGE 4
+PRICE 100
+
+ITEM cbow
+NAME compound bow
+PLURAL compound bows
+DESCRIPTION The best bow for elite archery
+WEIGHT 8
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch 3
+MISSILE 6
+COMBAT TARGET UNIT
+COMBAT RANGE 3
+COMBAT EFFECT RANGED
+COMBAT DAMAGE 6
+PRICE 285
+
+ITEM leat
+NAME leather jerkin
+PLURAL leather jerkins
+DESCRIPTION The basic protection for troops
+WEIGHT 5
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION cmbt
+DEFENSE 1
+PRICE 115
+
+ITEM chai
+NAME chain mail
+PLURAL chain mail
+DESCRIPTION Good and sturdy armor
+WEIGHT 10
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 2
+INITIATIVE -1
+LIFE 1
+PRICE 260
+
+ITEM amai
+NAME airy mail
+PLURAL airy mails
+DESCRIPTION This armor weights absolutely nothing, and may be used with great efficiency
+WEIGHT 1
+EQUIP_CATEGORY 6
+DEFENSE 2
+INITIATIVE 1
+PRICE 1120
+SPECIAL
+
+ITEM plat
+NAME plate mail
+PLURAL plate mail
+DESCRIPTION The best armor widely known
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 4
+INITIATIVE -2
+LIFE 2
+PRICE 350
+
+ITEM aplt
+NAME adamantium plate
+PLURAL adamantium plates
+DESCRIPTION The lightest of armors, and almost unbreakable
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 6
+LIFE 2
+INITIATIVE 1
+PRICE 2700
+SPECIAL
+
+ITEM plea
+NAME earth plate
+PLURAL earth plates
+DESCRIPTION Imbued with the strength of earth itself, this armor offers +3 protection against any elemental damage
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 6
+INITIATIVE -1
+LIFE 2
+PRICE 1460
+SPECIAL
+
+ITEM mpla
+NAME molten plate
+PLURAL molten plates
+DESCRIPTION This armor has been kept magically at fusion point, and offers +2 protection against fire damage
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 7
+DAMAGE 2
+INITIATIVE -1
+LIFE -1
+PRICE 1500
+SPECIAL
+
+ITEM cclo
+NAME camouflage cloak
+PLURAL camouflage cloaks
+DESCRIPTION This brown and grey cloak looks dirty, but camouflages its wearer handily
+WEIGHT 5
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+DEFENSE 1
+STEALTH 2
+PRICE 250
+
+ITEM coif
+NAME coif
+PLURAL coifs
+DESCRIPTION The basic head protection
+WEIGHT 4
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION cmbt
+DEFENSE 2
+INITIATIVE -1
+PRICE 90
+
+ITEM hlmt
+NAME helmet
+PLURAL helmets
+DESCRIPTION The full head protection
+WEIGHT 3
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 3
+INITIATIVE -1
+PRICE 100
+
+ITEM ahlm
+NAME adamantium helm
+PLURAL adamantium helms
+DESCRIPTION Lightweight and almost unbreakable
+WEIGHT 1
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 5
+INITIATIVE 1
+PRICE 575
+SPECIAL
+
+ITEM hlsp
+NAME helm of speed
+PLURAL helms of speed
+DESCRIPTION This increadible helmet allows its wearer to flow between units freely. Its owner may move into a square occupied by an ennemy unit
+WEIGHT 4
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+DEFENSE 2
+HITS 2
+PRICE 0
+FX 94
+SPECIAL
+
+ITEM hcom
+NAME helm of commandment
+PLURAL helms of commandment
+DESCRIPTION The very symbol of commandment, this helm adds 20% speed to the study of all skills derived from combat [cmbt]
+WEIGHT 1
+EQUIP_CATEGORY 7
+DEFENSE 5
+INITIATIVE 1
+SPECIAL
+
+ITEM hshd
+NAME hide shield
+PLURAL hide shields
+DESCRIPTION The basic shield
+WEIGHT 5
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr
+DEFENSE 2
+INITIATIVE -1
+PRICE 95
+
+ITEM tshd
+NAME tower shield
+PLURAL tower shields
+DESCRIPTION The shield for real fighters
+WEIGHT 7
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 1
+PRICE 125
+
+ITEM dshd
+NAME dark shield
+PLURAL dark shields
+DESCRIPTION Drawn from the very essence of void, this shield absords the ennemy's blows before failing his owner
+WEIGHT 7
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 1
+MELEE 1
+LIFE 5
+PRICE 860
+SPECIAL
+
+ITEM gshd
+NAME great shield
+PLURAL great shields
+DESCRIPTION The best shield craftsmen ever produced, covering a large area
+WEIGHT 9
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 3
+DEFENSE 2
+PRICE 170
+
+ITEM ashd
+NAME adamantium shield
+PLURAL admantium shields
+DESCRIPTION Lightweight and unbreakable
+WEIGHT 1
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 3
+LIFE 1
+INITIATIVE 1
+PRICE 1050
+SPECIAL
+
+ITEM wago
+NAME wagon
+PLURAL wagons
+DESCRIPTION The moving contraption of base, with a horse, platform and storage space for caravans
+WEIGHT 250
+EQUIP_CATEGORY 2
+EQUIP_CAPACITY 0 800
+INITIATIVE -1
+DEFENSE 1
+MELEE -1
+PRICE 320
+
+ITEM amul
+NAME amulet
+PLURAL amulets
+DESCRIPTION Made by jewellers from silver and gems, an amulet is considered a sign of luck, even if it is not magical
+EQUIP_CATEGORY 11
+PRICE 150
+
+ITEM irng
+NAME iron ring
+PLURAL iron rings
+DESCRIPTION Made by jewellers from iron and worked upon, the ring is hard to distinguish from silver rings, except to the trained eye
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 80
+
+ITEM srng
+NAME silver ring
+PLURAL silver rings
+DESCRIPTION Made by jewellers from silver, this ring indicates wealth and birth
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 160
+
+ITEM grng
+NAME gold ring
+PLURAL gold rings
+DESCRIPTION Made by the best jewellers from gold and gems, that ring is the true sign of the highest nobility and power
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 400
+
+ITEM tokl
+NAME token of loyalty
+PLURAL tokens of loyalty
+WEIGHT 1
+DESCRIPTION This medallion ensures that a creature will remain under your control, even if it is not stacked under one of your leaders at the end of a turn. The possession of one token per figure is required to guarantee this
+FX 127
+
+ITEM msto
+NAME mystic stone
+PLURAL mystic stones
+WEIGHT 1
+DESCRIPTION Enchanted out of ordinary gems by powerful mages, these mystic stones are required components of very high level spells
+PRICE 1150
+
+ITEM mwag
+NAME magic wagon
+PLURAL magic wagons
+DESCRIPTION An enchanted wagon that moves without horses, but as fast as one
+WEIGHT 250
+EQUIP_CATEGORY 2
+EQUIP_CAPACITY 0 800
+EQUIP_CAPACITY 1 800
+DEFENSE 1
+MELEE -1
+PRICE 1320
+
+ITEM poth
+NAME potion of healing
+PLURAL potions of healing
+DESCRIPTION The potion of healing enables its users to survive a wound that would otherwise be fatal
+EQUIP_CATEGORY 13
+LIFE 3
+PRICE 160
+
+ITEM whev
+NAME wand of heaviness
+PLURAL wands of heaviness
+DESCRIPTION From the wand of heaviness comes increased gravity. The affected figure will be unable to move, locking its unit in place, and will lose one initiative, two melee, one missile and one defense levels per item equipped per figure affected. A wand affect five figures at a time, and gravity lasts four rounds
+WEIGHT 1
+EQUIP_CATEGORY 5
+COMBAT TARGET UNIT
+COMBAT RANGE 2
+COMBAT EFFECT SPECIAL
+COMBAT BONUS INITIATIVE 3
+FX 66
+PRICE 420
+SPECIAL
+
+ITEM wfir
+NAME wand of fire
+PLURAL wands of fire
+DESCRIPTION From the wand of fire gushes forth an small fireball who does incredible damage for so small a volume
+WEIGHT 1
+EQUIP_CATEGORY 5
+COMBAT TARGET UNIT
+COMBAT RANGE 2
+COMBAT EFFECT RANGED
+COMBAT MISSILE 5
+COMBAT BONUS INITIATIVE 3
+COMBAT BONUS HITS 4
+COMBAT DAMAGE_TYPE 3
+COMBAT DAMAGE 5
+PRICE 420
+SPECIAL
+
+ITEM wcon
+NAME wand of confusion
+PLURAL wands of confusion
+DESCRIPTION From the wand of confusion gushes forth an invisible confusion. Confused units will either move randomly, reshuffle their combat list, or forget one combat action for this turn
+WEIGHT 1
+EQUIP_CATEGORY 5
+COMBAT TARGET UNIT
+COMBAT RANGE 2
+COMBAT EFFECT SPECIAL
+COMBAT BONUS INITIATIVE 1
+FX 38
+PRICE 500
+SPECIAL
+
+ITEM amli
+NAME amulet of life
+PLURAL amulets of life
+DESCRIPTION The amulet of life enables its wearer to survive many wounds that would be otherwise fatal
+EQUIP_CATEGORY 11
+LIFE 25
+PRICE 900
+
+ITEM amsh
+NAME amulet of shadows
+PLURAL amulets of shadows
+DESCRIPTION The amulet of shadows hides its wearer from the sight of his foes
+EQUIP_CATEGORY 11
+STEALTH 4
+PRICE 1450
+
+ITEM amsp
+NAME amulet of speed
+PLURAL amulets of speed
+DESCRIPTION The amulet of speed gives running capacity to its wearer, and enhances its initiative on the battlefield
+EQUIP_CATEGORY 11
+EQUIP_CAPACITY 1 90
+INITIATIVE 3
+PRICE 1100
+
+ITEM amra
+NAME amulet of radiance
+PLURAL amulets of radiance
+DESCRIPTION The amulet brings light to otherwise hidden areas and creatures
+EQUIP_CATEGORY 11
+OBSERVATION 3
+STEALTH -3
+PRICE 666
+
+ITEM amab
+NAME amulet of air blessing
+PLURAL amulets of air blessing
+DESCRIPTION The amulet of air blessing confers its wearer a +10 defense against air damage or 25% chance of resisting an air-based spell
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM ameb
+NAME amulet of earth blessing
+PLURAL amulets of earth blessing
+DESCRIPTION The amulet of earth blessing confers its wearer a +10 defense against earth damage or 25% chance of resisting an earth-based spell
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amfb
+NAME amulet of fire blessing
+PLURAL amulets of fire blessing
+DESCRIPTION The amulet of fire blessing confers its wearer a +10 defense against fire damage or 25% chance of resisting a fire-based spell
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amvb
+NAME amulet of void blessing
+PLURAL amulets of void blessing
+DESCRIPTION The amulet of void blessing confers its wearer a +10 defense against void damage or 25% chance of resisting a void-based spell
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amwb
+NAME amulet of water blessing
+PLURAL amulets of water blessing
+DESCRIPTION The amulet of water blessing confers its wearer a +10 defense against water damage or 25% chance of resisting a water-based spell
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM rtsi
+NAME ring of true sight
+PLURAL rings of true sight
+DESCRIPTION The ring of true sight enables its wearer to penetrate many deceptions
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+OBSERVATION 3
+PRICE 720
+
+ITEM rtst
+NAME ring of strength
+PLURAL rings of strength
+DESCRIPTION The ring of strength increases his wearer's stamina by large proportions
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 0 30
+DAMAGE 1
+LIFE 5
+PRICE 720
+
+ITEM rtiv
+NAME ring of minor invisibility
+PLURAL rings of minor invisibility
+DESCRIPTION The ring of minor invisibility enables its wearer to disappear from sight
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+STEALTH 2
+PRICE 770
+
+ITEM rlev
+NAME ring of levitation
+PLURAL rings of levitation
+DESCRIPTION The ring of levitation allows the wearer to fly, as long as he doesn't carry much
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 2 72
+PRICE 1000
+
+ITEM rair
+NAME ring of air
+PLURAL rings of air
+DESCRIPTION The ring of air symbolises air magics. A wearer of the ring of air will gain 5% speed to all air magic studies and 20% speed to all skills derived from scouting
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM reat
+NAME ring of earth
+PLURAL rings of earth
+DESCRIPTION The ring of earth symbolises earth magics. A wearer of the ring of earth will gain 5% speed to all earth magic studies and 20% speed to all skills derived from digging
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rfir
+NAME ring of fire
+PLURAL rings of fire
+DESCRIPTION The ring of fire symbolises fire magics. A wearer of the ring of fire will gain 5% speed to all fire magic studies and 20% speed to all skills derived from weaponsmith or armory
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rvod
+NAME ring of void
+PLURAL rings of void
+DESCRIPTION The ring of void symbolises void magics. A wearer of the ring of void will gain 5% speed to all void magic studies and 20% speed to all skills that provide observation or stealth bonus at one of its levels
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rwat
+NAME ring of water
+PLURAL rings of water
+DESCRIPTION The ring of water symbolises water magics. A wearer of the ring of water will gain 5% speed to all water magic studies and 20% speed to all skills that harvest or make living products
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rmov
+NAME ring of movement
+PLURAL rings of movement
+DESCRIPTION The ring of movement allows its wearer to find its way anywhere, and faster than lightning. Only a single figure may use this ring. Once a selected destination has been targeted, the mage will move toward that destination using the fastest way, ignoring any restriction, and moving at the rate of one location per day if it is capable of walking normally. Any unit stacked beneath the user will be left behind
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CONDITION SKILL_CONDITION mage 1
+FX 127
+PRICE 5100
+
+ITEM rmig
+NAME ring of might
+PLURAL rings of might
+DESCRIPTION The ring of might grants incredible superhuman fighting abilities and endurance, but prevents its wearer from using magic
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 0 1000
+MANA -200
+DEFENSE 20
+LIFE 60
+COMBAT DAMAGE 60
+COMBAT MELEE 20
+COMBAT EFFECT MELEE
+COMBAT RANGE 1
+COMBAT TARGET UNIT
+COMBAT DAMAGE_TYPE 2
+PRICE 5100
+
+ITEM rdom
+NAME ring of domination
+PLURAL rings of domination
+DESCRIPTION The ring of domination grants its user incredible control over the battlefield. Its wearer is considered having at least 5th ambush and 5th tactician
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CONDITION SKILL_CONDITION mage 1
+INITIATIVE 4
+MANA -4
+PRICE 5100
+
+ITEM rpow
+NAME ring of power
+PLURAL rings of power
+DESCRIPTION The ring of power grants incredible magical abilities at a price
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+MANA 30
+MELEE -15
+MISSILE -15
+PRICE 5100
+
+ITEM rphs
+NAME ring of phases
+PLURAL rings of phases
+DESCRIPTION The ring of phases makes its wearer hard to hit. Once phased, the user may take another action at -1 initiative
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 5100
+STEALTH 1
+COMBAT INITIATIVE -5
+COMBAT BONUS DEFENSE 40
+COMBAT BONUS STEALTH 1
+COMBAT BONUS MELEE -5
+COMBAT LIFE 5
+COMBAT EFFECT SPECIAL
+COMBAT RANGE 0
+COMBAT TARGET SELF
+
+ITEM mcom
+NAME magic compass
+PLURAL magic compasses
+WEIGHT 1
+DESCRIPTION The magic compass always points toward the nearest city, if one is in range
+FX 1
+PRICE 840
+
+ITEM morb
+NAME magic orb
+PLURAL magic orbs
+WEIGHT 1
+DESCRIPTION The holder of the magic orb may specify a unit or location id as its target. At the end of the month, 3 mana are consumed, and a report on the appropriate location generated. The orb remain inert if the target belongs to the same function. The farther the location scryed, the greater the chance of failure
+FX 127
+PRICE 2060
+
+ITEM xgla
+NAME x-ray glasses
+PLURAL x-ray glasses
+WEIGHT 1
+DESCRIPTION The wearer of x-ray glasses can see all local resources, regarless of its skills and the resource's requirements
+FX 2
+PRICE 610
+
+ITEM mkey
+NAME mage key
+PLURAL mage keys
+DESCRIPTION A mage key opens many doors, and locks many others. It is required for certain magical operations
+PRICE 940
+
+ITEM evtsigh
+NAME sighting
+TYPE 3
+FX 4
+ITEM evtrshe
+NAME shaping
+TYPE 3
+FX 5
+ITEM evtenhw
+NAME enhancement
+TYPE 3
+FX 127
+ITEM evtflor
+NAME floraison
+TYPE 3
+FX 6
+ITEM evtrmin
+NAME mind reading
+TYPE 3
+FX 7
+ITEM evtwway
+NAME wizard's walk
+TYPE 3
+FX 8
+ITEM evtcatt
+NAME additional cattle resource
+TYPE 3
+FX 9
+ITEM evthero
+NAME chance of hero status
+TYPE 3
+FX 11
+ITEM evtrmnt
+NAME random elemental mount
+TYPE 3
+FX 12
+ITEM evtlmin
+NAME mineral scrying
+TYPE 3
+FX 13
+ITEM evtfair
+NAME fair weather
+TYPE 3
+FX 21
+ITEM evtgaet
+NAME metamorphosis
+TYPE 3
+FX 22
+ITEM evtclon
+NAME cloning
+TYPE 3
+FX 28
+ITEM evtfami
+NAME familiar beasts unit
+TYPE 3
+FX 29
+ITEM evtwgrw
+NAME wild growth
+TYPE 3
+FX 45
+ITEM evtstor
+NAME storm season
+TYPE 3
+FX 55
+ITEM evtwind
+NAME persistent winds
+TYPE 3
+FX 54
+ITEM evtrain
+NAME rain month
+TYPE 3
+FX 53
+ITEM evtgwbe
+NAME gathering of beasts
+TYPE 3
+FX 60
+ITEM evtseet
+NAME seeing
+TYPE 3
+FX 127
+ITEM evtcapb
+NAME capture attempt
+TYPE 3
+FX 71
+ITEM evtcapc
+NAME capture attempt
+TYPE 3
+FX 72
+ITEM evtcapm
+NAME capture attempt
+TYPE 3
+FX 73
+ITEM evtimpr
+NAME mind impression
+TYPE 3
+FX 127
+ITEM evtamne
+NAME amnesia
+TYPE 3
+FX 127
+ITEM evtdeva
+NAME devastation
+TYPE 3
+FX 75
+ITEM evtmswp
+NAME mind swapping
+TYPE 3
+FX 37
+ITEM evtwvis
+NAME vision over water
+TYPE 3
+FX 41
+ITEM evtmgra
+NAME plantation
+TYPE 3
+FX 46
+ITEM evtsacr
+NAME sacrifice
+TYPE 3
+FX 47
+ITEM evtmmnd
+NAME mind impression
+TYPE 3
+FX 48
+ITEM evtfort
+NAME fortress
+TYPE 3
+FX 50
+ITEM evtcloc
+NAME cloning
+TYPE 3
+FX 127
+ITEM evthhai
+NAME hot hail
+TYPE 3
+FX 127
+ITEM evtfene
+NAME unit finding
+TYPE 3
+FX 127
+ITEM evtfmin
+NAME mineral finding
+TYPE 3
+FX 127
+ITEM evtsink
+NAME sinking
+TYPE 3
+FX 127
+ITEM evtondi
+NAME ondin transformation
+TYPE 3
+FX 99
+ITEM evtaeri
+NAME aerie
+TYPE 3
+FX 127
+ITEM evtcals
+NAME resource transfer
+TYPE 3
+FX 56
+ITEM evtcity
+NAME city construction
+TYPE 3
+FX 127
+ITEM evtmoss
+NAME moss growth
+TYPE 3
+FX 70
+ITEM evtchse
+NAME warping
+TYPE 3
+FX 127
+ITEM evtchhi
+NAME warping
+TYPE 3
+FX 127
+ITEM evtchpl
+NAME warping
+TYPE 3
+FX 127
+ITEM evtchfo
+NAME warping
+TYPE 3
+FX 127
+ITEM evtchsw
+NAME warping
+TYPE 3
+FX 127
+ITEM evtopwy
+NAME dimensional door
+TYPE 3
+FX 127
+
+ITEM evtblwd
+NAME wood structure
+PLURAL wood structures
+TYPE 3
+DESCRIPTION The basic wood beams supporting a structure or a floor. Typically require 1 wood to make
+ITEM evtblst
+NAME stonework
+PLURAL stonework
+TYPE 3
+DESCRIPTION The basic stone making up walls and floors. Typically require 1 stone to make
+ITEM evtblmi
+NAME fortification
+PLURAL fortifications
+TYPE 3
+DESCRIPTION Stonework applied to military uses. Typically require 1 stone to make
+ITEM evtblir
+NAME iron reinforcement
+PLURAL iron reinforcements
+TYPE 3
+DESCRIPTION Metal rods to strengthed military fortifications and other strong buldings. Typically require 1 iron to make
+ITEM evtblhi
+NAME hide streched
+PLURAL hides streched
+TYPE 3
+DESCRIPTION Hides, tanned and stretched over a frame for a basic coverage. Typically require 1 hide to make
+ITEM evtblky
+NAME magical consecration
+PLURAL magical consecrations
+TYPE 3
+DESCRIPTION The turning of the key on the final day of a magical structure. Require 1 mage key to effect
+ITEM evtmcir
+NAME circle drawing
+TYPE 3
+DESCRIPTION The making of a magic protecting circle, for high levels spells. Require 1 mystic stone to power
+ITEM evtbldc
+NAME silver decoration
+PLURAL silver decorations
+TYPE 3
+DESCRIPTION The silvery plates and engraving on prestige buildings. Typically require 1 silver to make
+ITEM evtbltx
+NAME tax lease
+PLURAL tax lease
+TYPE 3
+DESCRIPTION The special permission to activate a tax building. Require 1 gold to pay
+ITEM evtblks
+NAME key stonework
+PLURAL key stoneworks
+TYPE 3
+DESCRIPTION Specifically placed key stones are required for advanced buildings. Require 1 key stone cut from granite to make
+ITEM evtblwl
+NAME wall foundations
+PLURAL wall foundations
+TYPE 3
+DESCRIPTION The drawn wall foundations allow the direction of protecting wall
+ITEM evtblpf
+NAME tree rigging
+PLURAL tree riggings
+TYPE 3
+DESCRIPTION The basic placement on branches and various hides
+ITEM effmktg
+TYPE 2
+NAME market study
+PLURAL market studies
+DESCRIPTION Each market study can be used to detect an otherwise unsuspected market for some item
+
+ITEM evtskxx
+NAME chasm
+TYPE 3
+FX 63
+ITEM evtarma
+NAME armageddon strike
+TYPE 3
+FX 85
+ITEM evtbred
+NAME breeding
+TYPE 3
+FX 127
+ITEM evtvolc
+NAME volcano
+TYPE 3
+FX 127
+ITEM evterup
+NAME eruption
+TYPE 3
+FX 127
+ITEM evtwatp
+NAME water portal opening
+TYPE 3
+FX 81
+ITEM evtvoip
+NAME void portal opening
+TYPE 3
+FX 80
+ITEM evtfirp
+NAME fire portal opening
+TYPE 3
+FX 79
+ITEM evtearp
+NAME earth portal opening
+TYPE 3
+FX 78
+ITEM evtairp
+NAME air portal opening
+TYPE 3
+FX 77
+
+ITEM tokplai
+TYPE 4
+ITEM tokmoun
+TYPE 4
+ITEM tokhill
+TYPE 4
+ITEM tokfore
+TYPE 4
+ITEM tokdese
+TYPE 4
+ITEM tokswmp
+TYPE 4
+ITEM tokices
+TYPE 4
+ITEM tokplan
+TYPE 4
+ITEM evtupkp
+NAME upkeep ration
+PLURAL upkeep rations
+TYPE 2
+AUTO_EQUIP
+EQUIP_CATEGORY 1
+DESCRIPTION Food and drinks made from the land, basic, but consumed immediately
+ITEM toktaxe
+TYPE 4
+ITEM tokente
+TYPE 4
+ITEM evtppoc
+NAME attempt
+TYPE 3
+FX 57
+ITEM evtlmar
+NAME attempt
+TYPE 3
+FX 127
+ITEM evtlcoi
+NAME attempt
+TYPE 3
+FX 39
+ITEM evtassa
+NAME attempt
+TYPE 3
+FX 68
+
+ITEM evtplai
+NAME conversion to plains
+TYPE 3
+FX 127
+ITEM evthill
+NAME conversion to hills
+TYPE 3
+FX 127
+ITEM evtfore
+NAME conversion to forest
+TYPE 3
+FX 127
+ITEM evtswmp
+NAME conversion to swamp
+TYPE 3
+FX 127
+ITEM evtlake
+NAME conversion to lake
+TYPE 3
+FX 127
+
+ITEM evtsumm
+NAME summoning
+TYPE 3
+FX 16
+ITEM evtssum
+NAME summoning
+TYPE 3
+FX 17
+ITEM evtrais
+NAME raising
+TYPE 3
+FX 20
+ITEM evtmeta
+NAME metamorphosis
+TYPE 3
+FX 127
+ITEM evtbalr
+NAME summoning
+TYPE 3
+FX 127
+ITEM evtterr
+NAME terror chance
+TYPE 3
+FX 127
+ITEM evtlure
+NAME luring
+TYPE 3
+FX 62
+
+ITEM dead
+NAME dead body
+PLURAL dead bodies
+DESCRIPTION Freshly buried corpses, found after a battle. Each turn, about 20% of the dead turn into buried bones
+TYPE 2
+TOKEN 2
+HIDDEN
+ITEM bone
+NAME buried bones
+PLURAL buried bones
+DESCRIPTION Old bones, left after dead corpses have finished decaying. Each turn, about 10% of the bones disappear
+TYPE 2
+TOKEN 3
+HIDDEN
+
+ITEM effmldr
+NAME masquerade
+PLURAL masquerades
+DESCRIPTION Under this effect, the character shows as a normal leader for all units. Units with 8 or higher observation levels will be able to see the leader as it really is
+TYPE 3
+FX 42
+
+ITEM effmfol
+NAME hiding
+PLURAL hiding
+DESCRIPTION Under this effect, the character shows as a normal follower for all units. Units with 8 or higher observation levels will be able to see the leader as it really is
+TYPE 3
+FX 127
+
+ITEM evtattu
+NAME day of knowledge
+PLURAL days of knowledge
+DESCRIPTION While attuned, the mage knows all about its friends activities
+TYPE 1
+FX 127
+
+ITEM effride
+NAME day of riding speed
+PLURAL days of riding speed
+DESCRIPTION While under the effect, a unit has an intrinsic capacity for riding
+TYPE 1
+CAPACITY 1 75
+
+ITEM effflyi
+NAME day of flight
+PLURAL days of flight
+DESCRIPTION While under the effect, a unit has an intrinsic capacity for flying
+TYPE 1
+CAPACITY 2 75
+
+ITEM effsail
+NAME day of sailing
+PLURAL days of sailing
+DESCRIPTION While under the effect, a unit has an intrinsic capacity for sailing
+TYPE 1
+CAPACITY 3 70
+
+ITEM effseam
+NAME day of seamanship
+PLURAL days of seamanship
+DESCRIPTION While under the effect, a unit has a better capacity for sailing
+TYPE 1
+CAPACITY 3 40
+
+ITEM effblnd
+NAME day of blindness
+PLURAL days of blindness
+DESCRIPTION While under the effect, a unit has its observation severely hampered
+TYPE 1
+OBSERVATION -3
+
+ITEM effdes4
+NAME day of despair
+PLURAL days of despair
+DESCRIPTION While under the effect, a unit has its initiative lowered
+TYPE 1
+INITIATIVE -4
+
+ITEM effcowa
+NAME day of cowardice
+PLURAL days of cowardice
+DESCRIPTION While under the effect, a unit in battle has 30% chance of skipping any combat action other than PARRY. Once skipped, all other identical combat actions will be ignored. Fanatic units have only 20% chance of acting cowardly
+TYPE 1
+FX 127
+
+ITEM effini2
+NAME day of morale
+PLURAL days of morale
+DESCRIPTION While under the effect, a unit has its initiative enhanced
+TYPE 1
+INITIATIVE 2
+
+ITEM effini3
+NAME day of blessing
+PLURAL days of blessing
+DESCRIPTION While under the effect, a unit has its initiative enhanced
+TYPE 1
+INITIATIVE 3
+
+ITEM effmele
+NAME day of attack
+PLURAL days of attack
+DESCRIPTION While under the effect, a unit has its melee abilities enhanced
+TYPE 1
+MELEE 1
+
+ITEM effdefe
+NAME day of defense
+PLURAL days of defense
+DESCRIPTION While under the effect, a unit has its defense abilities enhanced
+TYPE 1
+DEFENSE 1
+
+ITEM effmiss
+NAME day of true aim
+PLURAL days of true aim
+DESCRIPTION While under the effect, a unit has its missile abilities enhanced
+TYPE 1
+MISSILE 1
+
+ITEM effbles
+NAME day of blessing
+PLURAL days of blessing
+DESCRIPTION While under the effect, a unit has its life flow enhanced
+TYPE 1
+LIFE 1
+
+ITEM effstre
+NAME day of strength
+PLURAL days of strength
+DESCRIPTION While under the effect, a unit deals more damage in battle
+TYPE 1
+DAMAGE 1
+
+ITEM effbers
+NAME day of rage
+PLURAL days of rage
+DESCRIPTION While under the bloodlust, a unit fight more savagely in battle
+TYPE 1
+MELEE 2
+DAMAGE 2
+LIFE 1
+DEFENSE -3
+
+ITEM effliqf
+NAME day of burning fervor
+PLURAL days of burning fervor
+DESCRIPTION While under the effect, a unit fights more savagely
+TYPE 1
+MELEE 1
+DAMAGE 1
+DEFENSE -1
+
+ITEM effpetr
+NAME day of paralysis
+PLURAL days of paralysis
+DESCRIPTION While under the effect, a unit can neither walk, ride, fly or sail
+TYPE 1
+CAPACITY 0 -500000
+CAPACITY 1 -500000
+CAPACITY 2 -500000
+CAPACITY 3 -500000
+
+ITEM effflig
+NAME day of flying
+PLURAL days of flying
+DESCRIPTION While under the effect, a unit enjoys a limited capability for flight
+TYPE 1
+CAPACITY 2 2000
+
+ITEM efffors
+NAME day of shadowy form
+PLURAL days of shadowy form
+DESCRIPTION While under the effect, the mage is insubstantial
+TYPE 1
+CAPACITY 0 -100
+CAPACITY 1 -100
+CAPACITY 2 80
+STEALTH 3
+MELEE -20
+MISSILE -20
+DEFENSE 15
+
+ITEM effwand
+NAME day of wandering
+PLURAL days of wandering
+DESCRIPTION While under the effect, a unit that moves will issues a move order will move in a random direction instead of the intended direction
+TYPE 1
+FX 127
+
+ITEM effstfi
+NAME day of stony fists
+PLURAL days of stony fists
+DESCRIPTION While under the effect, a unit has more strength in combat
+TYPE 1
+MELEE 3
+HITS 1
+DAMAGE 5
+
+ITEM efftsig
+NAME day of true sight
+PLURAL days of true sight
+DESCRIPTION While totally concentrated, the user sees many things, but is weakened
+TYPE 1
+OBSERVATION 3
+MELEE -3
+DEFENSE -6
+INITIATIVE -1
+WEIGHT 50
+
+ITEM effdisc
+NAME day of disaffection
+PLURAL days of disaffection
+DESCRIPTION An unpaid unit will remain disaffected for a while. Should you fail again to pay it's upkeep, it is likely to desert!
+INITIATIVE -1
+TYPE 1
+
+ITEM effhapy
+NAME day of happiness
+PLURAL days of happiness
+DESCRIPTION The spirits are lifted, and the morale is high
+INITIATIVE 1
+LIFE 1
+TYPE 1
+
+ITEM efftird
+NAME day of battle fatigue
+PLURAL days of battle fatigue
+DESCRIPTION After an attack, units lose their initiative for a day or two
+INITIATIVE -4
+TYPE 1
+
+ITEM effwary
+NAME day of wariness
+PLURAL days of wariness
+DESCRIPTION After being attacked, units are on their guard against others
+INITIATIVE 1
+TYPE 1
+
+ITEM sightb
+NAME Sightblinder
+DESCRIPTION The legendary god-forged sword Sightblinder disguise its wearer, and allows him to see any unit as it really is. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+STEALTH 40
+OBSERVATION 40
+DAMAGE 3
+SPECIAL
+
+ITEM coinsp
+NAME Coinspinner
+DESCRIPTION The legendary god-forged sword Coinspinner brings luck to its wearer, and ill luck to its opponents. During battle, all units on the wearer's side roll dice twice, taking the best results, while all opposing units roll twice, taking the worst results. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 76
+SPECIAL
+
+ITEM wayfin
+NAME Wayfinder
+DESCRIPTION The legendary god-forged sword Wayfinder finds anything its owner wants. Select as a target a location, unit, item, race or skill, and the shortest way to the appropriate location will be indicated at the end of the turn. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 19
+SPECIAL
+
+ITEM townsv
+NAME Townsaver
+DESCRIPTION The legendary god-forged sword Townsaver never fails to defend against enemies. If its user is attacked inside an inner location, all units at his side will enjoy the following benefits: +1 damage, +1 missile, +2 melee, +2 defense, and +5 initiative. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM soulct
+NAME Soulcutter
+DESCRIPTION The legendary god-forged sword Soulcutter is supreme in battle. If used in battle, all units on all sides suffer from its attack. Each figure hit in a unit will drop its equipment. If more than a third of the figures in the unit are hit, the unit reverts to the MELEE combat setting, and picks PARRY if more than half are hit. The user of Soulcutter is not exempt of the effect. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+COMBAT RANGE 7
+COMBAT EFFECT SPECIAL
+COMBAT TARGET BATTLE
+COMBAT MISSILE 6
+COMBAT DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM doomgv
+NAME Doomgiver
+DESCRIPTION The legendary god-forged sword Doomgiver protect its wielder against machinations and evil intents. Any negative action that targets its user in or outside battle is reflected back and inflicted on its source. Doomgiver does not provide protection against hand attacks or creature attacks. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM dragsl
+NAME Dragonslicer
+DESCRIPTION The legendary god-forged sword Dragonslicer is considered weak, but it reigns supreme against any creature or monster. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+COMBAT TARGET UNIT
+COMBAT RANGE 1
+COMBAT EFFECT MELEE
+COMBAT MELEE 40
+COMBAT DAMAGE 50
+FX 40
+SPECIAL
+
+ITEM farsla
+NAME Farslayer
+DESCRIPTION The legendary god-forged sword Farslayer can slay any enemy, now matter how afar he stands, or how well protected. If you have selected a unit target at end of turn, and have Farslayer equipped, it will move toward your target and slay one figure in the unit. It will then remain in the unit's possession, or any unit of the targeted faction if any are at the same location, or will be dropped as a stockpile. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM shldbr
+NAME Shieldbreaker
+DESCRIPTION The legendary god-forged sword Shieldbreaker negates any weapon or spell arrayed against its owner. Any item used against its wielder in battle will immediately be destroyed, and any spell or ability will be cancelled and removed from the combat options. Shieldbreaker's wearer is vulnerable against any unit that melees without any weapon equipped, and has -2 defense instead of the normal +3 against these. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM wndhlr
+NAME Woundhealer
+DESCRIPTION The legendary god-forged sword Woundhealer grants life and health to its user. If equipped by a single figure, it will regenerate 40 life points per battle round. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE -50
+DEFENSE 3
+DAMAGE -50
+LIFE 300
+FX 127
+SPECIAL
+
+ITEM stonct
+NAME Stonecutter
+DESCRIPTION The legendary god-forged sword Stonecutter will rip thru any defense. Its possession negates the intrinsic advantage linked to a defending structure, and add +2 melee, +2 initiative to all units if attacking a unit located in any structure or inner location that requires stonework to build. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+FX 127
+SPECIAL
+
+ITEM mindsw
+NAME Mindsword
+DESCRIPTION The legendary god-forged Mindsword grants fearsome powers. Its possessor has double speed while learning any skill that alter the mind-set of a unit (such as control spells, initiative, fanaticism), and grants additional control points to the faction. This is a unique item
+UNIQUE
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 4
+DEFENSE 3
+DAMAGE 3
+CONTROL -50
+FX 127
+SPECIAL
+
+ITEM sstgt
+NAME scroll of sense target
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in sense target [stgt] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION sres 1
+USE_SKILL stgt 1
+FX 44
+
+ITEM sedsh
+NAME scroll of enchant dark shield
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant dark shield [edsh] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION drlf 1
+USE_SKILL edsh 1
+FX 44
+
+ITEM sitos
+NAME scroll of iron to silver
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in iron to silver [itos] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION fire 1
+USE_SKILL itos 1
+FX 44
+
+ITEM stact
+NAME scroll of tactician
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in tactician [tact] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+USE_SKILL tact 1
+FX 44
+
+ITEM sdmci
+NAME scroll of draw mage circle
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in draw mage circle [dmci] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION mage 3
+USE_SKILL dmci 1
+FX 44
+
+ITEM sesto
+NAME scroll of enchant stone
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant stone [esto] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION mage 3
+USE_SKILL esto 1
+FX 44
+
+ITEM ssshr
+NAME scroll of mutate sea horse
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in mutate sea horse [sshr] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION wwal 1
+USE_SKILL sshr 1
+FX 44
+
+ITEM smish
+NAME scroll of mishap
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in mishap [mish] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION quag 1
+USE_SKILL mish 1
+FX 44
+
+ITEM sshed
+NAME scroll of stone heads
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in stone heads [shed] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION stha 1
+USE_SKILL shed 1
+FX 44
+
+ITEM sidre
+NAME scroll of inspire dread
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in inspire dread [idre] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION void 1
+USE_SKILL idre 1
+FX 44
+
+ITEM secwd
+NAME scroll of enchant confusion wand
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant confusion wand [ecwd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cnfm 1
+USE_SKILL ecwd 1
+FX 44
+
+ITEM sritu
+NAME scroll of ritual
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in ritual [ritu] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION medi 1
+USE_SKILL ritu 1
+FX 44
+
+ITEM ssres
+NAME scroll of see resources
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in see resources [sres] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION raur 1
+USE_SKILL sres 1
+FX 44
+
+ITEM sides
+NAME scroll of instill despair
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in instill despair [ides] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION mprs 1
+USE_SKILL ides 1
+FX 44
+
+ITEM sefwd
+NAME scroll of enchant fire wand
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant fire wand [efwd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION fwrk 1
+USE_SKILL efwd 1
+FX 44
+
+ITEM srswe
+NAME scroll of reshape weapon
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in reshape weapon [rswe] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION ersi 1
+USE_SKILL rswe 1
+FX 44
+
+ITEM scfam
+NAME scroll of call familiars
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in call familiars [cfam] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cmou 1
+USE_SKILL cfam 1
+FX 44
+
+ITEM sstog
+NAME scroll of stone to granite
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in stone to granite [stog] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION rshe 1
+USE_SKILL stog 1
+FX 44
+
+ITEM scwnd
+NAME scroll of counter winds
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in counter winds [cwnd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cwin 1
+USE_SKILL cwnd 1
+FX 44
+
+ITEM saarm
+NAME scroll of airy armor
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in airy armor [aarm] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION ewag 1
+USE_SKILL aarm 1
+FX 44
+
+ITEM scmon
+NAME scroll of control monsters
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in control monsters [cmon] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION subd 1
+USE_SKILL cmon 1
+FX 44
+
+ITEM stide
+NAME scroll of tidal wave
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in tidal wave [tide] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION mish 1
+USE_SKILL tide 1
+FX 44
+
+ITEM scals
+NAME scroll of call of the sea
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in call of the sea [cals] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION wate 2
+USE_SKILL cals 1
+FX 44
+
+ITEM srmin
+NAME scroll of read mind
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in read mind [rmin] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION raur 1
+USE_SKILL rmin 1
+FX 44
+
+ITEM smprs
+NAME scroll of mind pressure
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in mind pressure [mprs] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION idre 1
+USE_SKILL mprs 1
+FX 44
+
+ITEM svolc
+NAME scroll of volcano
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in volcano [volc] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION hhai 1
+USE_SKILL volc 1
+FX 44
+
+ITEM sehwd
+NAME scroll of enchant heavy wand
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant heavy wand [ehwd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION sgrp 1
+USE_SKILL ehwd 1
+FX 44
+
+ITEM scdis
+NAME scroll of combat disaffection
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in combat disaffection [cdis] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION rmor 1
+USE_SKILL cdis 1
+FX 44
+
+ITEM slspd
+NAME scroll of lightning speed
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in lightning speed [lspd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cdis 1
+USE_SKILL lspd 1
+FX 44
+
+ITEM satcr
+NAME scroll of attract creatures
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in attract creatures [atcr] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION capt 1
+USE_SKILL atcr 1
+FX 44
+
+ITEM seaml
+NAME scroll of enchant amulet of life
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of life [eaml] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION hpot 1
+USE_SKILL eaml 1
+FX 44
+
+ITEM shail
+NAME scroll of hailstones
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in hailstones [hail] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION stcl 1
+USE_SKILL hail 1
+FX 44
+
+ITEM swvis
+NAME scroll of watery visions
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in watery visions [wvis] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cals 1
+USE_SKILL wvis 1
+FX 44
+
+ITEM seafb
+NAME scroll of enchant amulet of fire blessing
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of fire blessing [eafb] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION efwd 1
+USE_SKILL eafb 1
+FX 44
+
+ITEM seavb
+NAME scroll of enchant amulet of void blessing
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of void blessing [eavb] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION estf 1
+USE_SKILL eavb 1
+FX 44
+
+ITEM seawb
+NAME scroll of enchant amulet of water blessing
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of water blessing [eawb] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION eaml 1
+USE_SKILL eawb 1
+FX 44
+
+ITEM seaeb
+NAME scroll of enchant amulet of earth blessing
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of earth blessing [eaeb] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION erst 1
+USE_SKILL eaeb
+FX 44
+
+ITEM seaab
+NAME scroll of enchant amulet of air blessing
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of air blessing [eaab] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION aarm 1
+USE_SKILL eaab 1
+FX 44
+
+ITEM staim
+NAME scroll of true aim
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in true aim [taim] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cdis 1
+USE_SKILL taim 1
+FX 44
+
+ITEM sfogc
+NAME scroll of fog cover
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in fog cover [fogc] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION stcl 1
+USE_SKILL fogc 1
+FX 44
+
+ITEM swgrw
+NAME scroll of wild growth
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in wild growth [wgrw] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION wate 1
+USE_SKILL wgrw 1
+FX 44
+
+ITEM sdeva
+NAME scroll of devastation
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in devastation [deva] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION fwrk 1
+USE_SKILL deva 1
+FX 44
+
+ITEM srsar
+NAME scroll of reshape armor
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in reshape armor [rsar] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION rswe 1
+USE_SKILL rsar 1
+FX 44
+
+ITEM srshd
+NAME scroll of reshape shield
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in reshape shield [rshd] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION rswe 1
+USE_SKILL rshd 1
+FX 44
+
+ITEM seara
+NAME scroll of enchant amulet of radiance
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant amulet of radiance [eara] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION ersi 1
+USE_SKILL eara 1
+FX 44
+
+ITEM slmin
+NAME scroll of locate minerals
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in locate minerals [lmin] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION stog 1
+USE_SKILL lmin 1
+FX 44
+
+ITEM sfmin
+NAME scroll of find minerals
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in find minerals [fmin] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION lmin 1
+USE_SKILL fmin 1
+FX 44
+
+ITEM sshft
+NAME scroll of shift earth
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in shift earth [shft] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION stog 1
+USE_SKILL shft 1
+FX 44
+
+ITEM scsto
+NAME scroll of call storm
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in call storm [csto] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION mwea 1
+USE_SKILL csto 1
+FX 44
+
+ITEM smrun
+NAME scroll of make run
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in make run [mrun] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION cdis 1
+USE_SKILL mrun 1
+FX 44
+
+ITEM sclon
+NAME scroll of clone mount
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in clone mount [clon] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION wgrw 1
+USE_SKILL clon 1
+FX 44
+
+ITEM sstea
+NAME scroll of stealth
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in stealth [stea] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION scou 1
+USE_SKILL stea 1
+FX 44
+
+ITEM scnfm
+NAME scroll of confuse minds
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in confuse minds [cnfm] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION idre 1
+USE_SKILL cnfm 1
+FX 44
+
+ITEM sdrlf
+NAME scroll of drain life
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in drain life [drlf] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION void 1
+USE_SKILL drlf 1
+FX 44
+
+ITEM sftrw
+NAME scroll of fire throw
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in fire throw [ftrw] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION ftch 1
+USE_SKILL ftrw 1
+FX 44
+
+ITEM srslf
+NAME scroll of reshape self
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in reshape self [rslf] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION rswe 1
+USE_SKILL rslf 1
+FX 44
+
+ITEM seham
+NAME scroll of enchant hammer
+DESCRIPTION Equipping this scroll at the end of a turn will set your experience in enchant hammer [eham] to 30 days in zero time, as the scroll inscribes itself in your brain. The scroll then disappears
+UNIQUE
+EQUIP_CATEGORY 14
+EQUIP_CONDITION SKILL_CONDITION sbul 1
+USE_SKILL eham 1
+FX 44
+
+ITEM thammr
+NAME The Hammer of Thor
+DESCRIPTION This legendary artefact can be used in battle for devastating effect, calling down lightning. Against lightning, any metal-based equipment, except adamantium ones yield a negative defense value instead of positive defense. This is a unique item
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+MELEE 4
+DAMAGE 4
+COMBAT TARGET OFFICER
+COMBAT EFFECT RANGED
+COMBAT RANGE 7
+COMBAT MISSILE 6
+COMBAT DAMAGE_TYPE 3
+COMBAT DAMAGE 15
+COMBAT HITS 1
+UNIQUE
+SPECIAL
+
+ITEM hecshl
+NAME The Shield of Hector
+DESCRIPTION This legendary artefact can be used in battle to protect its wearer. Its wearer can use it as a secondary attack
+WEIGHT 10
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 4
+LIFE 3
+HITS 1
+UNIQUE
+SPECIAL
+
+ITEM ssvetog
+NAME Svetogor
+PLURAL Svetogor
+DESCRIPTION Svetogor, forged by the legendary bladesmith Ilmarinen, is one of the finest ever made
+TYPE 1
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+SPECIAL
+UNIQUE
+
+ITEM hscyt
+NAME Hvanetian Scythe
+PLURAL Hvanetian Scythe
+DESCRIPTION The Hvanetian Scythe, forged by the legendary bladesmith Berthram Kvalder, is one of the finest ever made
+TYPE 2
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+SPECIAL
+UNIQUE
+
+ITEM palhrs
+NAME The Pale Horse
+PLURAL The Pale Horse
+DESCRIPTION This eerie mount has passed thru the ages and can only be approached with the appropriate knowledge. This is a unique item
+WEIGHT 120
+EQUIP_CAPACITY 0 200
+EQUIP_CAPACITY 1 250
+EQUIP_CAPACITY 2 200
+EQUIP_CAPACITY 3 240
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mage 2
+INITIATIVE 5
+STEALTH 5
+OBSERVATION 1
+LIFE 2
+DEFENSE 5
+HITS 1
+LIVE
+UNIQUE
+
+ITEM huntbw
+NAME Bow of the Huntsman
+PLURAL Bow of the Huntsman
+DESCRIPTION Carved of the deepest ebony and inlaid with adamantium, this antique bow was overlaid with powerful magics. This is a unique item
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION tgld
+OBSERVATION 1
+DEFENSE 2
+INITIATIVE 1
+MISSILE 15
+COMBAT TARGET OFFICER
+COMBAT RANGE 5
+COMBAT EFFECT RANGED
+COMBAT DAMAGE 12
+COMBAT HITS 2
+UNIQUE
+
+ITEM glassa
+NAME Glass Armor
+PLURAL Glass Armor
+DESCRIPTION Despite its transparent nature, the Glass Armor is far from fragile, and surpasses even the best of the armors. Its sharp whorls make it deadlier to approach than most weapons. This is a unique item
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 3
+DEFENSE 12
+COMBAT TARGET UNIT
+COMBAT RANGE 1
+COMBAT EFFECT MELEE
+COMBAT BONUS DAMAGE 5
+COMBAT BONUS MELEE 5
+UNIQUE

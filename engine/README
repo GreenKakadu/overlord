@@ -1,1 +1,49 @@
+These are files containing preliminary code  of Overlord turn
+processing engine.
+Version 0.23
+Date 13.08.2003
+
+                 1. Functionality.
+
+This version supports main functionality exept of combat, 
+titles, buildings, ships and all assosiated with these.
+Orders supported are:
+ACCEPT
+BUY
+DISBAND
+EQUIP
+GIVE
+MERGE
+MOVE
+RECRUIT
+SELL
+SPLIT
+STACK
+STUDY
+TEACH
+TEST
+UNSTACK
+USE
+WITHDRAW
+
+			2. Use
+
+Before running engine (Overlord) you should set game directories and configuration.
+
+File "game" contains configuration parameters.
+The most important of them are: GAMEDIR and PLAYERSDIR - these should be set 
+according to your's directories containing rulefiles, entities data and players subdirectories.
+
+GAMEDIR is a directory where engine will look for game rulefiles as skills, items etc.
+( items, races, skills, terrains, titles, buildings, directions, stats, 
+ stances, movements are  rulefiles)
+PLAYERSDIR is a directory where engine will look for orders and where it will place reports.
+	For each faction there should be subdirectory in PLAYERSDIR, containing orders file.
+	Orders file should be named orders.n, where n is number of turn.
+
+UNITSFILE FACTIONSFILE LOCATIONSFILE   are names of files containing entities data
+(units factions and locations data).
+
+TURN  is current turn. It should be identical to extention of order files.
+	so if TURN is 5 you should name order file order.5
 
