@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Rational.cpp 
+                          RationalNumber.cpp 
                              -------------------
     begin                : Sun May 11 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,13 +12,13 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include "Rational.h"
+#include "RationalNumber.h"
 #include <iostream>
 #include "Parser.h"
 using namespace std;
 
 
-Rational::Rational(int numenator, int denominator)
+RationalNumber::RationalNumber(int numenator, int denominator)
 {
   numenator_ = numenator;
   denominator_ = denominator;
@@ -29,7 +29,7 @@ Rational::Rational(int numenator, int denominator)
 
 
 
-Rational::Rational(const Rational & rational) : AbstractData()
+RationalNumber::RationalNumber(const RationalNumber & rational) : AbstractData()
 {
   numenator_ = rational.getNumenator();
   denominator_ = rational.getDenominator();
@@ -37,7 +37,7 @@ Rational::Rational(const Rational & rational) : AbstractData()
 
 
 
-void Rational::cancel_()
+void RationalNumber::cancel_()
 {
   int greatestCommonDenominator = findGCD(numenator_, denominator_);
   numenator_ = numenator_ / greatestCommonDenominator;
@@ -46,7 +46,7 @@ void Rational::cancel_()
 
 
 
-int Rational::findGCD(int x, int y)
+int RationalNumber::findGCD(int x, int y)
 {
         if (x == 0)
             return y;
@@ -56,7 +56,7 @@ int Rational::findGCD(int x, int y)
 
 
 
-Rational::~Rational(){
+RationalNumber::~RationalNumber(){
 }
 
 //********************************************************************
@@ -65,13 +65,13 @@ Rational::~Rational(){
 //
 //********************************************************************
 
-const Rational operator + (const Rational& leftArgument, const Rational& rightArgument)
+const RationalNumber operator + (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
-    return Rational(leftArgument.numenator_ + rightArgument.numenator_, leftArgument.denominator_);
+    return RationalNumber(leftArgument.numenator_ + rightArgument.numenator_, leftArgument.denominator_);
   else
   {
-    return Rational(leftArgument.numenator_ * rightArgument.denominator_ +
+    return RationalNumber(leftArgument.numenator_ * rightArgument.denominator_ +
                     rightArgument.numenator_ * leftArgument.denominator_,
                     leftArgument.denominator_ * rightArgument.denominator_);
  }
@@ -79,13 +79,13 @@ const Rational operator + (const Rational& leftArgument, const Rational& rightAr
 
 
 
-const Rational operator - (const Rational& leftArgument, const Rational& rightArgument)
+const RationalNumber operator - (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
-    return Rational(leftArgument.numenator_ - rightArgument.numenator_, leftArgument.denominator_);
+    return RationalNumber(leftArgument.numenator_ - rightArgument.numenator_, leftArgument.denominator_);
   else
   {
-    return Rational(leftArgument.numenator_ * rightArgument.denominator_ -
+    return RationalNumber(leftArgument.numenator_ * rightArgument.denominator_ -
                     rightArgument.numenator_ * leftArgument.denominator_,
                     leftArgument.denominator_ * rightArgument.denominator_);
  }
@@ -93,37 +93,37 @@ const Rational operator - (const Rational& leftArgument, const Rational& rightAr
 
 
 
-const Rational operator * (const Rational& leftArgument, const Rational& rightArgument)
+const RationalNumber operator * (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
-    return Rational(leftArgument.numenator_ * rightArgument.numenator_,
+    return RationalNumber(leftArgument.numenator_ * rightArgument.numenator_,
                     leftArgument.denominator_ * rightArgument.denominator_);
 }
 
 
 
-const Rational operator / (const Rational& leftArgument, const Rational& rightArgument)
+const RationalNumber operator / (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
-    return Rational(leftArgument.numenator_ * rightArgument.denominator_,
+    return RationalNumber(leftArgument.numenator_ * rightArgument.denominator_,
                     leftArgument.denominator_ * rightArgument.numenator_);
 }
 
 
 
-const Rational operator * (const Rational& leftArgument, const int& rightArgument)
+const RationalNumber operator * (const RationalNumber& leftArgument, const int& rightArgument)
 {
- return Rational(leftArgument.numenator_ * rightArgument, leftArgument.denominator_);
+ return RationalNumber(leftArgument.numenator_ * rightArgument, leftArgument.denominator_);
 }
 
 
 
-const Rational operator * (const int& leftArgument, const Rational& rightArgument)
+const RationalNumber operator * (const int& leftArgument, const RationalNumber& rightArgument)
 {
-  return Rational(leftArgument * rightArgument.numenator_, rightArgument.denominator_);
+  return RationalNumber(leftArgument * rightArgument.numenator_, rightArgument.denominator_);
 }
 
 
 
-Rational operator += ( Rational& leftArgument, const Rational& rightArgument)
+RationalNumber operator += ( RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        leftArgument.numenator_ += rightArgument.numenator_;
@@ -139,7 +139,7 @@ Rational operator += ( Rational& leftArgument, const Rational& rightArgument)
 
 
 
-Rational operator -= ( Rational& leftArgument, const Rational& rightArgument)
+RationalNumber operator -= ( RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        leftArgument.numenator_ -= rightArgument.numenator_;
@@ -155,7 +155,7 @@ Rational operator -= ( Rational& leftArgument, const Rational& rightArgument)
 
 
     
-const     bool operator == (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ == rightArgument.numenator_);
@@ -165,14 +165,14 @@ const     bool operator == (const Rational& leftArgument, const Rational& rightA
 
 
 
-const     bool operator == (const Rational& leftArgument, const int& rightArgument)
+const     bool operator == (const RationalNumber& leftArgument, const int& rightArgument)
 {
   return ((leftArgument.denominator_ == 1) && (leftArgument.numenator_ == rightArgument));
 }
 
 
 
-const     bool operator != (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator != (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ != rightArgument.numenator_);
@@ -182,7 +182,7 @@ const     bool operator != (const Rational& leftArgument, const Rational& rightA
 
 
 
-const     bool operator >= (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator >= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ >= rightArgument.numenator_);
@@ -193,7 +193,7 @@ const     bool operator >= (const Rational& leftArgument, const Rational& rightA
 
 
 
-const     bool operator <= (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator <= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ <= rightArgument.numenator_);
@@ -204,7 +204,7 @@ const     bool operator <= (const Rational& leftArgument, const Rational& rightA
 
 
 
-const     bool operator  > (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator  > (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ > rightArgument.numenator_);
@@ -215,7 +215,7 @@ const     bool operator  > (const Rational& leftArgument, const Rational& rightA
 
 
 
-const     bool operator  < (const Rational& leftArgument, const Rational& rightArgument)
+const     bool operator  < (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ < rightArgument.numenator_);
@@ -231,14 +231,14 @@ const     bool operator  < (const Rational& leftArgument, const Rational& rightA
 //   Input/output
 //
 //********************************************************************
-ostream & operator << ( ostream &out,  Rational rightArgument)
+ostream & operator << ( ostream &out,  RationalNumber rightArgument)
 {
   rightArgument.save(out);	return out;
 }
 
 
 
-string Rational::printName()
+string RationalNumber::print()
 {
     char buffer[30];
  if (!(numenator_ % denominator_))
@@ -249,7 +249,7 @@ string Rational::printName()
 
 }
 
-bool Rational::load(Parser * parser)
+bool RationalNumber::load(Parser * parser)
 {
  int num = parser->getInteger();
   if(parser->matchChar('('))
@@ -279,19 +279,19 @@ bool Rational::load(Parser * parser)
 
 
 /** Returns integer part */
-const int Rational::getValue() const
+const int RationalNumber::getValue() const
 {
  return numenator_ / denominator_;
 }
 
-bool Rational::isInteger()
+bool RationalNumber::isInteger()
 {
  return  (numenator_ % denominator_ == 0); 
 }
 
 
 
-void Rational::save(ostream & out)
+void RationalNumber::save(ostream & out)
 {
  out << getValue();
  if(numenator_ == 0)
@@ -304,21 +304,21 @@ void Rational::save(ostream & out)
 
 
 
-int Rational::roundDown() const
+int RationalNumber::roundDown() const
 {
   return  numenator_/denominator_ ;
 }
 
 
 
-int Rational::roundUp() const
+int RationalNumber::roundUp() const
 {
   return  (numenator_ + denominator_ -1)/denominator_ ;
 }
 
 
 
-bool Rational::isEmpty()
+bool RationalNumber::isEmpty()
 {
   return(!numenator_);  
 }

@@ -203,8 +203,8 @@ SOURCES = turn.cpp \
           misc/ReportPrinter.cpp   \
           misc/dgChannelBuf.cpp   \
           Global.cpp    \
-					datatypes/attributes/BasicAttribute.cpp
-					datatypes/attributes/EnchantmentAttribute.cpp
+					datatypes/attributes/BasicAttribute.cpp \
+					datatypes/attributes/EnchantmentAttribute.cpp \
 					implementation/actions/PickpocketActionRule.cpp \
           datatypes/elements/EnchantmentElement.cpp \
           datatypes/entities/EffectEntity.cpp \

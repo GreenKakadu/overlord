@@ -1,0 +1,14 @@
+# Overlord special actions data
+# Ver 0.31 19.01.2004
+
+KEYWORD FX_ACTION 999
+
+FX_ACTION evtppoc PICKPOCKET_ACTION
+NAME "attempt of picking pockets"
+
+
+FX_ACTION effmktg
+NAME market study
+PLURAL market studies
+DESCRIPTION Each market study can be used to detect an otherwise unsuspected market for some item
+
