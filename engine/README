@@ -1,30 +1,11 @@
 These are files containing preliminary code  of Overlord turn
 processing engine.
-Version 0.23
-Date 13.08.2003
+Version 0.32
+Date 16.05.2004
 
                  1. Functionality.
 
-This version supports main functionality exept of combat, 
-titles, buildings, ships and all assosiated with these.
-Orders supported are:
-ACCEPT
-BUY
-DISBAND
-EQUIP
-GIVE
-MERGE
-MOVE
-RECRUIT
-SELL
-SPLIT
-STACK
-STUDY
-TEACH
-TEST
-UNSTACK
-USE
-WITHDRAW
+This version supports main functionality exept of combat.
 
 			2. Use
 
@@ -41,8 +22,8 @@ PLAYERSDIR is a directory where engine will look for orders and where it will pl
 	For each faction there should be subdirectory in PLAYERSDIR, containing orders file.
 	Orders file should be named orders.n, where n is number of turn.
 
-UNITSFILE FACTIONSFILE LOCATIONSFILE   are names of files containing entities data
-(units factions and locations data).
+UNITSFILE FACTIONSFILE LOCATIONSFILE BUILDINGSFILE  are names of files containing entities data
+(units, buildings, factions and locations data).
 
 TURN  is current turn. It should be identical to extention of order files.
 	so if TURN is 5 you should name order file order.5
