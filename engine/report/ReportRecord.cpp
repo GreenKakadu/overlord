@@ -14,18 +14,14 @@ ReportRecord::ReportRecord(ReportPattern * report, OrderLine *  order, BasicCond
  observationCriteria_ = condition;
  reportMessage = report;
  orderId =  order;
-//	cout << ".....Report created...... |"<< reportMessage->print(cout);
+//  cout<<"********* ReportRecord created: "; report->printReport(cout);
 }
 
 
 
-/*
- * Cleans report pattern parameters.
- * Cleaning deletes parameter objects if they are non-permanent
- */
 ReportRecord::~ReportRecord()
 {
-//  reportMessage->clean();
+//  cout<<"********* ReportRecord deleted: "; reportMessage->printReport(cout); 
 }
 
 

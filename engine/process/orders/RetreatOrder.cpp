@@ -49,17 +49,18 @@ ORDER_STATUS RetreatOrder::process (Entity * entity, vector <AbstractData *>  &p
 {
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
+  OrderLine * orderId = entity->getCurrentOrder();
   if( unit->retreat())
     {
         unit->addReport(
-            new UnaryPattern(retreatPrivateReporter, unit->getLocation()));
+            new UnaryPattern(retreatPrivateReporter, unit->getLocation()),orderId,0);
          unit->getLocation()->addReport(
             new BinaryPattern(retreatPublicReporter, unit, unit->getLocation()),
-             0 ,ObservationCondition::createObservationCondition(unit->getStealth())
+             orderId ,ObservationCondition::createObservationCondition(unit->getStealth())
                                        );
-        ReportRecord * report = new  ReportRecord(new BinaryPattern(retreatGroupReporter,  
-                unit->getLocation(), unit), 0, 0);
-        unit->movingGroupReport(report);
+
+        unit->movingGroupReport(ReportRecord(new BinaryPattern(retreatGroupReporter,
+                unit->getLocation(), unit), orderId, 0));
 	      return SUCCESS;
 	  }
 	else

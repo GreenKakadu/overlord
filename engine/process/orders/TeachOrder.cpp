@@ -75,8 +75,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 
    if ( skill == 0)
     {
-//	    ReportRecord * currentReport = new   ReportRecord(new UnaryPattern(cannotStudyReporter, unit->getRace()));
-//		  unit->addReport( currentReport);
+//		  unit->addReport( new UnaryPattern(cannotStudyReporter, unit->getRace()));
  		return INVALID;
     }
   vector <Entity * > students;

@@ -104,7 +104,7 @@ ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &param
 
 
 ORDER_STATUS
-BuyOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+BuyOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

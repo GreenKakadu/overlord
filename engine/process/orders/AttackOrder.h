@@ -22,6 +22,7 @@ public:
 	~AttackOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
   ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
     protected:
 };
 

@@ -47,7 +47,8 @@ ORDER_STATUS StayOrder::process (Entity * entity, vector <AbstractData *>  &para
   if(unit->getLeader()== 0) // unstacked - clear stay 
   {
     unit->clearStay();
-    unit->addReport(new   ReportRecord(new UnaryPattern(stayReporter, unit)) );
+    OrderLine * orderId = entity->getCurrentOrder();
+    unit->addReport(new UnaryPattern(stayReporter, unit),orderId,0 );
     return SUCCESS;
   }
   if(unit->isStaying())

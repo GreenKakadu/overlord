@@ -95,7 +95,7 @@ OrderPrototype::process(Entity * , vector < AbstractData*>  & )
  */  
 
 ORDER_STATUS
-OrderPrototype::completeProcessing (Entity * entity, 
+OrderPrototype::completeOrderProcessing (Entity * entity, 
 							vector <AbstractData *>  &parameters, int result)
 {
   return FAILURE;

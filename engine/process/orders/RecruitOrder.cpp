@@ -185,7 +185,7 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 
 
 ORDER_STATUS
-RecruitOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+RecruitOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

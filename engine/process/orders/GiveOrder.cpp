@@ -93,6 +93,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
      
   int kept =   getIntegerParameter(parameters,3);
 
+  OrderLine * orderId = entity->getCurrentOrder();
 
 
  if (!unit->mayInterract(recipient)) // Not In the same place or can't see
@@ -101,8 +102,9 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
  if(*(recipient->getFaction()->getStance(unit)) < *friendlyStance)
       {
         // not accepting. Reports to both sides
-      unit->addReport(new   ReportRecord(new UnaryPattern(giveRejectedReporter, recipient)) );
-      recipient->addReport(new   ReportRecord(new UnaryPattern(giveRejectedReporter, recipient)) );
+      UnaryPattern * giveRejectedMessage = new UnaryPattern(giveRejectedReporter, recipient);  
+      unit->addReport(giveRejectedMessage,orderId,0);
+      recipient->addReport(giveRejectedMessage,orderId,0);
 		  return INVALID;
       }
 /*
@@ -134,12 +136,12 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 	
         if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
 	  {
-      unit->addReport( new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient));
+      unit->addReport( new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient),orderId,0);
      }
 
         if (!recipient->isSilent())
 	  {
-      recipient->addReport( new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit));
+      recipient->addReport( new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit),orderId,0);
 	  }
 
     if(given > reallyGiven)

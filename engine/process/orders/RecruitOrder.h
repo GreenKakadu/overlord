@@ -28,7 +28,7 @@ public:
 	RecruitOrder();
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
   ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  ORDER_STATUS completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+  ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
     protected:
 static const  UINT INVALID_RECRUIT_REPORT_FLAG;
 };

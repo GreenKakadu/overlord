@@ -27,7 +27,6 @@ enum  parsing_mode {
 typedef enum parsing_mode PARSING_MODE;
 
 class Entity;
-class ReportRecord;
 class UnitEntity;
 //class Order;
 class AbstractData;
@@ -43,10 +42,10 @@ class OrderPrototype
                    STATUS save( ostream &out);
 	   virtual ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
 // some orders can't be processed immediatelly. Instead of that they are submiting
-// requests that are resolved later. completeProcessing  is a second part of
+// requests that are resolved later. completeOrderProcessing  is a second part of
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
-     virtual ORDER_STATUS completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+     virtual ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
 	inline string getKeyword() const {return keyword_;}
     bool isFullDayOrder();
     bool mayInterrupt();

@@ -12,16 +12,20 @@
 #include "UnitEntity.h"
 #include "ConstructionEntity.h"
 #include "FactionEntity.h"
+#include "LocationEntity.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
 #include "EntitiesCollection.h"
+#include "BasicCombatManager.h"
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <FactionEntity>      factions;
 extern EntitiesCollection <ConstructionEntity>      buildingsAndShips;
 extern Reporter *	invalidParameterReporter;
 extern Reporter *	missingParameterReporter;
-extern Reporter *	AttackReporter;
+extern Reporter *	ownUnitAttackReporter;
+extern Reporter *	ownFactionAttackReporter;
+extern Reporter *	ownConstructionAttackReporter;
 extern GameInfo game;
 AttackOrder * instantiateAttackOrder = new AttackOrder();
 
@@ -35,20 +39,20 @@ AttackOrder::AttackOrder(){
   "\n" +
   "The attack does not occur if you are the owner of the target structure.\n";
 
-  orderType_   = DAY_LONG_ORDER;
+  orderType_   = STACK_ORDER;
 }
 
 STATUS AttackOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsUnit(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
    string tag = parser->getWord();
    if (tag.size() == 0) 
         {
         entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), 
-        			new StringData("unit-id od faction-id or construction id")));
+        			new StringData("unit-id or faction-id or construction id")));
          return IO_ERROR;
         }
 
@@ -85,8 +89,91 @@ STATUS AttackOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-  assert(unit);
+  TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
+  assert(tokenEntity);
+
+  OrderLine * orderId = tokenEntity->getCurrentOrder();
+  // if unit - check it is present and attack (unless it is allied)
+	UnitEntity * unitTarget   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+  if( unitTarget != 0)
+    {
+      if (!tokenEntity->mayInterractTokenEntity(unitTarget)) // Not In the same place or can't see
+	    return FAILURE;
+      if(unitTarget->getFaction() == tokenEntity->getFaction())
+        {
+          tokenEntity->addReport(new UnaryPattern(ownUnitAttackReporter,unitTarget));
+	        return INVALID;
+        }
+      else
+      {
+        combatManager->attackAttempt(tokenEntity,unitTarget,orderId);
+        return SUCCESS;
+      }
+    }
+
+  // If building - check owner  and attack owner (unless it is allied)
+  ConstructionEntity * constructionTarget   =  DOWNCAST_ENTITY<ConstructionEntity>(parameters[0]);
+  if( constructionTarget != 0)
+    {
+      if (!tokenEntity->mayInterractTokenEntity(constructionTarget)) // Not In the same place or can't see
+	    return FAILURE;
+      if(constructionTarget->getFaction() == 0)
+      {
+
+          tokenEntity->addReport(new UnaryPattern(ownConstructionAttackReporter,constructionTarget));
+        //Special case: attack on unowned construction
+        //tokenEntity->enterConstruction(target);
+        return SUCCESS;
+      }
+      if(constructionTarget->getFaction() == tokenEntity->getFaction())
+        {
+          // report: can't attack your own construction
+	        return INVALID;
+        }
+      else
+      {
+        combatManager->attackAttempt(tokenEntity,constructionTarget,orderId);
+        return SUCCESS;
+      }
+    }
+  // If faction - find any unit of this faction and attack it (unless it is allied)
+  FactionEntity * factionTarget   =  DOWNCAST_ENTITY<FactionEntity>(parameters[0]);
+  if( factionTarget != 0)
+    {
+      if(factionTarget == tokenEntity->getFaction())
+        {
+          tokenEntity->addReport(new UnaryPattern(ownFactionAttackReporter,factionTarget));
+	        return INVALID;
+        }
+      
+      if (!tokenEntity->mayInterractFaction(factionTarget)) // Not In the same place or can't see
+	    return FAILURE;
+
+    // try to find  unit or construction belonging to target faction  to attack
+   for(UnitIterator iter = tokenEntity->getLocation()->unitsPresent().begin();
+                    iter != tokenEntity->getLocation()->unitsPresent().end(); ++iter)
+       {
+         if( (*iter)->getFaction() == factionTarget)
+          {
+            if (tokenEntity->mayInterractTokenEntity(*iter))
+            {
+              combatManager->attackAttempt(tokenEntity,(*iter),orderId);
+              return SUCCESS;
+            }
+
+          }
+       }
+// the same for constructions
+     }
 	return FAILURE;
 }
 
+
+
+ORDER_STATUS
+AttackOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+{
+  assert(entity);
+  entity->updateOrderResults(SUCCESS);
+  return SUCCESS;
+}

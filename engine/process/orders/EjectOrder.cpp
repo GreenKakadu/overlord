@@ -61,8 +61,10 @@ ORDER_STATUS EjectOrder::process (Entity * entity, vector <AbstractData *>  &par
         {
    		    return FAILURE;
         }
-  entity->addReport(new   ReportRecord(new UnaryPattern(ejectReporter, follower)) );
-	follower->addReport(new   ReportRecord(new UnaryPattern(ejectReporter, follower)) );
+  OrderLine * orderId = entity->getCurrentOrder();      
+  UnaryPattern * ejectMessage = new UnaryPattern(ejectReporter, follower);      
+  entity->addReport(ejectMessage,orderId,0 );
+	follower->addReport(ejectMessage,orderId,0);
   UnitEntity * leader = unit->getLeader();
   if(leader)
   {
@@ -72,15 +74,16 @@ ORDER_STATUS EjectOrder::process (Entity * entity, vector <AbstractData *>  &par
    if((*(leader->getFaction()->getStance(follower)) >= *alliedStance) ||(leader->isAccepting(follower)))
       {
     		stack(follower,leader );
-        
-          follower->addReport(new   ReportRecord(new BinaryPattern(stackReporter, follower, leader)) );
-          leader->addReport(new   ReportRecord(new BinaryPattern(stackReporter, follower, leader)) );
+           BinaryPattern * stackMessage = new BinaryPattern(stackReporter, follower, leader);
+          follower->addReport(stackMessage,orderId,0 );
+          leader->addReport(stackMessage,orderId,0);
    		  return SUCCESS; 
       }
           else // rejected
      {
-       follower->addReport ( new   ReportRecord(new BinaryPattern(stackingUnacceptableReporter, leader , follower)));
-      leader->addReport( new   ReportRecord(new BinaryPattern(stackingUnacceptableReporter, leader , follower)));
+       BinaryPattern * stackingUnacceptableMessage =new BinaryPattern(stackingUnacceptableReporter, leader , follower);
+       follower->addReport (stackingUnacceptableMessage,orderId,0 );
+       leader->addReport(stackingUnacceptableMessage,orderId,0  );
    		  return SUCCESS; 
       }
       

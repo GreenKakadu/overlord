@@ -44,6 +44,11 @@ Reporter * cannotPayUpkeepReporter = new Reporter("Have not enough money to pay 
 // Accept
 Reporter *  acceptOwnReporter         = new Reporter("Warning: "," belongs to your faction. Accept has no sence.");
 Reporter *	acceptReporter            = new Reporter("Accepting ",".");
+// Attack
+Reporter *	AttackReporter                  = new Reporter(""," attacks ",".");
+Reporter *	ownUnitAttackReporter           = new Reporter("Can't attack your own unit ",".");
+Reporter *	ownFactionAttackReporter        = new Reporter("Can't attack your own faction ",".");
+Reporter *	ownConstructionAttackReporter   = new Reporter("Can't attack your own construction ",".");
 // Bestow
 Reporter * publicBestowReporter= new Reporter(""," bestows title of "," to ",".");
 Reporter * privateBestowReporter= new Reporter("Bestows title of "," to ",".");

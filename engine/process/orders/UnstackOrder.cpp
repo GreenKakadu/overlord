@@ -35,9 +35,10 @@ ORDER_STATUS UnstackOrder::process (Entity * entity, vector <AbstractData *>  &p
   UnitEntity * formerLeader = unit->getLeader();    
   if(unit->unstack())
      {
-		  unit->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
+      UnaryPattern *  unstackMessage = new UnaryPattern(unstackReporter, unit);
+		  unit->addReport(unstackMessage, entity->getCurrentOrder(),0 );
       if(formerLeader)
-		  formerLeader->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
+		  formerLeader->addReport(unstackMessage, entity->getCurrentOrder(),0  );
       }
    // already unstacked     
          return SUCCESS;

@@ -87,12 +87,14 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
 
   UnitEntity * formerLeader = unit->getLeader();
 
+  OrderLine * orderId = entity->getCurrentOrder();
+  UnaryPattern * unstackMessage = new UnaryPattern(unstackReporter, unit);
   if (parameters.size() == 0) // This means unstack
     {
       if(unit->unstack())
         {
-          entity->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
-		      formerLeader->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
+          entity->addReport(unstackMessage,orderId,0 );
+		      formerLeader->addReport(unstackMessage,orderId,0 );
           }
 
       return SUCCESS;
@@ -118,23 +120,24 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
       {
         if(unit->unstack())
         {
-          entity->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
+          entity->addReport(unstackMessage,orderId,0  );
           if(formerLeader)
-		          formerLeader->addReport(new   ReportRecord(new UnaryPattern(unstackReporter, unit)) );
+		          formerLeader->addReport(unstackMessage,orderId,0  );
         }
 
         
         stack(unit,leader );
-        
-          unit->addReport(new   ReportRecord(new BinaryPattern(stackReporter, unit, leader)) );
-          leader->addReport(new   ReportRecord(new BinaryPattern(stackReporter, unit, leader)) );
+           BinaryPattern * stackMessage = new BinaryPattern(stackReporter, unit, leader); 
+          unit->addReport(stackMessage,orderId,0);
+          leader->addReport(stackMessage,orderId,0);
 
  		      return SUCCESS;
       }
     else // rejected
      {
-       unit->addReport ( new   ReportRecord(new BinaryPattern(stackingUnacceptableReporter, leader , unit)));
-      leader->addReport( new   ReportRecord(new BinaryPattern(stackingUnacceptableReporter, leader , unit)));
+        BinaryPattern * stackingUnacceptableMessage = new BinaryPattern(stackingUnacceptableReporter, leader , unit);
+       unit->addReport (stackingUnacceptableMessage,orderId,0 );
+      leader->addReport(stackingUnacceptableMessage,orderId,0 );
  		  return INVALID;
       }
 

@@ -211,7 +211,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
 
 
 ORDER_STATUS
-UseOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+UseOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

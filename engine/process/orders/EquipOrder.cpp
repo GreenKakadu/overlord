@@ -113,6 +113,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
     }
    int number;        
    int result;
+   OrderLine * orderId = entity->getCurrentOrder();
    if(parameters.size() > 1)
       {
         IntegerData * numToEquip  = dynamic_cast<IntegerData *>(parameters[1]);
@@ -122,7 +123,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
         if (number == 0)  // unequip all
               {
                  unit->equipItem (item, number);
-		             unit->addReport(new   ReportRecord(new BinaryPattern(unequipReporter, unit, item)) );
+		             unit->addReport(new BinaryPattern(unequipReporter, unit, item),orderId,0 );
                  return SUCCESS;
                 }
       result = unit->equipItem (item, number);
@@ -130,19 +131,19 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
 		            return FAILURE;
         if( result < 0)    // unequiped
         {
-		      unit->addReport(new   ReportRecord(new BinaryPattern(unequipReporter, unit, item)) );
+		      unit->addReport(new BinaryPattern(unequipReporter, unit, item),orderId,0  );
           return SUCCESS;
           }   
         if (result < number) // only some part of items equiped
               {
                 //numToEquip->setValue(number - result);
 //QQQ
-		            unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))));
+		            unit->addReport( new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0 );
 // 		            return FAILURE;
                   return SUCCESS;
               }
 //QQQ
-		     unit->addReport( new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))) );
+		     unit->addReport( new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
          return SUCCESS;
       }
     else  // equip all available
@@ -154,7 +155,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
  		            return FAILURE;
               }
 //QQQ
-		     unit->addReport(new   ReportRecord(new BinaryPattern(equipReporter, unit, new ItemElement(item,result))) );
+		     unit->addReport(new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
          return SUCCESS;
        }
 
