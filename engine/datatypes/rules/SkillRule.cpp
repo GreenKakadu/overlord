@@ -11,10 +11,10 @@
 #include "TokenEntity.h"
 #include "BasicLearningStrategy.h"
 #include "PrototypeManager.h"
-#include "Reporter.h"
-#include "UnaryPattern.h"
+#include "ReportPattern.h"
+#include "UnaryMessage.h"
 extern string longtostr(unsigned long u);
-extern Reporter * unusableSkillReporter;
+extern ReportPattern * unusableSkillReporter;
 const int SkillRule::maxSkillLevel;
 //SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
 
@@ -30,7 +30,7 @@ SkillRule::SkillRule ( const SkillRule * prototype ) : Rule(prototype)
 //   resources_.resize(maxSkillLevel+1);
    studyCost_.resize(maxSkillLevel+1);
    stats_.resize(maxSkillLevel+1);
-   description_.resize(maxSkillLevel+1);       
+   description_.resize(maxSkillLevel+1);
    capacity_.resize(maxSkillLevel+1);
 	 expPoints_.resize(maxSkillLevel+1);
    requirement_.resize(maxSkillLevel+1);
@@ -52,13 +52,13 @@ void SkillRule::initLevel_ (int level)
 //  if(usingParadigm_[level] == 0)
    usingParadigm_[level] = usingParadigm_ [level - 1];
 //  if(studyCost_[level] == 0)
-   studyCost_[level] = studyCost_[level - 1]; 
+   studyCost_[level] = studyCost_[level - 1];
 //  if(stats_[level] == 0)
-   stats_[level] = stats_[level - 1]; 
+   stats_[level] = stats_[level - 1];
 //  if(description_[level].empty())
-   description_[level] = description_[level - 1]; 
+   description_[level] = description_[level - 1];
 //  if(capacity_[level].size() == 0)
-   capacity_[level] = capacity_[level - 1]; 
+   capacity_[level] = capacity_[level - 1];
 
 }
 
@@ -93,7 +93,7 @@ GameData * SkillRule::createInstanceOfSelf()
 STATUS
 SkillRule::initialize        ( Parser *parser )
 {
-	
+
   if (parser->matchKeyword ("NAME") )
     {
       setName(parser->getText());
@@ -205,7 +205,7 @@ SkillRule::initialize        ( Parser *parser )
 				{
   				usingParadigm_[currentLevel_] =
                   dynamic_cast<BasicUsingStrategy *>(temp ->createInstanceOfSelf ());
-//          cout << print()<<" at level "<<currentLevel_ << " using keyword "<<usingParadigm_[currentLevel_]->getKeyword()<<endl;        
+//          cout << print()<<" at level "<<currentLevel_ << " using keyword "<<usingParadigm_[currentLevel_]->getKeyword()<<endl;
         }
       return OK;
     }
@@ -215,7 +215,7 @@ SkillRule::initialize        ( Parser *parser )
        targetType_ = createByKeyword(parser->getWord());
       return OK;
     }
-    
+
 //  if (parser->matchKeyword ("") )
 //    {
 //       = parser->getInteger();
@@ -306,29 +306,29 @@ int SkillRule::getLevel(int expPoints)
     {
 //    if( this == skills["rela"] )
 //    cout <<printTag()<<" comparing current points " <<expPoints<<" with Exp level " << (*iter) <<endl;
-      
+
       if (expPoints < (*iter) )
           break;
       if( (*iter) == 0 && (level >1))
           break;
       else
-         level++;     
+         level++;
 
     }
     if(level < 1)
       return 0;
     return level - 1; // in current implementation expPoints[0] is 0 for all skills
 }
-     
+
 
 
 /*
  * Determines if current skill is in the tree growing from the given skill
  */
-bool SkillRule::isDescendFrom(SkillRule * root, int level) 
+bool SkillRule::isDescendFrom(SkillRule * root, int level)
 {
   SkillRule * current;
-  int tryLevel; 
+  int tryLevel;
   for (tryLevel = 0; tryLevel< level; tryLevel++)
   {
     for(current = this; current != 0; current = current ->getRequirement(tryLevel)->getSkill())
@@ -350,9 +350,9 @@ SkillLevelElement * SkillRule::getRequirement(int level) const
 //  if(requirement_[level])
 //      cout << (requirement_[level])->getSkill()->printTag()<<endl;
 //  else
-//    cout << "no requirement"<<endl;    
+//    cout << "no requirement"<<endl;
   return  requirement_[level];
-  
+
 }
 
 
@@ -365,14 +365,14 @@ void SkillRule::addDerivative(SkillLevelElement * skill, int level)
 }
 
 
-int SkillRule::getStudyCost(TokenEntity * const tokenEntity) 
+int SkillRule::getStudyCost(TokenEntity * const tokenEntity)
 {
   return  studyCost_[tokenEntity->getSkillLevel(this)];
 }
-       
 
 
-int SkillRule::getMaxLevel() 
+
+int SkillRule::getMaxLevel()
 {
   return getLevel(getMax()->getExpPoints());
 }
@@ -453,7 +453,7 @@ string SkillRule::printLevel(int level)
       return longtostr(level) + "th "+ print();
       }
      }
-    return  string(""); 
+    return  string("");
 }
 
 
@@ -485,9 +485,9 @@ USING_RESULT SkillRule::use(TokenEntity * tokenEntity, int & useCounter)
    USING_RESULT result = usingParadigm_[level]->use(tokenEntity,this,useCounter);
    if( result == UNUSABLE)
    {
-       tokenEntity->addReport( new UnaryPattern(unusableSkillReporter, this));
+       tokenEntity->addReport( new UnaryMessage(unusableSkillReporter, this));
     }
-  
+
   return result;
 }
 
@@ -501,7 +501,7 @@ SkillRule * SkillRule::getBasicSkill()
     {
       if (current->getRequirement(0) == 0)
         return current;
-      else  
+      else
       current = current->getRequirement(0)->getSkill();
     }
     return 0;
@@ -514,13 +514,13 @@ void    SkillRule::extractKnowledge (Entity * recipient, int parameter)
   vector <SkillLevelElement *>::iterator iter;
   for(iter = derivatives_[parameter].begin(); iter != derivatives_[parameter].end(); iter++)
   {
-    if(*iter)    
+    if(*iter)
       recipient->addSkillKnowledge((*iter)->getSkill(),(*iter)->getLevel());
     // No further extraction before skill learned
   }
   if(learningParadigm_[parameter])
     learningParadigm_[parameter]->extractKnowledge(recipient);
-  if(usingParadigm_[parameter])  
+  if(usingParadigm_[parameter])
     usingParadigm_[parameter]->extractKnowledge(recipient);
 }
 
@@ -547,7 +547,7 @@ void SkillRule::printSkillDescription(int level, ostream & out)
       {
         out << " Only "<<raceClass->getName()<< " may know this skill.";
       }
-  
+
     if(learningParadigm->isSpecialist())
       {
         out << " This is specialist skill.";
@@ -570,7 +570,7 @@ void SkillRule::printSkillDescription(int level, ostream & out)
     if(learningParadigm->getItemRequired()->getEquipedNumber())
       out << "equiping";
     else
-      out<<"possession"; 
+      out<<"possession";
     out<<" of "<< learningParadigm->getItemRequired()->getItemType()<<".";
     }
     if(!learningParadigm->getName().empty())
@@ -593,12 +593,12 @@ void SkillRule::printSkillDescription(int level, ostream & out)
    {
      usingParadigm->printSkillDescription(out);
    }
-   
+
    if(!stats_[level].empty())
    {
       out << " Added capacities: "<< stats_[level];
    }
-   
+
    out<<endl<<endl;
 }
 
@@ -615,5 +615,5 @@ int SkillRule::getUseDuration(TokenEntity * tokenEntity)
 InventoryElement * SkillRule::getItemRequired(TokenEntity * tokenEntity)
 {
    int level =  tokenEntity->getSkillLevel(this);
-   return learningParadigm_[level]->getItemRequired();  
+   return learningParadigm_[level]->getItemRequired();
 }

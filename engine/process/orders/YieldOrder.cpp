@@ -1,5 +1,5 @@
 /***************************************************************************
-                             YieldOrder.cpp 
+                             YieldOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,17 +12,17 @@
 #include "LocationEntity.h"
 #include "TitleRule.h"
 #include "TitleElement.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 extern RulesCollection <TitleRule>      titles;
 extern EntitiesCollection <LocationEntity>      locations;
-extern Reporter * noOwnYieldTitleReporter;
-extern Reporter * noYieldTitleReporter;
-extern Reporter * publicYieldTitleReporter;
-extern Reporter * privateYieldTitleReporter;
+extern ReportPattern * noOwnYieldTitleReporter;
+extern ReportPattern * noYieldTitleReporter;
+extern ReportPattern * publicYieldTitleReporter;
+extern ReportPattern * privateYieldTitleReporter;
 
 YieldOrder * instantiateYieldOrder = new YieldOrder();
 
@@ -57,7 +57,7 @@ ORDER_STATUS YieldOrder::process (Entity * entity, vector <AbstractData *>  &par
   assert(unit);
   if(parameters.size() <2)
   	return INVALID;
-  	
+
 	TitleRule * titleType   =  dynamic_cast<TitleRule *>(parameters[0]);
   if( titleType == 0)
     {
@@ -71,19 +71,19 @@ ORDER_STATUS YieldOrder::process (Entity * entity, vector <AbstractData *>  &par
   TitleElement * title = location->findTitle(titleType);
   if(title == 0)
     {
-      unit->addReport(new BinaryPattern(noYieldTitleReporter,titleType ,unit->getLocation()));
+      unit->addReport(new BinaryMessage(noYieldTitleReporter,titleType ,unit->getLocation()));
 	    return INVALID;
     }
     if(unit != title->getTitleHolder())
     {
-      unit->addReport(new UnaryPattern(noOwnYieldTitleReporter,title));
+      unit->addReport(new UnaryMessage(noOwnYieldTitleReporter,title));
 	    return FAILURE;
     }
-    
-      unit->addReport(new UnaryPattern(privateYieldTitleReporter,title));
-      unit->getLocation()->addReport(new BinaryPattern(publicYieldTitleReporter,unit,title));
-    
-    
+
+      unit->addReport(new UnaryMessage(privateYieldTitleReporter,title));
+      unit->getLocation()->addReport(new BinaryMessage(publicYieldTitleReporter,unit,title));
+
+
     unit->removeTitle(title);
 	return SUCCESS;
 }

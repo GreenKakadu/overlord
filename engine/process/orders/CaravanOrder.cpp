@@ -1,5 +1,5 @@
 /***************************************************************************
-                             CaravanOrder.cpp 
+                             CaravanOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,15 +10,15 @@
 #include "Entity.h"
 #include "TokenEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "MoveOrder.h"
 extern EntitiesCollection <LocationEntity>      locations;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	caravanLocationAddedReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	caravanLocationAddedReporter;
 
 CaravanOrder * instantiateCaravanOrder = new CaravanOrder();
 
@@ -44,32 +44,32 @@ STATUS CaravanOrder::loadParameters(Parser * parser,
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
-            
+
 	LocationEntity * location;
    string tag = parser->getWord();
 	while(tag.size() != 0)
 	{
 		if(!locations.checkDataType(tag))
 		{
-            entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), 
+            entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_),
             				new StringData(tag), new StringData("location-id")));
             return IO_ERROR;
 		}
 	location = locations[tag];
-	if(location)	
-		parameters.push_back(location);	
+	if(location)
+		parameters.push_back(location);
 	else
 		{
 			StringData * dummy = new StringData(tag);
    			parameters.push_back(dummy);
-		}	
-		
-	tag = parser->getWord();	
+		}
+
+	tag = parser->getWord();
 	}
   if(parameters.size() <2)
   	{
-         entity->addReport(new BinaryPattern(missingParameterReporter, 
-        					new StringData(keyword_), new StringData("at least two location-id"))); 		
+         entity->addReport(new BinaryMessage(missingParameterReporter,
+        					new StringData(keyword_), new StringData("at least two location-id")));
             return IO_ERROR;
   	}
   return OK;
@@ -82,9 +82,9 @@ ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &p
 {
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
-  
+
   LocationEntity * location = unit->getGlobalLocation();
-      
+
   if (location == 0)
      {  // Unit is already moving may be special message?
  		  return INVALID;
@@ -104,13 +104,13 @@ ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &p
              {
               temp = parameters[j];
               parameters[j]= parameters[routeLength - 1 - j];
-              parameters[routeLength - 1 - j] = temp;          
+              parameters[routeLength - 1 - j] = temp;
              }
-            result = MoveOrder::move(unit,parameters[1]);                 
+            result = MoveOrder::move(unit,parameters[1]);
            }
-          else 
+          else
             result = MoveOrder::move(unit,parameters[i+1]);
-            
+
         if (result == SUCCESS)
 	          return IN_PROGRESS;
         else
@@ -118,9 +118,9 @@ ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &p
         }
   }
   parameters.insert(parameters.begin(),location);
-  unit->addReport(new UnaryPattern(caravanLocationAddedReporter, location));
+  unit->addReport(new UnaryMessage(caravanLocationAddedReporter, location));
   result = MoveOrder::move(unit,parameters[1]);
-  
+
   if (result == SUCCESS)
 	  return IN_PROGRESS;
 	else

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UnitEntity.cpp 
+                          UnitEntity.cpp
                              -------------------
     begin                : Tue Nov 13 18:07:56 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -29,44 +29,44 @@
 #include "RulesCollection.h"
 
 #include "ReportRecord.h"
+#include "ReportMessage.h"
 #include "ReportPattern.h"
-#include "Reporter.h"
-#include "SimplePattern.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
-#include "QuartenaryPattern.h"
-#include "QuintenaryPattern.h"
+#include "SimpleMessage.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
+#include "QuartenaryMessage.h"
+#include "QuintenaryMessage.h"
 #include "ConstructionEntity.h"
 #include "ConstructionRule.h"
 #include "WagesCompetitiveRequest.h"
 #include "ObservationCondition.h"
 // reporters
-extern Reporter * withdrawReporter;
-extern Reporter * borrowReporter;
-extern Reporter * lendReporter;
-extern Reporter * cantMoveReporter; //
-extern Reporter * departLeaderReporter;
-extern Reporter * departFollowerReporter;
-extern Reporter * departPublicReporter;
-extern Reporter * arrivePrivateReporter;
-extern Reporter * arrivePublicReporter;
-extern Reporter * skillLossReporter;
-extern Reporter * mergeSkillReporter;
-extern Reporter * followerExitReporter;  
-extern Reporter * leaderExitReporter;    
-extern Reporter * followerEnterReporter;  
-extern Reporter * leaderEnterReporter;    
-extern Reporter * forgetReport;
-extern Reporter * consumeFoodReporter;
-extern Reporter * upkeepReporter;
-extern Reporter * cannotPayUpkeepReporter;
-extern Reporter * disbandReporter;
+extern ReportPattern * withdrawReporter;
+extern ReportPattern * borrowReporter;
+extern ReportPattern * lendReporter;
+extern ReportPattern * cantMoveReporter; //
+extern ReportPattern * departLeaderReporter;
+extern ReportPattern * departFollowerReporter;
+extern ReportPattern * departPublicReporter;
+extern ReportPattern * arrivePrivateReporter;
+extern ReportPattern * arrivePublicReporter;
+extern ReportPattern * skillLossReporter;
+extern ReportPattern * mergeSkillReporter;
+extern ReportPattern * followerExitReporter;
+extern ReportPattern * leaderExitReporter;
+extern ReportPattern * followerEnterReporter;
+extern ReportPattern * leaderEnterReporter;
+extern ReportPattern * forgetReport;
+extern ReportPattern * consumeFoodReporter;
+extern ReportPattern * upkeepReporter;
+extern ReportPattern * cannotPayUpkeepReporter;
+extern ReportPattern * disbandReporter;
 
 UnitEntity::UnitEntity(const string & keyword, GameData * parent)  : TokenEntity(keyword, parent)
 {
-    keyword_   = keyword;               
-    parent_   = parent;               
+    keyword_   = keyword;
+    parent_   = parent;
     prototypeManager->addToRegistry(this);
 }
 
@@ -85,9 +85,9 @@ UnitEntity::UnitEntity(const UnitEntity * prototype): TokenEntity(prototype)
 }
 
 
-/* 
+/*
  * Virtual constructor
- * Creates new unit at specified location, belonging to specified faction 
+ * Creates new unit at specified location, belonging to specified faction
  * and consisting of specified nimber of figured of specified race
  */
 UnitEntity * UnitEntity::createUnit (FactionEntity * faction, RaceRule * race,
@@ -96,7 +96,7 @@ UnitEntity * UnitEntity::createUnit (FactionEntity * faction, RaceRule * race,
   UnitEntity * newUnit = new UnitEntity(this);
    newUnit->setFaction(faction);
    newUnit->setLocation(location);
-   newUnit->setRace(race,number);     
+   newUnit->setRace(race,number);
    return newUnit;
 }
 
@@ -127,11 +127,11 @@ GameData * UnitEntity::createInstanceOfSelf()
 STATUS UnitEntity::initialize        ( Parser *parser )
 {
 
-	
+
   if (parser->matchKeyword("RACE"))
 	{
     raceComposition_ = RaceElement::readElement(parser);
-			
+
 	  return OK;
 	}
 
@@ -142,7 +142,7 @@ STATUS UnitEntity::initialize        ( Parser *parser )
         {
            containingConstruction_->addStaff(this);
         }
-                
+
 		return OK;
 	}
 
@@ -180,7 +180,7 @@ void UnitEntity::save(ostream &out)
   TokenEntity::save(out);
   if(!consuming_) out << "NO_CONSUME"<<endl;
   if(discontenting_) out << "DISCONTENT"<<endl;
-  
+
   if((moving_ !=0) && (stackFollowingTo_ == 0))  moving_->save(out);
 	out << "RACE "; raceComposition_->save(out);
 	if(stackFollowingTo_) out << "STACK " << stackFollowingTo_->getTag() << endl;
@@ -218,29 +218,29 @@ void      UnitEntity::payUpkeep()
         takeFromInventory(food,localFood);
       }
     else
-    {    
+    {
     takeFromInventory(food,localFood);
     localFood += borrow(food, getFiguresNumber() - localFood );
     }
     if(localFood)
     {
     upkeep -= (upkeep * localFood / getFiguresNumber()) * 80 /100;
-    addReport(new UnaryPattern(consumeFoodReporter, new IntegerData(localFood)));
-    }         
+    addReport(new UnaryMessage(consumeFoodReporter, new IntegerData(localFood)));
+    }
   }
   if(pay(upkeep))
   {
-    addReport(new UnaryPattern(upkeepReporter, new IntegerData(upkeep)));
+    addReport(new UnaryMessage(upkeepReporter, new IntegerData(upkeep)));
   }
   else
   {
-    addReport(new SimplePattern(cannotPayUpkeepReporter));
+    addReport(new SimpleMessage(cannotPayUpkeepReporter));
     if(getDiscontenting())
     {
-      addReport(new UnaryPattern(disbandReporter,this));
+      addReport(new UnaryMessage(disbandReporter,this));
       disband();
     }
-    
+
     else
       setDiscontenting(true);
 
@@ -290,7 +290,7 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
 {
   if(isHidden())
       return;
-      
+
   out  << print();
 
 
@@ -328,7 +328,7 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
 
     reportInventory(faction, out);
     reportSkills(faction, out);
-  
+
 
  recalculateStats();  // Do we really need that?
  out << "Stats: " << stats;
@@ -336,7 +336,7 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
  if(getTarget())
   out<< " Targeting "<< getTarget()->print()<<".\n";
  out <<endl<<endl;
-  
+
  out << "Events for "<<print()<<":"<<endl;
  reportEvents(out);
     out <<endl;
@@ -367,7 +367,7 @@ void UnitEntity::privateReport(ReportPrinter &out)
  reportSkills(getFaction(), out);
  recalculateStats();  // Do we really need that?
    out << "Stats: "<< stats<<endl;
- reportFlags(out);  
+ reportFlags(out);
  out.decr_indent();
 }
 
@@ -386,7 +386,7 @@ void    UnitEntity::reportFlags(ReportPrinter &out)
 
 
 /*
- * Report unit to foreign observer 
+ * Report unit to foreign observer
  */
 void    UnitEntity::publicReport(int observation, ReportPrinter &out)
 {
@@ -395,7 +395,7 @@ void    UnitEntity::publicReport(int observation, ReportPrinter &out)
 
   if(isDisbanded())
           return;
-          
+
   if (getStealth() > observation)
         return;
 
@@ -415,7 +415,7 @@ void    UnitEntity::publicReport(int observation, ReportPrinter &out)
 
 
 /*
- * Prints skills that unit has and skills it may learn 
+ * Prints skills that unit has and skills it may learn
  */
 void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 {
@@ -425,7 +425,7 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
   SkillIterator iter;
   out << "Skills: ";
   isFirst = true;
-  
+
   for (iter = skills_.begin(); iter != skills_.end(); iter++)
 		{
       if( iter != skills_.begin())
@@ -465,7 +465,7 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
               }
 
      }
-     
+
     if( !isFirst)
       out << ". ";
 }
@@ -518,7 +518,7 @@ void UnitEntity::reportInventory(FactionEntity * faction, ReportPrinter &out)
         out << "Capacity ";
         else
         out <<", "<< (movementModes[movementModeIndex])->getName()<< " ";
-        out << capacity; if(StackCapacity != capacity) out << "("<<StackCapacity <<")"; 
+        out << capacity; if(StackCapacity != capacity) out << "("<<StackCapacity <<")";
       }
     }
 out<<". ";
@@ -539,7 +539,7 @@ void    UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out
     else
       out << " "<< *(*iter);
   }
-  
+
  if(moving_)
     out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
@@ -587,7 +587,7 @@ void UnitEntity::preprocessData()
 
 
 /*
- * Checks data consistency 
+ * Checks data consistency
  */
 STATUS UnitEntity::dataConsistencyCheck()
 {
@@ -611,7 +611,7 @@ bool      UnitEntity::defaultAction()
 
   if(isBusy())
     return false;
-    
+
   if(isFullDayOrderFlagSet())
     return false;
   else
@@ -656,12 +656,12 @@ RaceRule * UnitEntity::getRace() const
 {
   return raceComposition_->getRace();
 }
-  
+
 
 
 
 /*
- * Returns unit's observation 
+ * Returns unit's observation
  */
 int UnitEntity::getObservation() const{
 return stats.getObservation();
@@ -670,7 +670,7 @@ return stats.getObservation();
 
 
 /*
- * Returns unit's stealth 
+ * Returns unit's stealth
  */
 int UnitEntity::getStealth() const{
 return stats.getStealth();
@@ -679,7 +679,7 @@ return stats.getStealth();
 
 
 /*
- * Returns unit's weight 
+ * Returns unit's weight
  */
 int UnitEntity::getWeight()
 {
@@ -726,7 +726,7 @@ int UnitEntity::getCapacity(int modeIndex)
 //  ==============================================================
 //  ============================================== ================
 /*
- * Updates number of equiped items after decreasing of number of figures in unit 
+ * Updates number of equiped items after decreasing of number of figures in unit
  */
 vector < InventoryElement *> UnitEntity::updateEquipement()
 {
@@ -735,7 +735,7 @@ vector < InventoryElement *> UnitEntity::updateEquipement()
   vector < InventoryElement *> unequiped;
   RaceRule * race = raceComposition_->getRace();
   int figures = raceComposition_->getFigures();
-  int unequippedNum; 
+  int unequippedNum;
   for (EquipSlotIterator iter = race->getAllEquipmentSlots().begin();
                     iter != race-> getAllEquipmentSlots().end(); ++iter)
     {
@@ -861,7 +861,7 @@ int currentlyEquipedItems = (*iter)->getEquipedNumber(); 																				;
 
 
 /*
- * Stacks unit under new leader 
+ * Stacks unit under new leader
  */
 void stack(UnitEntity * unit, UnitEntity * newLeader)
 {
@@ -897,7 +897,7 @@ void stack(UnitEntity * unit, UnitEntity * newLeader)
 
 
 /*
- * Unstacks unit 
+ * Unstacks unit
  */
 bool UnitEntity::unstack()
 {
@@ -923,12 +923,12 @@ bool UnitEntity::promoteUnit(UnitEntity * unit1,UnitEntity * unit2)
   UnitIterator u1 = find(stackFollowers_.begin(), stackFollowers_.end(), unit1);
   UnitIterator u2 = find(stackFollowers_.begin(), stackFollowers_.end(), unit2);
   if(u1 >= u2)
-    return false; 
-  if(u1 == stackFollowers_.end() || u2 == stackFollowers_.end())   
-    return false; 
+    return false;
+  if(u1 == stackFollowers_.end() || u2 == stackFollowers_.end())
+    return false;
   stackFollowers_.erase(u2);
   stackFollowers_.insert(u1,unit2);
-  return true;  
+  return true;
 }//==========================================================
 // ================== set of recursion methods =============
 //==========================================================
@@ -964,7 +964,7 @@ bool UnitEntity::leaveStaying()
 
 
 /*
- * returns list of all units following current unit 
+ * returns list of all units following current unit
  */
 vector< UnitEntity *> &  UnitEntity::createStackMembersList(vector< UnitEntity *> & followers)
 {
@@ -1069,7 +1069,7 @@ void UnitEntity::setEntityMoving(TravelElement * moving)
 
 
 /*
- * Applies all movement effects to all units in stack 
+ * Applies all movement effects to all units in stack
  */
 void UnitEntity::setStackMoving(TravelElement * moving)
 {
@@ -1082,19 +1082,19 @@ void UnitEntity::setStackMoving(TravelElement * moving)
 
       moving_ = moving;
       stats.modifyStealth( -1 * raceComposition_->getFigures()/10);
-      
+
       if(moving_->getMode()== flyingMode)
       {
         stats.modifyStealth(1);
       }
   getLocation()->addReport(
-            new BinaryPattern(departPublicReporter, this, moving_->getDestination()), 0 ,
+            new BinaryMessage(departPublicReporter, this, moving_->getDestination()), 0 ,
                             ObservationCondition::createObservationCondition(getStealth() )
             );
  if(getLeader())
  {
   addReport(
-            new QuintenaryPattern(departFollowerReporter, this, getLocation(),
+            new QuintenaryMessage(departFollowerReporter, this, getLocation(),
                 moving_->getDestination(), getLeader(),
                 new IntegerData(moving_->getTravelTime())   )
             );
@@ -1102,11 +1102,11 @@ void UnitEntity::setStackMoving(TravelElement * moving)
  else
  {
   addReport(
-            new QuartenaryPattern(departLeaderReporter, this, getLocation(),
-                moving_->getDestination(), 
+            new QuartenaryMessage(departLeaderReporter, this, getLocation(),
+                moving_->getDestination(),
                 new IntegerData(moving_->getTravelTime())   )
             );
- }           
+ }
 	StackIterator iter;
 	for (iter = stackFollowers_.begin(); iter !=  stackFollowers_.end(); iter++)
 	{
@@ -1119,7 +1119,7 @@ void UnitEntity::setStackMoving(TravelElement * moving)
 
 
 /*
- * recursively adds report to all units in the stack 
+ * recursively adds report to all units in the stack
  */
 void UnitEntity::movingGroupReport(ReportRecord report )
 {
@@ -1137,7 +1137,7 @@ void UnitEntity::movingGroupReport(ReportRecord report )
 
 }
 /*
- * recursively calculates weight of all units in stack 
+ * recursively calculates weight of all units in stack
  */
 int UnitEntity::calculateTotalWeight (int & weight){
 	recursionCounter++;
@@ -1158,7 +1158,7 @@ int UnitEntity::calculateTotalWeight (int & weight){
 
 
 /*
- * recursively calculates total capacity of the stack 
+ * recursively calculates total capacity of the stack
  */
 void UnitEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 {
@@ -1169,7 +1169,7 @@ void UnitEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 				return;
 			}
      capacity += getCapacity(modeIndex);
-  
+
 	StackIterator iter;
 	for (iter = stackFollowers_.begin(); iter !=  stackFollowers_.end(); iter++)
 	{
@@ -1212,9 +1212,9 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
                           FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE)
             addSkillExperience((*iter).getSkill(),(*iter).getExpPoints() *  number);
         else
-          { 
-  	        addReport( new BinaryPattern(mergeSkillReporter, unit, (*iter).getSkill()));
-          }                 
+          {
+  	        addReport( new BinaryMessage(mergeSkillReporter, unit, (*iter).getSkill()));
+          }
       }
    }
 
@@ -1223,7 +1223,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 		{
 // Find old level
      oldLevel = 0;
-     
+
 //     cout <<"Merging: before "; (*iter).print(cout);cout<< " and after ";
          for (iter2 = oldSkills.begin(); iter2 != oldSkills.end(); iter2++)
 		      {
@@ -1238,7 +1238,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 //     (*iter).print(cout);cout <<endl;
       if( (*iter).getLevel() < oldLevel)
         {
-  	        addReport( new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
+  	        addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
            (*iter).getSkill()->checkConditions(this);
         }
     }
@@ -1265,17 +1265,17 @@ void UnitEntity::addNewFigures(int number)
       (*iter).setExpPoints( ( (*iter).getExpPoints() *  oldFigures ) / (oldFigures + number));
       if( (*iter).getLevel() < oldLevel)
         {
-  	        addReport( new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
+  	        addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
            (*iter).getSkill()->checkConditions(this);
         }
 		}
-  recalculateStats();  
+  recalculateStats();
 }
 
 
 
 /*
- * Adding skill experience without checking  
+ * Adding skill experience without checking
  */
 void  UnitEntity::addSkillExperience(SkillRule  * skill, int expPoints)
 {
@@ -1287,7 +1287,7 @@ void  UnitEntity::addSkillExperience(SkillRule  * skill, int expPoints)
 									 (*iter).setExpPoints((*iter).getExpPoints() + expPoints);
 								  break;
 								}
-		}              
+		}
     if (iter == skills_.end())
 	      skills_.push_back(SkillElement(skill,expPoints));
 }
@@ -1304,8 +1304,8 @@ void  UnitEntity::addSkillExperience(SkillRule  * skill, int expPoints)
 
 
 /*
- * How many seats occupies this entity in the class. 
- * Number of entities that can be tought by one teacher determined by this value. 
+ * How many seats occupies this entity in the class.
+ * Number of entities that can be tought by one teacher determined by this value.
  */
 int UnitEntity::getLearningCapacity()
 {
@@ -1324,7 +1324,7 @@ bool UnitEntity::teacherRequired(SkillRule * skill)
 }
 
 /*
- *  Intristic ability of unit to study skill 
+ *  Intristic ability of unit to study skill
  *  Level limitations also taken into considerations
  */
 LEARNING_RESULT UnitEntity::mayLearn(SkillRule * skill)
@@ -1350,7 +1350,7 @@ int UnitEntity::getLearningLevelBonus(SkillRule * skill)
            return (*iter)->getLevel();
       }
 
-  
+
   // bonus may be obtained from title, item, skill
   // bonus SkillLevelElements added each time when title
   // gained, item equipped etc.
@@ -1384,9 +1384,9 @@ int UnitEntity::getTitleBonus(SkillRule * skill)
 
 
 /*
- * Calculate control points unit costs 
+ * Calculate control points unit costs
  */
-int UnitEntity::getControlPoints() 
+int UnitEntity::getControlPoints()
 {
   // + equipment, title and skill modifiers
   return stats.getControlPoints();
@@ -1418,7 +1418,7 @@ void UnitEntity::addLearningLevelBonus(SkillLevelElement * bonus)
   if(iter != learningLimitBonus_.end())
       (*iter)->setLevel( (*iter)->getLevel() + bonus->getLevel() );
    else
-      learningLimitBonus_.push_back(bonus); 
+      learningLimitBonus_.push_back(bonus);
 }
 
 
@@ -1431,9 +1431,9 @@ void UnitEntity::removeLearningLevelBonus(SkillLevelElement * bonus)
   int newLevel = (*iter)->getLevel() - bonus->getLevel() ;
   if(newLevel == 0)
     learningLimitBonus_.erase(iter);
-  else  
+  else
     (*iter)->setLevel( newLevel );
-  
+
 }
 
 
@@ -1445,7 +1445,7 @@ void UnitEntity::removeTitle(TitleElement * title)
    SkillLevelElement * bonus = title->getTitle()->getLearningLevelBonus();
   if(bonus)
     removeLearningLevelBonus(bonus);
-   
+
   TitleIterator iter = find(titles_.begin(), titles_.end(), title);
   if(iter == titles_.end())
 			return;
@@ -1480,7 +1480,7 @@ bool UnitEntity::mayCancelTitle(TitleElement * title)
  {
  	if((*iter)->mayCancelTitle(title))
  		return true;
- } 	
+ }
  return false;
 }
 //  ==============================================================
@@ -1538,8 +1538,8 @@ int UnitEntity::borrow(ItemRule * item, int amount)
     result += current;
     (*iter)->takeFromInventory(item,current);
 //QQQ
-       addReport(new TertiaryPattern(borrowReporter, this,new ItemElement(item,current),(*iter)));
-      (*iter)->addReport(new TertiaryPattern(lendReporter, (*iter),new ItemElement(item,current),this));
+       addReport(new TertiaryMessage(borrowReporter, this,new ItemElement(item,current),(*iter)));
+      (*iter)->addReport(new TertiaryMessage(lendReporter, (*iter),new ItemElement(item,current),this));
 	    if (isTraced())
       {
         ItemElement * itemsGiven = new ItemElement(item,current);
@@ -1549,14 +1549,14 @@ int UnitEntity::borrow(ItemRule * item, int amount)
     if(result >= amount)
       return amount;
   }
-      return result;  
+      return result;
 }
 
 
 
 
 /*
- *  determines how many items (but no more than amount) can borrow unit 
+ *  determines how many items (but no more than amount) can borrow unit
  */
 int UnitEntity::mayBorrow(ItemRule * item, int amount)
 {
@@ -1564,7 +1564,7 @@ int UnitEntity::mayBorrow(ItemRule * item, int amount)
   for (vector <UnitEntity *>::iterator iter = location_->unitsPresent().begin();
                     iter != location_->unitsPresent().end(); ++iter)
   {
-    
+
     if ((*iter)->getFaction() != faction_)
         continue;
     if ((*iter) == this)
@@ -1594,14 +1594,14 @@ bool UnitEntity::mayPay(int price)
   return true;
   else
     price -= cashAmount;
-     
+
   // Try to withdraw
   if(getWithdrawingSupport())
   {
     return faction_->mayWithdraw(cash,price);
   }
   else
-    return false;  
+    return false;
 }
 
 
@@ -1630,7 +1630,7 @@ bool UnitEntity::pay(int price)
   {
   cashAmount = faction_->withdraw(cash,price);
 //QQQ
-  addReport(new BinaryPattern(withdrawReporter, this,new ItemElement(cash,cashAmount)));
+  addReport(new BinaryMessage(withdrawReporter, this,new ItemElement(cash,cashAmount)));
 	if (isTraced() && cashAmount )
     cout <<"== TRACING " <<print()<< " ==> withdraws "<<cashAmount<< "\n";
   if (cashAmount >= price)
@@ -1638,7 +1638,7 @@ bool UnitEntity::pay(int price)
     return true;
   }
   }
-    return false; // Can't afford to pay 
+    return false; // Can't afford to pay
 }
 
 
@@ -1657,11 +1657,11 @@ void UnitEntity::recalculateStats()
 	for (InventoryElementIterator iter = inventory_.begin();
                       iter != inventory_.end(); ++iter)
 		{
-      stats.addPartialStats( (*iter)->getStats(), (*iter)->getEquipedNumber(), figures);      
+      stats.addPartialStats( (*iter)->getStats(), (*iter)->getEquipedNumber(), figures);
     }
  // Effects // may be partial stats?
      enchantments_.addStats(&stats,getFiguresNumber());
-    
+
  // Building
   if(containingConstruction_ != 0)
   {
@@ -1680,7 +1680,7 @@ bool UnitEntity::isLeading(UnitEntity * unit)
   if(iter != stackFollowers_.end())
    return true;
   else
-    return false; 
+    return false;
 }
 
 
@@ -1703,7 +1703,7 @@ bool UnitEntity::maySee(TokenEntity * tokenEntity)
 {
    if( tokenEntity == 0)
        return false;
-   if(tokenEntity->getLocation() != this->getLocation() )  
+   if(tokenEntity->getLocation() != this->getLocation() )
         return false;
    if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
         return true;
@@ -1743,9 +1743,9 @@ bool UnitEntity::mayInterract(UnitEntity * unit)
         return true;
    if (this->getLocation()->getFactionalObservation(getFaction()) >= unit->getStealth() )
         return true;
-   else     
+   else
         return false;
-   
+
 }
 
 bool UnitEntity::mayInterract(ConstructionEntity * buildingOrShip)
@@ -1791,7 +1791,7 @@ void UnitEntity::expose(bool value)
 //{
 //   if(!raceComposition_->getRace()->mayMove())
 //   {
-//      addReport(new BinaryPattern(cantMoveReporter,this,raceComposition_->getRace()) );
+//      addReport(new BinaryMessage(cantMoveReporter,this,raceComposition_->getRace()) );
 //     return RACE_CANNOT_MOVE;
 //   }
 // // 1. Some races may not be able to move (followers)
@@ -1862,14 +1862,14 @@ bool UnitEntity::moveAdvance()
       return false;
    if(patroling_)    // Unit is just patroling. no advancement.
       return false;
-      
+
    moving_->advance();
 
-   
+
    if(moving_->isCrossingBorder())
    {
-     // check if stack can enter location (it may be guarded or other reasons)    
-     moveGroupToLocation(); 
+     // check if stack can enter location (it may be guarded or other reasons)
+     moveGroupToLocation();
    }
 
    if(addStackLandwalkExperience(false))
@@ -1888,7 +1888,7 @@ bool UnitEntity::moveAdvance()
             moving_->resetTravelTime(totalTime - (oldTime - time));
           }
    }
-   
+
    if(moving_->isArrived())
    {
      movingGroupArrived();
@@ -1904,9 +1904,9 @@ bool UnitEntity::moveAdvance()
 void UnitEntity::movingEntityArrived()
 {
 
-  getLocation()->addReport(new UnaryPattern(arrivePublicReporter, this), 0 ,
+  getLocation()->addReport(new UnaryMessage(arrivePublicReporter, this), 0 ,
                             ObservationCondition::createObservationCondition(getStealth() ));
-  addReport(new UnaryPattern(arrivePrivateReporter, getLocation()));
+  addReport(new UnaryMessage(arrivePrivateReporter, getLocation()));
 
       stats.modifyStealth( raceComposition_->getFigures()/10);
 
@@ -1917,7 +1917,7 @@ void UnitEntity::movingEntityArrived()
 
    if(stackFollowingTo_)  // not a stack leader
             moving_ = 0;
-  
+
 }
 
 
@@ -1956,7 +1956,7 @@ bool UnitEntity::retreat()
 void UnitEntity::clearStay()
 {
   staying_ = false;
-  
+
 }
 
 
@@ -2012,7 +2012,7 @@ void UnitEntity::disband()
   {
 	  for (iter = stackFollowers_.begin(); iter !=  stackFollowers_.end(); iter++)
 	  {
-	    stack((*iter),stackFollowingTo_);       
+	    stack((*iter),stackFollowingTo_);
 	  }
   }
   else
@@ -2037,7 +2037,7 @@ void UnitEntity::enterConstruction(ConstructionEntity * containingConstruction)
    if(containingConstruction_)
       exitConstruction();
 
-   enterStack(containingConstruction);   
+   enterStack(containingConstruction);
 
 }
 
@@ -2073,11 +2073,11 @@ void UnitEntity::enterStack(ConstructionEntity * containingConstruction)
   containingConstruction_->addUnit(this);
  if(getLeader())
  {
-  addReport(new BinaryPattern(followerEnterReporter, containingConstruction_,getLeader()));
+  addReport(new BinaryMessage(followerEnterReporter, containingConstruction_,getLeader()));
  }
  else
  {
-  addReport(new UnaryPattern(leaderEnterReporter, containingConstruction_));
+  addReport(new UnaryMessage(leaderEnterReporter, containingConstruction_));
  }
   recalculateStats();
 	StackIterator iter;
@@ -2100,15 +2100,15 @@ void UnitEntity::exitStack()
       	cout << "Recursion overflow \n";
 				return ;
 			}
-  containingConstruction_->removeUnit(this);    
-  recalculateStats(); 
+  containingConstruction_->removeUnit(this);
+  recalculateStats();
  if(getLeader())
  {
-  addReport(new BinaryPattern(followerExitReporter, containingConstruction_,getLeader()));
+  addReport(new BinaryMessage(followerExitReporter, containingConstruction_,getLeader()));
  }
  else
  {
-    addReport(new UnaryPattern(leaderExitReporter, containingConstruction_));
+    addReport(new UnaryMessage(leaderExitReporter, containingConstruction_));
  }
   containingConstruction_ = 0;
 	StackIterator iter;
@@ -2166,7 +2166,7 @@ bool UnitEntity::isHidden()
   if(isAssignedToStaff_)
     return true;
   else
-    return false;  
+    return false;
 }
 
 
@@ -2179,15 +2179,15 @@ void UnitEntity::forgetSkill(SkillRule * skill)
 		{
 			if ((skill == (*iter).getSkill()) || ((*iter).getSkill()->isDescendFrom(skill,1)))
 			{
-			   addReport(new UnaryPattern(forgetReport,(*iter).getSkill()));
+			   addReport(new UnaryMessage(forgetReport,(*iter).getSkill()));
 			   // Skill loss may cause some items to be unequiped
 			   // or titles lost
             (*iter).getSkill()->checkConditions(this);
-			    skills_.erase(iter);			    
+			    skills_.erase(iter);
 			}
 			else
 			   ++iter;
-			
+
 		}
 		recalculateStats();
 }

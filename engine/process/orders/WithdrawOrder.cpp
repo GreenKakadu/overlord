@@ -6,12 +6,12 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "WithdrawOrder.h"
-#include "Reporter.h"
+#include "ReportPattern.h"
 #include "StringData.h"
-#include "TertiaryPattern.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "SimplePattern.h"
+#include "TertiaryMessage.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "SimpleMessage.h"
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
@@ -27,12 +27,12 @@ const UINT WithdrawOrder:: WITHDRAW_RESTRICTED_REPORT_FLAG= 0x01;
 //extern RulesCollection <TerrainRule>   terrains;
 extern RulesCollection    <ItemRule>     items;
 
-extern Reporter * withdrawInvalidReporter; 
-extern Reporter *	invalidParameterReporter;
-extern Reporter * withdrawRestrictedReporter;
-extern Reporter * withdrawUnitReporter;
-extern Reporter * withdrawFactionReporter;
-extern Reporter * withdrawFundEmptyReporter;
+extern ReportPattern * withdrawInvalidReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern * withdrawRestrictedReporter;
+extern ReportPattern * withdrawUnitReporter;
+extern ReportPattern * withdrawFactionReporter;
+extern ReportPattern * withdrawFundEmptyReporter;
 
 //WithdrawOrder instantiateWithdrawOrder;
 WithdrawOrder * instantiateWithdrawOrder = new WithdrawOrder();
@@ -51,7 +51,7 @@ WithdrawOrder::WithdrawOrder(){
   "any lack of coins.\n";
   orderType_   = IMMEDIATE_ORDER;
   mayInterrupt_ = true;
-} 
+}
 
 
 
@@ -62,7 +62,7 @@ WithdrawOrder::loadParameters(Parser * parser, vector <AbstractData *>  &paramet
             return IO_ERROR;
   if (!parseIntegerParameter(parser, parameters))
       {
-        entity->addReport(new TertiaryPattern(invalidParameterReporter,
+        entity->addReport(new TertiaryMessage(invalidParameterReporter,
                                 new StringData(keyword_),
                                 new StringData(parser->getWord()),
                                 new StringData(" integer ")));
@@ -87,7 +87,7 @@ WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
    {
      if(!orderId->getReportingFlag(WITHDRAW_RESTRICTED_REPORT_FLAG ))
       {
-        unit->addReport(new SimplePattern(withdrawRestrictedReporter));
+        unit->addReport(new SimpleMessage(withdrawRestrictedReporter));
         orderId->setReportingFlag(WITHDRAW_RESTRICTED_REPORT_FLAG );
       }
  	    return FAILURE;
@@ -106,30 +106,30 @@ WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
       item = cash;
    if(item == 0)
       {
-        unit->addReport(new UnaryPattern(withdrawInvalidReporter, parameters[1]));
+        unit->addReport(new UnaryMessage(withdrawInvalidReporter, parameters[1]));
       return INVALID;
-        
-      }   
+
+      }
 // if number is negative and in the bank and have that number of money may deposit // obsolete
    if(amount < 0)
     {
       cout << "deposits are not supported yet" << endl;
       return INVALID;
     }
-    
+
     int realAmount = unit->getFaction()->withdraw(item,amount);
     if(realAmount == 0)
     {
-        unit->addReport(new UnaryPattern(withdrawInvalidReporter, item));
+        unit->addReport(new UnaryMessage(withdrawInvalidReporter, item));
       return INVALID;
       }
     unit->addToInventory(item,realAmount);
 //QQQ
-        unit->addReport(new UnaryPattern(withdrawUnitReporter, new ItemElement(item, realAmount)));
-        unit->getFaction()->addReport(new BinaryPattern(withdrawFactionReporter, new ItemElement(item, realAmount), unit));
+        unit->addReport(new UnaryMessage(withdrawUnitReporter, new ItemElement(item, realAmount)));
+        unit->getFaction()->addReport(new BinaryMessage(withdrawFactionReporter, new ItemElement(item, realAmount), unit));
     if( amount > realAmount)
       {
-        unit->getFaction()->addReport(new UnaryPattern(withdrawFundEmptyReporter, item));
+        unit->getFaction()->addReport(new UnaryMessage(withdrawFundEmptyReporter, item));
       }
  	return SUCCESS;
 }

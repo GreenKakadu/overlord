@@ -22,9 +22,9 @@
   *@author Alex Dribin
   */
 
-class Reporter;
+class ReportPattern;
 class UseOrder : public OrderPrototype  {
-public: 
+public:
 	UseOrder();
 	~UseOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          QuintenaryPattern.cpp 
+                          QuintenaryMessage.cpp
                              -------------------
     begin                : Mon Apr 28 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,28 +12,28 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include "QuintenaryPattern.h"
-#include "Reporter.h"
+#include "QuintenaryMessage.h"
+#include "ReportPattern.h"
 extern const int BLOCK_SIZE;
 
-void * QuintenaryPattern::operator new(size_t size)
+void * QuintenaryMessage::operator new(size_t size)
 {
-   return NEW<QuintenaryPattern>( size);
+   return NEW<QuintenaryMessage>( size);
 }
 
 
-void  QuintenaryPattern::operator delete(void * deadObject, size_t size)
+void  QuintenaryMessage::operator delete(void * deadObject, size_t size)
 {
-	DELETE_PATTERN<QuintenaryPattern>(deadObject, size);
+	DELETE_PATTERN<QuintenaryMessage>(deadObject, size);
 }
 
 
-void QuintenaryPattern::printReport(ostream &out) const
+void QuintenaryMessage::printReport(ostream &out) const
 {
   reporter_->printReport(out, param1_, param2_, param3_ , param4_ , param5_ );
 }
 
-void QuintenaryPattern::clean()
+void QuintenaryMessage::clean()
 {
   param1_->clean();
   param2_->clean();
@@ -45,4 +45,4 @@ void QuintenaryPattern::clean()
 
 
 
-QuintenaryPattern  * QuintenaryPattern::headOfFreeList;
+QuintenaryMessage  * QuintenaryMessage::headOfFreeList;

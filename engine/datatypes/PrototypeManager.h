@@ -1,7 +1,7 @@
 /***************************************************************************
-                          PrototypeManager.h 
-This object is used in implementation of Prototype design pattern 
-(see Design Patterns. E. Gamma, R. Helm, R. Johnson, J. Vlissides)
+                          PrototypeManager.h
+This object is used in implementation of Prototype design pattern
+(see Design Messages. E. Gamma, R. Helm, R. Johnson, J. Vlissides)
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin

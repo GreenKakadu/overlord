@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TeachOrder.cpp 
+                          TeachOrder.cpp
                              -------------------
     begin                : Thu Jul 17 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -19,14 +19,14 @@
 #include "SkillLevelElement.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "TokenEntity.h"
 #include "TeachingOffer.h"
-extern Reporter * teachingReporter;
-extern Reporter * teachingReporter2; //debug
+extern ReportPattern * teachingReporter;
+extern ReportPattern * teachingReporter2; //debug
 extern EntitiesCollection <UnitEntity>      units;
 
 //TeachOrder instantiateTeachOrder;
@@ -58,7 +58,7 @@ STATUS TeachOrder::loadParameters(Parser * parser,
 
     while (parseOptionalGameDataParameter(entity, parser, units, parameters))
           {}
-            
+
   return OK;
 
 
@@ -75,7 +75,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 
    if ( skill == 0)
     {
-//		  unit->addReport( new UnaryPattern(cannotStudyReporter, unit->getRace()));
+//		  unit->addReport( new UnaryMessage(cannotStudyReporter, unit->getRace()));
  		return INVALID;
     }
   vector <Entity * > students;
@@ -108,10 +108,10 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
       if(teacher->getLastOrder() != entity->getCurrentOrder())
         {
 //QQQ
-          teacher->addReport(new UnaryPattern (teachingReporter,
+          teacher->addReport(new UnaryMessage (teachingReporter,
                         new  SkillLevelElement
                         (skill,teacher->getSkillLevel(skill))));
-//          teacher->addReport(new BinaryPattern (teachingReporter2, skill,
+//          teacher->addReport(new BinaryMessage (teachingReporter2, skill,
 //                        new IntegerData(teacher->getSkillLevel(skill))));
         }
       entity->getCurrentOrder()->setProcessingState (RESUME);
@@ -125,7 +125,7 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 // 		  return INVALID;
  		  return FAILURE;
      }
-     
+
         break;
 
      case RESUME:
@@ -147,12 +147,12 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 
 void TeachOrder::preProcess_(Entity * entity, vector <AbstractData *>  &parameters)
 {
-  
+
 }
 
 
 
 void TeachOrder::doProcess_(Entity * entity, vector <AbstractData *>  &parameters)
 {
-  
+
 }

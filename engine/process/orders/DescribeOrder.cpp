@@ -1,5 +1,5 @@
 /***************************************************************************
-                             DescribeOrder.cpp 
+                             DescribeOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -8,9 +8,9 @@
 #include "DescribeOrder.h"
 #include "StringData.h"
 #include "Entity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 
 DescribeOrder * instantiateDescribeOrder = new DescribeOrder();
@@ -33,7 +33,7 @@ STATUS DescribeOrder::loadParameters(Parser * parser,
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
-    else    
+    else
   		return OK;
 }
 

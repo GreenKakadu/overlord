@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ActionUsingStrategy.cpp 
+                          ActionUsingStrategy.cpp
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
@@ -13,11 +13,11 @@
 #include "UnitEntity.h"
 #include "LocationEntity.h"
 #include "RulesCollection.h"
-#include "BinaryPattern.h"
+#include "BinaryMessage.h"
 
-extern Reporter * notEnoughResourcesReporter;
-extern Reporter * privateActionReporter;
-extern Reporter * publicActionReporter;
+extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * privateActionReporter;
+extern ReportPattern * publicActionReporter;
 extern RulesCollection    <ActionRule>     fx_actions;
 
 
@@ -103,7 +103,7 @@ USING_RESULT ActionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
   }
 
 
-  else // The   production cycle is finished. 
+  else // The   production cycle is finished.
   {
 //cout<<"<===ACTION== "<< *productType_<<endl;
      productType_->carryOut(unit);
@@ -157,7 +157,7 @@ void ActionUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEnti
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
       if (tokenEntity->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
-        tokenEntity->addReport(new BinaryPattern(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
+        tokenEntity->addReport(new BinaryMessage(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
     }
 }
 

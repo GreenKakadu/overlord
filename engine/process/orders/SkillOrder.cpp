@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SkillOrder.cpp 
+                             SkillOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,13 +10,13 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "SkillRule.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern RulesCollection <SkillRule>      skills;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
 
 SkillOrder * instantiateSkillOrder = new SkillOrder();
 
@@ -41,7 +41,7 @@ STATUS SkillOrder::loadParameters(Parser * parser,
             return IO_ERROR;
     if(!parseIntegerParameter(parser, parameters))
     {
-      entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("skill level or days number")));
+      entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("skill level or days number")));
       return IO_ERROR;
     }
   if(parser ->matchKeyword("DAYS"))
@@ -51,7 +51,7 @@ STATUS SkillOrder::loadParameters(Parser * parser,
 	else
       parameters.push_back( new StringData ("LEVEL"));
 
-    
+
   return OK;
 
 }
@@ -69,7 +69,7 @@ ORDER_STATUS SkillOrder::process (Entity * entity, vector <AbstractData *>  &par
  		return FAILURE;
     }
   int parameter = getIntegerParameter(parameters,1);
-  
+
   if (parameters.size() > 2)
     {
       string par = parameters[2]->print();
@@ -78,16 +78,16 @@ ORDER_STATUS SkillOrder::process (Entity * entity, vector <AbstractData *>  &par
         	if(unit->hasSkill(skill,parameter))
         		return SUCCESS;
         	else
-        		return FAILURE;	
+        		return FAILURE;
           }
-    }     
+    }
 
     if(unit->hasSkillLevel(skill,parameter))
         	return SUCCESS;
     else
-        	return FAILURE;	
+        	return FAILURE;
 
-  
+
 	return FAILURE;
 }
 

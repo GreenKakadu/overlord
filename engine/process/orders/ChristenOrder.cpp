@@ -1,5 +1,5 @@
 /***************************************************************************
-                             ChristenOrder.cpp 
+                             ChristenOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -11,13 +11,13 @@
 #include "UnitEntity.h"
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern Reporter *	cannotChristenReporter;
-extern Reporter *	publicChristenReporter;
-extern Reporter *	privateChristenReporter;
+extern ReportPattern *	cannotChristenReporter;
+extern ReportPattern *	publicChristenReporter;
+extern ReportPattern *	privateChristenReporter;
 
 ChristenOrder * instantiateChristenOrder = new ChristenOrder();
 
@@ -42,7 +42,7 @@ STATUS ChristenOrder::loadParameters(Parser * parser,
 
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
-    else    
+    else
   		return OK;
 }
 
@@ -58,29 +58,29 @@ ORDER_STATUS ChristenOrder::process (Entity * entity, vector <AbstractData *>  &
   	{
   		if(construction->getFaction() != unit->getFaction())
   		{
-        entity->addReport(new UnaryPattern(cannotChristenReporter, 
-        					new StringData("construction"))); 		
+        entity->addReport(new UnaryMessage(cannotChristenReporter,
+        					new StringData("construction")));
   			return INVALID;
   		}
   		construction->setName(newName);
-        entity->addReport(new BinaryPattern(privateChristenReporter, 
-        					construction,new StringData(newName))); 		
-        construction->getLocation()->addReport(new TertiaryPattern(publicChristenReporter, 
-                        entity, construction,new StringData(newName))); 		
+        entity->addReport(new BinaryMessage(privateChristenReporter,
+        					construction,new StringData(newName)));
+        construction->getLocation()->addReport(new TertiaryMessage(publicChristenReporter,
+                        entity, construction,new StringData(newName)));
   		return SUCCESS;
   	}
-  	
-  if(unit->getLocation()->getOwner() != unit->getFaction())	
+
+  if(unit->getLocation()->getOwner() != unit->getFaction())
   	{
-        entity->addReport(new UnaryPattern(cannotChristenReporter, 
-        					new StringData("location"))); 		
+        entity->addReport(new UnaryMessage(cannotChristenReporter,
+        					new StringData("location")));
   			return INVALID;
   	}
   		unit->getLocation()->setName(newName);
-        entity->addReport(new BinaryPattern(privateChristenReporter, 
-        					unit->getLocation(),new StringData(newName))); 		
-        unit->getLocation()->addReport(new TertiaryPattern(publicChristenReporter, entity,
-        					unit->getLocation(),new StringData(newName))); 		
+        entity->addReport(new BinaryMessage(privateChristenReporter,
+        					unit->getLocation(),new StringData(newName)));
+        unit->getLocation()->addReport(new TertiaryMessage(publicChristenReporter, entity,
+        					unit->getLocation(),new StringData(newName)));
   		return SUCCESS;
   }
 

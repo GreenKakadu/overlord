@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UnaryPattern.h  -  description
+                          UnaryMessage.h  -  description
                              -------------------
     begin                : Wed Jan 22 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,30 +9,30 @@
 #ifndef UNARY_PATTERN_H
 #define UNARY_PATTERN_H
 
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 class AbstractData;
-class Reporter;
+class ReportPattern;
 /**
   *@author Alex Dribin
   */
 
-class UnaryPattern : public ReportPattern  {
-public: 
-	UnaryPattern(){}
-	UnaryPattern(Reporter * reporter, AbstractData * param1){reporter_ = reporter; param1_ = param1;}
+class UnaryMessage : public ReportMessage  {
+public:
+	UnaryMessage(){}
+	UnaryMessage(ReportPattern * reporter, AbstractData * param1){reporter_ = reporter; param1_ = param1;}
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
   void printReport(ostream &out) const;
   void clean();
-	static  UnaryPattern * headOfFreeList;
+	static  UnaryMessage * headOfFreeList;
 	union
 	{
-			UnaryPattern  * next; //for use in operator new
-  		Reporter * reporter_;
-	};		
+			UnaryMessage  * next; //for use in operator new
+  		ReportPattern * reporter_;
+	};
 protected:
-	~UnaryPattern(){}
+	~UnaryMessage(){}
 		AbstractData * param1_;
 };
 

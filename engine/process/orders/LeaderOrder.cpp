@@ -1,5 +1,5 @@
 /***************************************************************************
-                             LeaderOrder.cpp 
+                             LeaderOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,13 +9,13 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
 
 
 LeaderOrder * instantiateLeaderOrder = new LeaderOrder();
@@ -47,11 +47,11 @@ ORDER_STATUS LeaderOrder::process (Entity * entity, vector <AbstractData *>  &pa
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  
+
   UnitEntity * leader =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
   if(unit->isFollowingInStackTo(leader))
   	return SUCCESS;
-  else	
+  else
 	return FAILURE;
 }
 

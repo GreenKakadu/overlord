@@ -1,5 +1,5 @@
 /***************************************************************************
-                             TacticOrder.cpp 
+                             TacticOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,14 +9,14 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 TacticOrder * instantiateTacticOrder = new TacticOrder();
 
@@ -46,30 +46,30 @@ STATUS TacticOrder::loadParameters(Parser * parser,
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-   bool parsingResult = false; 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "AVOID");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "DEFEND");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FIGHT");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FRONT");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "MIDDLE");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "REAR");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "LEFT");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "CENTER");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "RIGHT");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FLEE");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "RETREAT");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "STAND");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "ADVANCE");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "SWEEP");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FLANK");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "CHARGE");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FIRE");                 
-   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "SUPPORT");                 
+   bool parsingResult = false;
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "AVOID");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "DEFEND");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FIGHT");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FRONT");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "MIDDLE");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "REAR");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "LEFT");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "CENTER");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "RIGHT");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FLEE");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "RETREAT");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "STAND");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "ADVANCE");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "SWEEP");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FLANK");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "CHARGE");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "FIRE");
+   parsingResult |= parseOptionalStringParameter(entity, parser, parameters, "SUPPORT");
    if(parsingResult)
      return OK;
-    else 
+    else
         {
-          entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(parser->getWord()), new StringData("one of tactic keywords")));
+          entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(parser->getWord()), new StringData("one of tactic keywords")));
           return IO_ERROR;
         }
 

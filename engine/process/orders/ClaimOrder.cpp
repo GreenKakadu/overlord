@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ClaimOrder.cpp 
+                          ClaimOrder.cpp
                              -------------------
     begin                : Mon Nov 3 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -23,20 +23,20 @@
 #include "UnitEntity.h"
 #include "StanceVariety.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
-#include "QuartenaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
+#include "QuartenaryMessage.h"
 
 ClaimOrder * instantiateClaimOrder = new ClaimOrder();
 extern RulesCollection <TitleRule>      titles;
-extern Reporter * noTitleReporter; 
-extern Reporter * noTitleConditionReporter;
-extern Reporter * cantPayForTitleReporter;  
-extern Reporter * noFreeTitleReporter;
-extern Reporter * contestTitleReporter;
-extern Reporter * claimTitleReporter;
-      
+extern ReportPattern * noTitleReporter;
+extern ReportPattern * noTitleConditionReporter;
+extern ReportPattern * cantPayForTitleReporter;
+extern ReportPattern * noFreeTitleReporter;
+extern ReportPattern * contestTitleReporter;
+extern ReportPattern * claimTitleReporter;
+
 ClaimOrder::ClaimOrder(){
   keyword_ = "claim";
   registerOrder_();
@@ -52,7 +52,7 @@ ClaimOrder::ClaimOrder(){
   "\n" +
   "Trying to CLAIM the title of Overlord if the title is held results in failure\n" +
   "and the Imperial faction [npc1] declaring you ENNEMY.\n";
-  
+
     orderType_   = DAY_LONG_ORDER;
 }
 
@@ -66,7 +66,7 @@ STATUS ClaimOrder::loadParameters(Parser * parser,
 
     if(!parseGameDataParameter(entity,  parser, titles, "title tag", parameters))
             return IO_ERROR;
-        
+
   if(parser ->matchKeyword("FREE"))
 		{
       parameters.push_back( new StringData ("FREE"));
@@ -85,7 +85,7 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
     {
 	    return INVALID;
     }
-  bool claimFreeTitleOnly = false;  
+  bool claimFreeTitleOnly = false;
   if (parameters.size() > 1)
     {
       string par = parameters[1]->print();
@@ -99,20 +99,20 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
   TitleElement * title = unit->getLocation()->findTitle(titleType);
   if(title == 0)
     {
-      unit->addReport(new BinaryPattern(noTitleReporter,titleType ,unit->getLocation()));
+      unit->addReport(new BinaryMessage(noTitleReporter,titleType ,unit->getLocation()));
 	    return INVALID;
     }
 
   if ( !title->getClaimingCondition()->isSatisfied(unit))
     {
-      unit->addReport(new TertiaryPattern(noTitleConditionReporter, unit,
+      unit->addReport(new TertiaryMessage(noTitleConditionReporter, unit,
                       title->getClaimingCondition(),titleType));
 	    return FAILURE;
     }
 
   if(!unit->mayPay(title->getTitle()->getCost()))
     {
-      unit->addReport(new UnaryPattern(cantPayForTitleReporter,titleType));
+      unit->addReport(new UnaryMessage(cantPayForTitleReporter,titleType));
 	    return FAILURE;
     }
 
@@ -121,7 +121,7 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
     {
      if(claimFreeTitleOnly)
       {
-        unit->addReport(new TertiaryPattern(noFreeTitleReporter,titleType, title->getTitleLocation(), titleHolder));
+        unit->addReport(new TertiaryMessage(noFreeTitleReporter,titleType, title->getTitleLocation(), titleHolder));
 	      return FAILURE;
       }
       if( *(unit->getFaction()->getStance(titleHolder)) >= *alliedStance )
@@ -129,11 +129,11 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
         // report can't contest alies use ... instead
 	      return INVALID;
       }
-      
-      
-      unit->addReport(new QuartenaryPattern(contestTitleReporter,unit,titleType, title->getTitleLocation(), titleHolder));
-      if(!title->contest(unit))  
-      {        
+
+
+      unit->addReport(new QuartenaryMessage(contestTitleReporter,unit,titleType, title->getTitleLocation(), titleHolder));
+      if(!title->contest(unit))
+      {
         unit->pay(title->getTitle()->getCost()/2);
 	      return SUCCESS;
       }
@@ -144,6 +144,6 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
       }
      }
       unit->claimTitle(title);
-      unit->addReport(new TertiaryPattern(claimTitleReporter, unit,titleType,title->getTitleLocation()));
+      unit->addReport(new TertiaryMessage(claimTitleReporter, unit,titleType,title->getTitleLocation()));
 	return SUCCESS;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BasicProductionStrategy.cpp 
+                          BasicProductionStrategy.cpp
                              -------------------
     begin                : Thu Sep 18 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -20,9 +20,9 @@
 #include "LocationEntity.h"
 #include "RulesCollection.h"
 #include "ToolUseElement.h"
-#include "BinaryPattern.h"
-extern Reporter * notEnoughResourcesReporter;
-extern Reporter * productionReporter;
+#include "BinaryMessage.h"
+extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * productionReporter;
 extern GameData  targetTypeSelf;
 
 extern RulesCollection    <ItemRule>     items;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MarketRequest.cpp 
+                          MarketRequest.cpp
                              -------------------
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -17,9 +17,9 @@
 #include "ItemElement.h"
 #include "IntegerData.h"
 #include "MarketRequest.h"
-#include "QuartenaryPattern.h"
-extern Reporter * buyReporter;
-extern Reporter * sellReporter;
+#include "QuartenaryMessage.h"
+extern ReportPattern * buyReporter;
+extern ReportPattern * sellReporter;
 extern ItemRule * cash;
 MarketRequest::MarketRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount,
@@ -47,7 +47,7 @@ string MarketRequest::print()
   else
     operationName = " sell ";
 
-    
+
   return  unit_->print() + " requests to " + operationName + longtostr(amount_) +
           " of " + item_->print() + " for " + longtostr(price_)  + " coins\n";
 }
@@ -94,8 +94,8 @@ bool MarketRequest::isValid()
     if (unit_->hasMoney() >= price_ * amount_)
       return true;
     else
-      return false;  
-  } 
+      return false;
+  }
   if (type_ == SELL)
   {
     if(item_ == 0)
@@ -103,7 +103,7 @@ bool MarketRequest::isValid()
     if ( unit_->hasItem(item_) >= amount_)
       return true;
     else
-      return false;    
+      return false;
   }
       return false;
 }
@@ -130,7 +130,7 @@ void MarketRequest::answerMarketRequest(int price, int amount)
     assert(taken == price * amount);
     // report
 //QQQ
-    unit_->addReport(new QuartenaryPattern(buyReporter, unit_,
+    unit_->addReport(new QuartenaryMessage(buyReporter, unit_,
                     new ItemElement(item_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults
@@ -145,7 +145,7 @@ void MarketRequest::answerMarketRequest(int price, int amount)
     assert(taken == amount);
     unit_->addToInventory(cash, price * amount);
 //QQQ
-    unit_->addReport(new QuartenaryPattern(sellReporter, unit_,
+    unit_->addReport(new QuartenaryMessage(sellReporter, unit_,
                     new ItemElement(item_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
      orderId_->completeProcessing(unit_,amount);

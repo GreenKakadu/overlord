@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SeeOrder.cpp 
+                             SeeOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,14 +9,14 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 SeeOrder * instantiateSeeOrder = new SeeOrder();
 
@@ -50,10 +50,10 @@ ORDER_STATUS SeeOrder::process (Entity * entity, vector <AbstractData *>  &param
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
   UnitEntity * target   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
-  
+
 	if(target == 0)
 		return INVALID;
-		
+
    if (!unit->maySee(target)) // Not In the same place or can't see
 	  return FAILURE;
    else

@@ -12,16 +12,16 @@ Used for report creation.
 #include <stdlib.h>
 #include <string>
 #include <iostream>
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 #include "Entity.h"
 #include "Element.h"
 
 using namespace std;
-typedef   Element3<ReportPattern , Entity* , int> BasicReportElement;
+typedef   Element3<ReportMessage , Entity* , int> BasicReportElement;
 
 class ReportElement : public  BasicReportElement  {
 public:
-	ReportElement(ReportPattern * pattern, Entity* destination, int time = currentDay)  : BasicReportElement (pattern,destination,time)
+	ReportElement(ReportMessage * pattern, Entity* destination, int time = currentDay)  : BasicReportElement (pattern,destination,time)
 			{}
 	~ReportElement(){}
   void printReport(ReportPrinter &out) const
@@ -29,7 +29,7 @@ public:
         out << "Day " << parameter2_ << " ";
         out.incr_indent();	out <<(*rule_); out.decr_indent();
         }
-  inline ReportPattern * getRecord() const {return rule_;}
+  inline ReportMessage * getRecord() const {return rule_;}
 	inline Entity *        getDestination() const {return parameter1_;}
 private:
     void save(ostream & out){} // disabled

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          AcceptOrder.h 
+                          AcceptOrder.h
                              -------------------
     begin                : Thu Mar 6 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,11 +13,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class AcceptOrder : public OrderPrototype  {
-public: 
+public:
 	AcceptOrder();
 	~AcceptOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

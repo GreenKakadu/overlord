@@ -1,9 +1,9 @@
 /***************************************************************************
-                          ReportPattern.h
+                          ReportMessage.h
 Usualy reports are standard messages that only have very few different fields
-Each Report Pattern is able to print it's message, inserting into it
+Each Report Message is able to print it's message, inserting into it
 appropriate parameters.
-ReportPattern is the Generic object for all report patterns.
+ReportMessage is the Generic object for all report patterns.
                              -------------------
     begin                : Thu Dec 26 2002
     copyright            : (C) 2002 by Alex Dribin
@@ -14,12 +14,12 @@ ReportPattern is the Generic object for all report patterns.
 
 #include <iostream>
 #include <stdlib.h>
-#include "Reporter.h"
+#include "ReportPattern.h"
 #include "ReportRecord.h"
 //extern const int BLOCK_SIZE;
 using namespace std;
-class ReportPattern {
-public: 
+class ReportMessage {
+public:
   virtual void printReport(ostream &) const{}
   virtual void clean() {}
   virtual int getTag(){return 0;} // dummy method which is never used
@@ -27,8 +27,8 @@ public:
                             // with interface similar with other elements
 
 protected:
-	ReportPattern(){}
-	virtual ~ReportPattern(){}
+	ReportMessage(){}
+	virtual ~ReportMessage(){}
 };
 
 
@@ -66,7 +66,7 @@ template <class T>  static void  DELETE_PATTERN (void * deadObject, size_t size)
 	p->next = T::headOfFreeList;
 	T::headOfFreeList = p;
 }
-   inline ostream& operator << (ostream& out,  ReportPattern & data)
+   inline ostream& operator << (ostream& out,  ReportMessage & data)
                                 { data.printReport(out); return out;}
 
 #endif

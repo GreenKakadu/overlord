@@ -18,11 +18,11 @@ class Entity;
 class TokenEntity;
 class BasicLearningStrategy;
 class InventoryElement;
-class Reporter;
+class ReportPattern;
 class TeachingOffer;
 
 class SkillRule : public Rule  {
-public: 
+public:
 
 			SkillRule ( const string & keyword, GameData * parent) : Rule(keyword, parent) {}
       SkillRule ( const SkillRule * prototype );
@@ -75,7 +75,7 @@ public:
     vector <EntityStatistics> stats_;
     vector <BasicLearningStrategy *> learningParadigm_;
     vector <BasicUsingStrategy *> usingParadigm_;
-    vector <string>   description_;       
+    vector <string>   description_;
 		vector < MovementMode<int> > capacity_;
 	  vector <int> expPoints_;
 	  vector <int> studyCost_;

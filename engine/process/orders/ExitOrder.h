@@ -22,9 +22,9 @@
   *@author Alex Dribin
   */
 
-class Reporter;
+class ReportPattern;
 class ExitOrder : public OrderPrototype   {
-public: 
+public:
 	ExitOrder();
 	~ExitOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

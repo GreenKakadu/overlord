@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TokenEntity.cpp 
+                          TokenEntity.cpp
                              -------------------
     begin                : Fri Jul 25 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -18,10 +18,10 @@
 #include "UnitEntity.h"
 #include "FactionEntity.h"
 #include "LocationEntity.h"
-#include "SimplePattern.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "SimpleMessage.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "IntegerData.h"
 #include "TerrainRule.h"
 #include "SkillUseElement.h"
@@ -34,15 +34,15 @@
 #include "TargetOrder.h"
 
 extern DataManipulator * dataManipulatorPtr;
-extern Reporter * newLevelReporter;
-extern Reporter * maxLevelReporter;
-extern Reporter *	cannotOathYourselfReporter;
-extern Reporter *	oathRejectedReporter;
-extern Reporter *	oathReporter;
-extern Reporter * enterPrivateReporter;
-extern Reporter * enterPublicReporter;
-extern Reporter * leavePrivateReporter;
-extern Reporter * leavePublicReporter;
+extern ReportPattern * newLevelReporter;
+extern ReportPattern * maxLevelReporter;
+extern ReportPattern *	cannotOathYourselfReporter;
+extern ReportPattern *	oathRejectedReporter;
+extern ReportPattern *	oathReporter;
+extern ReportPattern * enterPrivateReporter;
+extern ReportPattern * enterPublicReporter;
+extern ReportPattern * leavePrivateReporter;
+extern ReportPattern * leavePublicReporter;
 
 
 
@@ -181,7 +181,7 @@ void TokenEntity::save(ostream &out)
   if(advertising_) out << "ADVERTISE"<<endl;
   if(!withdrawingSupport_) out << "NO_SUPPORT"<<endl;
   if(!sharing_) out << "NO_SHARING"<<endl;
-  
+
 //  for (vector<OrderLine *>::iterator  iter = orders_.begin(); iter != orders_.end(); iter++)
 //    {
 //           (*iter)->save(out);
@@ -282,7 +282,7 @@ void    TokenEntity::reportFlags(ReportPrinter &out)
   if(!withdrawingSupport_) out << " Not withdrawing support.";
   if(!sharing_) out << " Not sharing.";
 }
-         
+
 
 
 void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
@@ -346,7 +346,7 @@ void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 
 
 /*
- * TokenEntity may not be able to execute orders when it is moving 
+ * TokenEntity may not be able to execute orders when it is moving
  * (not as passenger)
  */
 bool TokenEntity::isBusy()  const
@@ -360,7 +360,7 @@ bool TokenEntity::isBusy()  const
 
 /*
  * TokenEntity may be unaccessible for orders when it is
- * in process of destruction 
+ * in process of destruction
  */
 bool TokenEntity::isUnaccessible() const
 {
@@ -719,13 +719,13 @@ int TokenEntity::addSkill(SkillRule  * skill, int expPoints)
      return newLevel;
 }
 
-//  TokenEntity::newLevelReporter_ = new Reporter(""," reached level "," in ","");
+//  TokenEntity::newLevelReporter_ = new ReportPattern(""," reached level "," in ","");
 
 
 
 void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
 {
-	    TertiaryPattern * Message = new TertiaryPattern(newLevelReporter, this, new IntegerData(newLevel), skill);
+	    TertiaryMessage * Message = new TertiaryMessage(newLevelReporter, this, new IntegerData(newLevel), skill);
 		  addReport(Message, 0,0);
 
    // Add knowledge to faction
@@ -735,7 +735,7 @@ void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
    // Is it maximum level?
        if  ( newLevel >= skill->getMaxLevel() )
         {
-	    BinaryPattern * Message = new BinaryPattern(maxLevelReporter, this, skill);
+	    BinaryMessage * Message = new BinaryMessage(maxLevelReporter, this, skill);
 		  addReport(Message, 0,0 );
          }
 }
@@ -792,7 +792,7 @@ void TokenEntity::cancelTeachingOffer()
 
 
 /*
- * Checks that Entity has specified experience in given skill 
+ * Checks that Entity has specified experience in given skill
  */
 bool TokenEntity::hasSkill(SkillRule  * skill, int experience)
 {
@@ -880,7 +880,7 @@ int TokenEntity::addSkillUse(SkillUseElement * skillUse)
 // finds amount of skill use that remained from the previous use,
 // adds current skill use and
 // returns number of production cycle completed
-// no truncation 
+// no truncation
 int TokenEntity::addCumullativeSkillUse(SkillUseElement * skillUse, int accumulationLimit )
 {
   int numCycles=0;
@@ -898,7 +898,7 @@ int TokenEntity::addCumullativeSkillUse(SkillUseElement * skillUse, int accumula
       numCycles = (skillUse->getDaysUsed() / skillUse->getDuration()).roundDown();
       if (numCycles >= accumulationLimit) // all done. nothing to store
         return  accumulationLimit;
-      
+
       else
       {
         skillUse_.push_back(skillUse);
@@ -923,7 +923,7 @@ int TokenEntity::addCumullativeSkillUse(SkillUseElement * skillUse, int accumula
         return  numCycles;
 
 
-  else  // skill use completed 
+  else  // skill use completed
     {
 //      skillUse->setDaysUsed(effectiveDays - numCycles * (*iter)->getDuration());
       delete (*iter);
@@ -997,17 +997,17 @@ bool TokenEntity::moveAdvance()
 
 void TokenEntity::moveToLocation()
 {
-  getLocation()->addReport(new UnaryPattern(leavePublicReporter, this), 0 ,
+  getLocation()->addReport(new UnaryMessage(leavePublicReporter, this), 0 ,
                             ObservationCondition::createObservationCondition(getStealth() ));
-  addReport(new UnaryPattern(leavePrivateReporter, getLocation()));
+  addReport(new UnaryMessage(leavePrivateReporter, getLocation()));
   LocationEntity * newLocation = moving_->getDestination();
   getFaction()->addVisitedLocation(newLocation);
-  
+
 	if (isTraced())
     cout <<"== TRACING " <<print()<< " ==> Enters "<< newLocation->print()<<"\n";
-  newLocation->addReport(new UnaryPattern(enterPublicReporter, this), 0 ,
+  newLocation->addReport(new UnaryMessage(enterPublicReporter, this), 0 ,
                             ObservationCondition::createObservationCondition(getStealth() ));
-  addReport(new UnaryPattern(enterPrivateReporter, newLocation));
+  addReport(new UnaryMessage(enterPrivateReporter, newLocation));
 }
 
 
@@ -1104,7 +1104,7 @@ bool TokenEntity::mayInterractTokenEntity(TokenEntity * tokenEntity)
 {
    if( tokenEntity == 0)
        return false;
-  
+
    if(tokenEntity->getGlobalLocation() != this->getGlobalLocation() )  // take into account buildings
         return false;
    if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
@@ -1118,7 +1118,7 @@ bool TokenEntity::mayInterractTokenEntity(TokenEntity * tokenEntity)
    else
         return false;
 }
-  
+
 
 
 bool TokenEntity::mayInterractFaction(FactionEntity * faction)
@@ -1149,10 +1149,10 @@ ORDER_STATUS TokenEntity::oath(FactionEntity * faction)
   {
    return INVALID;
   }
-   
+
   if(faction == getFaction())
-  {   
-    addReport(new SimplePattern(cannotOathYourselfReporter)); 		
+  {
+    addReport(new SimpleMessage(cannotOathYourselfReporter));
    return INVALID;
   }
 
@@ -1160,17 +1160,17 @@ ORDER_STATUS TokenEntity::oath(FactionEntity * faction)
  {
    if (!mayInterractFaction(faction)) // Not In the same place or can't see
 	     return FAILURE;
- 
+
  	  if(*(faction->getStance(getFaction())) < *friendlyStance)
       {
         // not accepting. Reports to both sides
-      UnaryPattern * oathRejectedMessage = new UnaryPattern(oathRejectedReporter, faction);  
+      UnaryMessage * oathRejectedMessage = new UnaryMessage(oathRejectedReporter, faction);
       addReport(oathRejectedMessage,0,0);
       faction->addReport(oathRejectedMessage,0,0);
 		  return INVALID;
       }
   }
-  BinaryPattern * oathReportMessage = new BinaryPattern(oathReporter, this,faction);
+  BinaryMessage * oathReportMessage = new BinaryMessage(oathReporter, this,faction);
   getFaction()->addReport(oathReportMessage,0,0 );
   markToOath(faction);
   faction->addReport(oathReportMessage,0,0);
@@ -1189,7 +1189,7 @@ BasicOrderSynchronizationRequest * TokenEntity::hasOrderSyncRequest(BasicOrderSy
          {
             return (*iter);
          }
-      }  
+      }
  return 0;
 }
 
@@ -1206,7 +1206,7 @@ void TokenEntity::removeOrderSyncRequest(BasicOrderSynchronizationRequest * requ
             delete (*iter);
             return;
          }
-      }  
+      }
 }
 
 
@@ -1225,7 +1225,7 @@ bool TokenEntity::doneOrderSyncRequest(BasicOrderSynchronizationRequest * reques
       {
          if (request->isEqual(*iter))
          {
-            return (*iter)->syncDone();           
+            return (*iter)->syncDone();
          }
       }
   return false;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SettingOrder.cpp 
+                             SettingOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,13 +10,13 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 SettingOrder * instantiateSettingOrder = new SettingOrder();
 
@@ -58,13 +58,13 @@ STATUS SettingOrder::loadParameters(Parser * parser,
 {
 	if(parseSetting(parser,parameters,"TERSE","ON"))
 		return OK;
-		
+
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
 	if(parseSetting(parser,parameters,"ADVERTISE","ON"))
 		return OK;
-		
+
 	if(parseSetting(parser,parameters,"ANNOUNCE","ON"))
 		return OK;
 
@@ -76,11 +76,11 @@ STATUS SettingOrder::loadParameters(Parser * parser,
 
 	if(parseSetting(parser,parameters,"SUPPORT","ON"))
 		return OK;
-		
+
 
    if(!entityIsUnit(entity))
             return IO_ERROR;
-            
+
 	if(parseSetting(parser,parameters,"CONSUME","ON"))
 		return OK;
 
@@ -109,29 +109,29 @@ ORDER_STATUS SettingOrder::process (Entity * entity, vector <AbstractData *>  &p
     		{
     			faction->setTerseBattleReport(settingValue);
 				return SUCCESS;
-       		} 
+       		}
 		TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
     	if(tokenEntity)
     		{
     			tokenEntity->getFaction()->setTerseBattleReport(settingValue);
 				return SUCCESS;
-       		} 
+       		}
 		return INVALID;
     }
-    
+
   TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
 
    if(par1 == string("ADVERTISE"))
    	{
-    	tokenEntity->setAdvertising(settingValue); 
+    	tokenEntity->setAdvertising(settingValue);
 		return SUCCESS;
-   	}	
+   	}
    if(par1 == string("ANNOUNCE"))
    	{
-    	tokenEntity->setAnnouncing(settingValue); 
+    	tokenEntity->setAnnouncing(settingValue);
 		return SUCCESS;
-   	}	
+   	}
    if(par1 == string("SILENT"))
    	{
     	tokenEntity->setSilent(settingValue);
@@ -144,9 +144,9 @@ ORDER_STATUS SettingOrder::process (Entity * entity, vector <AbstractData *>  &p
    	}
    if(par1 == string("SUPPORT"))
    	{
-    	tokenEntity->setWithdrawingSupport(settingValue); 
+    	tokenEntity->setWithdrawingSupport(settingValue);
 		return SUCCESS;
-   	}	
+   	}
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
    if(par1 == string("CONSUME"))
@@ -176,7 +176,7 @@ bool SettingOrder::parseSetting(Parser * parser, vector <AbstractData *>  &param
       		return true;
 		}
       	parameters.push_back(new StringData (defaultSetting));
-      	return true;			
+      	return true;
 	}
 	// missing parameter
 	return false;
@@ -184,7 +184,7 @@ bool SettingOrder::parseSetting(Parser * parser, vector <AbstractData *>  &param
 
 
 
-//bool SettingOrder::getSettingParameter(vector <AbstractData *>  &parameters, 
+//bool SettingOrder::getSettingParameter(vector <AbstractData *>  &parameters,
 //											const char *setting, bool &value)
 //{
 //	  if (parameters.size() > 2)
@@ -196,5 +196,5 @@ bool SettingOrder::parseSetting(Parser * parser, vector <AbstractData *>  &param
 //           cout<< "Claiming free title only set \n";
 //          }
 //    }
-//	
+//
 //}

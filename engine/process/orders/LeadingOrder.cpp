@@ -1,5 +1,5 @@
 /***************************************************************************
-                             LeadingOrder.cpp 
+                             LeadingOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,14 +9,14 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 LeadingOrder * instantiateLeadingOrder = new LeadingOrder();
 
@@ -51,7 +51,7 @@ ORDER_STATUS LeadingOrder::process (Entity * entity, vector <AbstractData *>  &p
   UnitEntity * follower =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
   if(follower->isFollowingInStackTo(unit))
   	return SUCCESS;
-  else	
+  else
 	return FAILURE;
 }
 

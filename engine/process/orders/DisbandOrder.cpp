@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DisbandOrder.cpp 
+                          DisbandOrder.cpp
                              -------------------
     begin                : Mon Jul 7 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -15,13 +15,13 @@
 #include "DisbandOrder.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 extern bool ciStringCompare(const std::string& s1,const std::string& s2);
-extern Reporter * disbandReporter;
+extern ReportPattern * disbandReporter;
 
 //DisbandOrder instantiateDisbandOrder;
 DisbandOrder * instantiateDisbandOrder = new DisbandOrder();
- 
+
 DisbandOrder::DisbandOrder(){
 
   keyword_ = "disband";
@@ -43,7 +43,7 @@ STATUS DisbandOrder::loadParameters(Parser * parser, vector <AbstractData *>
     if (ciStringCompare(temp,"confirm"))
 //    if( temp != "confirm")
             return IO_ERROR;
-  
+
             return OK;
 }
 
@@ -54,7 +54,7 @@ ORDER_STATUS DisbandOrder::process (Entity * entity, vector <AbstractData *>
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  unit->addReport(new UnaryPattern(disbandReporter, unit));
+  unit->addReport(new UnaryMessage(disbandReporter, unit));
   unit->disband();
   return SUCCESS;
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EquipOrder.cpp 
+                          EquipOrder.cpp
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,17 +9,17 @@
 #include "SkillLevelElement.h"
 #include "StringData.h"
 #include "IntegerData.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "UnitEntity.h"
 #include "ItemRule.h"
 #include "ItemElement.h"
 const unsigned EquipOrder::SKILL_REQUIRED_REPORT_FLAG = 0x01;
-extern Reporter *	unequipReporter;
-extern Reporter *	equipReporter;
-extern Reporter *	unequipableReporter;
-extern Reporter *	equipSkillReporter;
+extern ReportPattern *	unequipReporter;
+extern ReportPattern *	equipReporter;
+extern ReportPattern *	unequipableReporter;
+extern ReportPattern *	equipSkillReporter;
 
 EquipOrder * instantiateEquipOrder = new EquipOrder();
 //EquipOrder  instantiateEquipOrder;
@@ -48,16 +48,16 @@ STATUS EquipOrder::loadParameters(Parser * parser,
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-            
-    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))        
+
+    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
             return IO_ERROR;
-            
+
 //   string itemTag = parser->getWord();
 //  if (itemTag.size() == 0)  // Missing parameter
 //        {
 //					cout  << "=<>= ACCEPT: missing Parameter (item tag expected) for "
 //								<< entity->print() << endl;
-//         entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("unit id")));
+//         entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("unit id")));
 //         return IO_ERROR;
 //        }
 //
@@ -72,7 +72,7 @@ STATUS EquipOrder::loadParameters(Parser * parser,
 //				{
 //   		     parameters.push_back(item);
 //				}
-      
+
     parseIntegerParameter(parser, parameters);
 
   return OK;
@@ -93,7 +93,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
 
   if(item->getEquipSlot() == 0)
     {
-         unit->addReport(new UnaryPattern(unequipableReporter,item));
+         unit->addReport(new UnaryMessage(unequipableReporter,item));
  		  return INVALID;
     }
   BasicCondition * equipCondition = item->demandsEquipCondition();
@@ -104,14 +104,14 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
      // Unit has no skill to equip item
      if(!unit->getCurrentOrder()->getReportingFlag( SKILL_REQUIRED_REPORT_FLAG))
       {
-//        unit->addReport(new BinaryPattern(equipSkillReporter,new SkillLevelElement(skillRequired),item));
+//        unit->addReport(new BinaryMessage(equipSkillReporter,new SkillLevelElement(skillRequired),item));
         unit->getCurrentOrder()->setReportingFlag( SKILL_REQUIRED_REPORT_FLAG);
       }
         return FAILURE;
      }
     unit->getCurrentOrder()->clearReportingFlag(SKILL_REQUIRED_REPORT_FLAG);
     }
-   int number;        
+   int number;
    int result;
    OrderLine * orderId = entity->getCurrentOrder();
    if(parameters.size() > 1)
@@ -123,7 +123,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
         if (number == 0)  // unequip all
               {
                  unit->equipItem (item, number);
-		             unit->addReport(new BinaryPattern(unequipReporter, unit, item),orderId,0 );
+		             unit->addReport(new BinaryMessage(unequipReporter, unit, item),orderId,0 );
                  return SUCCESS;
                 }
       result = unit->equipItem (item, number);
@@ -131,19 +131,19 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
 		            return FAILURE;
         if( result < 0)    // unequiped
         {
-		      unit->addReport(new BinaryPattern(unequipReporter, unit, item),orderId,0  );
+		      unit->addReport(new BinaryMessage(unequipReporter, unit, item),orderId,0  );
           return SUCCESS;
-          }   
+          }
         if (result < number) // only some part of items equiped
               {
                 //numToEquip->setValue(number - result);
 //QQQ
-		            unit->addReport( new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0 );
+		            unit->addReport( new BinaryMessage(equipReporter, unit, new ItemElement(item,result)),orderId,0 );
 // 		            return FAILURE;
                   return SUCCESS;
               }
 //QQQ
-		     unit->addReport( new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
+		     unit->addReport( new BinaryMessage(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
          return SUCCESS;
       }
     else  // equip all available
@@ -155,9 +155,9 @@ ORDER_STATUS EquipOrder::process (Entity * entity, vector <AbstractData *>  &par
  		            return FAILURE;
               }
 //QQQ
-		     unit->addReport(new BinaryPattern(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
+		     unit->addReport(new BinaryMessage(equipReporter, unit, new ItemElement(item,result)),orderId,0  );
          return SUCCESS;
        }
 
-// Equipping items may cause change in combat action      
+// Equipping items may cause change in combat action
 }

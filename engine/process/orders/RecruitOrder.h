@@ -17,14 +17,14 @@
 #define RECRUIT_ORDER_H
 
 #include "OrderPrototype.h"
-class Reporter;
+class ReportPattern;
 
 /**
   *@author Alex Dribin
   */
 
 class RecruitOrder : public OrderPrototype  {
-public: 
+public:
 	RecruitOrder();
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
   ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);

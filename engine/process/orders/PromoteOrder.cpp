@@ -1,5 +1,5 @@
 /***************************************************************************
-                             PromoteOrder.cpp 
+                             PromoteOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,13 +10,13 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	promotedReporter;
-extern Reporter *	promoteReporter;
+extern ReportPattern *	promotedReporter;
+extern ReportPattern *	promoteReporter;
 
 PromoteOrder * instantiatePromoteOrder = new PromoteOrder();
 
@@ -58,22 +58,22 @@ ORDER_STATUS PromoteOrder::process (Entity * entity, vector <AbstractData *>  &p
   {
   	return FAILURE;
  	}
-  
+
   if(unit->getLeader() !=  target->getLeader() )
   {
   	return FAILURE;
   }
-  
+
   if(unit->getLeader() == 0 ) // both not following anyone
   {
     if(unit->getLocation()->promoteUnit(unit,target))
         {
-          unit->addReport(new UnaryPattern(promoteReporter,target));
-          target->addReport(new UnaryPattern(promotedReporter,unit));
+          unit->addReport(new UnaryMessage(promoteReporter,target));
+          target->addReport(new UnaryMessage(promotedReporter,unit));
                 return SUCCESS;
         }
     else
-        return FAILURE;   
+        return FAILURE;
   }
   else // both following the same leader
   {
@@ -82,9 +82,9 @@ ORDER_STATUS PromoteOrder::process (Entity * entity, vector <AbstractData *>  &p
                 return SUCCESS;
         }
     else
-        return FAILURE;   
+        return FAILURE;
   }
-  
+
 	// determine own position (iterator) in location's units list
 	// insert target before
 	// what about constructions? add keyword BUILDING?

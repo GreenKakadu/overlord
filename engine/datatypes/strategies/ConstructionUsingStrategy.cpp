@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ConstructionUsingStrategy.cpp 
+                          ConstructionUsingStrategy.cpp
                              -------------------
     begin                : Wed Sep 3 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -20,8 +20,8 @@
 #include "TokenEntity.h"
 #include "SkillUseElement.h"
 #include "BasicCondition.h"
-#include "BinaryPattern.h"
-#include "UnaryPattern.h"
+#include "BinaryMessage.h"
+#include "UnaryMessage.h"
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
 #include "EntitiesCollection.h"
@@ -32,9 +32,9 @@ extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern RulesCollection <ConstructionRule>      constructions;
 extern RulesCollection    <ItemRule>     items;
 extern GameInfo game;
-extern Reporter * newBuidingStartedReporter;
-extern Reporter * buidingFinishedReporter;
-extern Reporter * constructionStartedReporter;
+extern ReportPattern * newBuidingStartedReporter;
+extern ReportPattern * buidingFinishedReporter;
+extern ReportPattern * constructionStartedReporter;
 
 
 ConstructionUsingStrategy::ConstructionUsingStrategy ( const ConstructionUsingStrategy * prototype ): BasicUsingStrategy(prototype)
@@ -110,23 +110,23 @@ USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * s
     if(newBuilding->isCompleted())
       {
         newBuilding->buildingCompleted();
-        unit->addReport( new BinaryPattern
+        unit->addReport( new BinaryMessage
                           (buidingFinishedReporter, construction_,
                               new StringData(newBuilding->printTag())));
-        unit->getLocation()->addReport( new BinaryPattern
+        unit->getLocation()->addReport( new BinaryMessage
                           (buidingFinishedReporter, construction_,
                               new StringData(newBuilding->printTag())));
       }
     else
       {
-        unit->addReport( new BinaryPattern
+        unit->addReport( new BinaryMessage
                           (newBuidingStartedReporter, construction_,
                               new StringData(newBuilding->printTag())));
-        unit->getLocation()->addReport( new BinaryPattern
+        unit->getLocation()->addReport( new BinaryMessage
                           (newBuidingStartedReporter, construction_,
                               new StringData(newBuilding->printTag())));
       }
-      
+
     // If we used placeholder as target now it's time to set it to real construction
     AbstractData * target = unit->getTarget();
     NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(target);
@@ -143,7 +143,7 @@ USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * s
                 //report placeholder duplication ?
           }
         }
-    
+
     unit->getCurrentOrder()->setCompletionFlag(true);
     return USING_COMPLETED;
   }
@@ -158,7 +158,7 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
 /** Otherwise we'll need resources */
    BasicCondition * buildCondition = construction_->getBuildCondition();
   if(buildCondition)
-  { 
+  {
     if(buildCondition->isSatisfied(unit))
       {
 //           report condition
@@ -190,8 +190,8 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
  unit->getLocation()->useLand(construction_->getLandUse());
 
  unit->takeFromInventory(resourceType_, resourceNumber_);
- 
- unit->addReport( new UnaryPattern (constructionStartedReporter, construction_));
+
+ unit->addReport( new UnaryMessage (constructionStartedReporter, construction_));
 
   return  USING_OK;
 }
@@ -207,7 +207,7 @@ void ConstructionUsingStrategy::printSkillDescription(ostream & out)
         out << resourceType_->getPluralName()<< " " << resourceType_->printTag();
       else
       out << resourceType_->print();
- 
+
       out<<".";
     }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CraftUsingStrategy.cpp 
+                          CraftUsingStrategy.cpp
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,9 +13,9 @@
 #include "LocationEntity.h"
 #include "RulesCollection.h"
 #include "ToolUseElement.h"
-#include "BinaryPattern.h"
-extern Reporter * notEnoughResourcesReporter;
-extern Reporter * productionReporter;
+#include "BinaryMessage.h"
+extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * productionReporter;
 
 extern RulesCollection    <ItemRule>     items;
 
@@ -101,22 +101,22 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
   else // The old  production cycle is finished. Do we want to start new?
   {
     int resourcesAvailable = checkResourcesAvailability(unit);
-    
+
     if( resourcesAvailable < cycleCounter)
         cycleCounter = resourcesAvailable;
     int effectiveProduction = cycleCounter * productNumber_;
     if( (useRestrictionCounter != 0) && (effectiveProduction  >= useRestrictionCounter) ) // limited number of new cycles
-      {  
+      {
         effectiveProduction = useRestrictionCounter;
         cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
         if(cycleCounter >1)
           consumeResources(unit,cycleCounter-1);
-         result = USING_COMPLETED; 
+         result = USING_COMPLETED;
         useRestrictionCounter = 0;
       unit->getCurrentOrder()->setCompletionFlag(true);
       }
-        
-    else 
+
+    else
     {
       consumeResources(unit,cycleCounter-1);
       if(dailyUse->getDaysUsed() > 0)
@@ -130,11 +130,11 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
         {
 //QQQ
           unit->addReport(
-          new BinaryPattern(productionReporter, unit,
+          new BinaryMessage(productionReporter, unit,
           new ItemElement(productType_,effectiveProduction))
                   );
       unit->getLocation()->addReport(
-      new BinaryPattern(productionReporter, unit,
+      new BinaryMessage(productionReporter, unit,
       new ItemElement(productType_,effectiveProduction))
         /*, 0, observation condition*/);
     }
@@ -188,7 +188,7 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
 ////      {
 ////        // no resources but old production in progress
 ////        dailyProduction =  currentAmount + 1 - currentAmount.getValue();
-////        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
+////        unit->addReport(new BinaryMessage(notEnoughResourcesReporter,resourceType_ ,productType_));
 ////        }
 ////    }
 ////    return  USING_OK;
@@ -227,7 +227,7 @@ void CraftUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntit
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
       if (tokenEntity->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
-        tokenEntity->addReport(new BinaryPattern(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
+        tokenEntity->addReport(new BinaryMessage(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
     }
 }
 

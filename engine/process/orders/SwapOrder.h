@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SwapOrder.h 
+                          SwapOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,13 +13,13 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 class TokenEntity;
 class ItemRule;
 
 class SwapOrder : public OrderPrototype  {
-public: 
+public:
 	SwapOrder();
 	~SwapOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

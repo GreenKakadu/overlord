@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UseOrder.cpp 
+                          UseOrder.cpp
                              -------------------
     begin                : Mon May 5 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,7 +16,7 @@
 #include "Entity.h"
 #include "SkillRule.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "IntegerData.h"
@@ -26,7 +26,7 @@
 extern RulesCollection <SkillRule>      skills;
 //extern EntitiesCollection <UnitEntity>      units;
 //extern EntitiesCollection <LocationEntity>      locations;
-extern Reporter * unusableSkillReporter;
+extern ReportPattern * unusableSkillReporter;
 const UINT UseOrder::NO_RESOURCE_REPORT_FLAG = 0x01;
 
 UseOrder * instantiateUseOrder = new UseOrder();
@@ -76,14 +76,14 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
   int useCounter = 0;
   unsigned int parameterOffset = 0;
   IntegerData *  par1 = 0;
-  
+
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
-  SkillRule * skill = dynamic_cast<SkillRule *>(parameters[0]); 
+  SkillRule * skill = dynamic_cast<SkillRule *>(parameters[0]);
  if ( skill == 0)
     {
-       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
     }
 
@@ -118,7 +118,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
     }
     case UNUSABLE:
     {
-       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
       break;
     }
@@ -134,31 +134,31 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
     }
     case CONDITION_FAILURE:
     {
-//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+//       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return FAILURE;
       break;
     }
     case CANNOT_USE:
     {
-//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+//       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
       break;
     }
     case WRONG_TARGET:
     {
-//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+//       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
       break;
     }
     case NO_TARGET:
     {
-//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+//       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
       break;
     }
     case TARGET_NOT_EXIST:
     {
-//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+//       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return FAILURE;
       break;
     }
@@ -172,7 +172,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
      parameters[1] = unit->getTarget();
   }
   result = skill->use(unit,useCounter);
-  
+
   if(parameters.size() > 1+ parameterOffset)
     {
       par1->setValue(useCounter);

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SettingOrder.h 
+                          SettingOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,18 +13,18 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class SettingOrder : public OrderPrototype  {
-public: 
+public:
 	SettingOrder();
 	~SettingOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
   ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
   bool parseSetting(Parser * parser, vector <AbstractData *>  &parameters,
 							const char *setting,   const char *defaultSetting);
-  
+
     protected:
 };
 

@@ -32,7 +32,7 @@
 
 #include "ReportElement.h"
 #include "ItemElement.h"
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 
 extern GameInfo game;
 extern bool ciStringCompare(const string& s1,const string& s2);
@@ -45,7 +45,7 @@ FactionEntity::FactionEntity ( const FactionEntity * prototype ) : Entity(protot
   controlPoints_ = 0;
   terseBattleReport_ = false;
   allSkillsToReshow_ = false;
-  isResigned_ = false; 
+  isResigned_ = false;
 }
 
 void    FactionEntity::preprocessData()
@@ -142,22 +142,22 @@ void FactionEntity::save(ostream &out)
 {
 	saveReport();
   if(isResigned_)
-    return; 
-    
+    return;
+
   out << keyword_ << " " << tag_ << endl;
   if(!name_.empty())          out << "NAME "               << name_            << endl;
   if(!description_.empty()) out << "DESCRIPTION " << description_  << endl;
  if(!email_.empty())             out << "EMAIL "               << email_            << endl;
  if(!password_.empty())      out << "PASSWORD "    << password_      << endl;
   if(terseBattleReport_) out << "TERSE" << endl;
-  
+
   vector<ItemElement *>::iterator fundsIter ;
   for (fundsIter  = funds_.begin(); fundsIter != funds_.end(); ++fundsIter)
     {
            out << "FUNDS ";
            (*fundsIter)->save(out);
     }
-	
+
 
   out << "DEFAULIT_STANCE " << defaultStance_ << endl;
 	for (StanceIterator iter = stances_.begin(); iter != stances_.end(); ++iter)
@@ -166,14 +166,14 @@ void FactionEntity::save(ostream &out)
 		}
 
    saveKnowledge(out);
-   
+
   for (vector<OrderLine *>::iterator  iter = orders_.begin(); iter != orders_.end(); ++iter)
     {
            (*iter)->save(out);
     }
   out << endl;
 
- 
+
 }
 
 
@@ -187,7 +187,7 @@ void FactionEntity::loadOrders()
   FileParser  * parser = new FileParser(orderFlename.c_str());
 	if(parser->status != OK)
 		return;
-	else		
+	else
 	cout << "Orders file " << orderFlename << " opened" <<endl;
    TokenEntity * currentEntity;
     parser -> getLine() ;
@@ -201,7 +201,7 @@ void FactionEntity::loadOrders()
 		{
    		 				delete parser;
     		 			return;
-		}	
+		}
 // ============== UNIT orders	  ====================
 	do
 	  {
@@ -213,18 +213,18 @@ void FactionEntity::loadOrders()
 
       if(parser->matchChar(COMMENT_SYMBOL))  // skip  lines starting from comment
 				  {
-  			    parser -> getLine();   		
+  			    parser -> getLine();
 					  continue;
 				  }
 			else
 				{
 					if(parser->matchChar(';'))  // overlord comment compartibility
 					{
-  			    parser -> getLine();   		
+  			    parser -> getLine();
 						continue;
 					}
 				}
-        
+
       if(parser->matchKeyword ("UNIT"))
         {
 
@@ -240,7 +240,7 @@ void FactionEntity::loadOrders()
 
 		  if(currentEntity == 0)
 			  {
-  			  parser -> getLine();   		
+  			  parser -> getLine();
   				continue;
 			  }
 		// Then it is order line
@@ -250,12 +250,12 @@ void FactionEntity::loadOrders()
 //    				cout << "Entity order " << order<<endl;
 				currentEntity  -> addOrder(new OrderLine(order,currentEntity));
 			}
-		
-  			   parser -> getLine();   		
+
+  			   parser -> getLine();
  } while   (!  parser -> eof() );
-	
-	
-	
+
+
+
 		delete parser;
 
 }
@@ -342,7 +342,7 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, TokenEntity ** entity)
 
   parser -> getLine();
 
- } 
+ }
 }
 
 
@@ -352,7 +352,7 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, TokenEntity ** entity)
  */
 TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & collection,
                                   Parser * parser)
-{    
+{
   string entityName =  parser->getWord();
   GameData * current = collection.findByTag(entityName);
   if(current == 0)
@@ -361,7 +361,7 @@ TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & colle
   		parser -> getLine();
   		return 0;
 		}
-  
+
   TokenEntity * currentEntity = dynamic_cast<TokenEntity *>(current);
   if(currentEntity == 0)
 		{
@@ -503,7 +503,7 @@ void FactionEntity::saveReport()
             else
               reportIterator++;
 		 }
- 
+
    outfile <<  endl << "// Units " <<  endl <<  endl;
 
  for ( vector< UnitEntity *>::iterator unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
@@ -545,9 +545,9 @@ void FactionEntity::saveReport()
    outfile <<  endl << "// Combat " <<  endl <<  endl;
 
    outfile <<  endl << "// Knowledge " <<  endl <<  endl;
-   
+
    reportNewKnowledge(outfile);
-   
+
    outfile <<  endl <<  endl << "#============== Orders Template ==========" <<  endl <<  endl;
 
   outfile <<"GAME "<< getTag()<< " "<<password_ << " " << game.getGameId() <<  endl <<  endl;
@@ -623,7 +623,7 @@ void FactionEntity::removeUnit(UnitEntity * unit)
 		  cout << "Cant remove" << unit->print() <<" from faction " << printTag()<<endl;
        return;
     }
-    
+
  vector< UnitEntity *>::iterator iter = find (loyalUnits_.begin(), loyalUnits_.end(), unit);
 	if (iter == loyalUnits_.end())
 		{
@@ -701,7 +701,7 @@ return this;
  * stance to it's faction will be returned.
  * Filally default stance will be used.
  */
-StanceVariety * FactionEntity::getStance(UnitEntity * unit) 
+StanceVariety * FactionEntity::getStance(UnitEntity * unit)
 {
 	for (StanceIterator iter = stances_.begin(); iter != stances_.end(); iter++)
 		{
@@ -720,7 +720,7 @@ StanceVariety * FactionEntity::getStance(UnitEntity * unit)
  * Faction may have special stance set toward it.
  * Otherwise  default stance will be used.
  */
-StanceVariety * FactionEntity::getStance(FactionEntity * faction) 
+StanceVariety * FactionEntity::getStance(FactionEntity * faction)
 {
  if  (faction == this)
  {
@@ -747,7 +747,7 @@ void FactionEntity::setStance(Entity * entity, StanceVariety * stance)
       defaultStance_ = stance;
       return;
   }
-      
+
   for (StanceIterator iter = stances_.begin(); iter != stances_.end(); ++iter)
 		{
 			if ( (*iter).getParameter1() == entity)
@@ -781,7 +781,7 @@ int FactionEntity::withdraw(ItemRule * item, int number)
                  {
                    funds_.erase(fundsIter);
                    return num;
-                 } 
+                 }
               }
     }
   return 0;
@@ -806,7 +806,7 @@ bool FactionEntity::mayWithdraw(ItemRule * item, int number)
             return true;
           else
             return false;
-        }        
+        }
     }
     return false;
 }
@@ -852,9 +852,9 @@ bool FactionEntity::addSkillKnowledge(SkillRule * knowledge, int level)
 /** No descriptions */
 Rule * FactionEntity::hasKnowledge(Rule * info)
 {
-    
+
   KnowledgeIterator  iter = find(knowledge_.begin(), knowledge_.end(),info) ;
-  
+
   if ( iter != knowledge_.end())
     return *iter;
   else
@@ -865,7 +865,7 @@ Rule * FactionEntity::hasKnowledge(Rule * info)
 /*
  * If faction already knows  this skill on given level (or higher)
  * returns SkillLevelElement at which faction actually knows skill.
- * Otherwise returns 0. 
+ * Otherwise returns 0.
  */
 SkillLevelElement * FactionEntity::hasSkillKnowledge(SkillRule * knowledge, int level)
 {
@@ -881,7 +881,7 @@ SkillLevelElement * FactionEntity::hasSkillKnowledge(SkillRule * knowledge, int 
 
 
 /*
- * Prints rule knowledge if it is known to faction. 
+ * Prints rule knowledge if it is known to faction.
  */
 void FactionEntity::reshow(Rule * info, ReportPrinter &out)
 {
@@ -921,23 +921,23 @@ void FactionEntity::reshowSkills(ReportPrinter &out )
 /** No descriptions */
 void FactionEntity::reshowSkill(SkillRule * knowledge, int level, ReportPrinter &out)
 {
-  
+
   if(level != 0)
     {
     if(hasSkillKnowledge(knowledge,level))
        knowledge->printSkillDescription(level,out);
-     return;  
+     return;
     }
-    
+
   else
     level = SkillRule::getMaxSkillLevel();
 
   for(int i = 1; i <= level; ++i)
-  { 
+  {
     if(hasSkillKnowledge(knowledge,i))
        knowledge->printSkillDescription(i,out);
     else
-      return;  
+      return;
   }
 }
 
@@ -961,8 +961,8 @@ void FactionEntity::saveKnowledge(ostream &out)
 
 void FactionEntity::markCollectionToReshow(BasicRulesCollection  * collection)
 {
-  if(collection->getCollectionKeyword()  == skills.getCollectionKeyword()) 
-    {                                                        
+  if(collection->getCollectionKeyword()  == skills.getCollectionKeyword())
+    {
       markAllSkillsToReshow();
     }
   collectionsToReshow_.push_back(collection);
@@ -972,9 +972,9 @@ void FactionEntity::markCollectionToReshow(BasicRulesCollection  * collection)
 void FactionEntity::markKnowledgeToReshow(Rule  * knowledge)
 {
  knowledgeToReshow_.push_back(knowledge);
-}  
-  
- 
+}
+
+
 
 void FactionEntity::markSkillToReshow(SkillRule * skill, int level)
 {
@@ -982,19 +982,19 @@ void FactionEntity::markSkillToReshow(SkillRule * skill, int level)
 }
 
 
-   
+
 /*
- * Print into report all new knowledge and knowledge marked for reshowing 
+ * Print into report all new knowledge and knowledge marked for reshowing
  */
 void FactionEntity::reportNewKnowledge(ReportPrinter &out)
 {
   bool isFirst = true;
   SkillLevelIterator skillIter;
   if(allSkillsToReshow_)
-    skillIter = skillKnowledge_.begin(); 
-  else   
-    skillIter = skillKnowledge_.begin() + newSkillKnowledge;  
-  if((skillKnowledge_.size() > newSkillKnowledge) || allSkillsToReshow_) 
+    skillIter = skillKnowledge_.begin();
+  else
+    skillIter = skillKnowledge_.begin() + newSkillKnowledge;
+  if((skillKnowledge_.size() > newSkillKnowledge) || allSkillsToReshow_)
   {
     out << "\nSkill knowledge:\n"<<endl<<endl;
     isFirst = false;
@@ -1004,7 +1004,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
         reshowSkill((*skillIter)->getSkill(), (*skillIter)->getLevel(),out);
 //        (*iter)->getSkill()->printDescription((*iter)->getLevel(),out);
       }
-   }   
+   }
   if( (skillsToReshow_.size() != 0) && !allSkillsToReshow_)
     {
      if(isFirst)
@@ -1013,10 +1013,10 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
       {
         reshowSkill((*iter).getSkill(), (*iter).getLevel(),out);
       }
-         
-    } 
 
-  
+    }
+
+
   allSkillsToReshow_ = false;
   skillsToReshow_.clear();
   for(vector < BasicRulesCollection  *>::iterator collIter = ruleIndex.getAllRules().begin();
@@ -1024,17 +1024,17 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
     {
       if((*collIter) == &skills) // this is a skill
          continue;
-      isFirst = true; 
-      bool isReshowing = false; 
+      isFirst = true;
+      bool isReshowing = false;
       KnowledgeIterator iter;
       //if collection is marked for full reshow?
-      if(collectionsToReshow_.end() != find(collectionsToReshow_.begin(),collectionsToReshow_.end(),(*collIter)))  
+      if(collectionsToReshow_.end() != find(collectionsToReshow_.begin(),collectionsToReshow_.end(),(*collIter)))
             {
               iter = knowledge_.begin();
               isReshowing = true;
             }
-      else 
-            iter = knowledge_.begin() + newKnowledge;       
+      else
+            iter = knowledge_.begin() + newKnowledge;
       for(; iter != knowledge_.end(); ++iter)
         {
 
@@ -1048,7 +1048,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
                               collName.begin() + 1, (int(*)(int))tolower);
 
                 out << endl<<endl << collName << " knowledge:\n";
-              }                
+              }
               out<<endl<<endl;
               reshow((*iter),out);
             }
@@ -1056,7 +1056,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
       // reshow additional rules marked for reshow;
       if(isReshowing)
             continue;
-      for(KnowledgeIterator iter = knowledgeToReshow_.begin(); 
+      for(KnowledgeIterator iter = knowledgeToReshow_.begin();
                         iter != knowledgeToReshow_.end(); ++iter)
       {
           if((*iter)->isDescendantFrom((*((*collIter)->begin()))) )
@@ -1069,7 +1069,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
                               collName.begin() + 1, (int(*)(int))tolower);
 
                 out << endl<<endl << collName << " knowledge:\n";
-              }                
+              }
               out<<endl<<endl;
               reshow((*iter),out);
             }
@@ -1125,7 +1125,7 @@ void FactionEntity::resign(FactionEntity * faction)
           (*iter)->disband();
          }
   }
-     
+
  for (vector< ConstructionEntity *>::iterator iter = loyalConstructions_.begin();
      iter != loyalConstructions_.end(); ++iter)
   {
@@ -1139,8 +1139,8 @@ void FactionEntity::resign(FactionEntity * faction)
 
 
 
-bool FactionEntity::isNPCFaction() 
+bool FactionEntity::isNPCFaction()
 {
  return game.isNPCFaction(this);
 }
-  
+

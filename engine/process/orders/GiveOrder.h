@@ -9,7 +9,7 @@
 #define GIVE_ORDER_H
 
 #include "OrderPrototype.h"
-class Reporter;
+class ReportPattern;
 
 class GiveOrder : public OrderPrototype
 {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PasswordOrder.h 
+                          PasswordOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,11 +13,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class PasswordOrder : public OrderPrototype  {
-public: 
+public:
 	PasswordOrder();
 	~PasswordOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

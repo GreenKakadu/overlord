@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ForgetOrder.h 
+                          ForgetOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,11 +13,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class ForgetOrder : public OrderPrototype  {
-public: 
+public:
 	ForgetOrder();
 	~ForgetOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

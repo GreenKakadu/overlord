@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CaravanOrder.h 
+                          CaravanOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,11 +13,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class CaravanOrder : public OrderPrototype  {
-public: 
+public:
 	CaravanOrder();
 	~CaravanOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

@@ -21,11 +21,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class ClaimOrder : public OrderPrototype  {
-public: 
+public:
 	ClaimOrder();
 	~ClaimOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

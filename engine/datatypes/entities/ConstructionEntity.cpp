@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ConstructionEntity.cpp 
+                          ConstructionEntity.cpp
                              -------------------
     begin                : Sun Aug 31 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -22,7 +22,7 @@
 #include "ConstructionRule.h"
 #include "ConstructionWorksElement.h"
 #include "ConstructionWorksVariety.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "ResourceElement.h"
 #include "SkillRule.h"
 #include "SkillElement.h"
@@ -31,14 +31,14 @@
 #include "SkillCondition.h"
 
 
-extern Reporter * buildingDestroyedReporter;
+extern ReportPattern * buildingDestroyedReporter;
 
-extern Reporter * cantMoveReporter; 
-extern Reporter * departLeaderReporter;
-extern Reporter * departFollowerReporter;
-extern Reporter * departPublicReporter;
-extern Reporter * arrivePrivateReporter;
-extern Reporter * arrivePublicReporter;
+extern ReportPattern * cantMoveReporter;
+extern ReportPattern * departLeaderReporter;
+extern ReportPattern * departFollowerReporter;
+extern ReportPattern * departPublicReporter;
+extern ReportPattern * arrivePrivateReporter;
+extern ReportPattern * arrivePublicReporter;
 
 
 ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) : TokenEntity(prototype)
@@ -125,7 +125,7 @@ void      ConstructionEntity::save (ostream &out)
    for (vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin();
         iter !=buildingWorks_.end(); ++iter)
         {
-         out << "RESOURCE " << (*iter)->getWorkType()->getTag()<< " "<<(*iter)->getWorkAmount()<<endl; 
+         out << "RESOURCE " << (*iter)->getWorkType()->getTag()<< " "<<(*iter)->getWorkAmount()<<endl;
         }
 //  if(()) out << " " << ()->()<<endl;
 //  if(()) out << " " << ()->()<<endl;
@@ -147,7 +147,7 @@ int  ConstructionEntity::workToDo(ConstructionWorksVariety * buildingWorksType)
      }
    }
    return 0;
-}  
+}
 
 
 
@@ -196,7 +196,7 @@ void      ConstructionEntity::produceFactionReport (FactionEntity * faction, Rep
 
     out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->print();
   }
-   
+
  reportAppearence(getFaction(), out);
  reportInventory(getFaction(), out);
  reportSkills(getFaction(), out);
@@ -214,7 +214,7 @@ void      ConstructionEntity::produceFactionReport (FactionEntity * faction, Rep
 
 void      ConstructionEntity::privateReport (ReportPrinter &out)
 {
-    
+
     out << " * " << print()  <<" "<<construction_->getName(); out.incr_indent();
     if(isDisbanded())
     {
@@ -356,11 +356,11 @@ bool ConstructionEntity::isCompleted() const
 {
   for(vector<ConstructionWorksElement *>::const_iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
   {
-    if((*iter)->getWorkAmount()!=0) 
+    if((*iter)->getWorkAmount()!=0)
       return false;
   }
       return true;
-  
+
 }
 
 
@@ -374,7 +374,7 @@ void ConstructionEntity::buildingCompleted()
 /*
  * Construction's skill defined as average skill of the staff.
  * After each change in the staff Construction's skill should be
- * recalculated. 
+ * recalculated.
  */
 bool ConstructionEntity::recalculateSkills()
 {
@@ -390,7 +390,7 @@ bool ConstructionEntity::recalculateSkills()
  if(!condition)
   return false;
   assert(construction_->getMaxStaff());
-  
+
   int currentSkillPoints;
 //  SkillElement * currentSkillElement;
  for(SkillIterator iter = skills_.begin(); iter != skills_.end(); ++iter)
@@ -439,7 +439,7 @@ int ConstructionEntity::calculateSkill(SkillRule *  skill)
       return 0;
   if(skill != construction_->getStaffCondition()->getSkill())
   return 0;
-  
+
   int totalSkillPoints = 0;
  for(vector <UnitEntity *>::iterator iter = staff_.begin();
                                 iter != staff_.end(); ++iter)
@@ -457,7 +457,7 @@ int ConstructionEntity::addSkill(SkillElement  skill)
   for(vector <UnitEntity *>::iterator iter = staff_.begin();
                                 iter != staff_.end(); ++iter)
       {
-        (*iter)->addSkill(skill.getSkill(), skill.getExpPoints()); 
+        (*iter)->addSkill(skill.getSkill(), skill.getExpPoints());
       }
   return recalculateSkills();
 }
@@ -524,7 +524,7 @@ void ConstructionEntity::removeUnit(UnitEntity * unit)
 void ConstructionEntity::addStaff(UnitEntity * unit)
 {
   staff_.push_back(unit) ;
-  effectiveStaff_ = min(effectiveStaff_ + unit->getFiguresNumber() , construction_->getMaxStaff());  
+  effectiveStaff_ = min(effectiveStaff_ + unit->getFiguresNumber() , construction_->getMaxStaff());
 //  unit->setHidden(true);
     unit->setPassenger(true);
     recalculateSkills();
@@ -544,7 +544,7 @@ void ConstructionEntity::removeStaff(UnitEntity * unit)
     unit->setPassenger(false);
     recalculateSkills();
   }
-  
+
 }
 
 
@@ -564,7 +564,7 @@ void ConstructionEntity::destroy()
         // may be report ?
        }
    location_->freeLand(construction_->getLandUse());
-   location_->addReport(new UnaryPattern(buildingDestroyedReporter, this));
+   location_->addReport(new UnaryMessage(buildingDestroyedReporter, this));
   // RIP
     buildingsAndShips.addRIPindex(buildingsAndShips.getIndex(tag_));
 }
@@ -646,10 +646,10 @@ RationalNumber ConstructionEntity::useProductionBonus(ItemRule * product, Ration
             {
               (*iter)->setAvailableResource(0);
               return available;
-            }   
+            }
          }
        }
-  return 0;     
+  return 0;
 }
 
 
@@ -706,19 +706,19 @@ void ConstructionEntity::calculateTotalCapacity(int & capacity, int modeIndex)
               continue;
           if(mayUseAsStaff(*iter))
           {
-            addStaff(*iter);    
+            addStaff(*iter);
             if(effectiveStaff_ < getConstructionType()->getMaxStaff())
               break;
-           }   
+           }
         }
 
-     
+
   }
   capacity += getCapacity(modeIndex);
   for(vector <UnitEntity *>::iterator iter = units_.begin(); iter != units_.end(); ++iter)
   {
     capacity += (*iter)->getCapacity(modeIndex);
-  }  
+  }
 }
 
 
@@ -735,12 +735,12 @@ void ConstructionEntity::moveToLocation()
 void ConstructionEntity::moveGroupToLocation()
 {
   moveToLocation();
-  
+
   for(vector <UnitEntity *>::iterator iter = units_.begin(); iter != units_.end(); ++iter)
   {
     (*iter)->moveToLocation();
   }
-  
+
 }
 
 
@@ -765,9 +765,9 @@ void ConstructionEntity::movingGroupArrived()
 void ConstructionEntity::movingEntityArrived()
 {
 
-  getLocation()->addReport(new UnaryPattern(arrivePublicReporter, this), 0 ,
+  getLocation()->addReport(new UnaryMessage(arrivePublicReporter, this), 0 ,
                             ObservationCondition::createObservationCondition(getStealth() ));
-  addReport(new UnaryPattern(arrivePrivateReporter, getLocation()));
+  addReport(new UnaryMessage(arrivePrivateReporter, getLocation()));
 
 
 //      if(moving_->getMode()== flyingMode)

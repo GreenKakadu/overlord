@@ -18,7 +18,7 @@
 
 #include "BasicCompetitiveRequest.h"
 class AbstractData;
-class Reporter;
+class ReportPattern;
 class ItemRule;
 
 /**
@@ -26,7 +26,7 @@ class ItemRule;
   */
 
 class WagesCompetitiveRequest : public BasicCompetitiveRequest  {
-public: 
+public:
 //	WagesCompetitiveRequest(UnitEntity * unit, int requestedSalary);
 	WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount);
 	~WagesCompetitiveRequest();
@@ -38,8 +38,8 @@ public:
    AbstractData * getType() const;
   RationalNumber getTotalAvailableValue() const;
   void answerRequest(RationalNumber& answer);
-  static Reporter * workPublicReporter;
-  static Reporter * workPrivateReporter;
+  static ReportPattern * workPublicReporter;
+  static ReportPattern * workPrivateReporter;
 protected:
   RationalNumber resourceAmount_;
 //  int requestedSalary_;

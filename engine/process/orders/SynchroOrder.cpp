@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SynchroOrder.cpp 
+                             SynchroOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,9 +9,9 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "SynchroOrderRequest.h"
 extern EntitiesCollection <UnitEntity>      units;
@@ -56,7 +56,7 @@ ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &p
 
   	return INVALID;
 
-   
+
   SynchroOrderRequest * tempSynchroRequest  = new SynchroOrderRequest(this,synchroTarget);
   // This is temporary request which is used for polymorphc access to OrderRequests
   // stored in tokenEntity.  It may be deleted if request already exists,
@@ -66,12 +66,12 @@ ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &p
   {
 // Do work here
 
-// delete request of this order 
+// delete request of this order
      tokenEntity->removeOrderSyncRequest(tempSynchroRequest) ;
      delete tempSynchroRequest;
       return SUCCESS;
   }
-  
+
   BasicOrderSynchronizationRequest * synchroRequest  = tokenEntity->hasOrderSyncRequest(tempSynchroRequest);
   if(synchroRequest == 0)
   {
@@ -83,7 +83,7 @@ ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &p
      delete  tempSynchroRequest;
    }
   SynchroOrderRequest * tempTargetSynchroRequest  = new SynchroOrderRequest(this,tokenEntity);
-  BasicOrderSynchronizationRequest * targetSynchroRequest = synchroTarget->hasOrderSyncRequest(tempTargetSynchroRequest);    
+  BasicOrderSynchronizationRequest * targetSynchroRequest = synchroTarget->hasOrderSyncRequest(tempTargetSynchroRequest);
   delete tempTargetSynchroRequest;
   if(targetSynchroRequest)
   {
@@ -95,7 +95,7 @@ ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &p
 // Do work here
 
 // delete request of this order and mark recipocal order for completeing
-     synchroTarget->markDoneOrderSyncRequest(targetSynchroRequest);  
+     synchroTarget->markDoneOrderSyncRequest(targetSynchroRequest);
      tokenEntity->removeOrderSyncRequest(synchroRequest) ;
       return SUCCESS;
   }

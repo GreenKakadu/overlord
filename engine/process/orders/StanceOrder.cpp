@@ -1,5 +1,5 @@
 /***************************************************************************
-                             StanceOrder.cpp 
+                             StanceOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,18 +10,18 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "StanceVariety.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "VarietiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <FactionEntity>      factions;
 extern VarietiesCollection <StanceVariety>      stances;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	AtReporter;
 
 StanceOrder * instantiateStanceOrder = new StanceOrder();
 
@@ -53,15 +53,15 @@ STATUS StanceOrder::loadParameters(Parser * parser,
 
     if(!parseGameDataParameter(entity,  parser,  stances, "stance tag", parameters) )
       {
-       entity->addReport(new BinaryPattern(missingParameterReporter, 
- 					new StringData(keyword_), new StringData("stance tag"))); 		
+       entity->addReport(new BinaryMessage(missingParameterReporter,
+ 					new StringData(keyword_), new StringData("stance tag")));
         return IO_ERROR;
-      }     
+      }
 
   StanceVariety * stance = dynamic_cast<StanceVariety *>(parameters[parameters.size()-1]);
   if(stance == 0)
   {
-        entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(parameters[parameters.size()-1]->print()), new StringData("stance")));
+        entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(parameters[parameters.size()-1]->print()), new StringData("stance")));
         return IO_ERROR;
   }
   return OK;
@@ -85,12 +85,12 @@ ORDER_STATUS StanceOrder::process (Entity * entity, vector <AbstractData *>  &pa
   StanceVariety * stance = dynamic_cast<StanceVariety *>(parameters[parameters.size()-1]);
   assert(stance);
   if(parameters.size() > 1)
-  {	
+  {
   	Entity * target = dynamic_cast<Entity *>(parameters[0]);
-  	assert(target);	
+  	assert(target);
   	faction->setStance(target,stance);
   }
-  else	
+  else
   	faction->setDefaultStance(stance);
 
   return SUCCESS;

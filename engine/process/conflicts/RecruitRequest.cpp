@@ -1,5 +1,5 @@
 /***************************************************************************
-                          RecruitRequest.cpp 
+                          RecruitRequest.cpp
                              -------------------
     begin                : Wed Jul 2 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,11 +16,11 @@
 #include "RaceRule.h"
 #include "IntegerData.h"
 #include "RaceElement.h"
-#include "QuartenaryPattern.h"
-#include "BinaryPattern.h"
+#include "QuartenaryMessage.h"
+#include "BinaryMessage.h"
 
-extern Reporter * recruiterReporter;
-extern Reporter * recruitedReporter;
+extern ReportPattern * recruiterReporter;
+extern ReportPattern * recruitedReporter;
 
 RecruitRequest::RecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
@@ -59,7 +59,7 @@ bool RecruitRequest::isValid()
       return true;
     else
       return false;
-  
+
 }
 
 AbstractData * RecruitRequest::getType() const
@@ -76,9 +76,9 @@ void RecruitRequest::answerMarketRequest(int price, int amount)
     assert(taken == price * amount);
     // report to targetUnit_
 //QQQ
-    targetUnit_ ->addReport(new BinaryPattern(recruitedReporter,
+    targetUnit_ ->addReport(new BinaryMessage(recruitedReporter,
                             new RaceElement(race_ , amount), targetUnit_));
-    unit_->addReport(new QuartenaryPattern(recruiterReporter, unit_,
+    unit_->addReport(new QuartenaryMessage(recruiterReporter, unit_,
                     new RaceElement(race_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults

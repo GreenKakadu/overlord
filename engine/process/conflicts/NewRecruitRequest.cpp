@@ -1,5 +1,5 @@
 /***************************************************************************
-                          NewRecruitRequest.cpp 
+                          NewRecruitRequest.cpp
                              -------------------
     begin                : Wed Jul 2 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -21,11 +21,11 @@
 #include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "EntitiesCollection.h"
-#include "BinaryPattern.h"
-#include "QuartenaryPattern.h"
+#include "BinaryMessage.h"
+#include "QuartenaryMessage.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter * recruiterReporter;
-extern Reporter * newRecruitReporter;
+extern ReportPattern * recruiterReporter;
+extern ReportPattern * newRecruitReporter;
 
 NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
@@ -97,13 +97,13 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
        newUnit->recalculateStats();
 	     if (unit_->isTraced())
         cout  <<"== TRACING " << "New unit created: "<<newUnit->print() <<" \n";
-       
+
     // report new unit created
 //QQQ
-    newUnit ->addReport(new BinaryPattern (newRecruitReporter,
+    newUnit ->addReport(new BinaryMessage (newRecruitReporter,
                         newUnit, new RaceElement (race_ , amount)));
-                            
-    unit_->addReport(new QuartenaryPattern(recruiterReporter, unit_,
+
+    unit_->addReport(new QuartenaryMessage(recruiterReporter, unit_,
                     new RaceElement(race_ , amount),
                     new IntegerData(price),new IntegerData(price * amount)));
     // finish order processing  updateOrderResults

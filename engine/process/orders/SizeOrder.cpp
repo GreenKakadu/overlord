@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SizeOrder.cpp 
+                             SizeOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,11 +9,11 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern Reporter *	invalidParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
 
 
 SizeOrder * instantiateSizeOrder = new SizeOrder();
@@ -37,7 +37,7 @@ STATUS SizeOrder::loadParameters(Parser * parser,
     if(!parseIntegerParameter(parser, parameters))
     {
 
-      entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("integer number")));
+      entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("integer number")));
       return IO_ERROR;
     }
   return OK;
@@ -52,7 +52,7 @@ ORDER_STATUS SizeOrder::process (Entity * entity, vector <AbstractData *>  &para
   assert(unit);
 	if (unit->getFiguresNumber() >= getIntegerParameter(parameters,0))
 		return SUCCESS;
-	else	
+	else
 		return FAILURE;
 }
 

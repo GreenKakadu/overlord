@@ -1,5 +1,5 @@
 /***************************************************************************
-                             SwapOrder.cpp 
+                             SwapOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,10 +10,10 @@
 #include "IntegerData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
-#include "QuartenaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
+#include "QuartenaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "ItemRule.h"
@@ -22,8 +22,8 @@
 
 extern EntitiesCollection <UnitEntity>      units;
 extern RulesCollection <ItemRule>      items;
-extern Reporter *	giveReporter;
-extern Reporter *	receiveReporter;
+extern ReportPattern *	giveReporter;
+extern ReportPattern *	receiveReporter;
 
 SwapOrder * instantiateSwapOrder = new SwapOrder();
 
@@ -63,24 +63,24 @@ STATUS SwapOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS SwapOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  	
+
   TokenEntity * tokenEntity = dynamic_cast<UnitEntity *>(entity);
   assert(tokenEntity);
   TokenEntity * swapTarget =DOWNCAST_ENTITY<TokenEntity>(parameters[0]);
   if(swapTarget == 0)
   	return INVALID;
   int num1 = 	getIntegerParameter(parameters,1);
-  ItemRule * item1 = dynamic_cast<ItemRule *>(parameters[2]);	
+  ItemRule * item1 = dynamic_cast<ItemRule *>(parameters[2]);
   assert(item1);
   int num2 = 	getIntegerParameter(parameters,3);
-  ItemRule * item2 = dynamic_cast<ItemRule *>(parameters[4]);	
+  ItemRule * item2 = dynamic_cast<ItemRule *>(parameters[4]);
   assert(item2);
-  
+
   if(tokenEntity->hasItem(item1) < num1)
   {
     // report
-      return FAILURE; 
-  } 
+      return FAILURE;
+  }
 
 
   SwapOrderRequest * tempSwapRequest  = new SwapOrderRequest(this,swapTarget,item2,num2);
@@ -137,13 +137,13 @@ void SwapOrder::doSwap(TokenEntity * tokenEntity, ItemRule * item1, int num1,
 
       if (!tokenEntity->isSilent() && tokenEntity->getCurrentOrder()->isNormalReportEnabled()   )
 	        {
-      	      tokenEntity  ->addReport( new QuartenaryPattern(giveReporter, tokenEntity,
+      	      tokenEntity  ->addReport( new QuartenaryMessage(giveReporter, tokenEntity,
                               new IntegerData(num1), item1, swapTarget));
            }
 
       if (!swapTarget->isSilent())
 	        {
-    	          swapTarget->addReport( new QuartenaryPattern(receiveReporter,
+    	          swapTarget->addReport( new QuartenaryMessage(receiveReporter,
                               swapTarget , new IntegerData(num1), item1, tokenEntity));
          }
 }

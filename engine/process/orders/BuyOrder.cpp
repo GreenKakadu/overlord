@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BuyOrder.cpp 
+                          BuyOrder.cpp
                              -------------------
     begin                : Thu Jun 26 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,12 +16,12 @@
 #include "IntegerData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "ItemRule.h"
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "MarketRequest.h"
-extern Reporter * cantTradeReporter;
+extern ReportPattern * cantTradeReporter;
 
 //BuyOrder instantiateBuyOrder;
 BuyOrder * instantiateBuyOrder = new BuyOrder();
@@ -88,15 +88,15 @@ ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &param
   IntegerData * par2  = dynamic_cast<IntegerData *>(parameters[2]);
   assert(par2);
   int price = par2->getValue();
-  
+
   if(!unit->getRace()->mayTrade())
   {
-    unit->addReport(new UnaryPattern(cantTradeReporter,unit->getRace()));
+    unit->addReport(new UnaryMessage(cantTradeReporter,unit->getRace()));
  	  return INVALID;
   }
   unit->expose(true);
   unit->getLocation()->addMarketRequest(new MarketRequest(unit, unit->getCurrentOrder(), amount,item,price,BUY));
-  
+
   return IN_PROGRESS;
 }
 

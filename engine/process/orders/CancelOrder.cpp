@@ -1,5 +1,5 @@
 /***************************************************************************
-                             CancelOrder.cpp 
+                             CancelOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,21 +9,21 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "LocationEntity.h"
 #include "TitleRule.h"
 #include "TitleElement.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
 extern RulesCollection <TitleRule>      titles;
 extern EntitiesCollection <LocationEntity>      locations;
-extern Reporter * publicCancelTitleReporter;
-extern Reporter * privateCancelTitleReporter;
-extern Reporter * cannotCancelReporter;
-extern Reporter * noCancelOwnReporter;
-extern Reporter * noCancelTitleReporter;
+extern ReportPattern * publicCancelTitleReporter;
+extern ReportPattern * privateCancelTitleReporter;
+extern ReportPattern * cannotCancelReporter;
+extern ReportPattern * noCancelOwnReporter;
+extern ReportPattern * noCancelTitleReporter;
 CancelOrder * instantiateCancelOrder = new CancelOrder();
 const unsigned CancelOrder::CANNOT_CANCEL_OWN_REPORT_FLAG = 0x01;
 const unsigned CancelOrder::CANNOT_CANCEL_REPORT_FLAG = 0x02;
@@ -61,7 +61,7 @@ ORDER_STATUS CancelOrder::process (Entity * entity, vector <AbstractData *>  &pa
   assert(unit);
   if(parameters.size() <2)
   	return INVALID;
-  	
+
 	TitleRule * titleType   =  dynamic_cast<TitleRule *>(parameters[0]);
   if( titleType == 0)
     {
@@ -75,37 +75,37 @@ ORDER_STATUS CancelOrder::process (Entity * entity, vector <AbstractData *>  &pa
   TitleElement * title = location->findTitle(titleType);
   if(title == 0)
     {
-      unit->addReport(new BinaryPattern(noCancelTitleReporter,titleType ,unit->getLocation()));
+      unit->addReport(new BinaryMessage(noCancelTitleReporter,titleType ,unit->getLocation()));
 	    return INVALID;
     }
 
     if(unit == title->getTitleHolder())
     {
-      if(!unit->getCurrentOrder()->getReportingFlag(CANNOT_CANCEL_OWN_REPORT_FLAG )) 
+      if(!unit->getCurrentOrder()->getReportingFlag(CANNOT_CANCEL_OWN_REPORT_FLAG ))
 	    {
-        unit->addReport(new UnaryPattern(noCancelOwnReporter,title));
-        unit->getCurrentOrder()->setReportingFlag(CANNOT_CANCEL_OWN_REPORT_FLAG);    
+        unit->addReport(new UnaryMessage(noCancelOwnReporter,title));
+        unit->getCurrentOrder()->setReportingFlag(CANNOT_CANCEL_OWN_REPORT_FLAG);
      }
 	      return FAILURE;
     }
     unit->getCurrentOrder()->clearReportingFlag(CANNOT_CANCEL_OWN_REPORT_FLAG);
-    
+
     if(!unit->mayCancelTitle(title))
     {
       if(!unit->getCurrentOrder()->getReportingFlag(CANNOT_CANCEL_REPORT_FLAG ))
 	    {
-        unit->addReport(new UnaryPattern(cannotCancelReporter,title));
+        unit->addReport(new UnaryMessage(cannotCancelReporter,title));
         unit->getCurrentOrder()->setReportingFlag(CANNOT_CANCEL_REPORT_FLAG );
      }
 	    return FAILURE;
     }
     else
     unit->getCurrentOrder()->clearReportingFlag(CANNOT_CANCEL_REPORT_FLAG);
-    
-    
+
+
     unit->removeTitle(title);
-    unit->addReport(new UnaryPattern(privateCancelTitleReporter,title));
-    unit->getLocation()->addReport(new UnaryPattern(publicCancelTitleReporter,title));
+    unit->addReport(new UnaryMessage(privateCancelTitleReporter,title));
+    unit->getLocation()->addReport(new UnaryMessage(publicCancelTitleReporter,title));
 
 	return SUCCESS;
 

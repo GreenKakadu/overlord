@@ -11,8 +11,8 @@
 #include "LocationEntity.h"
 #include "FactionEntity.h"
 #include "BasicCombatEngine.h"
-#include "BinaryPattern.h"
-extern Reporter *	AttackReporter;
+#include "BinaryMessage.h"
+extern ReportPattern *	AttackReporter;
 
 
 //BasicCombatManager combatManager;
@@ -33,7 +33,7 @@ void BasicCombatManager::attackAttempt(TokenEntity * attacker,
   vector<TokenEntity *> attackers;
   vector<TokenEntity *> defenders;
   // Report to units, factions, location
-  BinaryPattern * attackMessage = new BinaryPattern(AttackReporter,attacker,defender);
+  BinaryMessage * attackMessage = new BinaryMessage(AttackReporter,attacker,defender);
   defender->getLocation()->addReport(attackMessage,orderId,0);
   attacker->getFaction()->addReport(attackMessage,orderId,0);
   defender->getFaction()->addReport(attackMessage,orderId,0);
@@ -48,9 +48,9 @@ void BasicCombatManager::attackAttempt(TokenEntity * attacker,
    BATTLE_RESULT result = combatEngine_->processBattle(attackers,defenders);
 //    if(orderId)
 //        orderId->completeProcessing(attacker,result);
-        
+
 //   attackers.clear();
-//   defenders.clear();     
+//   defenders.clear();
 }
 
 

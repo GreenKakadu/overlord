@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TertiaryPattern.h 
+                          TertiaryMessage.h
                              -------------------
     begin                : Wed Feb 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,32 +9,32 @@
 #ifndef TERTIARY_PATTERN_H
 #define TERTIARY_PATTERN_H
 
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 class AbstractData;
-class Reporter;
+class ReportPattern;
 
 /**
   *@author Alex Dribin
   */
 
-class TertiaryPattern : public ReportPattern  {
-public: 
-	TertiaryPattern(){}
-	TertiaryPattern(Reporter * reporter, AbstractData * param1, AbstractData * param2, AbstractData * param3)
+class TertiaryMessage : public ReportMessage  {
+public:
+	TertiaryMessage(){}
+	TertiaryMessage(ReportPattern * reporter, AbstractData * param1, AbstractData * param2, AbstractData * param3)
         {reporter_ = reporter; param1_ = param1; param2_ = param2; param3_ = param3;}
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
   void printReport(ostream &out) const;
   void clean();
-	static  TertiaryPattern * headOfFreeList;
+	static  TertiaryMessage * headOfFreeList;
 	union
 	{
-			TertiaryPattern  * next; //for use in operator new
-  		Reporter * reporter_;
+			TertiaryMessage  * next; //for use in operator new
+  		ReportPattern * reporter_;
 	};
 protected:
-	~TertiaryPattern(){}
+	~TertiaryMessage(){}
 		AbstractData * param1_;
 		AbstractData * param2_;
 		AbstractData * param3_;

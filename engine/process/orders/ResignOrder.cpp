@@ -1,5 +1,5 @@
 /***************************************************************************
-                             ResignOrder.cpp 
+                             ResignOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,12 +9,12 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <FactionEntity>      factions;
-extern Reporter * resignReporter;	
+extern ReportPattern * resignReporter;
 ResignOrder * instantiateResignOrder = new ResignOrder();
 
 ResignOrder::ResignOrder(){
@@ -39,7 +39,7 @@ STATUS ResignOrder::loadParameters(Parser * parser,
 {
     if(!parseGameDataParameter(entity,  parser, factions, "npc faction id", parameters))
             return IO_ERROR;
-         return OK;                   
+         return OK;
 }
 
 

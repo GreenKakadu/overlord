@@ -1,41 +1,41 @@
 /***************************************************************************
-                          UnaryPattern.cpp  -  description
+                          UnaryMessage.cpp  -  description
                              -------------------
     begin                : Wed Jan 22 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
-#include "UnaryPattern.h"
-#include "Reporter.h"
+#include "UnaryMessage.h"
+#include "ReportPattern.h"
 extern const int BLOCK_SIZE;
 
-void * UnaryPattern::operator new(size_t size)
+void * UnaryMessage::operator new(size_t size)
 {
-   return NEW<UnaryPattern>( size);
+   return NEW<UnaryMessage>( size);
 }
 
 
 
-void  UnaryPattern::operator delete(void * deadObject, size_t size)
+void  UnaryMessage::operator delete(void * deadObject, size_t size)
 {
-	DELETE_PATTERN<UnaryPattern>(deadObject, size);
+	DELETE_PATTERN<UnaryMessage>(deadObject, size);
 }
 
 
 
-void UnaryPattern::printReport(ostream &out) const
+void UnaryMessage::printReport(ostream &out) const
 {
   reporter_->printReport(out, param1_);
 }
 
 
 
-void UnaryPattern::clean()
+void UnaryMessage::clean()
 {
   param1_->clean();
 }
 
 
 
-UnaryPattern  * UnaryPattern::headOfFreeList;
+UnaryMessage  * UnaryMessage::headOfFreeList;
 

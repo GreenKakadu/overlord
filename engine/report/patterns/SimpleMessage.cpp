@@ -1,30 +1,30 @@
 /***************************************************************************
-                          SimplePattern.cpp  -  description
+                          SimpleMessage.cpp  -  description
                              -------------------
     begin                : Tue Jan 21 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 
-#include "SimplePattern.h"
-#include "Reporter.h"
+#include "SimpleMessage.h"
+#include "ReportPattern.h"
 extern const int BLOCK_SIZE;
 
-void * SimplePattern::operator new(size_t size)
+void * SimpleMessage::operator new(size_t size)
 {
-   return NEW<SimplePattern>( size);
+   return NEW<SimpleMessage>( size);
 }
 
 
-void  SimplePattern::operator delete(void * deadObject, size_t size)
+void  SimpleMessage::operator delete(void * deadObject, size_t size)
 {
-	DELETE_PATTERN<SimplePattern>(deadObject, size);
+	DELETE_PATTERN<SimpleMessage>(deadObject, size);
 }
 
 
-void SimplePattern::printReport(ostream &out) const
+void SimpleMessage::printReport(ostream &out) const
 {
   reporter_->printReport(out);
 }
 
-SimplePattern  * SimplePattern::headOfFreeList;
+SimpleMessage  * SimpleMessage::headOfFreeList;

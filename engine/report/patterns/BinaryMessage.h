@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BinaryPattern.h 
+                          BinaryMessage.h
                              -------------------
     begin                : Thu Feb 13 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,31 +9,31 @@
 #ifndef BINARY_PATTERN_H
 #define BINARY_PATTERN_H
 
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 class AbstractData;
-class Reporter;
+class ReportPattern;
 
 /**
   *@author Alex Dribin
   */
 
-class BinaryPattern : public ReportPattern  {
-public: 
-	BinaryPattern(){}
-	BinaryPattern(Reporter * reporter, AbstractData * param1, AbstractData * param2){reporter_ = reporter; param1_ = param1; param2_ = param2;}
+class BinaryMessage : public ReportMessage  {
+public:
+	BinaryMessage(){}
+	BinaryMessage(ReportPattern * reporter, AbstractData * param1, AbstractData * param2){reporter_ = reporter; param1_ = param1; param2_ = param2;}
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
   void printReport(ostream &out) const;
   void clean();
-	static  BinaryPattern * headOfFreeList;
+	static  BinaryMessage * headOfFreeList;
 	union
 	{
-			BinaryPattern  * next; //for use in operator new
-  		Reporter * reporter_;
+			BinaryMessage  * next; //for use in operator new
+  		ReportPattern * reporter_;
 	};
 protected:
-	~BinaryPattern(){}
+	~BinaryMessage(){}
 		AbstractData * param1_;
 		AbstractData * param2_;
 

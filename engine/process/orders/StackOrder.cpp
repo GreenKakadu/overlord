@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StackOrder.cpp 
+                          StackOrder.cpp
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,15 +12,15 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	stackingUnacceptableReporter;
-extern Reporter *	stackReporter;
-extern Reporter *	unstackReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	stackingUnacceptableReporter;
+extern ReportPattern *	stackReporter;
+extern ReportPattern *	unstackReporter;
 
 //StackOrder instantiateStackOrder;
 StackOrder * instantiateStackOrder = new StackOrder();
@@ -59,7 +59,7 @@ STATUS StackOrder::loadParameters(Parser * parser, vector <AbstractData *>  &par
 
   if (!units.checkDataType(tag)) // this can't be a tag
 				{
-         entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("unit id")));
+         entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("unit id")));
          return IO_ERROR;
 				}
 
@@ -88,7 +88,7 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
   UnitEntity * formerLeader = unit->getLeader();
 
   OrderLine * orderId = entity->getCurrentOrder();
-  UnaryPattern * unstackMessage = new UnaryPattern(unstackReporter, unit);
+  UnaryMessage * unstackMessage = new UnaryMessage(unstackReporter, unit);
   if (parameters.size() == 0) // This means unstack
     {
       if(unit->unstack())
@@ -107,7 +107,7 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
 
 // unit and leader are at the same location
  if(!unit->mayInterract(leader))
-   		  return FAILURE;       
+   		  return FAILURE;
 // leader is ally or accepts unit
 //   cout << "Stance: "<< leader->getFaction()->getStance(unit)<<" "
 //        <<leader->getFaction()->getStance(unit)->getCode()<< " vs "
@@ -125,9 +125,9 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
 		          formerLeader->addReport(unstackMessage,orderId,0  );
         }
 
-        
+
         stack(unit,leader );
-           BinaryPattern * stackMessage = new BinaryPattern(stackReporter, unit, leader); 
+           BinaryMessage * stackMessage = new BinaryMessage(stackReporter, unit, leader);
           unit->addReport(stackMessage,orderId,0);
           leader->addReport(stackMessage,orderId,0);
 
@@ -135,12 +135,12 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
       }
     else // rejected
      {
-        BinaryPattern * stackingUnacceptableMessage = new BinaryPattern(stackingUnacceptableReporter, leader , unit);
+        BinaryMessage * stackingUnacceptableMessage = new BinaryMessage(stackingUnacceptableReporter, leader , unit);
        unit->addReport (stackingUnacceptableMessage,orderId,0 );
       leader->addReport(stackingUnacceptableMessage,orderId,0 );
  		  return INVALID;
       }
 
-                                    
+
 
 }

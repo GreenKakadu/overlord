@@ -30,7 +30,7 @@ class Entity;
 class UnitEntity;
 //class Order;
 class AbstractData;
-class Reporter;
+class ReportPattern;
 
 class OrderPrototype
 {

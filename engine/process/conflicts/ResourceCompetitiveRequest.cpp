@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ResourceCompetitiveRequest.cpp 
+                          ResourceCompetitiveRequest.cpp
                              -------------------
     begin                : Fri Apr 18 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,16 +10,16 @@
 #include "AbstractData.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "BinaryPattern.h"
+#include "BinaryMessage.h"
 #include "ConstructionEntity.h"
-extern Reporter * harvestReporter;
+extern ReportPattern * harvestReporter;
 
 ResourceCompetitiveRequest::ResourceCompetitiveRequest(UnitEntity * unit,
         OrderLine * orderId, ItemRule * resource,  RationalNumber& amount)
                                     :BasicCompetitiveRequest(unit, orderId)
 {
    resourceType_ = resource;
-  amount_ = amount;  
+  amount_ = amount;
 }
 
 
@@ -83,10 +83,10 @@ void ResourceCompetitiveRequest::answerRequest(RationalNumber& answer)
 // << resourceType_->print() << " at "<<  unit_->getLocation()->print() <<endl;
 //QQQ
   unit_->addReport(
-    new BinaryPattern(harvestReporter, unit_,
+    new BinaryMessage(harvestReporter, unit_,
     new ItemElement(resourceType_,added)) );
   unit_->getLocation()->addReport(
-    new BinaryPattern(harvestReporter, unit_,
+    new BinaryMessage(harvestReporter, unit_,
     new ItemElement(resourceType_,added))
         /*, 0, observation condition*/);
   }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             ForgetOrder.cpp 
+                             ForgetOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,13 +9,13 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "SkillRule.h"
 extern RulesCollection <SkillRule>      skills;
-extern Reporter *	AtReporter;
+extern ReportPattern *	AtReporter;
 
 ForgetOrder * instantiateForgetOrder = new ForgetOrder();
 
@@ -27,7 +27,7 @@ ForgetOrder::ForgetOrder(){
   "skill.  Causes the unit to forget the given skill, and all skills that depend\n" +
   "on it.  This order is useful for normal units who wish to learn a new skill,\n" +
   "but already knows a different skill.\n";
-  
+
   orderType_   = IMMEDIATE_ORDER;
 }
 
@@ -55,10 +55,10 @@ ORDER_STATUS ForgetOrder::process (Entity * entity, vector <AbstractData *>  &pa
     {
  		return FAILURE;
     }
-     
-  if(!unit->hasSkill(skill,1)) 
+
+  if(!unit->hasSkill(skill,1))
 	    return FAILURE;
 	unit->forgetSkill(skill);
-  return SUCCESS;    
+  return SUCCESS;
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             WaitOrder.cpp 
+                             WaitOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,14 +10,14 @@
 #include "IntegerData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 WaitOrder * instantiateWaitOrder = new WaitOrder();
 
@@ -39,7 +39,7 @@ STATUS WaitOrder::loadParameters(Parser * parser,
     if(!parseIntegerParameter(parser, parameters))
     {
 
-      entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("integer number")));
+      entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(""), new StringData("integer number")));
       return IO_ERROR;
     }
   return OK;
@@ -51,9 +51,9 @@ STATUS WaitOrder::loadParameters(Parser * parser,
 ORDER_STATUS WaitOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
 
-   IntegerData *par       =  dynamic_cast<IntegerData *>(parameters[0]);  
+   IntegerData *par       =  dynamic_cast<IntegerData *>(parameters[0]);
    assert(par);
-	int waitingTime = par->getValue(); 
+	int waitingTime = par->getValue();
 	if ( waitingTime <= 1)
 		return SUCCESS;
 	else

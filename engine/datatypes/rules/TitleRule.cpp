@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TitleRule.cpp  
+                          TitleRule.cpp
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -13,12 +13,12 @@
 #include "LocationEntity.h"
 #include "SkillLevelElement.h"
 #include "BonusElement.h"
-#include "QuintenaryPattern.h"
+#include "QuintenaryMessage.h"
 //TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
 //MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("MINOR", &sampleTitle);
 //OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
-extern Reporter * failedContestTitleReporter;
-extern Reporter * successContestTitleReporter;
+extern ReportPattern * failedContestTitleReporter;
+extern ReportPattern * successContestTitleReporter;
 
 TitleRule::TitleRule(const TitleRule * prototype) : Rule(prototype)
 {
@@ -40,7 +40,7 @@ GameData* TitleRule::createInstanceOfSelf()
 
 
 
-STATUS 
+STATUS
 TitleRule::initialize        ( Parser *parser)
 {
 
@@ -91,7 +91,7 @@ TitleRule::initialize        ( Parser *parser)
       setRange( parser->getInteger() );
       return OK;
     }
-  
+
   return OK;
 }
 
@@ -100,10 +100,10 @@ TitleRule::initialize        ( Parser *parser)
 void TitleRule::printDescription(ReportPrinter & out)
 {
    out << print()<< ": "<< getDescription()<<". ";
-    
+
    if(range_)   out << "Range "<< range_ <<" days of walking. ";
    if(cost_)    out << "Costs $"<< cost_ <<". ";
-   
+
    if(learningLevelBonus_)
         out << "Allows owner to learn " << learningLevelBonus_->getLevel()
             <<" additional levels of all skills derived from "
@@ -136,19 +136,19 @@ bool TitleRule::contest(UnitEntity * titleHolder, UnitEntity * contender,
 
   if(contestResult)
   {
-  contender->addReport(new QuintenaryPattern(successContestTitleReporter,contender, titleHolder,
+  contender->addReport(new QuintenaryMessage(successContestTitleReporter,contender, titleHolder,
         new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
-  titleHolder->addReport(new QuintenaryPattern(failedContestTitleReporter, titleHolder,contender,
+  titleHolder->addReport(new QuintenaryMessage(failedContestTitleReporter, titleHolder,contender,
                       new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
   }
   else
   {
-  contender->addReport(new QuintenaryPattern(failedContestTitleReporter,contender, titleHolder,
+  contender->addReport(new QuintenaryMessage(failedContestTitleReporter,contender, titleHolder,
         new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
-  titleHolder->addReport(new QuintenaryPattern(successContestTitleReporter, titleHolder,contender,
+  titleHolder->addReport(new QuintenaryMessage(successContestTitleReporter, titleHolder,contender,
                       new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
   }
-  
+
   return  contestResult;
 }
 
@@ -199,7 +199,7 @@ int TitleRule::markTerritoryOwned(LocationEntity * start, UnitEntity * titleHold
   current->markClosed();
   current->setDistance(0);
   examinedLocations.push_back(current);
-  
+
   while(current->getDistance() <= distance)
   {
     current->setOwner(owner);
@@ -242,7 +242,7 @@ void    TitleRule::extractKnowledge (Entity * recipient, int parameter)
 {
   if(condition_)
     condition_->extractKnowledge(recipient);
-    
+
   if(learningLevelBonus_)
   {
     if(recipient->addSkillKnowledge(learningLevelBonus_->getSkill(), 1))

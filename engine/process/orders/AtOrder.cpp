@@ -1,5 +1,5 @@
 /***************************************************************************
-                             AtOrder.cpp 
+                             AtOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,13 +10,13 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <LocationEntity>      locations;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
 
 AtOrder * instantiateAtOrder = new AtOrder();
 
@@ -51,10 +51,10 @@ ORDER_STATUS AtOrder::process (Entity * entity, vector <AbstractData *>  &parame
  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   LocationEntity * location = dynamic_cast<LocationEntity *>(parameters[0]);
-	
+
    if (location  == unit->getLocation())
 	return SUCCESS;
-   else			
+   else
 	return FAILURE;
 }
 

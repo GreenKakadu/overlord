@@ -1,5 +1,5 @@
 /***************************************************************************
-                             HaveOrder.cpp 
+                             HaveOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,14 +10,14 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "ItemRule.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern RulesCollection <ItemRule>      items;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 HaveOrder * instantiateHaveOrder = new HaveOrder();
 
@@ -28,7 +28,7 @@ HaveOrder::HaveOrder(){
   "Immediate, condition.  This order executes if the unit has the specified\n" +
   "number of items in its possession.  If the number is unspecified, it is\n" +
   "considered equal to 1.\n";
-  
+
   orderType_   = IMMEDIATE_ORDER;
   mayInterrupt_ = true;
 }
@@ -42,7 +42,7 @@ STATUS HaveOrder::loadParameters(Parser * parser,
     if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
             return IO_ERROR;
 
-     parseIntegerParameter(parser, parameters);       
+     parseIntegerParameter(parser, parameters);
 
   return OK;
 
@@ -61,12 +61,12 @@ ORDER_STATUS HaveOrder::process (Entity * entity, vector <AbstractData *>  &para
  		return FAILURE;
     }
   int parameter = getIntegerParameter(parameters,1);
-  if( parameter == 0) 
+  if( parameter == 0)
   	parameter = 1;
-  
+
   if (unit->hasItem(item) >= parameter)
   	return SUCCESS;
-  else	
+  else
 	return FAILURE;
 }
 

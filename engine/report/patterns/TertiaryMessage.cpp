@@ -1,35 +1,35 @@
 /***************************************************************************
-                          TertiaryPattern.cpp 
+                          TertiaryMessage.cpp
                              -------------------
     begin                : Wed Feb 19 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 
-#include "TertiaryPattern.h"
-#include "Reporter.h"
+#include "TertiaryMessage.h"
+#include "ReportPattern.h"
 extern const int BLOCK_SIZE;
 
-void * TertiaryPattern::operator new(size_t size)
+void * TertiaryMessage::operator new(size_t size)
 {
-   return NEW<TertiaryPattern>( size);
+   return NEW<TertiaryMessage>( size);
 }
 
 
-void  TertiaryPattern::operator delete(void * deadObject, size_t size)
+void  TertiaryMessage::operator delete(void * deadObject, size_t size)
 {
-	DELETE_PATTERN<TertiaryPattern>(deadObject, size);
+	DELETE_PATTERN<TertiaryMessage>(deadObject, size);
 }
 
 
-void TertiaryPattern::printReport(ostream &out) const
+void TertiaryMessage::printReport(ostream &out) const
 {
   reporter_->printReport(out, param1_, param2_, param3_ );
 }
 
 
 
-void TertiaryPattern::clean()
+void TertiaryMessage::clean()
 {
   param1_->clean();
   param2_->clean();
@@ -39,5 +39,5 @@ void TertiaryPattern::clean()
 
 
 
-TertiaryPattern  * TertiaryPattern::headOfFreeList;
+TertiaryMessage  * TertiaryMessage::headOfFreeList;
 

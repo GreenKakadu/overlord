@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SimplePattern.h  -  description
+                          SimpleMessage.h  -  description
                              -------------------
     begin                : Tue Jan 21 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -7,25 +7,25 @@
  ***************************************************************************/
 #ifndef SIMPLE_PATTERN_H
 #define SIMPLE_PATTERN_H
-#include "ReportPattern.h"
-class Reporter;
+#include "ReportMessage.h"
+class ReportPattern;
 
-class SimplePattern : public ReportPattern  {
-public: 
-	SimplePattern(){}
-	SimplePattern(Reporter * reporter){reporter_ = reporter;}
+class SimpleMessage : public ReportMessage  {
+public:
+	SimpleMessage(){}
+	SimpleMessage(ReportPattern * reporter){reporter_ = reporter;}
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
   void printReport(ostream &out) const;
-	static  SimplePattern * headOfFreeList;
+	static  SimpleMessage * headOfFreeList;
 	union
 	{
-			SimplePattern  * next; //for use in operator new
-  		Reporter * reporter_;
-	};		
+			SimpleMessage  * next; //for use in operator new
+  		ReportPattern * reporter_;
+	};
 protected:
-	~SimplePattern(){}
+	~SimpleMessage(){}
 };
 
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             AttackOrder.cpp 
+                             AttackOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,19 +13,19 @@
 #include "ConstructionEntity.h"
 #include "FactionEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "BasicCombatManager.h"
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <FactionEntity>      factions;
 extern EntitiesCollection <ConstructionEntity>      buildingsAndShips;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	ownUnitAttackReporter;
-extern Reporter *	ownFactionAttackReporter;
-extern Reporter *	ownConstructionAttackReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	ownUnitAttackReporter;
+extern ReportPattern *	ownFactionAttackReporter;
+extern ReportPattern *	ownConstructionAttackReporter;
 extern GameInfo game;
 AttackOrder * instantiateAttackOrder = new AttackOrder();
 
@@ -49,37 +49,37 @@ STATUS AttackOrder::loadParameters(Parser * parser,
             return IO_ERROR;
 
    string tag = parser->getWord();
-   if (tag.size() == 0) 
+   if (tag.size() == 0)
         {
-        entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), 
+        entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_),
         			new StringData("unit-id or faction-id or construction id")));
          return IO_ERROR;
         }
 
-  	if (units.checkDataType(tag) || game.isNewEntityName(tag)) 
+  	if (units.checkDataType(tag) || game.isNewEntityName(tag))
 	{
       if(checkParameterTag(entity, tag,  units, parameters))
       	return OK;
-      else	
+      else
         return IO_ERROR;
    	}
 
-  	if (factions.checkDataType(tag)) 
+  	if (factions.checkDataType(tag))
 	{
       if(checkParameterTag(entity, tag,  factions, parameters))
       	return OK;
-      else	
+      else
         return IO_ERROR;
    	}
-  	if (buildingsAndShips.checkDataType(tag) || game.isNewEntityName(tag)) 
+  	if (buildingsAndShips.checkDataType(tag) || game.isNewEntityName(tag))
 	{
       if(checkParameterTag(entity, tag,  buildingsAndShips, parameters))
       	return OK;
-      else	
+      else
         return IO_ERROR;
    	}
 
-  entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), 
+  entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_),
   			new StringData(tag), new StringData("unit-id od faction-id or construction id")));
   return IO_ERROR;
 
@@ -101,7 +101,7 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
 	    return FAILURE;
       if(unitTarget->getFaction() == tokenEntity->getFaction())
         {
-          tokenEntity->addReport(new UnaryPattern(ownUnitAttackReporter,unitTarget));
+          tokenEntity->addReport(new UnaryMessage(ownUnitAttackReporter,unitTarget));
 	        return INVALID;
         }
       else
@@ -120,7 +120,7 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
       if(constructionTarget->getFaction() == 0)
       {
 
-          tokenEntity->addReport(new UnaryPattern(ownConstructionAttackReporter,constructionTarget));
+          tokenEntity->addReport(new UnaryMessage(ownConstructionAttackReporter,constructionTarget));
         //Special case: attack on unowned construction
         //tokenEntity->enterConstruction(target);
         return SUCCESS;
@@ -142,10 +142,10 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
     {
       if(factionTarget == tokenEntity->getFaction())
         {
-          tokenEntity->addReport(new UnaryPattern(ownFactionAttackReporter,factionTarget));
+          tokenEntity->addReport(new UnaryMessage(ownFactionAttackReporter,factionTarget));
 	        return INVALID;
         }
-      
+
       if (!tokenEntity->mayInterractFaction(factionTarget)) // Not In the same place or can't see
 	    return FAILURE;
 

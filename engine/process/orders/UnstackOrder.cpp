@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UnstackOrder.cpp 
+                          UnstackOrder.cpp
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -8,8 +8,8 @@
 #include "UnstackOrder.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-extern Reporter *	unstackReporter;
+#include "UnaryMessage.h"
+extern ReportPattern *	unstackReporter;
 
 //UnstackOrder instantiateUnstackOrder;
 UnstackOrder * instantiateUnstackOrder = new UnstackOrder();
@@ -32,14 +32,14 @@ ORDER_STATUS UnstackOrder::process (Entity * entity, vector <AbstractData *>  &p
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
-  UnitEntity * formerLeader = unit->getLeader();    
+  UnitEntity * formerLeader = unit->getLeader();
   if(unit->unstack())
      {
-      UnaryPattern *  unstackMessage = new UnaryPattern(unstackReporter, unit);
+      UnaryMessage *  unstackMessage = new UnaryMessage(unstackReporter, unit);
 		  unit->addReport(unstackMessage, entity->getCurrentOrder(),0 );
       if(formerLeader)
 		  formerLeader->addReport(unstackMessage, entity->getCurrentOrder(),0  );
       }
-   // already unstacked     
+   // already unstacked
          return SUCCESS;
 }

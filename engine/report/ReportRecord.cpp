@@ -6,10 +6,10 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "ReportRecord.h"
-#include "ReportPattern.h"
+#include "ReportMessage.h"
 extern int currentDay;
 
-ReportRecord::ReportRecord(ReportPattern * report, OrderLine *  order, BasicCondition * condition)
+ReportRecord::ReportRecord(ReportMessage * report, OrderLine *  order, BasicCondition * condition)
 {
  observationCriteria_ = condition;
  reportMessage = report;
@@ -21,7 +21,7 @@ ReportRecord::ReportRecord(ReportPattern * report, OrderLine *  order, BasicCond
 
 ReportRecord::~ReportRecord()
 {
-//  cout<<"********* ReportRecord deleted: "; reportMessage->printReport(cout); 
+//  cout<<"********* ReportRecord deleted: "; reportMessage->printReport(cout);
 }
 
 
@@ -32,6 +32,6 @@ bool ReportRecord::observableBy(TokenEntity * unit) //const
   if(observationCriteria_)
     return(observationCriteria_->isSatisfied(unit));
    else
-   return true; 
+   return true;
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             NameOrder.cpp 
+                             NameOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -8,11 +8,11 @@
 #include "NameOrder.h"
 #include "StringData.h"
 #include "Entity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern Reporter *	changeNameReporter;
+extern ReportPattern *	changeNameReporter;
 
 NameOrder * instantiateNameOrder = new NameOrder();
 
@@ -31,7 +31,7 @@ STATUS NameOrder::loadParameters(Parser * parser,
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
-    else    
+    else
   		return OK;
 }
 
@@ -53,12 +53,12 @@ ORDER_STATUS NameOrder::process (Entity * entity, vector <AbstractData *>  &para
 //  entity->setName((parameters[0])->print());
 //   cout<< "NameOrder::process  "<< g1 <<endl;
 //   cout<< "NameOrder::process  "<< newName <<endl;
-//  entity->addReport(new UnaryPattern(changeNameReporter,new StringData(newName)));
-  entity->addReport(new UnaryPattern(changeNameReporter,new StringData(g1)));
+//  entity->addReport(new UnaryMessage(changeNameReporter,new StringData(newName)));
+  entity->addReport(new UnaryMessage(changeNameReporter,new StringData(g1)));
 //   cout<< "NameOrder::process  "<< (parameters[0])->print() <<endl;
 //   cout<< "NameOrder::process  "<< g1 <<endl;
 //   cout<< "NameOrder::process  "<< g1 <<endl;
-//  entity->addReport(new UnaryPattern(changeNameReporter,new StringData((parameters[0])->print())));
+//  entity->addReport(new UnaryMessage(changeNameReporter,new StringData((parameters[0])->print())));
   return SUCCESS;
 }
 

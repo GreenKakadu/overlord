@@ -22,9 +22,9 @@
   *@author Alex Dribin
   */
 
-class Reporter;
+class ReportPattern;
 class LeaveOrder : public OrderPrototype   {
-public: 
+public:
 	LeaveOrder();
 	~LeaveOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

@@ -8,9 +8,9 @@
 #include "GiveOrder.h"
 #include "OrderLine.h"
 #include "IntegerData.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "QuartenaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "QuartenaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "ItemRule.h"
@@ -24,9 +24,9 @@ GiveOrder * instantiateGiveOrder = new GiveOrder();
 
 extern EntitiesCollection <UnitEntity>      units;
 extern RulesCollection <ItemRule>      items;
-extern Reporter *	giveRejectedReporter;
-extern Reporter *	giveReporter;
-extern Reporter *	receiveReporter;
+extern ReportPattern *	giveRejectedReporter;
+extern ReportPattern *	giveReporter;
+extern ReportPattern *	receiveReporter;
 //const UINT GiveOrder::NO_GIFTS_REPORT_FLAG = 0x01;
 
 GiveOrder::GiveOrder()
@@ -88,9 +88,9 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 
   ItemRule * item          =  dynamic_cast<ItemRule *>(parameters[1]);
   assert(item);
-  
+
   int given =   getIntegerParameter(parameters,2);
-     
+
   int kept =   getIntegerParameter(parameters,3);
 
   OrderLine * orderId = entity->getCurrentOrder();
@@ -102,7 +102,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
  if(*(recipient->getFaction()->getStance(unit)) < *friendlyStance)
       {
         // not accepting. Reports to both sides
-      UnaryPattern * giveRejectedMessage = new UnaryPattern(giveRejectedReporter, recipient);  
+      UnaryMessage * giveRejectedMessage = new UnaryMessage(giveRejectedReporter, recipient);
       unit->addReport(giveRejectedMessage,orderId,0);
       recipient->addReport(giveRejectedMessage,orderId,0);
 		  return INVALID;
@@ -110,7 +110,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 /*
  * Validate item amounts
  */
- 	
+
         // get number of items in iventory unitItemPossesion
 		 int unitItemPossesion = unit-> hasItem(item);
         if (!unitItemPossesion)
@@ -133,15 +133,15 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 //        if (item->getTag() == string("mana"))    // Mana shouldn't be an item
 //                given = 0;
 
-	
+
         if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
 	  {
-      unit->addReport( new QuartenaryPattern(giveReporter, unit, new IntegerData(reallyGiven), item, recipient),orderId,0);
+      unit->addReport( new QuartenaryMessage(giveReporter, unit, new IntegerData(reallyGiven), item, recipient),orderId,0);
      }
 
         if (!recipient->isSilent())
 	  {
-      recipient->addReport( new QuartenaryPattern(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit),orderId,0);
+      recipient->addReport( new QuartenaryMessage(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit),orderId,0);
 	  }
 
     if(given > reallyGiven)
@@ -152,7 +152,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
         return IN_PROGRESS;
     }
         return SUCCESS;
-	
+
 }
 
 

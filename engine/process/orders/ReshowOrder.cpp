@@ -1,5 +1,5 @@
 /***************************************************************************
-                             ReshowOrder.cpp 
+                             ReshowOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,23 +10,23 @@
 #include "Entity.h"
 #include "FactionEntity.h"
 #include "TokenEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RuleIndex.h"
 extern EntitiesCollection <FactionEntity>      factions;
-extern Reporter * ReshowReporter;
-extern RuleIndex ruleIndex;	
-extern Reporter *	missingParameterReporter;
-extern Reporter *	invalidParameterReporter;
+extern ReportPattern * ReshowReporter;
+extern RuleIndex ruleIndex;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	invalidParameterReporter;
 ReshowOrder * instantiateReshowOrder = new ReshowOrder();
 
 ReshowOrder::ReshowOrder(){
   keyword_ = "Reshow";
   registerOrder_();
   description = string("RESHOW rule-keyword | rule-tag | skill-tag [skill-level] | [ALL] \n") +
-  "Includes in your report the  descriptions for all rules designated by keyword\n"+ 
+  "Includes in your report the  descriptions for all rules designated by keyword\n"+
   "or if specific rule-tag provided descriptions for the designated rule will be reported.\n" +
   "If this rule is skill-rule descriptions for the designated skill from\n" +
   "the specified skill level up to the maximum skill limit you ever reached.\n" +
@@ -41,11 +41,11 @@ STATUS ReshowOrder::loadParameters(Parser * parser,
 {
    if(!entityIsTokenEntity(entity,NO_PARSING_REPORT) && !entityIsFaction(entity,NO_PARSING_REPORT))
             return IO_ERROR;
-  // Implement [ALL]          
+  // Implement [ALL]
 	string tag = parser->getWord();
    if (tag.size() == 0)  // Missing parameter
         {
-        entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("rule tag")));
+        entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("rule tag")));
          return IO_ERROR;
         }
 // if this is a keyword?
@@ -60,16 +60,16 @@ STATUS ReshowOrder::loadParameters(Parser * parser,
    if(rule==0)
     {
 
-      entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("rule tag")));
+      entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("rule tag")));
       return IO_ERROR;
     }
     parameters.push_back(rule);
 // If it is a skilltag - read also optional level parameter
 	if(dynamic_cast<SkillRule*>(rule))
 			parseIntegerParameter(parser, parameters);
-			
+
     return OK;
-            
+
 }
 
 
@@ -82,8 +82,8 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, vector <AbstractData *>  &pa
     TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
     assert(unit);
     faction = unit->getFaction();
-  }        
-  // Implement [ALL]          
+  }
+  // Implement [ALL]
 
   StringData * par = dynamic_cast<StringData *>(parameters[0]);
   if(par)
@@ -108,6 +108,6 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, vector <AbstractData *>  &pa
   }
     return SUCCESS;
 }
-// If all rule collection or specific rule needs to be reshown add coll or rule 
+// If all rule collection or specific rule needs to be reshown add coll or rule
 // to special vector.
 

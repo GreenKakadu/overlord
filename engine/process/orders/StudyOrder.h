@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StudyOrder.h 
+                          StudyOrder.h
                              -------------------
     begin                : Thu Feb 13 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,7 +10,7 @@
 #define STUDY_ORDER_H
 
 #include "OrderPrototype.h"
-class Reporter;
+class ReportPattern;
 class SkillRule;
 class UnitEntity;
 class TeachingOffer;
@@ -19,7 +19,7 @@ class TeachingOffer;
   */
 
 class StudyOrder : public OrderPrototype  {
-public: 
+public:
 	StudyOrder();
 	~StudyOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

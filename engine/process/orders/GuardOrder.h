@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GuardOrder.h 
+                          GuardOrder.h
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,11 +13,11 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class AbstractData;
 
 class GuardOrder : public OrderPrototype  {
-public: 
+public:
 	GuardOrder();
 	~GuardOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );

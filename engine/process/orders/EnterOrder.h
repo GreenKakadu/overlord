@@ -21,7 +21,7 @@
 /**
   *@author Alex Dribin
   */
-class Reporter;
+class ReportPattern;
 class EnterOrder : public OrderPrototype  {
 public:
 	EnterOrder();

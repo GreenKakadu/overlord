@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TextsForReports.cpp 
+                          TextsForReports.cpp
                              -------------------
     begin                : Thu May 22 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,199 +12,199 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include "Reporter.h"
+#include "ReportPattern.h"
 // Generic
-Reporter *	invalidOrderReporter     = new Reporter("",": this is not "," order.");
-Reporter *	invalidParameterReporter  = new Reporter("",": invalid  Parameter <","> (", " expected).");
-Reporter *	unknownParameterReporter  = new Reporter("Warning! Unknown parameter "," .");
-Reporter *	missingParameterReporter  = new Reporter("",": missing  Parameter (", " expected).");
-Reporter *	invaliDirectionReporter   = new Reporter(""," direction is wrong or location is not connected.");
+ReportPattern *	invalidOrderReporter     = new ReportPattern("",": this is not "," order.");
+ReportPattern *	invalidParameterReporter  = new ReportPattern("",": invalid  Parameter <","> (", " expected).");
+ReportPattern *	unknownParameterReporter  = new ReportPattern("Warning! Unknown parameter "," .");
+ReportPattern *	missingParameterReporter  = new ReportPattern("",": missing  Parameter (", " expected).");
+ReportPattern *	invaliDirectionReporter   = new ReportPattern(""," direction is wrong or location is not connected.");
 // UnitEntity
-Reporter * withdrawReporter = new Reporter(""," withdraws "," from faction funds.");
-Reporter * borrowReporter = new Reporter(""," borrows "," from ",".");
-Reporter * lendReporter = new Reporter(""," lends "," to ","");
-Reporter * newLevelReporter = new Reporter(""," reached level "," in ",".");
-Reporter * maxLevelReporter = new Reporter(""," reached maximum level in ",". No further study is possible.");
-Reporter * cantMoveReporter = new Reporter("",": "," can't move.");
-Reporter * overloadReporter = new Reporter(""," overloaded: weight "," capacity ", "",".");
-Reporter * noMovementAbilityReporter = new Reporter(""," have no ability to move toward ",".");
-Reporter * departLeaderReporter = new Reporter(""," departs from "," to ",". Movementt will take  "," days.");
-Reporter * departFollowerReporter = new Reporter(""," departs from "," to "," following ",". Movementt will take  "," days.");
-Reporter * departPublicReporter = new Reporter(""," departs to ",".");
-Reporter * enterPublicReporter = new Reporter(""," enters location.");
-Reporter * enterPrivateReporter = new Reporter("Enters ",".");
-Reporter * leavePublicReporter = new Reporter(""," leaves location.");
-Reporter * leavePrivateReporter = new Reporter("Leaves ",".");
-Reporter * arrivePublicReporter = new Reporter(""," arrives.");
-Reporter * arrivePrivateReporter = new Reporter("Arrives to ",".");
-Reporter * consumeFoodReporter = new Reporter("Consumes "," food.");
-Reporter * upkeepReporter = new Reporter("Pays "," for upkeep.");
-Reporter * cannotPayUpkeepReporter = new Reporter("Have not enough money to pay upkeep.");
+ReportPattern * withdrawReporter = new ReportPattern(""," withdraws "," from faction funds.");
+ReportPattern * borrowReporter = new ReportPattern(""," borrows "," from ",".");
+ReportPattern * lendReporter = new ReportPattern(""," lends "," to ","");
+ReportPattern * newLevelReporter = new ReportPattern(""," reached level "," in ",".");
+ReportPattern * maxLevelReporter = new ReportPattern(""," reached maximum level in ",". No further study is possible.");
+ReportPattern * cantMoveReporter = new ReportPattern("",": "," can't move.");
+ReportPattern * overloadReporter = new ReportPattern(""," overloaded: weight "," capacity ", "",".");
+ReportPattern * noMovementAbilityReporter = new ReportPattern(""," have no ability to move toward ",".");
+ReportPattern * departLeaderReporter = new ReportPattern(""," departs from "," to ",". Movementt will take  "," days.");
+ReportPattern * departFollowerReporter = new ReportPattern(""," departs from "," to "," following ",". Movementt will take  "," days.");
+ReportPattern * departPublicReporter = new ReportPattern(""," departs to ",".");
+ReportPattern * enterPublicReporter = new ReportPattern(""," enters location.");
+ReportPattern * enterPrivateReporter = new ReportPattern("Enters ",".");
+ReportPattern * leavePublicReporter = new ReportPattern(""," leaves location.");
+ReportPattern * leavePrivateReporter = new ReportPattern("Leaves ",".");
+ReportPattern * arrivePublicReporter = new ReportPattern(""," arrives.");
+ReportPattern * arrivePrivateReporter = new ReportPattern("Arrives to ",".");
+ReportPattern * consumeFoodReporter = new ReportPattern("Consumes "," food.");
+ReportPattern * upkeepReporter = new ReportPattern("Pays "," for upkeep.");
+ReportPattern * cannotPayUpkeepReporter = new ReportPattern("Have not enough money to pay upkeep.");
 
 // Accept
-Reporter *  acceptOwnReporter         = new Reporter("Warning: "," belongs to your faction. Accept has no sence.");
-Reporter *	acceptReporter            = new Reporter("Accepting ",".");
+ReportPattern *  acceptOwnReporter         = new ReportPattern("Warning: "," belongs to your faction. Accept has no sence.");
+ReportPattern *	acceptReporter            = new ReportPattern("Accepting ",".");
 // Attack
-Reporter *	AttackReporter                  = new Reporter(""," attacks ",".");
-Reporter *	ownUnitAttackReporter           = new Reporter("Can't attack your own unit ",".");
-Reporter *	ownFactionAttackReporter        = new Reporter("Can't attack your own faction ",".");
-Reporter *	ownConstructionAttackReporter   = new Reporter("Can't attack your own construction ",".");
+ReportPattern *	AttackReporter                  = new ReportPattern(""," attacks ",".");
+ReportPattern *	ownUnitAttackReporter           = new ReportPattern("Can't attack your own unit ",".");
+ReportPattern *	ownFactionAttackReporter        = new ReportPattern("Can't attack your own faction ",".");
+ReportPattern *	ownConstructionAttackReporter   = new ReportPattern("Can't attack your own construction ",".");
 // Bestow
-Reporter * publicBestowReporter= new Reporter(""," bestows title of "," to ",".");
-Reporter * privateBestowReporter= new Reporter("Bestows title of "," to ",".");
-Reporter * receiveTitleReporter= new Reporter("Receives title of "," from ",".");
-Reporter * noBestowTitleReporter    = new Reporter("No ", "title available to bestow at ",".");
-Reporter * noBestowTitleConditionReporter    = new Reporter("" ," doesn't have "," which is nescessary to hold ",".");
-Reporter * noOwnBestowTitleReporter    = new Reporter    ("Should own the title of "," to bestow it.");
+ReportPattern * publicBestowReporter= new ReportPattern(""," bestows title of "," to ",".");
+ReportPattern * privateBestowReporter= new ReportPattern("Bestows title of "," to ",".");
+ReportPattern * receiveTitleReporter= new ReportPattern("Receives title of "," from ",".");
+ReportPattern * noBestowTitleReporter    = new ReportPattern("No ", "title available to bestow at ",".");
+ReportPattern * noBestowTitleConditionReporter    = new ReportPattern("" ," doesn't have "," which is nescessary to hold ",".");
+ReportPattern * noOwnBestowTitleReporter    = new ReportPattern    ("Should own the title of "," to bestow it.");
 // Build
-Reporter * newBuidingStartedReporter    = new Reporter("New "," " ," started.");
-Reporter * buidingFinishedReporter    = new Reporter(""," " ," was finished.");
-Reporter * constructionStartedReporter    = new Reporter(""," construction works started.");
-Reporter * buildingDestroyedReporter    = new Reporter(" "," destroyed.");
+ReportPattern * newBuidingStartedReporter    = new ReportPattern("New "," " ," started.");
+ReportPattern * buidingFinishedReporter    = new ReportPattern(""," " ," was finished.");
+ReportPattern * constructionStartedReporter    = new ReportPattern(""," construction works started.");
+ReportPattern * buildingDestroyedReporter    = new ReportPattern(" "," destroyed.");
 // Buy/Sell/Recruit
-Reporter * cantTradeReporter = new Reporter("" ," cannot trade.");
-Reporter * buyReporter       = new Reporter("" ," buys ", " for ", " spending "," coins.");
-Reporter * sellReporter       = new Reporter("" ," sells ", " for ", " gaining ", " coins.");
-Reporter * recruiterReporter    = new Reporter("" ," recruits ", " for ", " spending "," coins.");
-Reporter * recruitedReporter    = new Reporter("" ," were recruited to ", ".");
-Reporter * newRecruitReporter   = new Reporter("New unit " ," of ", " was created.");
+ReportPattern * cantTradeReporter = new ReportPattern("" ," cannot trade.");
+ReportPattern * buyReporter       = new ReportPattern("" ," buys ", " for ", " spending "," coins.");
+ReportPattern * sellReporter       = new ReportPattern("" ," sells ", " for ", " gaining ", " coins.");
+ReportPattern * recruiterReporter    = new ReportPattern("" ," recruits ", " for ", " spending "," coins.");
+ReportPattern * recruitedReporter    = new ReportPattern("" ," were recruited to ", ".");
+ReportPattern * newRecruitReporter   = new ReportPattern("New unit " ," of ", " was created.");
 // Cancel
-Reporter * publicCancelTitleReporter = new Reporter(""," cancels title of ",".");
-Reporter * privateCancelTitleReporter = new Reporter("Cancels title of ",".");
-Reporter * cannotCancelReporter= new Reporter    ("Have no rights to cancel a title of ",".");
-Reporter * noCancelOwnReporter = new Reporter    ("Cannot cancel your own title of ",".");
-Reporter * noCancelTitleReporter    = new Reporter("No ", "title available to cancel at ",".");
+ReportPattern * publicCancelTitleReporter = new ReportPattern(""," cancels title of ",".");
+ReportPattern * privateCancelTitleReporter = new ReportPattern("Cancels title of ",".");
+ReportPattern * cannotCancelReporter= new ReportPattern    ("Have no rights to cancel a title of ",".");
+ReportPattern * noCancelOwnReporter = new ReportPattern    ("Cannot cancel your own title of ",".");
+ReportPattern * noCancelTitleReporter    = new ReportPattern("No ", "title available to cancel at ",".");
 // Caravan
-Reporter * caravanLocationAddedReporter= new Reporter("Warning! Can't find  ",
+ReportPattern * caravanLocationAddedReporter= new ReportPattern("Warning! Can't find  ",
                     " in caravan list. Will try to add it as start location.");
 // Claim
-Reporter * noTitleReporter    = new Reporter("No ", "title available to claim at ",".");
-Reporter * noTitleConditionReporter    = new Reporter("" ," doesn't have "," which is nescessary to claim ",".");
-Reporter * cantPayForTitleReporter    = new Reporter("Doesn't have enough money to claim "," title.");
-Reporter * noFreeTitleReporter    = new Reporter(""," title at ", " already belongs to ",".");
-Reporter * contestTitleReporter    = new Reporter(""," contests "," title at "," from ",".");
-Reporter * failedContestTitleReporter    = new Reporter(""," loses contest to "," with "," days of ", " against ",".");
-Reporter * successContestTitleReporter    = new Reporter(""," wins contest from "," with "," days of "," against ",".");
-Reporter * claimTitleReporter    = new Reporter("", " claims "," title  at ",".");
+ReportPattern * noTitleReporter    = new ReportPattern("No ", "title available to claim at ",".");
+ReportPattern * noTitleConditionReporter    = new ReportPattern("" ," doesn't have "," which is nescessary to claim ",".");
+ReportPattern * cantPayForTitleReporter    = new ReportPattern("Doesn't have enough money to claim "," title.");
+ReportPattern * noFreeTitleReporter    = new ReportPattern(""," title at ", " already belongs to ",".");
+ReportPattern * contestTitleReporter    = new ReportPattern(""," contests "," title at "," from ",".");
+ReportPattern * failedContestTitleReporter    = new ReportPattern(""," loses contest to "," with "," days of ", " against ",".");
+ReportPattern * successContestTitleReporter    = new ReportPattern(""," wins contest from "," with "," days of "," against ",".");
+ReportPattern * claimTitleReporter    = new ReportPattern("", " claims "," title  at ",".");
 // Christen
-Reporter * cannotChristenReporter   = new Reporter("Can't christen "," that not belongs to you.");
-Reporter * publicChristenReporter   = new Reporter(""," christened ", " as ",".");
-Reporter * privateChristenReporter  = new Reporter(""," was christened as ",".");
+ReportPattern * cannotChristenReporter   = new ReportPattern("Can't christen "," that not belongs to you.");
+ReportPattern * publicChristenReporter   = new ReportPattern(""," christened ", " as ",".");
+ReportPattern * privateChristenReporter  = new ReportPattern(""," was christened as ",".");
 // Disband
-Reporter * disbandReporter    = new Reporter("" ," disbanded.");
-Reporter * skillLossReporter  = new Reporter(" Skill level in  ","  decreased to "," due to merging.");
+ReportPattern * disbandReporter    = new ReportPattern("" ," disbanded.");
+ReportPattern * skillLossReporter  = new ReportPattern(" Skill level in  ","  decreased to "," due to merging.");
 // Drop
-Reporter *	privateDropItemsReporter = new Reporter("Drops ",".");
-Reporter *	publicDropItemsReporter = new Reporter(""," drops ",".");
+ReportPattern *	privateDropItemsReporter = new ReportPattern("Drops ",".");
+ReportPattern *	publicDropItemsReporter = new ReportPattern(""," drops ",".");
 // Eject
-Reporter *	ejectReporter             = new Reporter(""," ejected from the stack.");
+ReportPattern *	ejectReporter             = new ReportPattern(""," ejected from the stack.");
 // e-mail
-Reporter * changeEmailReporter= new Reporter("E-mail address was changed to ",".");
+ReportPattern * changeEmailReporter= new ReportPattern("E-mail address was changed to ",".");
 // Enter
-Reporter * followerEnterReporter    = new Reporter("Entering "," following ",".");
-Reporter * leaderEnterReporter    = new Reporter("Entering ",".");
-Reporter * protectedEnterReporter    = new Reporter(""," is protected from entrance.");
+ReportPattern * followerEnterReporter    = new ReportPattern("Entering "," following ",".");
+ReportPattern * leaderEnterReporter    = new ReportPattern("Entering ",".");
+ReportPattern * protectedEnterReporter    = new ReportPattern(""," is protected from entrance.");
 // Equip
-Reporter *	unequipReporter           = new Reporter(""," unequips ","");
-Reporter *	equipReporter             = new Reporter(""," equips ","");
-Reporter *	unequipableReporter       = new Reporter(""," can't be equiped.");
-Reporter *	equipSkillReporter        = new Reporter(""," required to equip ","");
+ReportPattern *	unequipReporter           = new ReportPattern(""," unequips ","");
+ReportPattern *	equipReporter             = new ReportPattern(""," equips ","");
+ReportPattern *	unequipableReporter       = new ReportPattern(""," can't be equiped.");
+ReportPattern *	equipSkillReporter        = new ReportPattern(""," required to equip ","");
 // Exit
-Reporter * followerExitReporter    = new Reporter("Exiting from "," following ",".");
-Reporter * leaderExitReporter    = new Reporter("Exiting from ",".");
+ReportPattern * followerExitReporter    = new ReportPattern("Exiting from "," following ",".");
+ReportPattern * leaderExitReporter    = new ReportPattern("Exiting from ",".");
 // Get
-Reporter *	privateGetItemsReporter = new Reporter("Gets "," from ",".");
-Reporter *	publicGetItemsReporter = new Reporter(""," were taken by ",".");
+ReportPattern *	privateGetItemsReporter = new ReportPattern("Gets "," from ",".");
+ReportPattern *	publicGetItemsReporter = new ReportPattern(""," were taken by ",".");
 // Give
-Reporter *	giveRejectedReporter      = new Reporter(""," rejects gifts ");
-Reporter *	giveReporter              = new Reporter(""," gives "," "," to ","");
-Reporter *	receiveReporter           = new Reporter(""," receives "," "," from ","");
+ReportPattern *	giveRejectedReporter      = new ReportPattern(""," rejects gifts ");
+ReportPattern *	giveReporter              = new ReportPattern(""," gives "," "," to ","");
+ReportPattern *	receiveReporter           = new ReportPattern(""," receives "," "," from ","");
 // Forget
-Reporter * forgetReport= new Reporter("Forgets all it knowledge in ",".");
+ReportPattern * forgetReport= new ReportPattern("Forgets all it knowledge in ",".");
 // Merge
-Reporter * mergeRaceMismatchReporter    = new Reporter("May only merge units of the  same race.");
-Reporter * mergeRaceErrorReporter       = new Reporter("" ," can't be merged.");
-Reporter * mergeFactionMismatchReporter = new Reporter(" Can merge only in your faction units.");
-Reporter * mergeReporter                = new Reporter("" ," merged " ," into" ,".");
-Reporter * mergeSkillReporter  = new Reporter("Transfered figures from " ," loose their experience in " ,".");
+ReportPattern * mergeRaceMismatchReporter    = new ReportPattern("May only merge units of the  same race.");
+ReportPattern * mergeRaceErrorReporter       = new ReportPattern("" ," can't be merged.");
+ReportPattern * mergeFactionMismatchReporter = new ReportPattern(" Can merge only in your faction units.");
+ReportPattern * mergeReporter                = new ReportPattern("" ," merged " ," into" ,".");
+ReportPattern * mergeSkillReporter  = new ReportPattern("Transfered figures from " ," loose their experience in " ,".");
 // Name
-Reporter * changeNameReporter = new Reporter("Name was changed to ",".");
+ReportPattern * changeNameReporter = new ReportPattern("Name was changed to ",".");
 // Oath
-Reporter *	oathRejectedReporter      = new Reporter(""," rejects oath ");
-Reporter *	oathReporter      = new Reporter(""," declares oath to ",".");
+ReportPattern *	oathRejectedReporter      = new ReportPattern(""," rejects oath ");
+ReportPattern *	oathReporter      = new ReportPattern(""," declares oath to ",".");
 // Promote
-Reporter *	promoteReporter = new Reporter("Promotes ",".");
-Reporter *	promotedReporter = new Reporter("Promoted by ",".");
+ReportPattern *	promoteReporter = new ReportPattern("Promotes ",".");
+ReportPattern *	promotedReporter = new ReportPattern("Promoted by ",".");
 // Password
-Reporter * changePasswordReporter= new Reporter("Password was changed to ",".");
+ReportPattern * changePasswordReporter= new ReportPattern("Password was changed to ",".");
 // Recruit
-Reporter * unableRecruitReporter = new Reporter(""," is not able to recruit.");
-Reporter * recruitInvalidReporter  = new Reporter("Cannot recruit to ",".");
-Reporter * recruitForeignUnitReporter  = new Reporter("Cannot recruit to foreign unit ",".");
-Reporter * recruitMaxUnitSizeReporter  = new Reporter("", " cannot have more than ",".");
-Reporter * recruitMixedRaceReporter  = new Reporter("Race mismatch in ", ".");
-Reporter * unrecruitableRaceReporter = new Reporter("Cannot recruit ", ".");
+ReportPattern * unableRecruitReporter = new ReportPattern(""," is not able to recruit.");
+ReportPattern * recruitInvalidReporter  = new ReportPattern("Cannot recruit to ",".");
+ReportPattern * recruitForeignUnitReporter  = new ReportPattern("Cannot recruit to foreign unit ",".");
+ReportPattern * recruitMaxUnitSizeReporter  = new ReportPattern("", " cannot have more than ",".");
+ReportPattern * recruitMixedRaceReporter  = new ReportPattern("Race mismatch in ", ".");
+ReportPattern * unrecruitableRaceReporter = new ReportPattern("Cannot recruit ", ".");
 // Retreat
-Reporter * retreatPublicReporter= new Reporter(""," retreats back to ",".");
-Reporter * retreatGroupReporter= new Reporter("Retreats back to "," following ",".");
-Reporter * retreatPrivateReporter= new Reporter("Retreats back to ",".");
+ReportPattern * retreatPublicReporter= new ReportPattern(""," retreats back to ",".");
+ReportPattern * retreatGroupReporter= new ReportPattern("Retreats back to "," following ",".");
+ReportPattern * retreatPrivateReporter= new ReportPattern("Retreats back to ",".");
 // Split
-Reporter * splitterReporter    = new Reporter("" ," splits ", " to ", ".");
-Reporter * newSplitReporter    = new Reporter("New unit " ," of ", " was created.");
+ReportPattern * splitterReporter    = new ReportPattern("" ," splits ", " to ", ".");
+ReportPattern * newSplitReporter    = new ReportPattern("New unit " ," of ", " was created.");
 // Stack
-Reporter *	stackingUnacceptableReporter   = new Reporter(""," refuses to allow stacking of  ", "." );
-Reporter *	stackReporter             = new Reporter(""," stacked under ", "" );
+ReportPattern *	stackingUnacceptableReporter   = new ReportPattern(""," refuses to allow stacking of  ", "." );
+ReportPattern *	stackReporter             = new ReportPattern(""," stacked under ", "" );
 // Stay
-Reporter *	stayReporter             = new Reporter(""," stays while stack starts moving." );
+ReportPattern *	stayReporter             = new ReportPattern(""," stays while stack starts moving." );
 // Study
-Reporter * cannotStudyReporter        = new Reporter(""," can't study ");
-Reporter * raceErrorReporter          = new Reporter(""," can't study ","");
-Reporter * itemRequiredReporter       = new Reporter(""," needeed to study ","");
-Reporter * requirementErrorReporter   = new Reporter(""," doesn't know skills necessary to study ","");
-Reporter * teachingErrorReporter      = new Reporter(""," needs teacher  to study ","");
-Reporter * maxLevelErrorReporter      = new Reporter(""," is already at maximum level of ","");
-Reporter * paymentErrorReporter       = new Reporter(""," has not enough money to pay for studying ","");
-Reporter * learningStartedReporter    = new Reporter(""," started to learn ","");
-Reporter * followerSkillLimitReporter = new Reporter("" ," can't study second basic skill.");
+ReportPattern * cannotStudyReporter        = new ReportPattern(""," can't study ");
+ReportPattern * raceErrorReporter          = new ReportPattern(""," can't study ","");
+ReportPattern * itemRequiredReporter       = new ReportPattern(""," needeed to study ","");
+ReportPattern * requirementErrorReporter   = new ReportPattern(""," doesn't know skills necessary to study ","");
+ReportPattern * teachingErrorReporter      = new ReportPattern(""," needs teacher  to study ","");
+ReportPattern * maxLevelErrorReporter      = new ReportPattern(""," is already at maximum level of ","");
+ReportPattern * paymentErrorReporter       = new ReportPattern(""," has not enough money to pay for studying ","");
+ReportPattern * learningStartedReporter    = new ReportPattern(""," started to learn ","");
+ReportPattern * followerSkillLimitReporter = new ReportPattern("" ," can't study second basic skill.");
 // Teach
-Reporter * teachingReporter    = new Reporter("Teaching ", ".");
-Reporter * teachingReporter2    = new Reporter("Teaching "," ", ".");
+ReportPattern * teachingReporter    = new ReportPattern("Teaching ", ".");
+ReportPattern * teachingReporter2    = new ReportPattern("Teaching "," ", ".");
 // Unstack
-Reporter *	unstackReporter           = new Reporter(""," unstacked.");                                            
+ReportPattern *	unstackReporter           = new ReportPattern(""," unstacked.");
 // Use
-Reporter * productionReporter         = new Reporter(""," produces ",".");
-Reporter * harvestReporter            = new Reporter(""," harvests ",".");
-Reporter * invalidReporter            = new Reporter("Invalid USE order for ",".");
-Reporter * notAvailableReporter       = new Reporter(" "," is not available at ",".");
-Reporter * notEnoughResourcesReporter = new Reporter("Has not enough "," to produce ",".");
-Reporter * unusableSkillReporter      = new Reporter("Skill "," can't be used.");
+ReportPattern * productionReporter         = new ReportPattern(""," produces ",".");
+ReportPattern * harvestReporter            = new ReportPattern(""," harvests ",".");
+ReportPattern * invalidReporter            = new ReportPattern("Invalid USE order for ",".");
+ReportPattern * notAvailableReporter       = new ReportPattern(" "," is not available at ",".");
+ReportPattern * notEnoughResourcesReporter = new ReportPattern("Has not enough "," to produce ",".");
+ReportPattern * unusableSkillReporter      = new ReportPattern("Skill "," can't be used.");
 // Withdraw
-Reporter * withdrawRestrictedReporter = new Reporter("Things may be only withdrawn in cities.");
-Reporter * withdrawInvalidReporter = new Reporter("Cann't withdraw any ",".");
-Reporter * withdrawUnitReporter = new Reporter("Withdraws ",".");
-Reporter * withdrawFactionReporter = new Reporter(""," are withdrawn from faction funds by ","." );
-Reporter * withdrawFundEmptyReporter = new Reporter("Faction funds of "," are empty.");
+ReportPattern * withdrawRestrictedReporter = new ReportPattern("Things may be only withdrawn in cities.");
+ReportPattern * withdrawInvalidReporter = new ReportPattern("Cann't withdraw any ",".");
+ReportPattern * withdrawUnitReporter = new ReportPattern("Withdraws ",".");
+ReportPattern * withdrawFactionReporter = new ReportPattern(""," are withdrawn from faction funds by ","." );
+ReportPattern * withdrawFundEmptyReporter = new ReportPattern("Faction funds of "," are empty.");
 // Yield
-Reporter * noOwnYieldTitleReporter    = new Reporter    ("Should own the title of "," to yield it.");
-Reporter * noYieldTitleReporter    = new Reporter("No ", " title available to yield at ",".");
-Reporter * publicYieldTitleReporter = new Reporter(""," yields title of ",".");
-Reporter * privateYieldTitleReporter = new Reporter("Yields title of ",".");
-Reporter * cannotOathYourselfReporter = new Reporter("Can't oath to yourself"); 
+ReportPattern * noOwnYieldTitleReporter    = new ReportPattern    ("Should own the title of "," to yield it.");
+ReportPattern * noYieldTitleReporter    = new ReportPattern("No ", " title available to yield at ",".");
+ReportPattern * publicYieldTitleReporter = new ReportPattern(""," yields title of ",".");
+ReportPattern * privateYieldTitleReporter = new ReportPattern("Yields title of ",".");
+ReportPattern * cannotOathYourselfReporter = new ReportPattern("Can't oath to yourself");
 //
 
 
-Reporter * privateEnchantmentReporter = new Reporter(""," enchanted with "," by ",".");
-Reporter * privateEnchanterReporter = new Reporter(""," enchants "," with ",".");
-Reporter * publicEnchantmentReporter = new Reporter(""," produces ",".");
-Reporter * privateActionReporter  = new Reporter(""," produces ",".");
-Reporter * publicActionReporter   = new Reporter(""," produces ",".");
+ReportPattern * privateEnchantmentReporter = new ReportPattern(""," enchanted with "," by ",".");
+ReportPattern * privateEnchanterReporter = new ReportPattern(""," enchants "," with ",".");
+ReportPattern * publicEnchantmentReporter = new ReportPattern(""," produces ",".");
+ReportPattern * privateActionReporter  = new ReportPattern(""," produces ",".");
+ReportPattern * publicActionReporter   = new ReportPattern(""," produces ",".");
 //==================== PickPocket
 
-Reporter * pickPocketNoTargetReporter = new Reporter("Failed to find ",".");
-Reporter * pickPocketEmptyPocketReporter = new Reporter("Failed to find anything in pockets of ",".");
-Reporter * pickPocketStealingFailureReporter = new Reporter("Failed to steal from ",".");
-Reporter * pickPocketStealingPrivateReporter = new Reporter("Stole "," from ","." );
-Reporter * pickPocketStealingTargetReporter = new Reporter( "Hep! Somebody stole some "," from us!");
-//Reporter * pickPocket Reporter = new Reporter( );
+ReportPattern * pickPocketNoTargetReporter = new ReportPattern("Failed to find ",".");
+ReportPattern * pickPocketEmptyPocketReporter = new ReportPattern("Failed to find anything in pockets of ",".");
+ReportPattern * pickPocketStealingFailureReporter = new ReportPattern("Failed to steal from ",".");
+ReportPattern * pickPocketStealingPrivateReporter = new ReportPattern("Stole "," from ","." );
+ReportPattern * pickPocketStealingTargetReporter = new ReportPattern( "Hep! Somebody stole some "," from us!");
+//ReportPattern * pickPocket Reporter = new ReportPattern( );
 
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          RecruitOrder.cpp 
+                          RecruitOrder.cpp
                              -------------------
     begin                : Thu Jun 5 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -15,9 +15,9 @@
 #include "RaceElement.h"
 #include "IntegerData.h"
 #include "RecruitOrder.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "QuartenaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "QuartenaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "Entity.h"
@@ -27,12 +27,12 @@
 #include "RecruitRequest.h"
 #include "NewRecruitRequest.h"
 const UINT RecruitOrder:: INVALID_RECRUIT_REPORT_FLAG = 0x01;
-extern Reporter * unableRecruitReporter;
-extern Reporter * recruitInvalidReporter; 
-extern Reporter * recruitForeignUnitReporter; 
-extern Reporter * recruitMaxUnitSizeReporter;  
-extern Reporter * recruitMixedRaceReporter;
-extern Reporter * unrecruitableRaceReporter;
+extern ReportPattern * unableRecruitReporter;
+extern ReportPattern * recruitInvalidReporter;
+extern ReportPattern * recruitForeignUnitReporter;
+extern ReportPattern * recruitMaxUnitSizeReporter;
+extern ReportPattern * recruitMixedRaceReporter;
+extern ReportPattern * unrecruitableRaceReporter;
 
 //RecruitOrder instantiateRecruitOrder;
 RecruitOrder * instantiateRecruitOrder = new RecruitOrder();
@@ -96,21 +96,21 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
   if(!unit->getRace()->mayRectuit())
   {
    // entity not able to recruit (not a leader)
-        unit->addReport(new UnaryPattern(unableRecruitReporter,unit->getRace()));
+        unit->addReport(new UnaryMessage(unableRecruitReporter,unit->getRace()));
 		  return INVALID;
   }
   UnitEntity * newUnit;
   RaceRule * race = dynamic_cast<RaceRule *>(parameters[2]);
      if(race == 0)
    {
-      unit->addReport(new UnaryPattern(unrecruitableRaceReporter,race));
+      unit->addReport(new UnaryMessage(unrecruitableRaceReporter,race));
 		  return INVALID;
     }
-    
+
    IntegerData * par1       =  dynamic_cast<IntegerData *>(parameters[1]);
       assert(par1);
   int number = par1->getValue();
-  
+
    IntegerData * par3       =  dynamic_cast<IntegerData *>(parameters[3]);
       assert(par3);
   int price = par3->getValue();
@@ -145,35 +145,35 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
    {
      if(!orderId->getReportingFlag(INVALID_RECRUIT_REPORT_FLAG ))
       {
-        unit->addReport(new UnaryPattern(recruitInvalidReporter,parameters[0] ));
+        unit->addReport(new UnaryMessage(recruitInvalidReporter,parameters[0] ));
         orderId->setReportingFlag(INVALID_RECRUIT_REPORT_FLAG );
       }
       return FAILURE;
     }
    orderId->clearReportingFlag(INVALID_RECRUIT_REPORT_FLAG);
 
-        
+
    if(unit->getFaction() != newUnit ->getFaction())
    {
-      unit->addReport(new UnaryPattern(recruitForeignUnitReporter,newUnit));
-		  return INVALID;   
+      unit->addReport(new UnaryMessage(recruitForeignUnitReporter,newUnit));
+		  return INVALID;
     }
 
 
    if(race != newUnit ->getRace())
    {
-      unit->addReport(new UnaryPattern(recruitMixedRaceReporter,newUnit));
+      unit->addReport(new UnaryMessage(recruitMixedRaceReporter,newUnit));
 		  return INVALID;
     }
    // one leader per unit
    if(race != newUnit ->getRace())
    {
 //QQQ
-      unit->addReport(new BinaryPattern(recruitMaxUnitSizeReporter,newUnit,
+      unit->addReport(new BinaryMessage(recruitMaxUnitSizeReporter,newUnit,
                       new RaceElement(race, number)));
 		  return INVALID;
     }
-    
+
   }
 
    // Submit request

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             EjectOrder.cpp 
+                             EjectOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,15 +10,15 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "StanceVariety.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	stackingUnacceptableReporter;
-extern Reporter *	stackReporter;
-extern Reporter *	ejectReporter;
+extern ReportPattern *	stackingUnacceptableReporter;
+extern ReportPattern *	stackReporter;
+extern ReportPattern *	ejectReporter;
 
 EjectOrder * instantiateEjectOrder = new EjectOrder();
 
@@ -30,7 +30,7 @@ EjectOrder::EjectOrder(){
   "first level of stack under your leadership.  That unit is forced to unstack\n" +
   "if you're the overall stack leader, or is moved out of your substack and just\n" +
   "after you if you're stacked below someone else.\n";
-  
+
   orderType_   = IMMEDIATE_ORDER;
 }
 
@@ -61,33 +61,33 @@ ORDER_STATUS EjectOrder::process (Entity * entity, vector <AbstractData *>  &par
         {
    		    return FAILURE;
         }
-  OrderLine * orderId = entity->getCurrentOrder();      
-  UnaryPattern * ejectMessage = new UnaryPattern(ejectReporter, follower);      
+  OrderLine * orderId = entity->getCurrentOrder();
+  UnaryMessage * ejectMessage = new UnaryMessage(ejectReporter, follower);
   entity->addReport(ejectMessage,orderId,0 );
 	follower->addReport(ejectMessage,orderId,0);
   UnitEntity * leader = unit->getLeader();
   if(leader)
   {
  	if(!follower->mayInterract(leader))
-   		  return SUCCESS; 
-   		        
+   		  return SUCCESS;
+
    if((*(leader->getFaction()->getStance(follower)) >= *alliedStance) ||(leader->isAccepting(follower)))
       {
     		stack(follower,leader );
-           BinaryPattern * stackMessage = new BinaryPattern(stackReporter, follower, leader);
+           BinaryMessage * stackMessage = new BinaryMessage(stackReporter, follower, leader);
           follower->addReport(stackMessage,orderId,0 );
           leader->addReport(stackMessage,orderId,0);
-   		  return SUCCESS; 
+   		  return SUCCESS;
       }
           else // rejected
      {
-       BinaryPattern * stackingUnacceptableMessage =new BinaryPattern(stackingUnacceptableReporter, leader , follower);
+       BinaryMessage * stackingUnacceptableMessage =new BinaryMessage(stackingUnacceptableReporter, leader , follower);
        follower->addReport (stackingUnacceptableMessage,orderId,0 );
        leader->addReport(stackingUnacceptableMessage,orderId,0  );
-   		  return SUCCESS; 
+   		  return SUCCESS;
       }
-      
+
   }
-   		  return SUCCESS; 
+   		  return SUCCESS;
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Entity.h  
+                          Entity.h
                              -------------------
     begin                : Wen jul  15:21:12 IST 2002
     copyright            : (C) 2002 by Alex Dribin
@@ -22,7 +22,7 @@ using namespace std;
 
 class OrderLine;
 class ReportElement;
-class ReportPattern;
+class ReportMessage;
 class BasicCondition;
 class SkillRule;
 class TeachingOffer;
@@ -57,7 +57,7 @@ class Entity : public GameData
    virtual     void      dailyPreProcess();
    virtual     void      dailyUpdate();
    virtual     void      payUpkeep(){}
-   
+
    virtual     void 	   postProcessOrder(ORDER_STATUS result, OrderIterator  iter);
   /** prints  report for Entity (stats, posessions, private events) */
   virtual      void      produceFactionReport(FactionEntity * faction, ReportPrinter &out);
@@ -66,7 +66,7 @@ class Entity : public GameData
   virtual void clearOrders();
 //  virtual void prepareOrders();
   virtual void addReport(ReportRecord report);
-  virtual void addReport(ReportPattern * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
+  virtual void addReport(ReportMessage * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
   virtual void extractReport(UnitEntity * unit, vector < ReportElement * > & reports);
   virtual Entity * getReportDestination();
   /** prints list of events related to this Entity */
@@ -99,7 +99,7 @@ class Entity : public GameData
   virtual  bool teacherRequired(SkillRule * skill);
    void addEnchantment(EnchantmentElement *enchantment) {enchantments_.add(enchantment); }
    void removeEnchantment(EnchantmentElement *enchantment) {enchantments_.remove(enchantment); }
-  
+
 //===============================  Knowledge ============
   virtual bool addKnowledge(Rule * info);
   virtual bool addSkillKnowledge(SkillRule * knowledge, int level);

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          UnitEntity.h  
+                          UnitEntity.h
                              -------------------
     begin                : Tue Nov 13 18:21:12 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -17,7 +17,7 @@ class FactionEntity;
 class LocationEntity;
 class RaceRule;
 class ItemRule;
-class Reporter;
+class ReportPattern;
 class BasicExit;
 class TravelElement;
 class RaceElement;
@@ -39,7 +39,7 @@ class UnitEntity : public TokenEntity
   STATUS  initialize      ( Parser *parser );
   void    preprocessData();
   STATUS  dataConsistencyCheck();
-  void    save (ostream &out); 
+  void    save (ostream &out);
   void    dailyUpdate();
   bool    defaultAction();
   void      postProcessData();
@@ -53,7 +53,7 @@ class UnitEntity : public TokenEntity
   void    reportSkills(FactionEntity * faction, ReportPrinter &out);
   void    reportFlags(ReportPrinter &out);
 // Data access methods ==============================================
- 
+
          int              getObservation() const;
          int              getStealth() const;
          int              getWeight();
@@ -68,7 +68,7 @@ class UnitEntity : public TokenEntity
           void exitConstruction() ;
    inline  int              getControlPoints();
 // Inventory methods ==============================================
-     
+
         /** Updates number of equiped items after decreasing of number of figures in unit */
          vector < InventoryElement *>    updateEquipement();
          int     hasMoney();                                  // These two items play special
@@ -101,7 +101,7 @@ class UnitEntity : public TokenEntity
           bool            leaveStaying();
           void            enterStack(ConstructionEntity * containingConstruction);
           void            exitStack();
-          bool            promoteUnit(UnitEntity * unit1,UnitEntity * unit2); 
+          bool            promoteUnit(UnitEntity * unit1,UnitEntity * unit2);
 // Skills ========================================================
 
 
@@ -136,7 +136,7 @@ bool mayCancelTitle(TitleElement * title);
   void  doOath();
   void  setEntityMoving(TravelElement * moving);
   Rule * getType();
-  void disband();  
+  void disband();
   void recalculateStats();
   bool retreat();
   bool pay(int price);
@@ -149,7 +149,7 @@ bool mayCancelTitle(TitleElement * title);
   bool mayMove();
   void moveArrive();
   bool moveAdvance();
-  void setStaying(); 
+  void setStaying();
   void clearStay(); // may be these are not needed
   bool isStaying();
   void moveToLocation();
@@ -166,9 +166,9 @@ bool mayCancelTitle(TitleElement * title);
 		// Removes all experience in given skill and all it's derivatives
 		void forgetSkill(SkillRule * skill);
    inline bool isAccepted(UnitEntity * unit) {return isLeading(unit);}
-// Reporters ========================================================
+// ReportPatterns ========================================================
 
-  
+
     protected:
          ConstructionEntity  * containingConstruction_;
          UnitEntity     * stackFollowingTo_;

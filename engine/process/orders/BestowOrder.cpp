@@ -1,5 +1,5 @@
 /***************************************************************************
-                             BestowOrder.cpp 
+                             BestowOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,9 +12,9 @@
 #include "LocationEntity.h"
 #include "TitleRule.h"
 #include "TitleElement.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
@@ -23,12 +23,12 @@ extern EntitiesCollection <LocationEntity>      locations;
 const unsigned BestowOrder::BESTOW_CONDITION_REPORT_FLAG = 0x01;
 const unsigned BestowOrder::CANNOT_BESTOW_SELF_REPORT_FLAG = 0x02;
 
-extern Reporter * noBestowTitleReporter; 
-extern Reporter * noBestowTitleConditionReporter;
-extern Reporter * publicBestowReporter;
-extern Reporter * privateBestowReporter;
-extern Reporter * noOwnBestowTitleReporter;
-extern Reporter * receiveTitleReporter;
+extern ReportPattern * noBestowTitleReporter;
+extern ReportPattern * noBestowTitleConditionReporter;
+extern ReportPattern * publicBestowReporter;
+extern ReportPattern * privateBestowReporter;
+extern ReportPattern * noOwnBestowTitleReporter;
+extern ReportPattern * receiveTitleReporter;
 
 BestowOrder * instantiateBestowOrder = new BestowOrder();
 
@@ -67,7 +67,7 @@ ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &pa
   assert(unit);
   if(parameters.size() <3)
   	return INVALID;
-  	
+
 	TitleRule * titleType   =  dynamic_cast<TitleRule *>(parameters[0]);
   if( titleType == 0)
     {
@@ -81,7 +81,7 @@ ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &pa
   TitleElement * title = location->findTitle(titleType);
   if(title == 0)
     {
-      unit->addReport(new BinaryPattern(noBestowTitleReporter,titleType ,unit->getLocation()));
+      unit->addReport(new BinaryMessage(noBestowTitleReporter,titleType ,unit->getLocation()));
 	    return INVALID;
     }
 
@@ -90,40 +90,40 @@ ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &pa
     {
       if(!unit->getCurrentOrder()->getReportingFlag(CANNOT_BESTOW_SELF_REPORT_FLAG))
 	    {
-      unit->addReport(new UnaryPattern(noOwnBestowTitleReporter,title));
+      unit->addReport(new UnaryMessage(noOwnBestowTitleReporter,title));
         unit->getCurrentOrder()->setReportingFlag(CANNOT_BESTOW_SELF_REPORT_FLAG);
      }
 	    return FAILURE;
     }
     unit->getCurrentOrder()->clearReportingFlag(CANNOT_BESTOW_SELF_REPORT_FLAG);
-    
+
 	UnitEntity * recipient   =  DOWNCAST_ENTITY<UnitEntity>(parameters[2]);
   if( recipient == 0)
     {
 	    return INVALID;
     }
-    
+
   if ( !title->getClaimingCondition()->isSatisfied(recipient))
     {
       if(!unit->getCurrentOrder()->getReportingFlag(BESTOW_CONDITION_REPORT_FLAG))
 	    {
-      unit->addReport(new TertiaryPattern(noBestowTitleConditionReporter, unit,
+      unit->addReport(new TertiaryMessage(noBestowTitleConditionReporter, unit,
                       title->getClaimingCondition(),titleType));
         unit->getCurrentOrder()->setReportingFlag(BESTOW_CONDITION_REPORT_FLAG);
      }
 	    return FAILURE;
     }
     unit->getCurrentOrder()->clearReportingFlag(BESTOW_CONDITION_REPORT_FLAG);
-    
+
     unit->removeTitle(title);
     title->setTitleHolder(recipient);
     recipient->addTitle(title);
   	title->activateClaimingEffects();
-    unit->addReport(new BinaryPattern(privateBestowReporter,title, recipient));
-    recipient->addReport(new BinaryPattern(receiveTitleReporter,title, unit));
-     		
-    unit->getLocation()->addReport(new TertiaryPattern(publicBestowReporter, entity,
-        					title,recipient)); 		
+    unit->addReport(new BinaryMessage(privateBestowReporter,title, recipient));
+    recipient->addReport(new BinaryMessage(receiveTitleReporter,title, unit));
+
+    unit->getLocation()->addReport(new TertiaryMessage(publicBestowReporter, entity,
+        					title,recipient));
 
 	return FAILURE;
 }

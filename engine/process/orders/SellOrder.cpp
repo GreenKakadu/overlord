@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SellOrder.cpp 
+                          SellOrder.cpp
                              -------------------
     begin                : Thu Jun 26 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -15,13 +15,13 @@
 #include "SellOrder.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "ItemRule.h"
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "MarketRequest.h"
 #include "IntegerData.h"
-extern Reporter * cantTradeReporter;
+extern ReportPattern * cantTradeReporter;
 
 //SellOrder instantiateSellOrder;
 SellOrder * instantiateSellOrder = new SellOrder();
@@ -91,7 +91,7 @@ ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &para
   int price = par2->getValue();
   if(!unit->getRace()->mayTrade())
   {
-    unit->addReport(new UnaryPattern(cantTradeReporter,unit->getRace()));
+    unit->addReport(new UnaryMessage(cantTradeReporter,unit->getRace()));
  	  return INVALID;
   }
   unit->expose(true);

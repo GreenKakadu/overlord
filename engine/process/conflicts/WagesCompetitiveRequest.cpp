@@ -1,5 +1,5 @@
 /***************************************************************************
-                          WagesCompetitiveRequest.cpp 
+                          WagesCompetitiveRequest.cpp
                              -------------------
     begin                : Fri Apr 25 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,18 +12,18 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include <typeinfo> 
+#include <typeinfo>
 #include "WagesCompetitiveRequest.h"
 #include "AbstractData.h"
 #include "IntegerData.h"
 #include "ItemRule.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
 extern RulesCollection    <ItemRule>    items;
-Reporter * WagesCompetitiveRequest::workPublicReporter = new Reporter(""," is working.");
-Reporter * WagesCompetitiveRequest::workPrivateReporter = new Reporter("Working at "," earning "," coins.");
+ReportPattern * WagesCompetitiveRequest::workPublicReporter = new ReportPattern(""," is working.");
+ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("Working at "," earning "," coins.");
 
 
 WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount) :BasicCompetitiveRequest(unit,0)
@@ -77,8 +77,8 @@ void WagesCompetitiveRequest::answerRequest(RationalNumber& answer)
 {
 //  int answer =  scale_down(scaledAnswer);
   unit_->addToInventory( cash,answer);
-  unit_->addReport(new BinaryPattern(workPrivateReporter, unit_->getLocation(), new IntegerData(answer.getValue())));
-  unit_->getLocation()->addReport(new UnaryPattern(workPublicReporter, unit_));
+  unit_->addReport(new BinaryMessage(workPrivateReporter, unit_->getLocation(), new IntegerData(answer.getValue())));
+  unit_->getLocation()->addReport(new UnaryMessage(workPublicReporter, unit_));
 //  cout << unit_->print() << " is working at "<< unit_->getLocation()->print()<<"earning "<< answer<< " coins.\n";
 
 }

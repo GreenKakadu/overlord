@@ -1,5 +1,5 @@
 /***************************************************************************
-                             MarchOrder.cpp 
+                             MarchOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,18 +9,18 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
 #include "DirectionVariety.h"
 extern EntitiesCollection   <LocationEntity>      locations;
 extern VarietiesCollection  <DirectionVariety>      directions;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	AtReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	AtReporter;
 
 MarchOrder * instantiateMarchOrder = new MarchOrder();
 
@@ -42,10 +42,10 @@ STATUS MarchOrder::loadParameters(Parser * parser,
             return IO_ERROR;
 
    const string tag = parser->getWord();
-   
+
    if (tag.size() == 0)  // Missing parameter
         {
-        entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("destination ")));
+        entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("destination ")));
          return IO_ERROR;
         }
 
@@ -61,7 +61,7 @@ STATUS MarchOrder::loadParameters(Parser * parser,
    		      parameters.push_back(direction);
             return OK;
           }
-    else      
+    else
 				{
           StringData * dummy = new StringData(tag);
    		     parameters.push_back(dummy);

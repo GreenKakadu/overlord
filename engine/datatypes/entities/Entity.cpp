@@ -417,7 +417,7 @@ if (!isSilent())
 
 
 
-void Entity::addReport(ReportPattern * report,OrderLine *  orderId, BasicCondition * observationCriteria)
+void Entity::addReport(ReportMessage * report,OrderLine *  orderId, BasicCondition * observationCriteria)
 {
 if (!isSilent())
   publicReports_.push_back(ReportRecord(report, orderId, observationCriteria));

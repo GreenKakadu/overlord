@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MergeOrder.cpp 
+                          MergeOrder.cpp
                              -------------------
     begin                : Tue Jul 8 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -18,14 +18,14 @@
 #include "RaceRule.h"
 #include "UnitEntity.h"
 #include "EntitiesCollection.h"
-#include "SimplePattern.h"
-#include "UnaryPattern.h"
-#include "TertiaryPattern.h"
+#include "SimpleMessage.h"
+#include "UnaryMessage.h"
+#include "TertiaryMessage.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter * mergeRaceMismatchReporter;
-extern Reporter * mergeRaceErrorReporter;
-extern Reporter * mergeFactionMismatchReporter;
-extern Reporter * mergeReporter;
+extern ReportPattern * mergeRaceMismatchReporter;
+extern ReportPattern * mergeRaceErrorReporter;
+extern ReportPattern * mergeFactionMismatchReporter;
+extern ReportPattern * mergeReporter;
 
 //MergeOrder instantiateMergeOrder;
 MergeOrder * instantiateMergeOrder = new MergeOrder();
@@ -80,19 +80,19 @@ ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
   }
   if(unit->getFaction() != recipient->getFaction())
   {
-     unit->addReport(new SimplePattern(mergeFactionMismatchReporter));
+     unit->addReport(new SimpleMessage(mergeFactionMismatchReporter));
     return INVALID;
   }
 
   if(!unit->getRace()->mayTransferFigures())
   {
-     unit->addReport(new UnaryPattern(mergeRaceErrorReporter, unit)); 
+     unit->addReport(new UnaryMessage(mergeRaceErrorReporter, unit));
     return INVALID;
     }
 
   if(unit->getRace() != recipient->getRace())
   {
-     unit->addReport(new SimplePattern(mergeRaceMismatchReporter));
+     unit->addReport(new SimpleMessage(mergeRaceMismatchReporter));
     return INVALID;
   }
    int totalFigures = unit->getFiguresNumber();
@@ -104,12 +104,12 @@ ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
 
     if(number == totalFigures)    // if merging all give all items
      {
-       unit->giveAllInventory(recipient);       
+       unit->giveAllInventory(recipient);
      }
        // efects
-    recipient->updateEquipement();   
+    recipient->updateEquipement();
 //QQQ
-     unit->addReport(new TertiaryPattern(mergeReporter, unit,
+     unit->addReport(new TertiaryMessage(mergeReporter, unit,
           new RaceElement(unit->getRace(),number), recipient));
   return SUCCESS;
 }

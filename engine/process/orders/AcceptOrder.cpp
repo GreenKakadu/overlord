@@ -1,5 +1,5 @@
 /***************************************************************************
-                             AcceptOrder.cpp 
+                             AcceptOrder.cpp
                              -------------------
     begin                : Thu Mar 6 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,15 +9,15 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter * acceptOwnReporter;
-extern Reporter *	acceptReporter; 
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern * acceptOwnReporter;
+extern ReportPattern *	acceptReporter;
 
 AcceptOrder * instantiateAcceptOrder = new AcceptOrder();
 
@@ -60,9 +60,9 @@ ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &pa
       }
   if(unit->getFaction() == follower->getFaction())
   {
-    unit->addReport(new UnaryPattern(acceptOwnReporter, follower) );
+    unit->addReport(new UnaryMessage(acceptOwnReporter, follower) );
 		  return SUCCESS;
-    } 
+    }
 
   if(unit->isAccepted(follower))
     {
@@ -75,8 +75,8 @@ ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &pa
     }
    else
     {
-      unit->accept(follower);   
-     unit->addReport(new UnaryPattern(acceptReporter, follower) );
+      unit->accept(follower);
+     unit->addReport(new UnaryMessage(acceptReporter, follower) );
       }
 	return FAILURE;
 }

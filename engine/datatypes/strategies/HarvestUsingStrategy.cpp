@@ -1,5 +1,5 @@
 /***************************************************************************
-                          HarvestUsingStrategy.cpp 
+                          HarvestUsingStrategy.cpp
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -12,10 +12,10 @@
 #include "ResourceCompetitiveRequest.h"
 #include "RulesCollection.h"
 #include "ToolUseElement.h"
-#include "BinaryPattern.h"
+#include "BinaryMessage.h"
 #include "ConstructionEntity.h"
 
-extern Reporter * notAvailableReporter;
+extern ReportPattern * notAvailableReporter;
 
 
 extern RulesCollection    <ItemRule>     items;
@@ -29,7 +29,7 @@ HarvestUsingStrategy::HarvestUsingStrategy ( const HarvestUsingStrategy * protot
      resourceConsumed_ = 0;
      harvest_ = 0;
      days_ = 1;
-  
+
 }
 
 
@@ -73,7 +73,7 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
 
 RationalNumber HarvestUsingStrategy::getDailyProduction()
 {
-  return  RationalNumber(harvest_ , days_); 
+  return  RationalNumber(harvest_ , days_);
 }
 
 
@@ -83,7 +83,7 @@ USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
   RationalNumber request = getDailyProduction() * unit->getFiguresNumber();
   if( request.isEmpty())
   {
-//    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
+//    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
     return CANNOT_USE;
   }
   vector <ToolUseElement *>::iterator iter;
@@ -94,10 +94,10 @@ USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
 
   ConstructionEntity * containingConstruction = unit->getContainingConstruction();
   if(containingConstruction)
-  {    
+  {
     containingConstruction->setProductionBonus(getHarvestedResource(), skill,unit->getSkillLevel(skill));
   }
-      
+
   unit->getLocation()->addDailyConflictRequest(new ResourceCompetitiveRequest(unit,unit->getCurrentOrder(),getHarvestedResource(), request));
   return USING_COMPLETED;
 }
@@ -135,7 +135,7 @@ USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * ski
   RationalNumber request = getDailyProduction();
   if( !harvest_)
   {
-//    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
+//    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
     return NO_RESOURCES;
   }
   return  USING_OK;
@@ -145,7 +145,7 @@ USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * ski
 
 void HarvestUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntity)
 {
-    tokenEntity->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,tokenEntity->getLocation()));
+    tokenEntity->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,tokenEntity->getLocation()));
 
 }
 

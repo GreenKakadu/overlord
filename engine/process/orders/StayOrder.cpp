@@ -1,5 +1,5 @@
 /***************************************************************************
-                             StayOrder.cpp 
+                             StayOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,11 +9,11 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern Reporter *	stayReporter;
+extern ReportPattern *	stayReporter;
 
 StayOrder * instantiateStayOrder = new StayOrder();
 
@@ -44,11 +44,11 @@ ORDER_STATUS StayOrder::process (Entity * entity, vector <AbstractData *>  &para
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  if(unit->getLeader()== 0) // unstacked - clear stay 
+  if(unit->getLeader()== 0) // unstacked - clear stay
   {
     unit->clearStay();
     OrderLine * orderId = entity->getCurrentOrder();
-    unit->addReport(new UnaryPattern(stayReporter, unit),orderId,0 );
+    unit->addReport(new UnaryMessage(stayReporter, unit),orderId,0 );
     return SUCCESS;
   }
   if(unit->isStaying())
@@ -57,7 +57,7 @@ ORDER_STATUS StayOrder::process (Entity * entity, vector <AbstractData *>  &para
     }
    else
     {
-      unit->setStaying();   
+      unit->setStaying();
     }
 	return FAILURE;
 

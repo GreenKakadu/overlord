@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BuildUsingStrategy.cpp 
+                          BuildUsingStrategy.cpp
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -21,14 +21,14 @@
 #include "VarietiesCollection.h"
 #include "OrderPrototype.h"
 #include "TargetOrder.h"
-#include "BinaryPattern.h"
+#include "BinaryMessage.h"
 #include "StringData.h"
 
 extern VarietiesCollection   <ConstructionWorksVariety>  construction_works;
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern RulesCollection <ConstructionRule>      constructions;
-extern Reporter * newBuidingStartedReporter;
-extern Reporter * buidingFinishedReporter;
+extern ReportPattern * newBuidingStartedReporter;
+extern ReportPattern * buidingFinishedReporter;
 
 GameData * BuildUsingStrategy::createInstanceOfSelf()
 {
@@ -60,7 +60,7 @@ BuildUsingStrategy::initialize        ( Parser *parser )
     }
 
 
-      
+
   if (parser->matchKeyword ("CONSUME") )
     {
 			if(parser->matchElement())
@@ -68,7 +68,7 @@ BuildUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
 
-    
+
   if (parser->matchKeyword ("MULTIPLE") )
     {
       productNumber_ =  parser->getInteger();
@@ -131,18 +131,18 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
         cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
         if(cycleCounter >1)
           consumeResources(unit,cycleCounter-1);
-          
+
         if (construction->addBuildingWork(
                 new ConstructionWorksElement(constructionWorkProduced_,
                                                 effectiveProduction)))
-            {    
+            {
               construction->buildingCompleted();
               unit->getLocation()->addReport(
-                  new BinaryPattern(buidingFinishedReporter, construction->getConstructionType(),
+                  new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
                               new StringData(construction->printTag())));
               // private
               unit->addReport(
-                  new BinaryPattern(buidingFinishedReporter, construction->getConstructionType(),
+                  new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
                               new StringData(construction->printTag())));
             }
         return USING_COMPLETED;
@@ -160,7 +160,7 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
                                                 effectiveProduction));
         return USING_IN_PROGRESS;
       }
-    }  
+    }
 }
 
 
@@ -216,11 +216,11 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
                   unit->setTarget(newBuilding);
                   consumeResources(unit,1);
                   unit->getLocation()->addReport(
-                      new BinaryPattern(newBuidingStartedReporter, constructionType,
+                      new BinaryMessage(newBuidingStartedReporter, constructionType,
                                         new StringData(newBuilding->printTag())));
                   //  private report
                   unit->addReport(
-                      new BinaryPattern(newBuidingStartedReporter, constructionType,
+                      new BinaryMessage(newBuidingStartedReporter, constructionType,
                                         new StringData(newBuilding->printTag())));
                   return  USING_OK;
                 }
@@ -243,11 +243,11 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
 
     }
 
-  // still no target identified. Try to use  ContainingConstruction as a target   
+  // still no target identified. Try to use  ContainingConstruction as a target
 
   if(!construction)
     {
-      construction = unit->getContainingConstruction(); 
+      construction = unit->getContainingConstruction();
       if(!construction)
         {
           return  TARGET_NOT_EXIST;

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             RetreatOrder.cpp 
+                             RetreatOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,15 +10,15 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "ObservationCondition.h"
-	
-extern Reporter * retreatGroupReporter;
-extern Reporter * retreatPublicReporter;
-extern Reporter * retreatPrivateReporter;
+
+extern ReportPattern * retreatGroupReporter;
+extern ReportPattern * retreatPublicReporter;
+extern ReportPattern * retreatPrivateReporter;
 
 RetreatOrder * instantiateRetreatOrder = new RetreatOrder();
 
@@ -53,17 +53,17 @@ ORDER_STATUS RetreatOrder::process (Entity * entity, vector <AbstractData *>  &p
   if( unit->retreat())
     {
         unit->addReport(
-            new UnaryPattern(retreatPrivateReporter, unit->getLocation()),orderId,0);
+            new UnaryMessage(retreatPrivateReporter, unit->getLocation()),orderId,0);
          unit->getLocation()->addReport(
-            new BinaryPattern(retreatPublicReporter, unit, unit->getLocation()),
+            new BinaryMessage(retreatPublicReporter, unit, unit->getLocation()),
              orderId ,ObservationCondition::createObservationCondition(unit->getStealth())
                                        );
 
-        unit->movingGroupReport(ReportRecord(new BinaryPattern(retreatGroupReporter,
+        unit->movingGroupReport(ReportRecord(new BinaryMessage(retreatGroupReporter,
                 unit->getLocation(), unit), orderId, 0));
 	      return SUCCESS;
 	  }
 	else
-    return INVALID;  
+    return INVALID;
 }
 

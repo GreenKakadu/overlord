@@ -1,5 +1,5 @@
 /***************************************************************************
-                             EmailOrder.cpp 
+                             EmailOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,12 +10,12 @@
 #include "Entity.h"
 #include "TokenEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 
-extern Reporter * changeEmailReporter;	
+extern ReportPattern * changeEmailReporter;
 EmailOrder * instantiateEmailOrder = new EmailOrder();
 
 EmailOrder::EmailOrder(){
@@ -36,7 +36,7 @@ STATUS EmailOrder::loadParameters(Parser * parser,
             return OK;
    if(entityIsFaction(entity,NO_PARSING_REPORT))
             return OK;
-    else    
+    else
   		return IO_ERROR;
 }
 
@@ -50,14 +50,14 @@ ORDER_STATUS EmailOrder::process (Entity * entity, vector <AbstractData *>  &par
   {
     faction->setEMail(newEmail);
 //    faction->setEMail("zaraza");
-    entity->addReport(new UnaryPattern(changeEmailReporter,new StringData(newEmail)));
+    entity->addReport(new UnaryMessage(changeEmailReporter,new StringData(newEmail)));
     return SUCCESS;
   }
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   if(unit)
     unit->getFaction()->setEMail(newEmail);
-     
-  entity->addReport(new UnaryPattern(changeEmailReporter,new StringData(newEmail))); 		
+
+  entity->addReport(new UnaryMessage(changeEmailReporter,new StringData(newEmail)));
   return SUCCESS;
 }
 

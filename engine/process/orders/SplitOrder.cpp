@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SplitOrder.cpp 
+                          SplitOrder.cpp
                              -------------------
     begin                : Tue Jul 8 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,14 +16,14 @@
 #include "Entity.h"
 #include "InventoryElement.h"
 #include "UnitEntity.h"
-#include "BinaryPattern.h"
+#include "BinaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RaceElement.h"
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
-extern Reporter * newSplitReporter;
-extern Reporter * splitterReporter;
+extern ReportPattern * newSplitReporter;
+extern ReportPattern * splitterReporter;
 extern EntitiesCollection <UnitEntity>      units;
 
 SplitOrder instantiateSplitOrder;
@@ -125,10 +125,10 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
 //        cout << "New unit created: "<<newUnit->print() <<" \n";
 
 //QQQ
-    newUnit ->addReport(new BinaryPattern (newSplitReporter,
+    newUnit ->addReport(new BinaryMessage (newSplitReporter,
                         newUnit, new RaceElement ( race, number)));
 
-    unit->addReport(new BinaryPattern(splitterReporter, unit,
+    unit->addReport(new BinaryMessage(splitterReporter, unit,
                     new RaceElement(race, number) ));
   return SUCCESS;
 

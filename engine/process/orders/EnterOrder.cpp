@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EnterOrder.cpp 
+                          EnterOrder.cpp
                              -------------------
     begin                : Mon Sep 29 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,18 +16,18 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
+#include "UnaryMessage.h"
 #include "EntitiesCollection.h"
 #include "ConstructionEntity.h"
 #include "FactionEntity.h"
 #include "StanceVariety.h"
 #define STEALTH_TO_ENTER_PROTECTED_BUILDING  4
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
-extern Reporter * protectedEnterReporter;
+extern ReportPattern * protectedEnterReporter;
 
 //EnterOrder instantiateEnterOrder;
 EnterOrder * instantiateEnterOrder = new EnterOrder() ;
-    
+
 EnterOrder::EnterOrder(){
   keyword_ = "enter";
   registerOrder_();
@@ -39,7 +39,7 @@ EnterOrder::EnterOrder(){
 
   "Note that followers may issue ENTER/LEAVE orders.  These orders will cause\n" +
   "the unit to leave its stack if the order is succesful.\n";
-  
+
     orderType_   = IMMEDIATE_ORDER;
 }
 
@@ -69,7 +69,7 @@ ORDER_STATUS EnterOrder::process (Entity * entity, vector <AbstractData *>  &par
      {
  		    return FAILURE;
      }
-     
+
   if(!unit->mayInterract(buildingOrShip))
     {
  		    return FAILURE;
@@ -88,11 +88,11 @@ ORDER_STATUS EnterOrder::process (Entity * entity, vector <AbstractData *>  &par
         if( buildingOrShip->getLocation()->getFactionalObservation (buildingOrShip->getFaction())
                            >= unit->getStealth() - STEALTH_TO_ENTER_PROTECTED_BUILDING)
            {
-            unit->addReport(new UnaryPattern(protectedEnterReporter, buildingOrShip));
+            unit->addReport(new UnaryMessage(protectedEnterReporter, buildingOrShip));
  		        return FAILURE;
            }
       }
-   }   
+   }
 
   unit->enterConstruction(buildingOrShip);
   return SUCCESS;

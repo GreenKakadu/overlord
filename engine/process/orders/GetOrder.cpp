@@ -1,5 +1,5 @@
 /***************************************************************************
-                             GetOrder.cpp 
+                             GetOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -11,9 +11,9 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "ItemRule.h"
@@ -23,9 +23,9 @@
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <LocationEntity>  locations;
 extern RulesCollection <ItemRule>      items;
-extern Reporter *	missingParameterReporter;
-extern Reporter *	privateGetItemsReporter;
-extern Reporter *	publicGetItemsReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	privateGetItemsReporter;
+extern ReportPattern *	publicGetItemsReporter;
 
 
 
@@ -36,7 +36,7 @@ GetOrder::GetOrder(){
   registerOrder_();
   description = string("GET unit-id | [location-id] [number] item-tag  [left] \n") +
   "Immediate.  Attempts to get the required amount of items from the designated\n" +
-  "unit or location.  If no number is specified, attempts to get as much as\n" + 
+  "unit or location.  If no number is specified, attempts to get as much as\n" +
   "possible.  The order executes if the designated unit is there \n" +
   "(or designated locations is here) and has the items.  The designated unit\n" +
   "must belong to your faction.  The location must be unowned or owner to be\n" +
@@ -59,13 +59,13 @@ STATUS GetOrder::loadParameters(Parser * parser,
     !parseOptionalGameDataParameter(entity,  parser, locations,  parameters)
       )
       {
-       entity->addReport(new BinaryPattern(missingParameterReporter, 
- 					new StringData(keyword_), new StringData("unit or location id"))); 		
+       entity->addReport(new BinaryMessage(missingParameterReporter,
+ 					new StringData(keyword_), new StringData("unit or location id")));
         return IO_ERROR;
-      }     
- 
+      }
+
      parseIntegerParameter(parser, parameters);
-     
+
     if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
             return IO_ERROR;
 
@@ -95,17 +95,17 @@ ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &param
   if(item)
     {
       toGet = unit->hasItem(item);
-      nextParameterIndex = 2; 
+      nextParameterIndex = 2;
     }
    else
    {
      toGet =   getIntegerParameter(parameters,1);
      item          =  dynamic_cast<ItemRule *>(parameters[2]);
      assert(item);
-     nextParameterIndex = 3; 
-   } 
-   
-  
+     nextParameterIndex = 3;
+   }
+
+
   int kept =   getIntegerParameter(parameters,nextParameterIndex);
   int itemPossesion;
   if(donor)
@@ -131,7 +131,7 @@ ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &param
         if (!itemPossesion)
                 return FAILURE;
   }
-  
+
  int reallyGot = toGet;
 
   if (reallyGot == 0)
@@ -142,24 +142,24 @@ ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &param
     return FAILURE;
 
   unit->getLocation()->addLocalItem(item, reallyGot);
-  
+
   ItemElement * gotItems = new ItemElement(item, reallyGot);
 
   if(donor)
   {
     donor->takeFromInventory(item, reallyGot);
 //QQQ
-    unit->addReport(new BinaryPattern(privateGetItemsReporter,gotItems,donor));
-    donor->addReport(new BinaryPattern(publicGetItemsReporter,gotItems, unit));
+    unit->addReport(new BinaryMessage(privateGetItemsReporter,gotItems,donor));
+    donor->addReport(new BinaryMessage(publicGetItemsReporter,gotItems, unit));
   }
   else if(location) // public report only if gets from location
   {
     location->removeLocalItem(item, reallyGot);
 //QQQ
-    unit->addReport(new BinaryPattern(privateGetItemsReporter,gotItems,location));
-    location->addReport(new BinaryPattern(publicGetItemsReporter,gotItems,unit));
+    unit->addReport(new BinaryMessage(privateGetItemsReporter,gotItems,location));
+    location->addReport(new BinaryMessage(publicGetItemsReporter,gotItems,unit));
   }
-  
+
     if(toGet > reallyGot)
     {
         IntegerData * par       =  dynamic_cast<IntegerData *>(parameters[1]);
@@ -167,6 +167,6 @@ ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &param
         par->setValue(toGet - reallyGot);
         return IN_PROGRESS;
     }
-        return SUCCESS; 
+        return SUCCESS;
 }
 

@@ -1,5 +1,5 @@
 /***************************************************************************
-                             PasswordOrder.cpp 
+                             PasswordOrder.cpp
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,11 +10,11 @@
 #include "Entity.h"
 #include "FactionEntity.h"
 #include "TokenEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
-extern Reporter * changePasswordReporter;
-//PasswordOrder  instantiatePasswordOrder;	
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
+extern ReportPattern * changePasswordReporter;
+//PasswordOrder  instantiatePasswordOrder;
 PasswordOrder * instantiatePasswordOrder = new PasswordOrder();
 
 PasswordOrder::PasswordOrder(){
@@ -37,7 +37,7 @@ STATUS PasswordOrder::loadParameters(Parser * parser,
             return OK;
    if(entityIsFaction(entity,NO_PARSING_REPORT))
             return OK;
-    else    
+    else
   		return IO_ERROR;
 }
 
@@ -52,8 +52,8 @@ ORDER_STATUS PasswordOrder::process (Entity * entity, vector <AbstractData *>  &
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   if(unit)
     unit->getFaction()->setPassword(newPassword);
-     
-  entity->addReport(new UnaryPattern(changePasswordReporter,new StringData(newPassword))); 		
+
+  entity->addReport(new UnaryMessage(changePasswordReporter,new StringData(newPassword)));
   return SUCCESS;
 }
 

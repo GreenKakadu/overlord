@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EnchantmentUsingStrategy.cpp 
+                          EnchantmentUsingStrategy.cpp
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -14,12 +14,12 @@
 #include "LocationEntity.h"
 #include "RulesCollection.h"
 #include "ToolUseElement.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
-extern Reporter * notEnoughResourcesReporter;
-extern Reporter * privateEnchanterReporter;
-extern Reporter * privateEnchantmentReporter;
-//extern Reporter * publicEnchantmentReporter;
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
+extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * privateEnchanterReporter;
+extern ReportPattern * privateEnchantmentReporter;
+//extern ReportPattern * publicEnchantmentReporter;
 extern GameData  targetTypeSelf;
 
 extern RulesCollection    <EnchantmentRule>     enchantments;
@@ -113,17 +113,17 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
        // as defined by repetition counter
   {
     int resourcesAvailable = checkResourcesAvailability(unit);
-    
+
     if( resourcesAvailable < cycleCounter)
         cycleCounter = resourcesAvailable;
     int effectiveProduction = cycleCounter * productNumber_;
     if( (repetitionCounter != 0) && (effectiveProduction  >= repetitionCounter) ) // production will be finished now
-      {  
+      {
         effectiveProduction = repetitionCounter;
         cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
         if(cycleCounter >1)
           consumeResources(unit,cycleCounter-1);
-         result = USING_COMPLETED; 
+         result = USING_COMPLETED;
         repetitionCounter = 0;
       unit->getCurrentOrder()->setCompletionFlag(true);
 
@@ -135,15 +135,15 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
     target = dynamic_cast <TokenEntity *>(unit->getTarget());
    if(!target) // definition of EnchantmentRule is wrong
       {
-       cout << "Wrong definition of EnchantmentRule. Target is not a token"<<endl; 
-       return WRONG_TARGET; 
-      }  
+       cout << "Wrong definition of EnchantmentRule. Target is not a token"<<endl;
+       return WRONG_TARGET;
+      }
     target->addEnchantment(new EnchantmentElement(productType_, effectiveProduction));  //
       if(!unit->isSilent())
         {
 //QQQ
           unit->addReport(
-          new TertiaryPattern(privateEnchanterReporter, unit, target,
+          new TertiaryMessage(privateEnchanterReporter, unit, target,
           new EnchantmentElement(productType_,effectiveProduction))
                   );
         }
@@ -151,16 +151,16 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
         {
 //QQQ
           target->addReport(
-          new TertiaryPattern(privateEnchantmentReporter, target, unit,
+          new TertiaryMessage(privateEnchantmentReporter, target, unit,
           new EnchantmentElement(productType_,effectiveProduction))
                   );
         }
 //      target->getLocation()->addReport(
-//      new BinaryPattern(publicEnchantmentReporter, unit, productType_
+//      new BinaryMessage(publicEnchantmentReporter, unit, productType_
 //        /*, 0, observation condition*/);
 
       }
-    else 
+    else
     {
       consumeResources(unit,cycleCounter-1);
 //      if(dailyUse->getDaysUsed() > 0)
@@ -181,7 +181,7 @@ USING_RESULT EnchantmentUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule *
     USING_RESULT result = checkTarget(unit,productType_->getTargetType());
     if( result != USING_OK)
       return  result;
-    else  
+    else
       return BasicProductionStrategy::unitMayUse(unit,skill);
 }
 
@@ -218,7 +218,7 @@ void EnchantmentUsingStrategy::reportUse(USING_RESULT result, TokenEntity * toke
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
       if (tokenEntity->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
-        tokenEntity->addReport(new BinaryPattern(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
+        tokenEntity->addReport(new BinaryMessage(notEnoughResourcesReporter, (*iter)->getItemType(),productType_));
     }
 }
 

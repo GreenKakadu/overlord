@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StudyOrder.cpp 
+                          StudyOrder.cpp
                              -------------------
     begin                : Thu Feb 13 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,21 +16,21 @@
 #include "UnitEntity.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
-#include "TertiaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "TeachingOffer.h"
 
 extern RulesCollection <SkillRule>     skills;
-extern Reporter * cannotStudyReporter;
-extern Reporter * raceErrorReporter;
-extern Reporter * requirementErrorReporter;
-extern Reporter * teachingErrorReporter;
-extern Reporter * maxLevelErrorReporter;
-extern Reporter * paymentErrorReporter;
-extern Reporter * learningStartedReporter;
-extern Reporter * followerSkillLimitReporter ;
-extern Reporter * itemRequiredReporter;
+extern ReportPattern * cannotStudyReporter;
+extern ReportPattern * raceErrorReporter;
+extern ReportPattern * requirementErrorReporter;
+extern ReportPattern * teachingErrorReporter;
+extern ReportPattern * maxLevelErrorReporter;
+extern ReportPattern * paymentErrorReporter;
+extern ReportPattern * learningStartedReporter;
+extern ReportPattern * followerSkillLimitReporter ;
+extern ReportPattern * itemRequiredReporter;
 //StudyOrder instantiateStudyOrder;
 StudyOrder * instantiateStudyOrder = new StudyOrder();
 const UINT StudyOrder::TEACHER_REQUIRED_REPORT_FLAG = 0x01;
@@ -74,7 +74,7 @@ STATUS StudyOrder::loadParameters(Parser * parser,
     parseIntegerParameter(parser, parameters);
 
   return OK;
-     
+
 
 }
 
@@ -89,7 +89,7 @@ ORDER_STATUS StudyOrder::process (Entity * entity, vector <AbstractData *>  &par
   OrderLine * orderId = entity->getCurrentOrder();
    if ( skill == 0)
     {
-	    UnaryPattern * currentMessage = new UnaryPattern(cannotStudyReporter, unit->getRace());
+	    UnaryMessage * currentMessage = new UnaryMessage(cannotStudyReporter, unit->getRace());
 		  unit->addReport(currentMessage,orderId,0 );
  		return INVALID;
     }
@@ -126,11 +126,11 @@ ORDER_STATUS StudyOrder::process (Entity * entity, vector <AbstractData *>  &par
       if(teacher)
           {
             teacher->confirmTeachingOffer(unit);
-            unit->getCurrentOrder()->setProcessingState (RESUME); 
+            unit->getCurrentOrder()->setProcessingState (RESUME);
             unit->getLocation()->setStudentCounter(true);
             return SUSPENDED;
           }
-          
+
       unit->getCurrentOrder()->setProcessingState (SUSPEND);
       unit->getLocation()->setStudentCounter(true);
       return SUSPENDED;
@@ -146,7 +146,7 @@ ORDER_STATUS StudyOrder::process (Entity * entity, vector <AbstractData *>  &par
           }
          if(unit->getLocation()->getTeacherCounter() )
          {
-            return SUSPENDED; // wait. There are other orders suspended and their 
+            return SUSPENDED; // wait. There are other orders suspended and their
                               // results may have effect on this order execution
          }
          // No teacher available If skill requires teacher it fails
@@ -173,8 +173,8 @@ ORDER_STATUS StudyOrder::process (Entity * entity, vector <AbstractData *>  &par
      default:
       cout << "Unknown state "<< state <<" in STUDY order\n";
    }
- 		  return INVALID; 		     
-}      
+ 		  return INVALID;
+}
 
 
 /** Checks if study order may be processed (except teaching condition)*/
@@ -198,40 +198,40 @@ ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int l
     }
     case CANNOT_STUDY_FAILURE:
     {
-	    UnaryPattern * cannotStudyMessage = new UnaryPattern(cannotStudyReporter, unit->getRace());
+	    UnaryMessage * cannotStudyMessage = new UnaryMessage(cannotStudyReporter, unit->getRace());
 	 	  unit->addReport(cannotStudyMessage,orderId,0);
  		  return INVALID;
       break;
     }
     case RACE_FAILURE:
     {
-		  unit->addReport( new BinaryPattern(raceErrorReporter, unit->getRace(),skill),orderId,0);
+		  unit->addReport( new BinaryMessage(raceErrorReporter, unit->getRace(),skill),orderId,0);
  		  return INVALID;
       break;
     }
     case ITEM_REQUIRED_FAILURE:
     {
-		  unit->addReport( new BinaryPattern(itemRequiredReporter,
+		  unit->addReport( new BinaryMessage(itemRequiredReporter,
                             skill->getItemRequired(unit)->getItemType() ,skill),orderId,0);
  		  return FAILURE;
       break;
     }
     case REQUIREMENT_FAILURE:
     {
-		  unit->addReport(new BinaryPattern(requirementErrorReporter, unit, skill),orderId,0);
+		  unit->addReport(new BinaryMessage(requirementErrorReporter, unit, skill),orderId,0);
  		  return FAILURE;
       break;
     }
     case SKILL_STUDY_LIMIT_FAILURE:
     case MAX_LEVEL_FAILURE:
     {
-		  unit->addReport(new BinaryPattern(maxLevelErrorReporter, unit, skill),orderId,0 );
+		  unit->addReport(new BinaryMessage(maxLevelErrorReporter, unit, skill),orderId,0 );
  		  return INVALID;
       break;
     }
     case FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE:
     {
-		  unit->addReport(new UnaryPattern(followerSkillLimitReporter, unit),orderId,0 );
+		  unit->addReport(new UnaryMessage(followerSkillLimitReporter, unit),orderId,0 );
  		  return INVALID;
       break;
     }
@@ -245,7 +245,7 @@ ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int l
       if(unit->getSkillLevel(skill) >= level )
         {
 //         cout << " Order Level is " << level_ << " exp is " << skill_->getLevelExperience()<<" unit's level is "<< unit_->getSkillLevel(skill_)<<endl;
-	       BinaryPattern * maxLevelErrorMessage = new BinaryPattern(maxLevelErrorReporter, unit, skill);
+	       BinaryMessage * maxLevelErrorMessage = new BinaryMessage(maxLevelErrorReporter, unit, skill);
 		     unit->addReport(maxLevelErrorMessage,orderId,0 );
  		     return INVALID;
         }
@@ -254,7 +254,7 @@ ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int l
     int cost = skill->getStudyCost(unit) * unit->getFiguresNumber();
     if (!unit->mayPay(cost) )
      {
-	    BinaryPattern * paymentErrorMessage = new BinaryPattern(paymentErrorReporter, unit, skill);
+	    BinaryMessage * paymentErrorMessage = new BinaryMessage(paymentErrorReporter, unit, skill);
 		  unit->addReport(paymentErrorMessage,orderId,0 );
  		  return FAILURE;
     }
@@ -273,7 +273,7 @@ ORDER_STATUS StudyOrder::doProcess_(UnitEntity * unit, SkillRule * skill, int le
     {
      if(!unit->getCurrentOrder()->getReportingFlag( TEACHER_REQUIRED_REPORT_FLAG))
       {
-		    unit->addReport(new BinaryPattern(teachingErrorReporter, unit, skill),orderId,0 );
+		    unit->addReport(new BinaryMessage(teachingErrorReporter, unit, skill),orderId,0 );
         unit->getCurrentOrder()->setReportingFlag( TEACHER_REQUIRED_REPORT_FLAG);
       }
      return FAILURE;
@@ -282,12 +282,12 @@ ORDER_STATUS StudyOrder::doProcess_(UnitEntity * unit, SkillRule * skill, int le
 
     int cost = skill->getStudyCost(unit) * unit->getFiguresNumber();
     unit->pay(cost);
-    
+
    // if this order is not the order that was processed last day we may refrain from reporting
    if(unit->getLastOrder() != unit->getCurrentOrder())
      {
 //QQQ
-     unit->addReport(new  BinaryPattern(learningStartedReporter,unit,
+     unit->addReport(new  BinaryMessage(learningStartedReporter,unit,
                         new SkillLevelElement
                         (skill,unit->getSkillLevel(skill) +1)),orderId,0);
     }

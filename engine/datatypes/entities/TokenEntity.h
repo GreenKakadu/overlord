@@ -25,7 +25,7 @@ class UnitEntity;
 class FactionEntity;
 class LocationEntity;
 class ItemRule;
-class Reporter;
+class ReportPattern;
 class BasicExit;
 class TravelElement;
 class SkillUseElement;
@@ -40,7 +40,7 @@ class BasicOrderSynchronizationRequest;
 typedef  Element3<TokenEntity,ItemRule *, int > SwapRequestElement;
 
 class TokenEntity : public Entity  {
-public: 
+public:
 	    TokenEntity();
       TokenEntity (const string & keyword, GameData * parent ) : Entity(keyword, parent){}
       TokenEntity ( const TokenEntity * prototype );
@@ -78,7 +78,7 @@ public:
    inline virtual bool             isGuarding() const { return guarding_;}
    inline virtual int              getControlPoints() {return 0;}
    inline virtual bool             isExposed() const {return false;}
-   
+
 // Inventory methods ==============================================
           InventoryElement * findInInventory(ItemRule * item);
           void deleteFromInventory(InventoryElement * element);
@@ -109,7 +109,7 @@ public:
           virtual SkillElement *  getSkillElement(SkillRule  * const skill);
           virtual void cancelTeachingOffer();
           virtual bool hasSkill(SkillRule  * skill, int experience) ;
-  inline  virtual bool hasSkillLevel(SkillRule  * skill, int level) 
+  inline  virtual bool hasSkillLevel(SkillRule  * skill, int level)
         {return hasSkill(skill, skill->getLevelExperience(level));}
   inline  virtual bool hasSkill(SkillLevelElement * skill)
         {return hasSkill(skill->getSkill(), skill->getSkill()->getLevelExperience(skill->getLevel()));}

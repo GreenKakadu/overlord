@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MoveOrder.cpp 
+                          MoveOrder.cpp
                              -------------------
     begin                : Mon Apr 7 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,24 +13,24 @@
 #include "LocationEntity.h"
 #include "RaceRule.h"
 #include "DirectionVariety.h"
-#include "UnaryPattern.h"
-#include "BinaryPattern.h"
+#include "UnaryMessage.h"
+#include "BinaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
 #include "TravelElement.h"
 #include "BasicExit.h"
-#include "QuartenaryPattern.h"
+#include "QuartenaryMessage.h"
 extern EntitiesCollection <LocationEntity>      locations;
 extern VarietiesCollection  <DirectionVariety>      directions;
 const UINT MoveOrder::OVERLOADING_REPORT_FLAG = 0x01;
 const UINT MoveOrder::NO_MOVEMENT_ABILITY_REPORT_FLAG = 0x02;
-extern Reporter *	invalidOrderReporter;
-extern Reporter *	invalidParameterReporter;
-extern Reporter *	missingParameterReporter;
-extern Reporter * cantMoveReporter;
-extern Reporter * overloadReporter;
-extern Reporter * noMovementAbilityReporter;
-extern Reporter *	invaliDirectionReporter;
+extern ReportPattern *	invalidOrderReporter;
+extern ReportPattern *	invalidParameterReporter;
+extern ReportPattern *	missingParameterReporter;
+extern ReportPattern * cantMoveReporter;
+extern ReportPattern * overloadReporter;
+extern ReportPattern * noMovementAbilityReporter;
+extern ReportPattern *	invaliDirectionReporter;
 
 //MoveOrder instantiateMoveOrder;
 MoveOrder * instantiateMoveOrder = new MoveOrder();
@@ -49,7 +49,7 @@ MoveOrder::MoveOrder(){
   "\n" +
   "If the movement is prefixed by the infinite repeat request symbol ('@'), it\n" +
   "is retained after execution. Specific duration is ignored.\n";
-  
+
   orderType_   = STACK_ORDER;
 }
 
@@ -60,12 +60,12 @@ STATUS MoveOrder::loadParameters(Parser * parser,
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
-            
+
    const string tag = parser->getWord();
-   
+
    if (tag.size() == 0)  // Missing parameter
         {
-        entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("destination ")));
+        entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("destination ")));
          return IO_ERROR;
         }
 
@@ -81,7 +81,7 @@ STATUS MoveOrder::loadParameters(Parser * parser,
    		      parameters.push_back(direction);
             return OK;
           }
-    else      
+    else
 				{
           StringData * dummy = new StringData(tag);
    		     parameters.push_back(dummy);
@@ -95,7 +95,7 @@ STATUS MoveOrder::loadParameters(Parser * parser,
 // Currently MOVE supports only one parameter.
 // Later parameter list like MOVE L123 N NE SE should be supported.
 // take parsing from Caravan, execute one-by one, delete executed locations
-// from parameters list. return IN-PROGRESS and SUCCESS only if the end of 
+// from parameters list. return IN-PROGRESS and SUCCESS only if the end of
 // parameters list reached
 ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
@@ -109,9 +109,9 @@ ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &para
 ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
 {
   OrderLine * orderId = tokenEntity->getCurrentOrder();
-   
+
   LocationEntity * location = tokenEntity->getGlobalLocation();
-      
+
   if (location == 0)
      {  // Unit is already moving may be special message?
  		  return INVALID;
@@ -121,12 +121,12 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
   string parValue = parameter->print();
 	LocationEntity * destination   =  dynamic_cast<LocationEntity *>(parameter);
   if( destination != 0)
-    { 
+    {
       exit = location->findExit(destination);
       parValue  = destination->getTag();
     }
   else
-    {  
+    {
   // directions are relative to current positions
   // That's why they can't be calculated on loading
       DirectionVariety * direction =   dynamic_cast< DirectionVariety*>(parameter);
@@ -138,21 +138,21 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
     }
   if (exit == 0)
      {  // direction is wrong or location not connected
-      tokenEntity->addReport(new UnaryPattern(invaliDirectionReporter, new StringData(parValue)));
+      tokenEntity->addReport(new UnaryMessage(invaliDirectionReporter, new StringData(parValue)));
  		  return INVALID;
       }
 
 //=================
    if(!tokenEntity->mayMove())
    {
-      tokenEntity->addReport(new BinaryPattern(cantMoveReporter,tokenEntity,tokenEntity->getType()) );
+      tokenEntity->addReport(new BinaryMessage(cantMoveReporter,tokenEntity,tokenEntity->getType()) );
  		  return INVALID;
    }
 	if (tokenEntity->isTraced())
     cout <<"== TRACING " <<tokenEntity->print()<< " ==> Attempts to move\n";
 
  tokenEntity->leaveStaying();
- 
+
  int weight=0;
  int time = 0;
  int totalTravelTime = 999;
@@ -177,7 +177,7 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
     }
     if(weight > capacity[i])
     {
-      if(movementModes[i] == walkingMode) // only walking entity may be Overloaded 
+      if(movementModes[i] == walkingMode) // only walking entity may be Overloaded
         time = tokenEntity->calculateTravelTime(time , weight, capacity[i]);
       else
         time = 0;
@@ -199,23 +199,23 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
         {
           if(!orderId->getReportingFlag(NO_MOVEMENT_ABILITY_REPORT_FLAG ))
             {
-              tokenEntity->addReport(new BinaryPattern(noMovementAbilityReporter,
-                              tokenEntity,exit->getDestination()));     
+              tokenEntity->addReport(new BinaryMessage(noMovementAbilityReporter,
+                              tokenEntity,exit->getDestination()));
               orderId->setReportingFlag(NO_MOVEMENT_ABILITY_REPORT_FLAG);
             }
   	      return FAILURE;
-         } 
+         }
       else // overload
         {
           orderId->clearReportingFlag(NO_MOVEMENT_ABILITY_REPORT_FLAG);
           if(!orderId->getReportingFlag(OVERLOADING_REPORT_FLAG ))
             {
-        
-              tokenEntity->addReport(new QuartenaryPattern(overloadReporter, tokenEntity,
+
+              tokenEntity->addReport(new QuartenaryMessage(overloadReporter, tokenEntity,
                                     new IntegerData(weight),
                                     new IntegerData(bestCapacity),
                                     new StringData(bestMode->getName())));
-        
+
               orderId->setReportingFlag(OVERLOADING_REPORT_FLAG);
             }
   	      return FAILURE;
