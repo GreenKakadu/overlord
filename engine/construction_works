@@ -1,0 +1,63 @@
+# Overlord Construction Works data
+# Ver 0.30 02.11.2003
+
+KEYWORD  CONSTRUCTION_WORK 20
+
+CONSTRUCTION_WORK woodwk #evtblwd
+NAME wood structure work
+PLURAL wood structure works
+DESCRIPTION The basic wood beams supporting a structure or a floor. Typically require 1 wood to make
+
+CONSTRUCTION_WORK stonwk #evtblst
+NAME stonework
+PLURAL stoneworks
+DESCRIPTION The basic stone making up walls and floors. Typically require 1 stone to make
+
+CONSTRUCTION_WORK fortwk # evtblmi
+NAME fortification work
+PLURAL fortification works
+DESCRIPTION Stonework applied to military uses. Typically require 1 stone to make
+
+CONSTRUCTION_WORK ironwk # evtblir
+NAME iron reinforcement work
+PLURAL iron reinforcement works
+DESCRIPTION Metal rods to strengthed military fortifications and other strong buldings. Typically require 1 iron to make
+
+CONSTRUCTION_WORK hidewk #evtblhi
+NAME hide streching work
+PLURAL hides streching  works
+DESCRIPTION Hides, tanned and stretched over a frame for a basic coverage. Typically require 1 hide to make
+
+CONSTRUCTION_WORK mconwk #evtblky
+NAME magical consecration work
+PLURAL magical consecration works
+DESCRIPTION The turning of the key on the final day of a magical structure. Require 1 mage key to effect
+
+CONSTRUCTION_WORK evtmcir
+NAME circle drawing work
+DESCRIPTION The making of a magic protecting circle, for high levels spells. Require 1 mystic stone to power
+
+CONSTRUCTION_WORK silvwk #evtbldc
+NAME silver decoration work
+PLURAL silver decoration works
+DESCRIPTION The silvery plates and engraving on prestige buildings. Typically require 1 silver to make
+
+CONSTRUCTION_WORK evtbltx
+NAME tax lease work
+PLURAL tax lease works
+DESCRIPTION The special permission to activate a tax building. Require 1 gold to pay
+
+CONSTRUCTION_WORK kstnwk #evtblks
+NAME key stonework
+PLURAL key stoneworks
+DESCRIPTION Specifically placed key stones are required for advanced buildings. Require 1 key stone cut from granite to make
+
+CONSTRUCTION_WORK evtblwl
+NAME wall foundations
+PLURAL wall foundations
+DESCRIPTION The drawn wall foundations allow the direction of protecting wall
+
+CONSTRUCTION_WORK evtblpf
+NAME tree rigging
+PLURAL tree riggings
+DESCRIPTION The basic placement on branches and various hides

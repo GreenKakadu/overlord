@@ -1,7 +1,7 @@
 /***************************************************************************
-                          SkillLevelelEmentData.cpp 
+                          TargetOrder.h
                              -------------------
-    begin                : Fri May 23 2003
+    begin                : Tue Sep 23 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
@@ -12,9 +12,27 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-#include "SkillLevelElementData.h"
 
-string SkillLevelElementData::printName()
-{
-  return data_->getSkill()->printLevel(data_->getLevel());
-}
+#ifndef TARGET_ORDER_H
+#define TARGET_ORDER_H
+
+#include "OrderPrototype.h"
+
+/**
+  *@author Alex Dribin
+  */
+
+class TargetOrder : public OrderPrototype  {
+public: 
+	TargetOrder();
+	~TargetOrder(){}
+  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  static bool isUnit(const string & target);
+  static bool isBuildingOrShip(const string & target);
+  static bool isConstruction(const string & target);
+  static bool isLocation(const string & target);
+  static bool isValidTarget(const string & target);
+};
+
+#endif

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          SkillLevelElementData.h
+                          ClaimOrder.h
                              -------------------
-    begin                : Fri May 23 2003
+    begin                : Mon Nov 3 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
@@ -13,22 +13,24 @@
  *                                                                                            *
  ***************************************************************************/
 
-#ifndef SKILL_LEVEL_ELEMENT_DATA_H
-#define SKILL_LEVEL_ELEMENT_DATA_H
+#ifndef CLAIM_ORDER_H
+#define CLAIM_ORDER_H
 
-#include "AbstractData.h"
-#include "SkillLevelElement.h"
+#include "OrderPrototype.h"
+
 /**
   *@author Alex Dribin
   */
+class Reporter;
+class AbstractData;
 
-class SkillLevelElementData : public AbstractData  {
+class ClaimOrder : public OrderPrototype  {
 public: 
-	SkillLevelElementData(SkillLevelElement * data){data_ = data;}
-	~SkillLevelElementData(){}
-    string printName();
+	ClaimOrder();
+	~ClaimOrder(){}
+  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
     protected:
-   SkillLevelElement * data_; 
 };
 
 #endif
