@@ -2,11 +2,11 @@ GAME T1
 NAME Test game
 TURN 5
 EMAIL alexliza@netvision.net.il
-VERSION 0.32
+VERSION 0.33
 DEADLINE  16 apr 2004
 GAMEDIR  /home/alex/engine/overlord
 PLAYERSDIR "/home/alex/players"
-DAYS_IN_TURN  6
+DAYS_IN_TURN  3
 # RUN_MODE: 0 - normal 1 - time test 2 - memory test 3 - daily memory test
 RUN_MODE 0
 #

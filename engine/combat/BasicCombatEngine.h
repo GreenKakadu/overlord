@@ -1,7 +1,11 @@
-//---------------------------------------------------------------------------
-// BasicCombatEngine
-// Provides generic interface to all combat engines
-//---------------------------------------------------------------------------
+/***************************************************************************
+                      BasicCombatEngine.h
+            Provides generic interface to all combat engines
+                          ------------------
+    begin                : Mon May 24 2004
+    copyright            : (C) 2004 by Alex Dribin
+    email                : alexliza@netvision.net.il
+ ***************************************************************************/
 #if !defined(BASIC_COMBAT_ENGINE_H)
   #define BASIC_COMBAT_ENGINE_H
 
@@ -15,6 +19,7 @@ enum battle_result {
   DEFENDER_VICTORY    = 2,
   DRAW                = 3,
   BATTLE_UNDEFINED    = 4,
+
   BATTLE_RESULTS_END  = 10
 };
 typedef enum battle_result BATTLE_RESULT;
@@ -26,7 +31,7 @@ class  BasicCombatEngine{
   virtual ~BasicCombatEngine(){}
   virtual void initialize(){}
   virtual BATTLE_RESULT processBattle(vector<TokenEntity *> &attackers,
-                    vector<TokenEntity *> &defenders){return BATTLE_UNDEFINED;}
+                    vector<TokenEntity *> &defenders);
 
   protected:
   private:

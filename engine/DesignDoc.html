@@ -1,17 +1,19 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-  <meta http-equiv="Content-Type"
- content="text/html; charset=iso-8859-1">
-  <meta name="author" content="Alex Dribin">
-  <meta name="description"
- content="General principles and concepts of Overlord engine design">
-  <meta name="GENERATOR"
- content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2 i686) [Netscape]">
+  <meta content="text/html; charset=iso-8859-1"
+ http-equiv="Content-Type">
+  <meta content="Alex Dribin" name="author">
+  <meta
+ content="General principles and concepts of Overlord engine design"
+ name="description">
+  <meta
+ content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2 i686) [Netscape]"
+ name="GENERATOR">
   <title>Overlord Design</title>
 </head>
-<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b"
- alink="#ff0000">
+<body alink="#ff0000" vlink="#551a8b" link="#0000ee" bgcolor="#ffffff"
+ text="#000000">
 <div align="center">
 <h3> 1.0 General Concepts.</h3>
 </div>
@@ -329,8 +331,9 @@ solved only on some days(Market Conflict on Market days) or at the end
 of month (wages
 payed)<br>
 </p>
-<h3>3.3 Requests</h3>
-<p> <br>
+<h4>3.2.1 Requests<br>
+</h4>
+<p>
 When order processing may depend on orders given to the other <span
  style="font-weight: bold;">Entities</span>
 present at the same Location, processing can't be done instantly
@@ -342,18 +345,20 @@ order
 processing is completed and all <span style="font-weight: bold;">Requests</span>
 are submitted, they will be
 sorted,
-conflicts detected and resolved.</p>
-<p><span style="font-style: italic; text-decoration: underline;">Conflict
-Resolution.</span><br>
+conflicts detected and resolved. <br>
 </p>
-<p>When it time comes each conflict is <span
+<h4><span style="font-weight: bold;">3.2.2 Conflict
+Resolution.</span><br>
+</h4>
+<p>When it's time comes each conflict is <span
  style="text-decoration: underline;"><i>pro</i></span><span
  style="text-decoration: underline;"><i>ces</i></span><span
  style="text-decoration: underline;"><i>sed</i></span><b
  style="font-weight: bold; text-decoration: underline;"><i>.</i></b><span
  style="font-weight: bold; text-decoration: underline;"> </span>All
 requests
-are sorted by their critical resource type, then for each resource
+are sorted by their critical resource type (or some other property) so
+that several independent conflicts formed. Then each independent
 conflict
 should be<span style="font-weight: bold;"> </span><span
  style="text-decoration: underline;"><i>re</i></span><span
@@ -361,9 +366,9 @@ should be<span style="font-weight: bold;"> </span><span
  style="text-decoration: underline;"><i>lved</i></span><span
  style="text-decoration: underline; font-weight: bold;"><i>.</i> </span>Resolution
 is a procedude deciding
-how
-much of resource should get each request. Then each <span
- style="font-weight: bold;">request</span> gets
+what is conflict outcome (for instance how
+much of resource should get each request, or who wins a battle). Then
+each <span style="font-weight: bold;">request</span> gets
 <span style="font-style: italic; text-decoration: underline;">answer</span>.
 Answering request is done by <span style="font-weight: bold;">request</span>
 object and may include&nbsp; requested resource acquisition,
@@ -373,33 +378,52 @@ order
 processing result (such as SUCCESS or FAILURE) so order processing
 should
 be updated for that unit (request inside answering method calls <span
- style="font-weight: bold;">Orders's</span> method <i
- style="text-decoration: underline;">completeProcessing</i><i><b> </b></i>calling<i><b>
+ style="font-weight: bold;">OrderLine's </span>method<span
+ style="font-weight: bold;"><i style="text-decoration: underline;"> </i></span><i
+ style="text-decoration: underline;">completeProcessing</i><span
+ style="font-weight: bold;">, </span>which calls<span
+ style="font-weight: bold;">&nbsp; Orders's</span> method <i
+ style="text-decoration: underline;">completeOrderProcessing</i><i><b> </b></i>calling<i><b>
 </b><span style="text-decoration: underline;">updateOrderResults</span></i>&nbsp;
 )<br>
 </p>
 <p><br>
 </p>
-<h3>3.5 Report Processing</h3>
+<h3>3.3 Report Processing</h3>
 <p><br>
 <br>
 =======<br>
 <br>
 <br>
-Reports:<br>
-Reports are produced by Manipulators. So _what_ to report depends on
-Manipulator, but _how_ to report defined in InfoRules. Each time when
-something that worths to be reported happens, ReportRecord generated. <br>
-ReportRecord is an Element, containig pointer to InfoRule, set of
-parameters (defined in InfoRule) and&nbsp; ObservationCriteria
-Manipulator.<br>
+Normally Reports are produced by orders processing but may be also
+result of some game events.</p>
+<p>Typically report The problem with reports is that game generates a
+lot of them so that reports may consume a lot of memory so we would
+like to save memory. Typically report consists from some pre-defined
+words (that are part of code known at compillation time) and some
+variable data. So we would like to save on these pre-defined words by
+using ReportPatterns.<br>
+</p>
+<p>Report Message&nbsp; consists from&nbsp; some&nbsp; number of
+pre-defined words (strings) - these are Report Pattern&nbsp; and some
+number of parameters.</p>
+<p>Report Messages differ based on number of parameters they support.
+So a set of pre-defined strings that are used by report pattern is
+called ReporterPattern and ReportMessage just contains ReportPattern
+and some number of parameters. Report Message then occupies much less
+space than full report text and may generate text of the report.<br>
+</p>
+<p>Next we have ReportRecord which consists from ReportMessage,
+ObservationCriteria condition and OrderId. <br>
+</p>
+<p>&nbsp;<br>
 <br>
-ObservationCriteria Element provides condition that unit&nbsp; should
+ObservationCriteria Object provides condition that unit&nbsp; should
 meet in order to observe and be able to report some event. These may be:<br>
 &nbsp;&nbsp; Possesing some level of observation<br>
 &nbsp;&nbsp; Possesing some level of skill<br>
 &nbsp;&nbsp; Possessing some item<br>
-implementation of ObservationCriteria Element - TBD.<br>
+ObservationCriteria inmplemented as condition object<br>
 <br>
 Events which are seen differently by units with different levels of
 ObservationCriteria (for instance uncommon resources or foreign unit's
@@ -409,7 +433,8 @@ different ObservationCriteria, where each next record adds additional
 info
 for the previous ones.<br>
 <br>
-ReportElement contains pointer to ReportRecord and some additional keys
+Finally ReportElement contains pointer to ReportRecord and some
+additional keys
 for&nbsp; sorting (Unit, Location, Day of report).<br>
 <br>
 <br>
@@ -441,9 +466,8 @@ units that are still alive, try to report local events to their
 factions.
 To do that ReportManipulator compares ObservationCriteria with Unit's
 possesions and abilities in the case of success ReportElement containig
-refe<br>
-ence to&nbsp; ReportRecord placed into corresponded faction's
-ReportElementCollections&nbsp; (How to do it efficiently and hoe to
+refeence to&nbsp; ReportMessage placed into corresponded faction's
+ReportElementCollections&nbsp; (How to do it efficiently and how to
 avoid reporting the same things many times - TBD) <br>
 After the end of turn processing ReportManipulator creates faction
 report, calculates faction statistics, faction ranking, prints into
@@ -458,7 +482,7 @@ location units&nbsp; sorted ReportElementCollections&nbsp; <br>
 <br>
 <br>
 </p>
-<h3>3.6 Data post-processing<br>
+<h3>3.4 Data post-processing<br>
 </h3>
 <p><br>
 <br>

@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "Global.h"
 #include "DataManipulator.h"
-#include "CombatManager.h"
+#include "BasicCombatManager.h"
 
 #include "DataStorageHandler.h"
 #include "MovementVariety.h"
@@ -166,7 +166,7 @@ for (iter = entities_.begin(); iter != entities_.end(); iter++)
 			status = IO_ERROR;
    }
 
-  combatManager.initialize();
+  combatManager->initialize();
  return status;
 }
 

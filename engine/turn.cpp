@@ -12,7 +12,7 @@
 #include "Global.h"
 #include "GameInfo.h"
 #include "DataManipulator.h"
-#include "CombatManager.h"
+#include "BasicCombatManager.h"
 //#include "ReportElement.h" //temp
 // tests
 extern GameInfo game;
@@ -22,9 +22,10 @@ extern ProcessingMode   immediateOrders;
 extern ProcessingMode   stackOrders;
 extern ProcessingMode 	dayOrders;
 #ifndef VERSION
-#define VERSION 0.33
+#define VERSION "0.3.3"
 #endif
 DataManipulator * dataManipulatorPtr = 0;
+BasicCombatManager * combatManager = new BasicCombatManager();
 int main(int argc, char *argv[])
 {
   clock_t tick =0;
@@ -105,7 +106,7 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
  		dataManipulator.processOrders(&stackOrders);
 
     cout << "Processing combat resoution  for all combats"<<endl<<endl;
-    combatManager.process();
+    combatManager->process();
 
 
     cout <<"Processing full day orders " <<endl<<endl;
