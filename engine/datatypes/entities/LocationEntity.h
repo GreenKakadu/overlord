@@ -9,10 +9,10 @@
 #ifndef LOCATION_ENTITY_H
 #define LOCATION_ENTITY_H
 
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "TerrainRule.h"
 //#include "BonusElement.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 #include "ItemElement.h"
 
 class  UnitEntity;
@@ -41,6 +41,7 @@ class LocationEntity : public Entity  {
        void      save (ostream &out);
       GameData * createInstanceOfSelf();
       void    preprocessData();
+      void    postProcessData();
   inline void setTerrain(TerrainRule * terrain) {terrain_ = terrain;}
 
   /** Adds Unit to location */
@@ -50,7 +51,7 @@ class LocationEntity : public Entity  {
   void addConstruction(ConstructionEntity * construction);
   void removeConstruction(ConstructionEntity * construction);
   /** prints  report for Entity (stats, posessions, private events) */
-  void report(FactionEntity * faction, ReportPrinter & out);
+  void produceFactionReport(FactionEntity * faction, ReportPrinter & out);
   /** returns skill learning bonus that location gives */
   int getBonus(SkillRule * skill);
   void setResource(ItemElement);
@@ -58,7 +59,7 @@ class LocationEntity : public Entity  {
   int  getResource(ItemRule * item);
   bool mayInterract(UnitEntity * unit);
   /** Some resources may be unavailable */
-  Rational  getAvailableResource(ItemRule * item);
+  RationalNumber  getAvailableResource(ItemRule * item);
   void addDailyConflictRequest(BasicCompetitiveRequest * request);
   void addMonthlyConflictRequest(BasicCompetitiveRequest * request);
   void addMarketRequest(MarketRequest * request);
@@ -84,8 +85,8 @@ class LocationEntity : public Entity  {
   inline int getOptima()     const {return optima_;}
          BasicExit *  findExit(LocationEntity * dest);
          BasicExit *  findExit(DirectionVariety * dir);
-         void harvestResource(ItemRule * item, Rational& num);
-  Rational  takeAvailableResource(ItemRule * item, Rational amount);
+         void harvestResource(ItemRule * item, RationalNumber& num);
+  RationalNumber  takeAvailableResource(ItemRule * item, RationalNumber amount);
   //         BasicExit *  findExit(TerrainRule * dest);
          void setOwner(FactionEntity * owner);
   inline FactionEntity *  getOwner() const {return owner_;}

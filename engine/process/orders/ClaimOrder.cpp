@@ -88,7 +88,7 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &par
   bool claimFreeTitleOnly = false;  
   if (parameters.size() > 1)
     {
-      string par = parameters[1]->printName();
+      string par = parameters[1]->print();
       if(par == string("FREE"))
         {
            claimFreeTitleOnly = true;

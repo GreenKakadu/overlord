@@ -12,12 +12,21 @@
 #include "ReportElement.h"
 #include "InventoryElement.h"
 #include "TeachingOffer.h"
-
+//#include "BasicAttribute.h"
 extern bool testMode;
+//static vector <BasicAttribute *> Entity::attributes;
+Entity::Entity ( const Entity * prototype ): GameData(prototype)
+{
+  fullDayOrder_ = 0;
+  silent_ = false;
+}
+
+
 
 Entity::~Entity()
 {
-
+  cleanCollectedReports();
+//  cout << this << " destroyed.\n";
 }
 
 
@@ -30,7 +39,7 @@ bool  Entity::process(ProcessingMode * processingMode)
   OrderIterator currentIterator ;
   ORDER_STATUS result;
 #ifdef TEST_MODE
-   if(testMode) 	cout<< "Processing orders for Entity " << printName() <<endl;
+   if(testMode) 	cout<< "Processing orders for Entity " << print() <<endl;
 #endif
 
    for( currentIterator = orders_.begin(); currentIterator != orders_.end();)
@@ -130,7 +139,7 @@ bool Entity::processOrderResults(ORDER_STATUS result, OrderIterator & currentIte
 #endif
 	    				postProcessOrder(result, currentIterator);
 
-				    	(*currentIterator) -> ~Order();
+				    	(*currentIterator) -> ~OrderLine();
 		    			currentIterator = orders_.erase(currentIterator);
 	    				break;
 	  				}//end of INVALID case
@@ -236,7 +245,7 @@ Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 #ifdef TEST_MODE
    if(testMode) 		    cout << "====+++ Order deleted (impossible conditions)"<<endl;
 #endif
-		    					(*currentIterator)  ->  ~Order();
+		    					(*currentIterator)  ->  ~OrderLine();
 		    						currentIterator = orders_.erase(currentIterator);
 		  					}
 							else
@@ -249,7 +258,7 @@ Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 #ifdef TEST_MODE
    if(testMode) 		cout << "====+++ Order deleted (condition failed)"<<endl;
 #endif
-				    	(*currentIterator) -> ~Order();
+				    	(*currentIterator) -> ~OrderLine();
 		    			currentIterator = orders_.erase(currentIterator);
 	      		}
 	    		break;
@@ -275,7 +284,8 @@ GameData * Entity::createInstanceOfSelf()
 STATUS
 Entity::initialize        ( Parser *parser )
 {
-
+STATUS currentResult = OK;
+//STATUS result = OK;
 	
       if (parser->matchKeyword ("NAME") )
         {
@@ -289,9 +299,13 @@ Entity::initialize        ( Parser *parser )
 	}
        if (parser->matchKeyword("ORDER"))
  	{
-	  orders_.push_back(new Order(parser->getText(),this));
+	  orders_.push_back(new OrderLine(parser->getText(),this));
  	}
 
+   currentResult = enchantments_.initialize(parser);
+   if(currentResult != OK)
+    return currentResult;
+    
 	  return OK;
 
 }
@@ -304,6 +318,7 @@ Entity::save(ostream &out)
   out << keyword_ << " " <<tag_ << endl;
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
+  enchantments_.save(out);
   out << endl;
   for (OrderIterator iter = orders_.begin(); iter != orders_.end(); iter++)
     {
@@ -324,7 +339,7 @@ ostream &operator << ( ostream &out, Entity * entity)
 void  Entity::loadOrders()
 
 {
-//cout << "Loading orders for "<< printName()<<endl;
+//cout << "Loading orders for "<< print()<<endl;
 
 //
 //  vector<Order *>::iterator iter;
@@ -339,7 +354,7 @@ void  Entity::loadOrders()
 
 
 
-void Entity::addOrder(Order * newOrder)
+void Entity::addOrder(OrderLine * newOrder)
 {
 	orders_.push_back(newOrder);
 }
@@ -403,7 +418,7 @@ if (!isSilent())
 
 
 
-void Entity::addReport(ReportPattern * report,Order *  orderId, BasicCondition * observationCriteria)
+void Entity::addReport(ReportPattern * report,OrderLine *  orderId, BasicCondition * observationCriteria)
 {
 if (!isSilent())
   publicReports_.push_back(new  ReportRecord(report, orderId, observationCriteria));
@@ -429,7 +444,7 @@ void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extra
     {
        if( (*iter)->observableBy(unit))
 			{
-//             cout << "Report extracting by "<< unit->printName()<<" =} "/*<< <<endl*/;(*iter)->reportMessage->print(cout);
+//             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter)->reportMessage->print(cout);
             	extractedReports.push_back
 							(new ReportElement((*iter)->reportMessage,this));
 			}			
@@ -448,8 +463,8 @@ return 0;
 
 
 /** prints  report for Entity (stats, posessions, private events) */
-void Entity::report(FactionEntity * faction, ReportPrinter &out){
- out  << printName()<<endl;
+void Entity::produceFactionReport(FactionEntity * faction, ReportPrinter &out){
+ out  << print()<<endl;
 // Stats
 // Posessions
  reportEvents(out);
@@ -464,7 +479,7 @@ void Entity::reportEvents(ReportPrinter &out)
    vector<ReportElement *>::iterator iter;
   for ( iter = collectedReports_.begin(); iter != collectedReports_.end(); iter++)
     {
-		 (*iter)->print(out);
+		 (*iter)->printReport(out);
 	}
     out.decr_indent();
 }
@@ -488,7 +503,10 @@ void Entity::finalizeReports()
 		{
        duplicate = false;
        if((*iter1)->orderId == 0)
-            break; // This is non-order generated report
+       {
+					  iter1++;
+            continue; // This is non-order generated report
+       }
   		for ( iter2 = iter1 + 1; iter2 != publicReports_.end(); iter2++)
 					{
 					if( (*iter2)->orderId == (*iter1)->orderId)
@@ -499,7 +517,8 @@ void Entity::finalizeReports()
 		    	}
 			if (duplicate)
 					{
-					delete (*iter1);
+          if(*iter1)  
+					  delete (*iter1);
 					publicReports_.erase(iter1);	
 					}
 			else
@@ -515,15 +534,33 @@ void Entity::finalizeReports()
 
 
 
-/** cleans all unused public reports. */
-void Entity::cleanReports()
+/*
+ * cleans all unused public reports.
+ */
+void Entity::cleanPublicReports()
 {
    vector<ReportRecord *>::iterator iter;
   for ( iter = publicReports_.begin(); iter != publicReports_.end(); iter++)
 		{
-					delete (*iter);
+          delete (*iter);
 		}
 					publicReports_.clear();
+}
+
+
+/*
+ * cleans  collected reports this destroys all report information
+ */
+void Entity::cleanCollectedReports()
+{
+//   cout<< "Cleaning report info for " << *this<<endl;
+   vector<ReportElement *>::iterator iter;
+  for ( iter = collectedReports_.begin(); iter != collectedReports_.end(); iter++)
+		{
+          if(*iter)
+            delete (*iter);
+		}
+					collectedReports_.clear();
 }
 
 
@@ -542,7 +579,7 @@ bool Entity::mayInterract(UnitEntity * unit)
 
 
 
-bool Entity::mayInterractPhysicalEntity(PhysicalEntity * tokenEntity)
+bool Entity::mayInterractTokenEntity(TokenEntity * tokenEntity)
 {
         return false;
 }
@@ -603,7 +640,7 @@ bool Entity::checkTeachingConfirmation()
     if((*iter)->getTeacher() == this)
         return (*iter)->isConfirmed();
     }
-  cout << "ERROR."<< printName() <<" Can't find his own teachingOffers\n";
+  cout << "ERROR."<< print() <<" Can't find his own teachingOffers\n";
   return false;
 }
 

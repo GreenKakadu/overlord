@@ -10,7 +10,8 @@
 #include "LocalRecruitOffer.h"
 #include "SkillUseElement.h"
 #include "TitleElement.h"
-#include "TestOrder.h"
+#include "EnchantmentElement.h"
+
 #include "EmailOrder.h"          
 #include "PasswordOrder.h"  
 #include "ResignOrder.h"       
@@ -77,7 +78,7 @@ OrderPrototypesCollection sampleOrderPrototypesCollection;
 TravelElement sample(0,0,0,0,0);
 IntegerData  IntegerDataSample(0);
 SkillUseElement SkillUseElementSample(0,0,0);
-Rational rationalSample(0);
+RationalNumber rationalSample(0);
 ResourceCompetitiveRequest rcrSample(0, 0, 0, rationalSample);
 LocalMarketRequest lmrSample(0,0,0,BUY);
 RecruitRequest rrSample(0,0,0,0,0,0);
@@ -85,10 +86,12 @@ NewRecruitRequest nrrSample(0,0,0,0,0,0);
 LocalRecruitOffer lrrSample(0,0,0);
 MarketConflict marketConflictSample(0);
 TitleElement sampleTitleElement(0,0,0);
+EnchantmentElement sampleEnchantmentElement(0,0);
 // Orders
 //std::cout << "Sample Order  instantiation  start \n";
 
-TestOrder sampleTestOrder;
+EnchantmentsAttribute sampleEnchantmentsAttribute;
+
 EmailOrder    sampleEmailOrder;     
 PasswordOrder samplePasswordOrder; 
 ResignOrder   sampleResignOrder; 
@@ -150,4 +153,11 @@ WaitOrder     sampleWaitOrder;
 WithdrawOrder sampleWithdrawOrder;
 WorkOrder     sampleWorkOrder;
 YieldOrder    sampleYieldOrder;	   
-//cout << "Sample Order  instantiation  end \n";
+
+//=============================================================================
+#include "PickpocketActionRule.h" 
+PickpocketActionRule samplePickpocketAction = PickpocketActionRule("PICKPOCKET_ACTION",&sampleAction);
+
+
+
+

@@ -19,6 +19,8 @@
 #include "SkillRule.h"
 #include "ItemRule.h"
 #include "RaceRule.h"
+#include "ActionRule.h"
+#include "EnchantmentRule.h"
 #include "LeaderRaceRule.h"
 #include "FollowerRaceRule.h"
 #include "CreatureRaceRule.h"
@@ -30,22 +32,26 @@
 #include "BasicUsingStrategy.h"
 #include "HarvestUsingStrategy.h"
 #include "CraftUsingStrategy.h"
+#include "EnchantmentUsingStrategy.h"
 #include "CombatUsingStrategy.h"
 #include "SummonUsingStrategy.h"
 #include "BuildUsingStrategy.h"
 #include "ConstructionUsingStrategy.h"
 #include "MarketStrategy.h"
 #include "ConstructionRule.h"
+#include "ActionUsingStrategy.h"
+//#include "EffectUsingStrategy.h"
 
 #include "TerrainRule.h"
 #include "RuleIndex.h"
 // Entities
 #include "EntitiesCollection.h"
 #include "UnitEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
+#include "EffectEntity.h"
 // #include "GameEntity.h"
 #include "GameInfo.h"
 // Varieties
@@ -63,7 +69,7 @@
 
 #include "IntegerData.h" 
 #include "ItemElement.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 #include "BasicExit.h"
 
 

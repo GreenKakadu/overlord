@@ -17,7 +17,7 @@
 #include "FactionEntity.h"
 #include "ItemElement.h"
 
-extern void longtostr(unsigned long u, char *out);
+extern string longtostr(unsigned long u);
 
 LocalMarketRequest::LocalMarketRequest(int amount,ItemRule * item,
   int price, MARKET_OFFER type): MarketRequest(0,0,amount,item,price,type)
@@ -42,20 +42,16 @@ string LocalMarketRequest::print()
   }
   else
     operationName = " sell ";
-  char buffer1[12];
-  char buffer2[12];
-  longtostr(amount_, buffer1);
-  longtostr(price_, buffer2);
 
-  return  string("Local request to ") + operationName + buffer1 +
-          " of " + item_->printName() + " for " + buffer2  + "coins\n";
+  return  string("Local request to ") + operationName + longtostr(amount_) +
+          " of " + item_->print() + " for " + longtostr(price_)  + "coins\n";
 }
 
 
-void  LocalMarketRequest::report(FactionEntity * faction, ostream &out)
+void  LocalMarketRequest::produceFactionReport(FactionEntity * faction, ostream &out)
 {
-  out << ItemElement(item_,initialAmount_).printName() << " at $"<< price_;
-//  out << amount_ << " " << item_->printName() << " at $"<< price_;
+  out << ItemElement(item_,initialAmount_).print() << " at $"<< price_;
+//  out << amount_ << " " << item_->print() << " at $"<< price_;
   faction->addKnowledge(item_);
 }
 

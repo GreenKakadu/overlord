@@ -17,7 +17,7 @@
 #include "SynchroOrderRequest.h"
 
 SynchroOrderRequest::SynchroOrderRequest(OrderPrototype * orderType,
-                  PhysicalEntity * synchroTarget)
+                  TokenEntity * synchroTarget)
                     :BasicOrderSynchronizationRequest(orderType)
 {
    synchroTarget_ = synchroTarget;

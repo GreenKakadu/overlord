@@ -2,13 +2,13 @@ GAME T1
 NAME Test game
 TURN 5
 EMAIL alexliza@netvision.net.il
-#VERSION 0.3
+VERSION 0.32
 DEADLINE  16 apr 2004
 GAMEDIR  /home/alex/engine/overlord
 PLAYERSDIR "/home/alex/players"
-DAYS_IN_TURN  30
+DAYS_IN_TURN  6
 # RUN_MODE: 0 - normal 1 - time test 2 - memory test 3 - daily memory test
-RUN_MODE 1
+RUN_MODE 0
 #
 # Here may be defined special symbols like comment symbol (#)
 # Entity prefixes
@@ -36,8 +36,8 @@ FACTIONSFILE "/home/alex/players/tfactions"
 LOCATIONSFILE "/home/alex/players/tlocations"
 BUILDINGSFILE "/home/alex/players/tbuildings"
 
-#UNITSFILE  units
-#FACTIONSFILE factions
-#LOCATIONSFILE locations
-#BUILDINGSFILE buildings
+UNITSFILE  units
+FACTIONSFILE factions
+LOCATIONSFILE locations
+BUILDINGSFILE buildings
 

@@ -9,7 +9,7 @@
 #include "ReportPattern.h"
 extern int currentDay;
 
-ReportRecord::ReportRecord(ReportPattern * report, Order *  order, BasicCondition * condition)
+ReportRecord::ReportRecord(ReportPattern * report, OrderLine *  order, BasicCondition * condition)
 {
  observationCriteria_ = condition;
  reportMessage = report;
@@ -31,7 +31,7 @@ ReportRecord::~ReportRecord()
 
 
 /** No descriptions */
-bool ReportRecord::observableBy(PhysicalEntity * unit) //const
+bool ReportRecord::observableBy(TokenEntity * unit) //const
 {
   if(observationCriteria_)
     return(observationCriteria_->isSatisfied(unit));

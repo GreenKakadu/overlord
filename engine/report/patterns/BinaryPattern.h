@@ -24,7 +24,7 @@ public:
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
-  void print(ostream &out) const;
+  void printReport(ostream &out) const;
   void clean();
 	static  BinaryPattern * headOfFreeList;
 	union

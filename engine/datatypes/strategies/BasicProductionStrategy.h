@@ -37,15 +37,18 @@ public:
 		  virtual ~BasicProductionStrategy(){};
       virtual GameData * createInstanceOfSelf();
       virtual STATUS initialize        ( Parser *parser );
-      virtual void reportUse(USING_RESULT result, PhysicalEntity * unit);
+      virtual USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      virtual void reportUse(USING_RESULT result, TokenEntity * unit);
       virtual void extractKnowledge (Entity * recipient, int parameter = 0);
-      virtual int checkResourcesAvailability(PhysicalEntity * unit);
-      virtual bool consumeResources(PhysicalEntity * unit, int numCycles);
+      virtual int checkResourcesAvailability(TokenEntity * unit);
+      virtual bool consumeResources(TokenEntity * unit, int numCycles);
               void printSkillDescription(ostream & out);
+      USING_RESULT  checkTarget(UnitEntity * unit, GameData * targetType);
 	protected:
       vector <ItemElement *> resources_;
       int productNumber_ ;
       vector <ToolUseElement *> tools_;
+      int productionDays_;
 };
 
 #endif

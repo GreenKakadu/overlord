@@ -1,22 +1,24 @@
 <!DOCTYPE html PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-  <meta http-equiv="Content-Type"
- content="text/html; charset=iso-8859-1">
-  <meta name="author" content="Alex Dribin">
-  <meta name="description"
- content="General principles and concepts of Overlord engine design">
-  <meta name="GENERATOR"
- content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2 i686) [Netscape]">
+  <meta content="text/html; charset=iso-8859-1"
+ http-equiv="Content-Type">
+  <meta content="Alex Dribin" name="author">
+  <meta
+ content="General principles and concepts of Overlord engine design"
+ name="description">
+  <meta
+ content="Mozilla/4.76 [en] (X11; U; Linux 2.4.2-2 i686) [Netscape]"
+ name="GENERATOR">
   <title>Overlord Design</title>
 </head>
-<body text="#000000" bgcolor="#ffffff" link="#0000ee" vlink="#551a8b"
- alink="#ff0000">
+<body alink="#ff0000" vlink="#551a8b" link="#0000ee" bgcolor="#ffffff"
+ text="#000000">
 <div align="center">
 <h3> 1.0 General Concepts.</h3>
 </div>
 <div align="center">
-<pre>General principles and concepts of Overlord engine desig</pre>
+<pre>General principles and concepts of Overlord engine design</pre>
 &nbsp; </div>
 <div align="center">
 <h3> 1.1 Overlord Game Engine object paradigm:</h3>
@@ -257,10 +259,45 @@ to study skills<br>
 &nbsp;&nbsp;&nbsp; UsingStrategy - defines the way how skill is used.<br>
 &nbsp;&nbsp;&nbsp; MarketStrategy - responsible for local trading
 operations. <br>
-&nbsp; <br>
+&nbsp;
+<br>
 </p>
-<h2>Order processing&nbsp; </h2>
-<h4> Conflicts.</h4>
+<h3>2.9 <a name="Attributes"></a>Attributes.</h3>
+&nbsp;&nbsp;&nbsp; Entities&nbsp; have some properties characteristics
+or <span style="font-weight: bold;">attributes</span> (such as set of
+items, skills or titles) that are treated in similar way: they may be
+added to entity or removed from it, entity may be checked for having
+some attribute and so on. In many case attributes also persistent so
+they shouls be also loaded and saved. So it is reasonable to group all
+these operations into one type of&nbsp; objects that have similar
+interface.<br>
+<br>
+<p> </p>
+<h2 style="text-align: center;">3.0 Turn processing <br>
+</h2>
+Orders<br>
+Requests<br>
+conflicts<br>
+reports<br>
+<br>
+<h3>3.1 Data pre-processing<br>
+</h3>
+<br>
+<h3>3.1 Order processing <br>
+</h3>
+<h2 style="text-align: center;"></h2>
+Orders are processed daily. There are several <span
+ style="font-style: italic;">phases</span> of order processing <br>
+&nbsp;&nbsp;&nbsp; immediate orders<br>
+&nbsp;&nbsp;&nbsp; stack orders<br>
+&nbsp;&nbsp;&nbsp; full-day orders<br>
+On each phase order processing engine tries to process all orders but
+only some of them may be proceesed.&nbsp; Immediate orders may be
+processed on any stage&nbsp; but stack orders and full-day orders may
+be processed only on their respective phase. <br>
+<br>
+<br>
+<h3>3.2 Conflicts</h3>
 <p> <br>
 Conflict happens when two (or more) entities are trying to perform
 actions that are contradicting each other or just can't be done at the
@@ -294,37 +331,58 @@ solved only on some days(Market Conflict on Market days) or at the end
 of month (wages
 payed)<br>
 </p>
-<h4> Requests.</h4>
+<h3>3.3 Requests</h3>
 <p> <br>
-When order processing may depend on orders given to the other Entities
+When order processing may depend on orders given to the other <span
+ style="font-weight: bold;">Entities</span>
 present at the same Location, processing can't be done instantly
-and should be postponed. For that purpose Request is generated. When
+and should be postponed. For that purpose <span
+ style="font-weight: bold;">Request</span> is generated. It should be
+submitted to local conflict resolution system, represented by <span
+ style="font-weight: bold;">Conflict</span> object. When
 order
-processing is completed and all Requests are submitted, they will be
+processing is completed and all <span style="font-weight: bold;">Requests</span>
+are submitted, they will be
 sorted,
 conflicts detected and resolved.</p>
-<p>Conflict Resolution.<br>
+<p><span style="font-style: italic; text-decoration: underline;">Conflict
+Resolution.</span><br>
 </p>
-<p>When it time comes each conflict is <b><i>processed.</i></b> All
+<p>When it time comes each conflict is <span
+ style="text-decoration: underline;"><i>pro</i></span><span
+ style="text-decoration: underline;"><i>ces</i></span><span
+ style="text-decoration: underline;"><i>sed</i></span><b
+ style="font-weight: bold; text-decoration: underline;"><i>.</i></b><span
+ style="font-weight: bold; text-decoration: underline;"> </span>All
 requests
 are sorted by their critical resource type, then for each resource
 conflict
-should be <b><i>resolved.</i></b> Resolution is a procedude deciding
+should be<span style="font-weight: bold;"> </span><span
+ style="text-decoration: underline;"><i>re</i></span><span
+ style="text-decoration: underline;"><i>so</i></span><span
+ style="text-decoration: underline;"><i>lved</i></span><span
+ style="text-decoration: underline; font-weight: bold;"><i>.</i> </span>Resolution
+is a procedude deciding
 how
-much of resource should get each request. Then each request gets
-answer.
-Answering request may include&nbsp; requested resource acquisition,
+much of resource should get each request. Then each <span
+ style="font-weight: bold;">request</span> gets
+<span style="font-style: italic; text-decoration: underline;">answer</span>.
+Answering request is done by <span style="font-weight: bold;">request</span>
+object and may include&nbsp; requested resource acquisition,
 reporting
 results. In many cases &nbsp;finishing request processing may determine
 order
 processing result (such as SUCCESS or FAILURE) so order processing
 should
-be updated for that unit ( <b><i>completeProcessing</i></b><i><b> </b></i>calling<i><b>
-updateOrderResults</b></i>&nbsp;<b><i></i></b> )<br>
+be updated for that unit (request inside answering method calls <span
+ style="font-weight: bold;">Orders's</span> method <i
+ style="text-decoration: underline;">completeProcessing</i><i><b> </b></i>calling<i><b>
+</b><span style="text-decoration: underline;">updateOrderResults</span></i>&nbsp;
+)<br>
 </p>
 <p><br>
 </p>
-<h2>Report Processing</h2>
+<h3>3.5 Report Processing</h3>
 <p><br>
 <br>
 =======<br>
@@ -401,7 +459,10 @@ create for each faction, temporary collection of all present at the
 location units&nbsp; sorted ReportElementCollections&nbsp; <br>
 <br>
 <br>
-<br>
+</p>
+<h3>3.6 Data post-processing<br>
+</h3>
+<p><br>
 <br>
 </p>
 <h2>&nbsp; </h2>

@@ -9,7 +9,7 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "FactionEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
@@ -39,7 +39,7 @@ ReshowOrder::ReshowOrder(){
 STATUS ReshowOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity,NO_PARSING_REPORT) && !entityIsFaction(entity,NO_PARSING_REPORT))
+   if(!entityIsTokenEntity(entity,NO_PARSING_REPORT) && !entityIsFaction(entity,NO_PARSING_REPORT))
             return IO_ERROR;
   // Implement [ALL]          
 	string tag = parser->getWord();
@@ -79,7 +79,7 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, vector <AbstractData *>  &pa
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction == 0)
   {
-    PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+    TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
     assert(unit);
     faction = unit->getFaction();
   }        
@@ -88,7 +88,7 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, vector <AbstractData *>  &pa
   StringData * par = dynamic_cast<StringData *>(parameters[0]);
   if(par)
   {
-    string tag = par->printName();
+    string tag = par->print();
     BasicRulesCollection  * collection = ruleIndex.findRuleCollection(tag);
     assert(collection);
     faction->markCollectionToReshow(collection);

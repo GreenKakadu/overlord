@@ -13,12 +13,12 @@ class UnitEntity;
 class ObservationCondition : public BasicCondition  {
 public: 
   ObservationCondition(const string & keyword, GameData * parent ): BasicCondition(keyword, parent){}
-  ObservationCondition(const ObservationCondition * prototype): BasicCondition(prototype){}
+  ObservationCondition(const ObservationCondition * prototype); 
 	~ObservationCondition(){}
   static ObservationCondition * createObservationCondition(int observationLevel);
   STATUS      initialize ( Parser *parser );
   GameData * createInstanceOfSelf();
-  bool isSatisfied(PhysicalEntity * unit);
+  bool isSatisfied(TokenEntity * unit);
   inline void setObservationCondition(int observation) {observationRequired_ = observation;}
   inline int getObservationCondition() const {return observationRequired_;}
 protected:

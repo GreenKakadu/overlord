@@ -37,6 +37,13 @@ GameData * BuildUsingStrategy::createInstanceOfSelf()
 
 
 
+BuildUsingStrategy::BuildUsingStrategy ( const BuildUsingStrategy * prototype ): BasicProductionStrategy(prototype)
+{
+  constructionWorkProduced_ =0;
+}
+
+
+
 STATUS
 BuildUsingStrategy::initialize        ( Parser *parser )
 {
@@ -83,20 +90,13 @@ BuildUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT BuildUsingStrategy::use(PhysicalEntity * tokenEntity, SkillRule * skill, int &useCounter)
-{
-    UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
-  if(unit)
-     return unitUse(unit, skill,useCounter);
-  else
-     return CANNOT_USE;
-}
 
 
 
 USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int &useCounter)
 {
-  ConstructionEntity * construction = buildingsAndShips[unit->getTarget()];
+  ConstructionEntity * construction =  dynamic_cast<ConstructionEntity *>(unit->getTarget());
+//  buildingsAndShips[unit->getTarget()->getTag()];
   assert(construction);
 
 // Production modifiers:
@@ -163,14 +163,6 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
     }  
 }
 
-USING_RESULT BuildUsingStrategy::mayUse(PhysicalEntity * tokenEntity, SkillRule * skill)
-{
-  UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
-  if(unit)
-     return unitMayUse(unit, skill);
-  else
-     return CANNOT_USE;
-}
 
 
 
@@ -178,34 +170,20 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
 {
 /** We may be in the middle of construction. Then we anyway may continue.*/
 /** Otherwise we'll need resources */
-    ConstructionEntity * construction;
-    string target = unit->getTarget();
-    if(TargetOrder::isBuildingOrShip(target))
-      {
-        construction = buildingsAndShips[target];
-        if(!construction)  // No such entity. May be it is NewEntityPlaceholder?
-          {
-            NewEntityPlaceholder * placeholder = buildingsAndShips.findPlaceholder(target);
-            if(placeholder)
-              {
-                 Entity * newEntity = placeholder->getRealEntity();
-                if (newEntity)
-                {
-                  construction = dynamic_cast<ConstructionEntity *>(newEntity);
-                  assert(construction);
-                  unit->setTarget(construction->getTag());
-                }
+   AbstractData * target = unit->getTarget();
+   // target may be:
+   // existing construction
+   // construction type to build
+   // existing placeholder
+   // new placeholder
+   // 0
+   ConstructionEntity * construction =  dynamic_cast<ConstructionEntity *>(unit->getTarget());
+   if(!construction)  // No such entity. May be This is a rule?
+    {
+      ConstructionRule * constructionType =  dynamic_cast<ConstructionRule *>(unit->getTarget());
 
-              }
-          }
-      }
-    else
-      {
-        if(TargetOrder::isConstruction(target))
-          {
-            ConstructionRule * constructionType = constructions[target] ;
-            if(constructionType)  
-            {
+      if(constructionType)
+        {
               // check that building need this work
                if(!constructionType->getResourceRequirement(constructionWorkProduced_))
                   return  WRONG_TARGET;
@@ -231,11 +209,11 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
                       {
                         unit->pay(unit->getLocation()->getLandPrice() *
                                           constructionType->getLandUse());
-                        // transfer money to owner.
+                        // transfer money to owner - to title-residence building.
                       }
                   unit->getLocation()->useLand(constructionType->getLandUse());
 
-                  unit->setTarget(newBuilding->getTag());
+                  unit->setTarget(newBuilding);
                   consumeResources(unit,1);
                   unit->getLocation()->addReport(
                       new BinaryPattern(newBuidingStartedReporter, constructionType,
@@ -246,14 +224,30 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
                                         new StringData(newBuilding->printTag())));
                   return  USING_OK;
                 }
-             }      
+        }
+       else // this is not a rule.May be it is NewEntityPlaceholder?
+       {
+          NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(target);
+          if(placeholder)
+              {
+                 Entity * newEntity = placeholder->getRealEntity();
+                 if (newEntity)
+                  {
+                    construction = dynamic_cast<ConstructionEntity *>(newEntity);
+                    assert(construction);
+                    unit->setTarget(construction);
+                  }
 
-          }
-      }
+              }
+       }
+
+    }
+
+  // still no target identified. Try to use  ContainingConstruction as a target   
 
   if(!construction)
     {
-      construction = unit->getContainingConstruction(); // try to use  ContainingConstruction as a target
+      construction = unit->getContainingConstruction(); 
       if(!construction)
         {
           return  TARGET_NOT_EXIST;
@@ -261,9 +255,9 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
       if(construction->isCompleted())
         return  TARGET_NOT_EXIST;
       else
-        unit->setTarget(construction->getTag());
+        unit->setTarget(construction);
     }
-
+ //=========================================================
     if(construction->isCompleted())
         return  WRONG_TARGET;
 
@@ -301,7 +295,7 @@ void BuildUsingStrategy::printSkillDescription(ostream & out)
  if(productNumber_ > 1)
   out << constructionWorkProduced_->getPluralName()<< " " << constructionWorkProduced_->printTag();
  else
-  out << constructionWorkProduced_->printName();
+  out << constructionWorkProduced_->print();
 
   out<<" in "<< productionDays_ <<" days.";
 }

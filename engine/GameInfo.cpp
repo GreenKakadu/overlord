@@ -11,7 +11,7 @@
 #include "FileParser.h"
 #include "FactionEntity.h"
 #include "EntitiesCollection.h"
-extern void longtostr(unsigned long u, char *out);
+extern string longtostr(unsigned long u);
 extern EntitiesCollection <FactionEntity>   factions;
 
 GameInfo::GameInfo()
@@ -19,6 +19,8 @@ GameInfo::GameInfo()
 	unitsFile_ = string("units");
 	locationsFile_ = string("locations");
 	factionsFile_ = string("factions");
+   buildingsFile_ = string("buildings");
+  effectsFile_ = string("effects");
   newEntityPrefix_ = string("new");
   daysInMonth = 30;
 	runMode = NORMAL;
@@ -109,6 +111,11 @@ void GameInfo::init(const char * filename)
       		 buildingsFile_ = parser->getParameter();
       		continue;
     		}
+ 	if (parser->matchKeyword("EFFECTSFILE"))
+    		{
+      		 effectsFile_ = parser->getParameter();
+      		continue;
+    		}
   	if (parser->matchKeyword("FILE"))
     		{
       		 factionsFile_ = parser->getParameter();
@@ -137,10 +144,7 @@ void GameInfo::init(const char * filename)
 
     } while (! parser ->eof() );
  delete parser;
- char buffer [10];
- longtostr(turn,buffer);
-// sprintf(buffer,"%d",turn);
- turnString_ = buffer;
+ turnString_ = longtostr(turn);
 }
 
 
@@ -232,6 +236,12 @@ return &buildingsFile_;
 }
 
 
+string * GameInfo::getEffectsFile()
+{
+return &effectsFile_;
+}
+
+
 bool GameInfo::isNewEntityName(const string &tag, FactionEntity * faction)
 {
   // New Entity name should be [fxxx][Px][nnn]
@@ -248,7 +258,7 @@ bool GameInfo::isNewEntityName(const string &tag, FactionEntity * faction)
     }
 //     string tempTag = tag.substr(0,factionTagSize);
 //     cout << "TempTag= "<<tempTag<<endl;
-//     cout <<  (factions[1])->printName()<<endl;
+//     cout <<  (factions[1])->print()<<endl;
 //  if(factions.isValidTag(tempTag) )
   if(factions.isValidTag(tag.substr(0,factionTagSize)) )
   

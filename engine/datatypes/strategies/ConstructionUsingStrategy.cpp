@@ -17,7 +17,7 @@
 #include "RulesCollection.h"
 #include "ItemRule.h"
 #include "UnitEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "SkillUseElement.h"
 #include "BasicCondition.h"
 #include "BinaryPattern.h"
@@ -40,6 +40,11 @@ extern Reporter * constructionStartedReporter;
 ConstructionUsingStrategy::ConstructionUsingStrategy ( const ConstructionUsingStrategy * prototype ): BasicUsingStrategy(prototype)
 {
   multiplicationFactor_ = 1;
+  construction_ = 0;
+  productionDays_ = 1;
+  resourceType_ = 0;
+  resourceNumber_ =1;
+  constructionToUpgrade_ = 0;
 }
 
 GameData * ConstructionUsingStrategy::createInstanceOfSelf()
@@ -121,25 +126,24 @@ USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * s
                           (newBuidingStartedReporter, construction_,
                               new StringData(newBuilding->printTag())));
       }
-    string target = unit->getTarget();
-    if(game.isNewEntityName(target))
+      
+    // If we used placeholder as target now it's time to set it to real construction
+    AbstractData * target = unit->getTarget();
+    NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(target);
+    if(placeholder)
       {
-        NewEntityPlaceholder * placeholder =
-                        buildingsAndShips.findPlaceholder(target);
-        if(placeholder)
+        Entity * newEntity = placeholder->getRealEntity();
+        if (!newEntity)
           {
-            Entity * newEntity = placeholder->getRealEntity();
-            if (!newEntity)
-                {
-                  placeholder->setRealEntity(newBuilding);
-                  //unit->setTarget(newBuilding->getTag());
-                }
-            else
-              {
-                //report placeholder duplication
-              }
+            placeholder->setRealEntity(newBuilding);
+            //unit->setTarget(newBuilding);
           }
- 		  }
+        else
+          {
+                //report placeholder duplication ?
+          }
+        }
+    
     unit->getCurrentOrder()->setCompletionFlag(true);
     return USING_COMPLETED;
   }
@@ -158,7 +162,7 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
     if(buildCondition->isSatisfied(unit))
       {
 //           report condition
-          cout << "CONDITION FAILED: "<<construction_->getBuildCondition()->printName() <<endl;
+          cout << "CONDITION FAILED: "<<construction_->getBuildCondition()->print() <<endl;
           return CONDITION_FAILURE;
       }
   }
@@ -181,11 +185,11 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
  if(unit->getLocation()->getLandPrice())
       {
         unit->pay(unit->getLocation()->getLandPrice() * construction_->getLandUse());
-        // transfer money to owner.
+        // transfer money to owner.  - to title-residence building.
         }
  unit->getLocation()->useLand(construction_->getLandUse());
 
- unit->takeFromInventoryExactly(resourceType_, resourceNumber_);
+ unit->takeFromInventory(resourceType_, resourceNumber_);
  
  unit->addReport( new UnaryPattern (constructionStartedReporter, construction_));
 
@@ -202,14 +206,14 @@ void ConstructionUsingStrategy::printSkillDescription(ostream & out)
       if(resourceNumber_ > 1)
         out << resourceType_->getPluralName()<< " " << resourceType_->printTag();
       else
-      out << resourceType_->printName();
+      out << resourceType_->print();
  
       out<<".";
     }
 
  if(construction_)
     return;
- out << " Use produces: " << construction_->printName()<<" in "
+ out << " Use produces: " << construction_->print()<<" in "
     << productionDays_ <<" days.";
 }
 

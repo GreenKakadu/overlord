@@ -55,7 +55,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
    int totalValue = 0;
    int finalPrice;
 #ifdef TEST_MODE
-  if(testMode)   cout << endl<<"<><><><><><><><><><>   Resolving Market conflict at "<<location_->printName()<<endl;
+  if(testMode)   cout << endl<<"<><><><><><><><><><>   Resolving Market conflict at "<<location_->print()<<endl;
 #endif
 //  Sort out sellOffers and buyOffers
   for(iter = currentList.begin(); iter != currentList.end(); ++iter)
@@ -64,7 +64,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
     if(request == 0)
     {
       cout << "ERROR: Market Conflict resolution detected wrong request type from "
-            << (*iter)->getRequestingUnit()->printName()<<endl;
+            << (*iter)->getRequestingUnit()->print()<<endl;
       continue;
       }
 #ifdef TEST_MODE
@@ -131,7 +131,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
         break;
     }
     finalPrice = calculateFinalPrice(buyOffers,sellOffers);
-//    cout << "Final price for "<< buyMax->getType()->printName()<<" is "<< finalPrice<<endl;
+//    cout << "Final price for "<< buyMax->getType()->print()<<" is "<< finalPrice<<endl;
   }
   // Distribute goods, answering reports and calculating total (for selliing only)
    int buyAmount = mayBuyByPrice(buyOffers,finalPrice);

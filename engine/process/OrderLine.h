@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Order.h
+                          OrderLine.h
     Order object with modifiers and parameters.                .
                              -------------------
     begin                : Wen Aug  7 16:08:00 IST 2002
@@ -7,8 +7,8 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 
-#ifndef ORDER_H
-#define ORDER_H
+#ifndef ORDER_LINE_H
+#define ORDER_LINE_H
 #include <vector>
 #include <string>
 #include <vector>
@@ -25,11 +25,11 @@ class Entity;
 class OrderPrototype;
 
 
-class Order
+class OrderLine
 {
     public:
-        Order(const string & order, Entity * entity);
-        ~Order();
+        OrderLine(const string & order, Entity * entity);
+        ~OrderLine();
 
 	ORDER_STATUS process( ProcessingMode * processingMode, Entity * entity, ostream &out);
 // some orders can't be processed immediatelly. Instead of that they are submiting
@@ -38,7 +38,7 @@ class Order
 // conflict resolution, when it is over.
 	ORDER_STATUS completeProcessing(Entity * entity, int result);
 	void save(ostream &out);
-	void print(ostream &out);
+	void printOrderLine(ostream &out);
 	void parseModifiers(Parser * parser );
 	bool parse(Parser * parser, Entity * entity );
 //	bool isParsed;

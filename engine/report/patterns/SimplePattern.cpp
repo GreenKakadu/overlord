@@ -22,9 +22,9 @@ void  SimplePattern::operator delete(void * deadObject, size_t size)
 }
 
 
-void SimplePattern::print(ostream &out) const
+void SimplePattern::printReport(ostream &out) const
 {
-  reporter_->print(out);
+  reporter_->printReport(out);
 }
 
 SimplePattern  * SimplePattern::headOfFreeList;

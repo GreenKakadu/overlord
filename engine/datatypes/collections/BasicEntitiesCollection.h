@@ -37,11 +37,13 @@ public:
     void                   remove             (const string &tag);
     bool                   checkDataType    (const string &tag);
     void                   setEntityTagPrefix (char prefix);
+    void                   clear();
     string tagFromIndex(long int index);
    void addRIPindex(long int index);
    long int getRIPsize() const;
    long int getRIPbyIndex(long int i) const;
-	 NewEntityPlaceholder * findPlaceholder(const string &tag);
+	 NewEntityPlaceholder * findOrAddPlaceholder(const string &tag);
+	 NewEntityPlaceholder * checkPlaceholder(const string &tag);
 protected:
     vector <Entity*> data_;
     char prefix_;

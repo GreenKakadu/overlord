@@ -41,7 +41,12 @@ ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(
  mobile_ = false;
  weight_ = 10000; // default weight
  maxStaff_ = 0;
+ generateTitle_ = 0;
+ skill_ = 0;
+ buildCondition_ = 0;
+ staffCondition_ = 0;
 }
+
 ConstructionRule::~ConstructionRule(){}
 GameData * ConstructionRule::createInstanceOfSelf()
 {
@@ -185,7 +190,7 @@ ConstructionEntity * ConstructionRule::startConstruction(UnitEntity * unit)
      unit->getLocation()->addConstruction(newBuilding);
      newBuilding->setFaction(unit->getFaction());
 	   unit->getFaction()->addConstruction(newBuilding);
-//     cout << "New "<< printName() << " was built in "<< unit->getLocation()->printName()<<endl;
+//     cout << "New "<< print() << " was built in "<< unit->getLocation()->print()<<endl;
   }
   return newBuilding;
 }
@@ -305,7 +310,7 @@ void    ConstructionRule::extractKnowledge (Entity * recipient, int parameter)
 
 void ConstructionRule::printDescription(ReportPrinter & out)
 {
-    out << printName()<< ": "<< getDescription()<<".";
+    out << print()<< ": "<< getDescription()<<".";
     if(!resources_.empty())
     {
       out << " Requires ";
@@ -314,20 +319,18 @@ void ConstructionRule::printDescription(ReportPrinter & out)
           {
             if(iter != resources_.begin())
               out << ", ";
-            (*iter)->print(out);
+            out<< *(*iter);
           }
     }
     out<< ". ";
     if(generateTitle_)
       {
-        out << "Generates "<< generateTitle_->printName()
+        out << "Generates "<< generateTitle_->print()
                                     << " title. ";
       }
    
    if(!stats_.empty())
    {
-     out << "Adds ";
-        stats_.print(out);
-        out << " to units inside.";
+     out << "Adds "<< stats_ << " to units inside.";
    }
 }

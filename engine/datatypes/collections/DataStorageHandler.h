@@ -25,10 +25,11 @@ public:
   ~DataStorageHandler();
   void setCollection(BasicCollection  *collection);
   STATUS open();
+  STATUS close();
   STATUS load();
   STATUS save();
   STATUS initializeData();
-  void print();
+  void printCollection();
    STATUS status;
 protected:
   FileParser * parser_;

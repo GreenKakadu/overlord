@@ -25,7 +25,7 @@ class RaceRule;
 
 class NewRecruitRequest : public MarketRequest  {
 public: 
-	NewRecruitRequest(UnitEntity * unit, Order * orderId, int amount,
+	NewRecruitRequest(UnitEntity * unit, OrderLine * orderId, int amount,
                               RaceRule * race, int price, NewEntityPlaceholder * targetUnit);
 	~NewRecruitRequest();
  AbstractData * getType() const;

@@ -27,8 +27,8 @@ public:
 	BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEntity * dest);
 	virtual ~BasicExit(){};
   virtual void save(ostream & out);
-  virtual void print();
-  virtual void report(ReportPrinter & out);
+  virtual string print();
+  virtual void produceReport(ReportPrinter & out);
   virtual inline LocationEntity * getDestination() const {return destination_;}
   virtual inline DirectionVariety * getDirection() const {return dir_;}
   virtual int getTravelTime(MovementVariety * mode);

@@ -30,23 +30,21 @@ public:
    inline bool         isValidElement() const {return (rule_ )&&(parameter1_); }
 //  static RaceElement readRaceElement(Parser * parser);
 	
-string RaceElement::printName()
+string RaceElement::print()
 {
     if (rule_ == 0) return "";
-    char buffer[12];
-      longtostr(parameter1_,buffer);
     if( parameter1_ > 1)
-      return string(buffer)  + " " + rule_->getPluralName()  + rule_->printTag();
+      return longtostr(parameter1_)  + " " + rule_->getPluralName()  + rule_->printTag();
     else
-      return string(buffer)  + " " + rule_->printName();
+      return longtostr(parameter1_)  + " " + rule_->print();
 }
 
 
 
-void RaceElement::save(ostream & out)
-{
-  out << rule_->getTag() << " " <<  parameter1_   << endl;
-}
+//void RaceElement::save(ostream & out)
+//{
+//  out << rule_->getTag() << " " <<  parameter1_   << endl;
+//}
 
 
 

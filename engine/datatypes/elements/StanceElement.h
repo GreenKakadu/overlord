@@ -11,7 +11,8 @@
 
 #include   <vector>
 #include "Element.h"
-class StanceVariety;
+//class StanceVariety;
+#include "StanceVariety.h"
 
 typedef  Element2<StanceVariety,Entity *> StanceElement;
 typedef vector<StanceElement>::iterator StanceIterator;

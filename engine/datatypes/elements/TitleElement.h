@@ -43,9 +43,8 @@ public:
    inline void   setTitleHolder(UnitEntity * unit)     {unit_ = unit;}
    inline bool isValidElement() const {return (( title_ != 0 ) && (location_ != 0));}
    void save(ostream & out);
-   void print(ostream & out);
-   string printName();
-   void report(ostream & out);
+   string print();
+   void produceReport(ostream & out);
    static TitleElement  * readElement (Parser * parser);
    bool contest(UnitEntity * contender);
    void activateClaimingEffects();

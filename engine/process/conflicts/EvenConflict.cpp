@@ -19,9 +19,9 @@
 void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
 {
  vector  <BasicCompetitiveRequest *>::iterator iter;
- Rational totalRequestValue = 0;
- Rational totalAvailableValue;
- Rational ratio;
+ RationalNumber totalRequestValue = 0;
+ RationalNumber totalAvailableValue;
+ RationalNumber ratio;
  BasicCompetitiveRequest * typicalRequest;
  // Calculate total request.
 // cout << "Resolving EvenConflict\n";
@@ -34,17 +34,17 @@ void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
   for(iter = currentList.begin() ; iter != currentList.end();iter++)
   {
     totalRequestValue += (*iter)->getValue(); 
-//    cout << "Request for "<< (*iter)->getValue()<< " " <<(*iter)->getType()->printName() <<endl;
+//    cout << "Request for "<< (*iter)->getValue()<< " " <<(*iter)->getType()->print() <<endl;
 
   }
  // compare with available amount
   totalAvailableValue = typicalRequest->getTotalAvailableValue();
-//    cout << "Total "<< typicalRequest->getType()->printName() <<" available: "<< totalAvailableValue <<" \n";
+//    cout << "Total "<< typicalRequest->getType()->print() <<" available: "<< totalAvailableValue <<" \n";
 
   if( totalRequestValue >  totalAvailableValue)
   {
     ratio = totalAvailableValue/ totalRequestValue;
-    Rational currentAnswer;
+    RationalNumber currentAnswer;
     for(iter = currentList.begin() ; iter != currentList.end();iter++)
     {
       currentAnswer = ((*iter)->getValue() *  ratio);
@@ -67,14 +67,14 @@ void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
 
   for(iter = currentList.begin() ; iter != currentList.end();iter++)
     {
-      Rational answer((*iter)->getValue());
+      RationalNumber answer((*iter)->getValue());
       (*iter)->answerRequest(answer);
     }
 }
 
 
 
-Rational EvenConflict::getTotalAvailableValue(ItemRule * item) const
+RationalNumber EvenConflict::getTotalAvailableValue(ItemRule * item) const
 {
   if(item)
     return location_->getAvailableResource(item);

@@ -22,7 +22,7 @@ class InventoryElement;
 class Parser;
 class SkillRule;
 class TeachingOffer;
-class PhysicalEntity;
+class TokenEntity;
 
 /**Rules for learning skill
   *@author Alex Dribin
@@ -37,18 +37,16 @@ public:
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
   /** Calculate amount of experience gained by 1 day of study */
-  virtual int  calculateLearningExperience(PhysicalEntity * unit, SkillRule * skill, TeachingOffer * teacher);
+  virtual int  calculateLearningExperience(TokenEntity * unit, SkillRule * skill, TeachingOffer * teacher);
   virtual int  calculateUnitLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher);
   /** Add learning experience to skill studied by unit*/
-  virtual void addLearningExperience(PhysicalEntity * unit, SkillElement & skill);
+  virtual void addLearningExperience(TokenEntity * unit, SkillElement & skill);
 //  virtual void addLearningExperience(UnitEntity * unit, SkillRule * skill, int experience);
   /**  Add learning experience to all parent skills of a skill studied by unit */
-  virtual void addRecursiveLearningExperience(PhysicalEntity * unit, SkillElement & skill);
+  virtual void addRecursiveLearningExperience(TokenEntity * unit, SkillElement & skill);
   /** No descriptions */
-  virtual  LEARNING_RESULT mayStudy(PhysicalEntity * unit, SkillRule * skill) const;
+  virtual  LEARNING_RESULT mayStudy(TokenEntity * unit, SkillRule * skill) const;
   virtual  bool teacherRequired(Entity * unit, SkillRule * skill);
-  // For debugging:====================
-  void print() {cout << " Learning: ";}
   static int getPointsPerDay()  {return expBase_;}
   virtual  void extractKnowledge (Entity * recipient, int parameter = 0);
   inline InventoryElement * getItemRequired() {return itemRequired_;}

@@ -17,7 +17,7 @@ extern VarietiesCollection <MovementVariety> movementModes;
 
 template <class T> class MovementMode : public vector < T>  {
 public: 
-	MovementMode(){ resize(movementModes.size());}
+	MovementMode(){ resize(/*movementModes.size()*/5);}
 	~MovementMode(){}
   T& operator []       (const string &tag);
   T& operator []       (const int index);

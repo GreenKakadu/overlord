@@ -38,38 +38,19 @@ BasicExit::BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEn
 /*
  *
  */
-void BasicExit::print()
+string BasicExit::print()
 {
-	cout << "    Exit" << dir_->printName() << " to" << destination_->printName();
-  int i;
-  int days;
-  bool firstMode= true;
-  for(i=0; i < movementModes.size(); i++)
-  {
-    days =  getTravelTime(movementModes[i]);
-    if( days )
-      {
-        if(firstMode)
-          cout << " "<< days<< " days of" << (movementModes[i])->getName();
-        else
-         cout <<", "<< days<< " of" << (movementModes[i])->getName();
-         firstMode = false;
-       }
-
-    }
-
-  cout<<"."<<endl;
-
+	return string("exit  ") + dir_->print() + " to " + destination_->print();
 }
 
 
 /*
  * Outputs exit information for use in reports 
  */
-void BasicExit::report(ReportPrinter & out)
+void BasicExit::produceReport(ReportPrinter & out)
 {
   out.incr_indent();
-  out << "Exit "; out.incr_indent(); out.incr_indent(); out<< dir_->printName() << " to " << destination_->printName();
+  out << "Exit "; out.incr_indent(); out.incr_indent(); out<< dir_->print() << " to " << destination_->print();
   int i;
   int days;
   bool firstMode= true;

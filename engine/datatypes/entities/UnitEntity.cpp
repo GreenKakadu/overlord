@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include "UnitEntity.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 #include "InventoryElement.h"
 #include "RaceElement.h"
 #include "SkillLevelElement.h"
@@ -31,6 +31,7 @@
 #include "ReportRecord.h"
 #include "ReportPattern.h"
 #include "Reporter.h"
+#include "SimplePattern.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
@@ -57,8 +58,12 @@ extern Reporter * leaderExitReporter;
 extern Reporter * followerEnterReporter;  
 extern Reporter * leaderEnterReporter;    
 extern Reporter * forgetReport;
+extern Reporter * consumeFoodReporter;
+extern Reporter * upkeepReporter;
+extern Reporter * cannotPayUpkeepReporter;
+extern Reporter * disbandReporter;
 
-UnitEntity::UnitEntity(const string & keyword, GameData * parent)  : PhysicalEntity(keyword, parent)
+UnitEntity::UnitEntity(const string & keyword, GameData * parent)  : TokenEntity(keyword, parent)
 {
     keyword_   = keyword;               
     parent_   = parent;               
@@ -67,12 +72,15 @@ UnitEntity::UnitEntity(const string & keyword, GameData * parent)  : PhysicalEnt
 
 
 
-UnitEntity::UnitEntity(const UnitEntity * prototype): PhysicalEntity(prototype)
+UnitEntity::UnitEntity(const UnitEntity * prototype): TokenEntity(prototype)
 {
+      raceComposition_ =0;
       stackFollowingTo_ = 0;
       staying_  = false;
+      consuming_ = true;
       exposeFlag_   = false;
       containingConstruction_=0;
+      discontenting_ = false;
       isAssignedToStaff_  = false;
 }
 
@@ -146,7 +154,17 @@ STATUS UnitEntity::initialize        ( Parser *parser )
 		return OK;
 	}
 
-	  return PhysicalEntity::initialize(parser );
+ if (parser->matchKeyword("NO_CONSUME"))
+	{
+    consuming_ = false;
+		return OK;
+	}
+ if (parser->matchKeyword("DISCONTENT"))
+	{
+    discontenting_ = true;
+		return OK;
+	}
+	  return TokenEntity::initialize(parser );
 
 }
 
@@ -159,7 +177,9 @@ void UnitEntity::save(ostream &out)
 {
   if(isDisbanded())
       return;
-  PhysicalEntity::save(out);
+  TokenEntity::save(out);
+  if(!consuming_) out << "NO_CONSUME"<<endl;
+  if(discontenting_) out << "DISCONTENT"<<endl;
   
   if((moving_ !=0) && (stackFollowingTo_ == 0))  moving_->save(out);
 	out << "RACE "; raceComposition_->save(out);
@@ -179,6 +199,52 @@ void UnitEntity::save(ostream &out)
 void UnitEntity::dailyUpdate()
 {
    moveAdvance();
+   enchantments_.processExpiration(getFiguresNumber());
+}
+
+
+
+void      UnitEntity::payUpkeep()
+{
+  int upkeep = stats.getUpkeep() * getFiguresNumber();
+  //  winter upkeep is higher?
+  if(getConsuming())
+  {
+
+    int localFood = hasItem(food);
+    if(localFood >= getFiguresNumber())
+      {
+        localFood = getFiguresNumber();
+        takeFromInventory(food,localFood);
+      }
+    else
+    {    
+    takeFromInventory(food,localFood);
+    localFood += borrow(food, getFiguresNumber() - localFood );
+    }
+    if(localFood)
+    {
+    upkeep -= (upkeep * localFood / getFiguresNumber()) * 80 /100;
+    addReport(new UnaryPattern(consumeFoodReporter, new IntegerData(localFood)));
+    }         
+  }
+  if(pay(upkeep))
+  {
+    addReport(new UnaryPattern(upkeepReporter, new IntegerData(upkeep)));
+  }
+  else
+  {
+    addReport(new SimplePattern(cannotPayUpkeepReporter));
+    if(getDiscontenting())
+    {
+      addReport(new UnaryPattern(disbandReporter,this));
+      disband();
+    }
+    
+    else
+      setDiscontenting(true);
+
+  }
 }
 
 
@@ -199,7 +265,7 @@ void UnitEntity::doOath()
     oldFaction->removeUnit(this);
   for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
   {
-   oldFaction->removeTotalControlPoints((*iter)->getTitle()->getControl());
+   oldFaction->removeMaxControlPoints((*iter)->getTitle()->getControl());
    (*iter)->desactivateClaimingEffects(); // will clean ownership info
   }
     setFaction(toOath_);
@@ -208,22 +274,24 @@ void UnitEntity::doOath()
     // Transfer titles and land ownership
   for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
   {
-   toOath_->addTotalControlPoints((*iter)->getTitle()->getControl());
+   toOath_->addMaxControlPoints((*iter)->getTitle()->getControl());
    (*iter)->activateClaimingEffects(); // will renew ownership info
   }
 }
-
-
-
+//===============================================================================
+//
+//                          REPORTING
+//
+//===============================================================================
 /*
  *
  */
-void UnitEntity::report(FactionEntity * faction, ReportPrinter &out)
+void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &out)
 {
   if(isHidden())
       return;
       
-  out  << printName();
+  out  << print();
 
 
   if(isDisbanded())
@@ -239,38 +307,37 @@ void UnitEntity::report(FactionEntity * faction, ReportPrinter &out)
   for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
   {
     if(iter != titles_.begin())
-      out << ", ";
+      out << ", " << *(*iter);
     else
-      out << " ";
-    (*iter)->print(out);
+      out << " " << *(*iter);
 
   }
-      out  << " at "<<getLocation()->printName();
+      out  << " at "<<getLocation()->print();
 
  if(moving_)
-    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->printName()
+    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
  if(stackFollowingTo_)
-    out << " following " << getLeader()->printName();
+    out << " following " << getLeader()->print();
  if(getContainingConstruction())
-    out << " inside " << getContainingConstruction()->printName();
+    out << " inside " << getContainingConstruction()->print();
     out  <<". "<< endl;
 
     out.incr_indent();
-    out<<raceComposition_->printName();
+    out<<raceComposition_->print();
 
     reportInventory(faction, out);
     reportSkills(faction, out);
   
 
  recalculateStats();  // Do we really need that?
- out << "Stats: ";
- stats.print(out);
- if(!getTarget().empty())
-  out<< " Targeting "<< getTarget()<<".\n";
+ out << "Stats: " << stats;
+ out << " Upkeep: " << stats.getUpkeep() * getFiguresNumber() << " coins.";
+ if(getTarget())
+  out<< " Targeting "<< getTarget()->print()<<".\n";
  out <<endl<<endl;
   
- out << "Events for "<<printName()<<":"<<endl;
+ out << "Events for "<<print()<<":"<<endl;
  reportEvents(out);
     out <<endl;
     out.decr_indent();
@@ -286,7 +353,7 @@ void UnitEntity::privateReport(ReportPrinter &out)
   if(isHidden())
       return;
 
-  out  << " * "<< printName();
+  out  << " * "<< print();
 
     if(isDisbanded())
     {
@@ -299,9 +366,21 @@ void UnitEntity::privateReport(ReportPrinter &out)
  reportInventory(getFaction(), out);
  reportSkills(getFaction(), out);
  recalculateStats();  // Do we really need that?
-   out << "Stats: ";stats.print(out);
- out <<endl;
+   out << "Stats: "<< stats<<endl;
+ reportFlags(out);  
  out.decr_indent();
+}
+
+
+
+/*
+ * Report unit's specific states
+ */
+void    UnitEntity::reportFlags(ReportPrinter &out)
+{
+  TokenEntity::reportFlags(out);
+  if(!consuming_) out << " Will not use food for upkeep.";
+  if(discontenting_) out << " Discontent.";
 }
 
 
@@ -320,16 +399,16 @@ void    UnitEntity::publicReport(int observation, ReportPrinter &out)
   if (getStealth() > observation)
         return;
 
-  out  << " - "<< printName();
+  out  << " - "<< print();
   if (getStealth() < observation)
-     out  << " of "<< getFaction()->printName();
+     out  << " of "<< getFaction()->print();
 
  if(moving_)
-    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->printName()
+    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
 
  if(getContainingConstruction())
-    out << " inside " << getContainingConstruction()->printName();
+    out << " inside " << getContainingConstruction()->print();
     out<<endl;
 }
 
@@ -353,7 +432,7 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
         {
           out << ", ";
         }
-      (*iter).print(out);
+      (*iter).reportExperience(out);
     }
   out <<". ";
 
@@ -419,18 +498,30 @@ void UnitEntity::reportInventory(FactionEntity * faction, ReportPrinter &out)
             {
               out << ", ";
             }
-          (*iter)->print(out);
+          (*iter)->reportEquipment(out);
         }
     out <<". ";
     }
+
     int StackWeight=0;
-    int StackCapacity=0;
     int weight = getWeight();
-    int capacity = getCapacity(0);
     calculateTotalWeight(StackWeight);
-   out << "Weight "<<weight; if(weight != StackWeight) out << "("<<StackWeight <<")"; out<<". ";
-   calculateTotalCapacity(StackCapacity,0);
-   out << "Capacity "<< capacity; if(StackCapacity != capacity) out << "("<<StackCapacity <<")"; out<<". ";
+    out << "Weight "<<weight; if(weight != StackWeight) out << "("<<StackWeight <<")"; out<<". ";
+    for (int movementModeIndex = 0; movementModeIndex < movementModes.size();  movementModeIndex++)
+    {
+      int StackCapacity=0;
+      int capacity = getCapacity(movementModeIndex);
+      calculateTotalCapacity(StackCapacity,movementModeIndex);
+      if(StackCapacity > 0)
+      {
+       if(!movementModeIndex)
+        out << "Capacity ";
+        else
+        out <<", "<< (movementModes[movementModeIndex])->getName()<< " ";
+        out << capacity; if(StackCapacity != capacity) out << "("<<StackCapacity <<")"; 
+      }
+    }
+out<<". ";
 //   out<<endl;
 }
 
@@ -444,28 +535,29 @@ void    UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out
   for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
   {
     if(iter != titles_.begin())
-      out << ", ";
+      out << ", "<< *(*iter);
     else
-      out << " ";
-    (*iter)->print(out);
-
+      out << " "<< *(*iter);
   }
   
  if(moving_)
-    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->printName()
+    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
  if(faction == getFaction())
  {
   if(stackFollowingTo_)
-    out << " following " << getLeader()->printName();
+    out << " following " << getLeader()->print();
  }
  if(getContainingConstruction())
-    out << " inside " << getContainingConstruction()->printName();
+    out << " inside " << getContainingConstruction()->print();
  out  << endl;
-   out<<raceComposition_->printName();
+   out<<raceComposition_->print();
 
 }
 
+//===============================================================================
+//===============================================================================
+//===============================================================================
 
 
 /*
@@ -479,10 +571,10 @@ void UnitEntity::preprocessData()
 	if(faction_)
 	faction_-> addUnit(this);
 	else
-	cout << "Unassigned faction for unit" << printName() <<endl;
+	cout << "Unassigned faction for unit" << print() <<endl;
     if(raceComposition_ == 0)
 		{
-			cout << "Race data are missing for unit" << printName() <<endl;
+			cout << "Race data are missing for unit" << print() <<endl;
 			}
   if(containingConstruction_)
      containingConstruction_->addUnit(this);
@@ -501,7 +593,7 @@ STATUS UnitEntity::dataConsistencyCheck()
 {
   if (location_ ==0)
 	{
-		cout << "Incomplete data (no location reference) for " << printName() << endl;
+		cout << "Incomplete data (no location reference) for " << print() << endl;
 		return IO_ERROR;
 	}
 	faction_->addVisitedLocation(location_);
@@ -622,6 +714,7 @@ int UnitEntity::getCapacity(int modeIndex)
       }
   //  capacity += location_->getCapacity(modeIndex) * figures_;
   // effects
+    capacity += enchantments_.getCapacity(modeIndex, getFiguresNumber());
     return capacity;
 }
 
@@ -647,14 +740,14 @@ vector < InventoryElement *> UnitEntity::updateEquipement()
                     iter != race-> getAllEquipmentSlots().end(); ++iter)
     {
 	 		equipMax = figures * race-> getEquipCapacity((*iter)->type);
-//     cout << "checking equipment for "<< (*iter)->type->printName()<< " max = " << equipMax<<endl;
+//     cout << "checking equipment for "<< (*iter)->type->print()<< " max = " << equipMax<<endl;
   		for (InventoryElementIterator iterEquip = inventory_.begin();
                           iterEquip != inventory_.end(); ++iterEquip)
     		{
 				  currentEquip = (*iterEquip)->getEquipedNumber() * (*iterEquip)->getItemType()-> getNumEquipSlotsRequired();
 	     		if( (*iterEquip)->getItemType()-> getEquipSlot() == (*iter)->type)
 						{
-//     cout << "------- "<< (*iterEquip).getItemType()->printName()<< " slots left "<< equipMax<<endl;
+//     cout << "------- "<< (*iterEquip).getItemType()->print()<< " slots left "<< equipMax<<endl;
 							if(equipMax == 0)  // no more slots
               {
                 unequippedNum = currentEquip / ((*iterEquip)->getItemType()-> getNumEquipSlotsRequired());
@@ -736,7 +829,7 @@ int currentlyEquipedItems = (*iter)->getEquipedNumber(); 																				;
     {
 	     if( (*iterEquip)->getItemType()-> getEquipSlot() == item->getEquipSlot())
 				{
-//          cout<< "======================" << (*iterEquip).getItemType()->printName()<< " "<< (*iterEquip).getEquipedNumber()<< " "<< (*iterEquip).getItemType()-> getNumEquipSlotsRequired()<<endl;
+//          cout<< "======================" << (*iterEquip).getItemType()->print()<< " "<< (*iterEquip).getEquipedNumber()<< " "<< (*iterEquip).getItemType()-> getNumEquipSlotsRequired()<<endl;
           equipCapacity -= (*iterEquip)->getEquipedNumber() * (*iterEquip)->getItemType()-> getNumEquipSlotsRequired();
 				}
 		}
@@ -795,7 +888,7 @@ void stack(UnitEntity * unit, UnitEntity * newLeader)
 
 
 	if (unit->isTraced() || newLeader->isTraced() )
-    cout <<"== TRACING " <<unit->printTag()<< " ==> stacks under "<< newLeader->printName() <<"\n";
+    cout <<"== TRACING " <<unit->printTag()<< " ==> stacks under "<< newLeader->print() <<"\n";
 	//move_to_location(stacked, 0);
 	 unit->stackFollowingTo_ = newLeader;
    newLeader->stackFollowers_.push_back(unit);
@@ -812,7 +905,7 @@ bool UnitEntity::unstack()
 		return false;
 
 	if (isTraced() || stackFollowingTo_->isTraced() )
-    cout <<"== TRACING " <<printTag()<< " ==>  unstacks from "<< stackFollowingTo_->printName() <<"\n";
+    cout <<"== TRACING " <<printTag()<< " ==>  unstacks from "<< stackFollowingTo_->print() <<"\n";
 
   this->stackFollowingTo_->stackFollowers_.erase (
 				find( stackFollowingTo_->stackFollowers_.begin(),
@@ -1111,6 +1204,8 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 
   if(unit)
   {
+     setDiscontenting( unit->getDiscontenting()); // copy discontent flag
+
     for (iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); iter++)
 		  {
        if ( (*iter).getSkill()->mayBeStudied(this) !=
@@ -1308,7 +1403,7 @@ void UnitEntity::addTitle(TitleElement * title)
    SkillLevelElement * bonus = title->getTitle()->getLearningLevelBonus();
   if(bonus)
     addLearningLevelBonus(bonus);
-  getFaction()->addTotalControlPoints(title->getTitle()->getControl());
+  getFaction()->addMaxControlPoints(title->getTitle()->getControl());
 }
 
 
@@ -1357,7 +1452,7 @@ void UnitEntity::removeTitle(TitleElement * title)
 
 
    titles_.erase( iter);
-  getFaction()->removeTotalControlPoints(title->getTitle()->getControl());
+  getFaction()->removeMaxControlPoints(title->getTitle()->getControl());
 
 }
 
@@ -1396,11 +1491,19 @@ bool UnitEntity::mayCancelTitle(TitleElement * title)
 
 
 
+/*
+ *  Generic interface function for determining rules responsible for
+ *  TokenEntity ability to study
+ */
 Rule * UnitEntity::getType()
 {
   return getRace();
 }
 
+
+/*
+ * Determines racial type of unit
+ */
 bool UnitEntity::isOfType(Rule * type)
 {
   return getRace()->isDescendantFrom(type);
@@ -1408,9 +1511,77 @@ bool UnitEntity::isOfType(Rule * type)
 
 
 
+/*
+ *  borrows no more than amount of items
+ */
+int UnitEntity::borrow(ItemRule * item, int amount)
+{
+  int result = 0;
+  int current = 0;
+  for (vector <UnitEntity *>::iterator iter = location_->unitsPresent().begin();
+                    iter != location_->unitsPresent().end(); ++iter)
+  {
+    if ((*iter) == this)
+        continue;
+    if ((*iter)->getFaction() != faction_)
+        continue;
+    if(!(*iter)->getSharing())
+        continue;
+    current =  (*iter)->hasItem(item);
+    if(current == 0)
+        continue;
+
+    if(current  > amount - result)
+    {
+      current =  amount - result;
+    }
+    result += current;
+    (*iter)->takeFromInventory(item,current);
+//QQQ
+       addReport(new TertiaryPattern(borrowReporter, this,new ItemElement(item,current),(*iter)));
+      (*iter)->addReport(new TertiaryPattern(lendReporter, (*iter),new ItemElement(item,current),this));
+	    if (isTraced())
+      {
+        ItemElement * itemsGiven = new ItemElement(item,current);
+      cout <<"== TRACING " <<print()<< " ==> borrows "<< * itemsGiven<< " from "<< (*iter)->print() <<"\n";
+         delete itemsGiven;
+      }
+    if(result >= amount)
+      return amount;
+  }
+      return result;  
+}
+
+
+
+
+/*
+ *  determines how many items (but no more than amount) can borrow unit 
+ */
+int UnitEntity::mayBorrow(ItemRule * item, int amount)
+{
+  int result = 0;
+  for (vector <UnitEntity *>::iterator iter = location_->unitsPresent().begin();
+                    iter != location_->unitsPresent().end(); ++iter)
+  {
+    
+    if ((*iter)->getFaction() != faction_)
+        continue;
+    if ((*iter) == this)
+        continue;
+    if(!(*iter)->getSharing())
+        continue;
+    result +=  (*iter)->hasItem(item);
+    if(result >= amount)
+      return amount;
+  }
+      return result;
+}
+
+
+
 bool UnitEntity::mayPay(int price)
 {
-//  ItemRule * cash = items["coin"];
   // Try to pay from the pocket money
   int cashAmount = hasItem(cash);
  if(cashAmount >= price)
@@ -1418,69 +1589,54 @@ bool UnitEntity::mayPay(int price)
   else
     price -= cashAmount;
  // Try to borrow
- vector <UnitEntity *>::iterator iter;
-  for (iter = location_->unitsPresent().begin(); iter != location_->unitsPresent().end(); iter++)
-  {
-    if ((*iter)->getFaction() != faction_)
-        continue;
-    cashAmount = (*iter)->hasItem(cash);
-    if(cashAmount >= price)
-      return true;
-    else
-      price -= cashAmount;
-  }
+    cashAmount = mayBorrow(cash,price);
+ if(cashAmount >= price)
+  return true;
+  else
+    price -= cashAmount;
+     
   // Try to withdraw
-  return faction_->mayWithdraw(cash,price);
+  if(getWithdrawingSupport())
+  {
+    return faction_->mayWithdraw(cash,price);
+  }
+  else
+    return false;  
 }
 
 
 
 bool UnitEntity::pay(int price)
 {
-//  ItemRule * cash = items["coin"];
   // Try to pay from the pocket money
   int cashAmount = takeFromInventory (cash, price);
   if (cashAmount >= price)
   {
     return true;
   }
-  else
+
     price -= cashAmount;
  // Try to borrow
- vector <UnitEntity *>::iterator iter;
-  for (iter = location_->unitsPresent().begin(); iter != location_->unitsPresent().end(); iter++)
-  {
-//    cout << printName()<<" is trying to borrow from " << (*iter)->printName() << " at " << location_->printName()<<endl;
-    if((*iter) == this)  // can't borrow from itself
-        continue;
-    
-    if ((*iter)->getFaction() != faction_)
-        continue;
-    cashAmount = (*iter)->takeFromInventory (cash, price);
-    if(cashAmount)
-    {
-//QQQ
-       addReport(new TertiaryPattern(borrowReporter, this,new ItemElement(cash,cashAmount),(*iter)));
-      (*iter)->addReport(new TertiaryPattern(lendReporter, (*iter),new ItemElement(cash,cashAmount),this));
-	    if (isTraced())
-      cout <<"== TRACING " <<printName()<< " ==> borrows "<<cashAmount<< " from "<< (*iter)->printName() <<"\n";
-    }
+    cashAmount = mayBorrow(cash,price);
     if(cashAmount >= price)
       {
         return true;
       }
     else
       price -= cashAmount;
-  }
+
   // Try to withdraw
+  if(getWithdrawingSupport())
+  {
   cashAmount = faction_->withdraw(cash,price);
 //QQQ
   addReport(new BinaryPattern(withdrawReporter, this,new ItemElement(cash,cashAmount)));
 	if (isTraced() && cashAmount )
-    cout <<"== TRACING " <<printName()<< " ==> withdraws "<<cashAmount<< "\n";
+    cout <<"== TRACING " <<print()<< " ==> withdraws "<<cashAmount<< "\n";
   if (cashAmount >= price)
   {
     return true;
+  }
   }
     return false; // Can't afford to pay 
 }
@@ -1503,10 +1659,13 @@ void UnitEntity::recalculateStats()
 		{
       stats.addPartialStats( (*iter)->getStats(), (*iter)->getEquipedNumber(), figures);      
     }
+ // Effects // may be partial stats?
+     enchantments_.addStats(&stats,getFiguresNumber());
+    
  // Building
   if(containingConstruction_ != 0)
   {
-//      cout << containingConstruction_->printName()<<endl;
+//      cout << containingConstruction_->print()<<endl;
       stats.addStats(getContainingConstruction()->getConstructionType()->getStats());
    }
 }
@@ -1540,7 +1699,7 @@ bool UnitEntity::isFollowingInStackTo(UnitEntity * unit)
 
 
 
-bool UnitEntity::maySee(PhysicalEntity * tokenEntity)
+bool UnitEntity::maySee(TokenEntity * tokenEntity)
 {
    if( tokenEntity == 0)
        return false;
@@ -1637,7 +1796,7 @@ void UnitEntity::expose(bool value)
 //   }
 // // 1. Some races may not be able to move (followers)
 //	if (isTraced())
-//    cout <<"== TRACING " <<printName()<< " ==> Attempts to move\n";
+//    cout <<"== TRACING " <<print()<< " ==> Attempts to move\n";
 //
 // // Can't move while shopping - obsolete
 // stayStack();
@@ -1688,7 +1847,7 @@ void UnitEntity::expose(bool value)
 /** */
 void UnitEntity::moveToLocation()
 {
-  PhysicalEntity::moveToLocation();
+  TokenEntity::moveToLocation();
   getLocation()->removeUnit(this);
   moving_->getDestination()->addUnit(this);
 }
@@ -1814,16 +1973,16 @@ bool UnitEntity::work()
         // report race can't work
         return false;
         }
-    Rational amount(location_->getWages() *  getFiguresNumber(), game.daysInMonth);
+    RationalNumber amount(location_->getWages() *  getFiguresNumber(), game.daysInMonth);
     if(amount.getValue())
     {
       location_->addMonthlyConflictRequest(new WagesCompetitiveRequest(this,0,amount));
-//      cout << printName() << " is working at "<< location_->printName()<<"\n";
+//      cout << print() << " is working at "<< location_->print()<<"\n";
       return true;
     }
     else
     {
-      cout << printName() << " can't work at "<< location_->printName()<<"\n";
+      cout << print() << " can't work at "<< location_->print()<<"\n";
       return false;
     }
 }
@@ -1844,7 +2003,7 @@ void UnitEntity::disband()
   for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
   {
    (*iter)->setTitleHolder(0);
-   getFaction()->removeTotalControlPoints((*iter)->getTitle()->getControl());
+   getFaction()->removeMaxControlPoints((*iter)->getTitle()->getControl());
    (*iter)->desactivateClaimingEffects(); // will clean ownership info
   }
 

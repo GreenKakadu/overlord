@@ -21,7 +21,7 @@
 extern Reporter * buyReporter;
 extern Reporter * sellReporter;
 extern ItemRule * cash;
-MarketRequest::MarketRequest(UnitEntity * unit, Order * orderId,
+MarketRequest::MarketRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount,
                               ItemRule * item,
                               int price, MARKET_OFFER type): BasicCompetitiveRequest( unit, orderId)
@@ -46,13 +46,10 @@ string MarketRequest::print()
   }
   else
     operationName = " sell ";
-  char buffer1[12];
-  char buffer2[12];
-  longtostr(amount_, buffer1);
-  longtostr(price_, buffer2);
+
     
-  return  unit_->printName() + " requests to " + operationName + buffer1 +
-          " of " + item_->printName() + " for " + buffer2  + " coins\n";
+  return  unit_->print() + " requests to " + operationName + longtostr(amount_) +
+          " of " + item_->print() + " for " + longtostr(price_)  + " coins\n";
 }
 
 AbstractData * MarketRequest::getType() const
@@ -62,13 +59,13 @@ AbstractData * MarketRequest::getType() const
 bool MarketRequest::isEqualTo(BasicCompetitiveRequest * request)
 {
 
-//  cout << "Comparing "<< this->getType()->printName() << " and " <<request->getType()->printName()<<endl;
+//  cout << "Comparing "<< this->getType()->print() << " and " <<request->getType()->print()<<endl;
 //  cout << "MarketRequest::Comparing: "<< this->print() << " and " <<request->print()<<endl;
 //  if (this->getType())
-//     cout << this->getType()->printName();
+//     cout << this->getType()->print();
 //      else cout <<" 0 ";
 //  if (request->getType())
-//     cout << request->getType()->printName();
+//     cout << request->getType()->print();
 //      else cout <<" 0 ";
 //  if (this->getType() == request->getType())
 //      cout << " True "<<endl;
@@ -127,9 +124,10 @@ void MarketRequest::answerMarketRequest(int price, int amount)
   if (type_ == BUY)
   {
     if (unit_->isTraced())
-      cout <<"== TRACING " << unit_->printName()<< " buys " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
+      cout <<"== TRACING " << unit_->print()<< " buys " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
     unit_->addToInventory(item_,amount);
-    assert(unit_->takeFromInventoryExactly(cash, price * amount));
+    int taken = unit_->takeFromInventory(cash, price * amount);  // pay
+    assert(taken == price * amount);
     // report
 //QQQ
     unit_->addReport(new QuartenaryPattern(buyReporter, unit_,
@@ -142,8 +140,9 @@ void MarketRequest::answerMarketRequest(int price, int amount)
   if (type_ == SELL)
   {
     if (unit_->isTraced())
-        cout <<"== TRACING " << unit_->printName()<< " sells " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
-    assert(unit_->takeFromInventoryExactly(item_,amount));
+        cout <<"== TRACING " << unit_->print()<< " sells " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
+    int taken = unit_->takeFromInventory(item_,amount);
+    assert(taken == amount);
     unit_->addToInventory(cash, price * amount);
 //QQQ
     unit_->addReport(new QuartenaryPattern(sellReporter, unit_,

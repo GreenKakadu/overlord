@@ -185,7 +185,7 @@ void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
 
 void ItemRule::printDescription(ReportPrinter & out)
 {
-  out << printName()<< ": ";
+  out << print()<< ": ";
   if(weight_)
   {
     out <<"weight "  <<weight_ ;
@@ -221,7 +221,7 @@ void ItemRule::printDescription(ReportPrinter & out)
 
   if(equipCondition_)
   {
-    out << " Equipped with "; equipCondition_->print(out); out<<".";
+    out << " Equipped with "<< *equipCondition_<<".";
   }
 
    if(equipSlot_)
@@ -233,7 +233,7 @@ void ItemRule::printDescription(ReportPrinter & out)
    }
    if(!stats.empty())
    {
-      out << " Equipment gives "; stats.print(out);
+      out << " Equipment gives " << stats;
    }
 }
 

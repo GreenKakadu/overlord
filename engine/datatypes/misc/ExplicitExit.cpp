@@ -22,9 +22,9 @@ ExplicitExit::ExplicitExit(LocationEntity * origin, DirectionVariety * dir,
 /*
  *  prints description of exit for debugging purposes.
  */
-void ExplicitExit::print()
+string ExplicitExit::print()
 {
-	cout << "exit  " << dir_->printName() << " to " << destination_->printName() << endl;
+	return string("explicit exit  ") + dir_->print() + " to " + destination_->print();
 }
 
 

@@ -28,9 +28,9 @@ void  QuintenaryPattern::operator delete(void * deadObject, size_t size)
 }
 
 
-void QuintenaryPattern::print(ostream &out) const
+void QuintenaryPattern::printReport(ostream &out) const
 {
-  reporter_->print(out, param1_, param2_, param3_ , param4_ , param5_ );
+  reporter_->printReport(out, param1_, param2_, param3_ , param4_ , param5_ );
 }
 
 void QuintenaryPattern::clean()

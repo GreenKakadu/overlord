@@ -58,7 +58,7 @@ MoveOrder::MoveOrder(){
 STATUS MoveOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
             
    const string tag = parser->getWord();
@@ -100,15 +100,15 @@ STATUS MoveOrder::loadParameters(Parser * parser,
 ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
 
-  PhysicalEntity * tokenEntity = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
   return move(tokenEntity,parameters[0]);
 }
 
 
-ORDER_STATUS MoveOrder::move(PhysicalEntity * tokenEntity, AbstractData *parameter)
+ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
 {
-  Order * orderId = tokenEntity->getCurrentOrder();
+  OrderLine * orderId = tokenEntity->getCurrentOrder();
    
   LocationEntity * location = tokenEntity->getGlobalLocation();
       
@@ -118,7 +118,7 @@ ORDER_STATUS MoveOrder::move(PhysicalEntity * tokenEntity, AbstractData *paramet
       }
 
   BasicExit * exit = 0;
-  string parValue = parameter->printName();
+  string parValue = parameter->print();
 	LocationEntity * destination   =  dynamic_cast<LocationEntity *>(parameter);
   if( destination != 0)
     { 
@@ -149,7 +149,7 @@ ORDER_STATUS MoveOrder::move(PhysicalEntity * tokenEntity, AbstractData *paramet
  		  return INVALID;
    }
 	if (tokenEntity->isTraced())
-    cout <<"== TRACING " <<tokenEntity->printName()<< " ==> Attempts to move\n";
+    cout <<"== TRACING " <<tokenEntity->print()<< " ==> Attempts to move\n";
 
  tokenEntity->leaveStaying();
  
@@ -167,7 +167,7 @@ ORDER_STATUS MoveOrder::move(PhysicalEntity * tokenEntity, AbstractData *paramet
   {
    tokenEntity->calculateTotalCapacity(capacity[i], i);
    time = exit->getTravelTime(movementModes[i]);
-// cout <<"++++++++ MOVING: "<< tokenEntity->printName() <<" "<< movementModes[i]->printName()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+// cout <<"++++++++ MOVING: "<< tokenEntity->print() <<" "<< movementModes[i]->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
    if(time == 0)
     continue;
     if(capacity[i] > bestCapacity)

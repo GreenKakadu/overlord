@@ -17,7 +17,7 @@
 #define SWAP_ORDER_REQUEST_H
 
 #include "BasicOrderSynchronizationRequest.h"
-class PhysicalEntity;
+class TokenEntity;
 class ItemRule;
 
 /**
@@ -26,14 +26,14 @@ class ItemRule;
 
 class SwapOrderRequest : public BasicOrderSynchronizationRequest  {
 public: 
-	SwapOrderRequest(OrderPrototype * orderType, PhysicalEntity * swapTarget, ItemRule * item, int number);
+	SwapOrderRequest(OrderPrototype * orderType, TokenEntity * swapTarget, ItemRule * item, int number);
 	~SwapOrderRequest(){}
    bool isMatch(BasicOrderSynchronizationRequest  * request);
-   inline PhysicalEntity * getSwapTarget() const {return swapTarget_;}
+   inline TokenEntity * getSwapTarget() const {return swapTarget_;}
    inline ItemRule * getSwapItem() const {return item_;}
    inline int  getSwapNumber() const {return number_;}
 protected:
-   PhysicalEntity * swapTarget_;
+   TokenEntity * swapTarget_;
    ItemRule * item_;
    int number_;
 };

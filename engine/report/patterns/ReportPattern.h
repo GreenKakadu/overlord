@@ -20,8 +20,11 @@ ReportPattern is the Generic object for all report patterns.
 using namespace std;
 class ReportPattern {
 public: 
-  virtual void print(ostream &) const{}
+  virtual void printReport(ostream &) const{}
   virtual void clean() {}
+  virtual int getTag(){return 0;} // dummy method which is never used
+                            // defined in order to provide  reportElements
+                            // with interface similar with other elements
 
 protected:
 	ReportPattern(){}
@@ -39,9 +42,6 @@ template <class T>  static void * NEW (size_t size)
 			T::headOfFreeList = p->next;
 	else
 		{
-//			T * newBlock = static_cast<T *>
-//							(:: operator new ( BLOCK_SIZE * sizeof (T) ) );
-//      	void * temp =				(:: operator new ( 100000) );
 			void * temp =				(:: operator new ( BLOCK_SIZE * sizeof (T) ) );
 			T * newBlock = static_cast<T *> (temp);
 			for (int i = 1; i < BLOCK_SIZE - 1 ; ++i)
@@ -66,5 +66,7 @@ template <class T>  static void  DELETE_PATTERN (void * deadObject, size_t size)
 	p->next = T::headOfFreeList;
 	T::headOfFreeList = p;
 }
+   inline ostream& operator << (ostream& out,  ReportPattern & data)
+                                { data.printReport(out); return out;}
 
 #endif

@@ -17,7 +17,7 @@ using namespace std;
 class StanceVariety : public Variety  {
 public:
       StanceVariety ( const string & keyword, GameData * parent): Variety(keyword, parent){}
-      StanceVariety ( const StanceVariety * prototype ): Variety(prototype){}
+      StanceVariety ( const StanceVariety * prototype ): Variety(prototype){code_ = 0;}
       ~StanceVariety (){}
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();

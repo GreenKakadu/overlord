@@ -30,7 +30,7 @@ public:
    {out << rule_->getTag() << " " <<  parameter1_ ;
       if(parameter2_) out << "  " << *parameter2_ ;
       out << endl;}
-   void print(ostream & out)
+   void reportMovement(ostream & out)
    {out << " " <<  parameter1_ << "days of "<< rule_->getTag() ;
       if(parameter2_) out << " using " << *parameter2_ ;
       out << endl;}

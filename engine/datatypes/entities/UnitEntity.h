@@ -8,11 +8,10 @@
 
 #ifndef UNIT_H
 #define UNIT_H
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "SkillElement.h"
 #include "SkillLevelElement.h"
 #include "EntityStatistics.h"
-#include "MovementMode.h"
 #include "ReportPrinter.h"
 class FactionEntity;
 class LocationEntity;
@@ -28,7 +27,7 @@ class ConstructionRule;
 class TitleElement;
 class InventoryElement;
 
-class UnitEntity : public PhysicalEntity
+class UnitEntity : public TokenEntity
 {
     public:
       UnitEntity (const string & keyword, GameData * parent );
@@ -44,13 +43,15 @@ class UnitEntity : public PhysicalEntity
   void    dailyUpdate();
   bool    defaultAction();
   void      postProcessData();
+  void      payUpkeep();
 // Reporting ==============================================
-  void    report(FactionEntity * faction, ReportPrinter &out);
+  void    produceFactionReport(FactionEntity * faction, ReportPrinter &out);
   void    publicReport(int observation, ReportPrinter &out);
   void    privateReport(ReportPrinter &out);
   void    reportAppearence(FactionEntity * faction, ReportPrinter &out);
   void    reportInventory(FactionEntity * faction, ReportPrinter &out);
   void    reportSkills(FactionEntity * faction, ReportPrinter &out);
+  void    reportFlags(ReportPrinter &out);
 // Data access methods ==============================================
  
          int              getObservation() const;
@@ -73,6 +74,9 @@ class UnitEntity : public PhysicalEntity
          int     hasMoney();                                  // These two items play special
   inline int     hasMana()  {return hasItem(items["mana"]);} // role. Demand special care?
          int     equipItem(ItemRule * item, int num);
+         int     mayBorrow(ItemRule * item, int amount);
+         int     borrow(ItemRule * item, int amount);
+
 // Stacking ========================================================
 
                           /** Stacks under new leader */
@@ -122,6 +126,12 @@ void addLearningLevelBonus(SkillLevelElement * bonus);
 void removeLearningLevelBonus(SkillLevelElement * bonus);
 int getTitleBonus(SkillRule * skill);
 bool mayCancelTitle(TitleElement * title);
+// Flags ========================================================
+  void setConsuming(bool value) {consuming_ = value;}
+  bool getConsuming() {return consuming_;}
+  void setDiscontenting(bool value) {discontenting_ = value;}
+  bool getDiscontenting() {return discontenting_;}
+
 // Other ========================================================
   void  doOath();
   void  setEntityMoving(TravelElement * moving);
@@ -131,7 +141,7 @@ bool mayCancelTitle(TitleElement * title);
   bool retreat();
   bool pay(int price);
   bool mayPay(int price);
-  bool maySee(PhysicalEntity * tokenEntity);
+  bool maySee(TokenEntity * tokenEntity);
   bool mayInterract(UnitEntity * unit);
   bool mayInterract(ConstructionEntity * buildingOrShip);
   bool mayBuild (ConstructionRule * construction);
@@ -167,6 +177,8 @@ bool mayCancelTitle(TitleElement * title);
          bool             staying_;
          bool             patroling_;
          bool             exposeFlag_;
+         bool 	          consuming_;
+         bool 	          discontenting_;
          bool             isAssignedToStaff_;
   vector < UnitEntity *>      stackFollowers_;
   vector < TitleElement *>      titles_;

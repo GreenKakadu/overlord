@@ -23,12 +23,14 @@
 #include "BinaryPattern.h"
 extern Reporter * notEnoughResourcesReporter;
 extern Reporter * productionReporter;
+extern GameData  targetTypeSelf;
 
 extern RulesCollection    <ItemRule>     items;
 
 BasicProductionStrategy::BasicProductionStrategy ( const BasicProductionStrategy * prototype ): BasicUsingStrategy(prototype)
 {
   productNumber_ = 1;
+  productionDays_ =1;
 }
 
 
@@ -56,13 +58,34 @@ void    BasicProductionStrategy::extractKnowledge (Entity * recipient, int param
 
 
 
-void BasicProductionStrategy::reportUse(USING_RESULT result, PhysicalEntity * unit)
+void BasicProductionStrategy::reportUse(USING_RESULT result, TokenEntity * unit)
 {
 }
 
 
 
-int BasicProductionStrategy::checkResourcesAvailability(PhysicalEntity * unit)
+USING_RESULT BasicProductionStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
+{
+/** We may be in the middle of production. Then we anyway may continue.*/
+/** Otherwise we'll need resources */
+
+ if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
+  {
+    if(checkResourcesAvailability(unit) == 0)
+      {
+        return NO_RESOURCES;
+      }
+     else
+     {
+        consumeResources(unit,1);
+        return  USING_OK;
+     }
+  }
+    return  USING_OK;
+}
+
+
+int BasicProductionStrategy::checkResourcesAvailability(TokenEntity * unit)
 {
   int currentProductionCycles;
   int maxProductionCycles = 9999;  // very big number
@@ -84,11 +107,11 @@ int BasicProductionStrategy::checkResourcesAvailability(PhysicalEntity * unit)
 
 
 
-bool BasicProductionStrategy::consumeResources(PhysicalEntity * unit, int numCycles)
+bool BasicProductionStrategy::consumeResources(TokenEntity * unit, int numCycles)
 {
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
-      if(!unit->takeFromInventoryExactly ((*iter)->getItemType(),(*iter)->getItemNumber() * numCycles ))
+      if((*iter)->getItemNumber() * numCycles != unit->takeFromInventory ((*iter)->getItemType(),(*iter)->getItemNumber() * numCycles ))
           return false;
     }
       return true;
@@ -107,7 +130,46 @@ void BasicProductionStrategy::printSkillDescription(ostream & out)
      {
        if(iter != resources_.begin())
         out<<", ";
-       out<< (*iter)->printName();
+       out<< (*iter)->print();
      }
   out<<".";
+}
+
+
+
+USING_RESULT  BasicProductionStrategy::checkTarget(UnitEntity * unit, GameData * targetType)
+{
+   AbstractData * target = unit->getTarget();
+// check target type
+  // if targetType = SELF any target will work
+   if(targetType == &targetTypeSelf)
+      return USING_OK;
+
+
+   if(target==0)             // we may try to find default target
+       return NO_TARGET;    //  such as containning construction
+
+  NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(target);
+  if(placeholder != 0)  // this is  placeholder.
+    {
+      GameData* realEntity = placeholder->getRealEntity();
+      if(realEntity) // We can get real entity id from placeholder
+        {
+            if(realEntity->isDescendantFrom(targetType))
+              return USING_OK;
+            else
+              return WRONG_TARGET;
+        }
+      else   // placeholder is still unresolved. Skill can't be used
+              return TARGET_NOT_EXIST;
+    }
+
+  //  or some GameData (Entity or rule)  check
+  GameData * dataTarget = dynamic_cast<GameData *>(target);
+  assert(dataTarget);
+  if(dataTarget->isDescendantFrom(targetType))
+    return USING_OK;
+  else
+    return WRONG_TARGET;
+
 }

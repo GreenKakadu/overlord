@@ -39,6 +39,7 @@ LocationEntity::LocationEntity ( const LocationEntity * prototype ) : Entity(pro
 {
   terrain_ = 0;
   owner_ = 0;
+  race_ = 0;
 //  location_ = this;
   dailyConflict_ = new EvenConflict(this); // default
   monthlyConflict_ = new EvenConflict(this); // default
@@ -63,17 +64,7 @@ LocationEntity::initialize        ( Parser *parser )
 {
 string temp;
 	
-      if (parser->matchKeyword ("NAME") )
-        {
-	  setName(parser->getText());
-	  return OK;
-	}
-      if (parser->matchKeyword("DESCRIPTION"))
-	{
-	  setDescription(parser->getText());
-	  return OK;
-	}
-      if (parser->matchKeyword("TERRAIN"))
+  if (parser->matchKeyword("TERRAIN"))
 	{
 //	  setTerrain(terrains[parser->getWord()]);
 	  setTerrain(findTerrainByTag(parser->getWord()));
@@ -185,11 +176,6 @@ string temp;
 //	  z_ = (parser->getInteger());
 //	  return OK;
 //	}
-       if (parser->matchKeyword("ORDER"))
- 	{
-	  //          cout << "Reading order..." << endl;
-	  orders_.push_back(new Order(parser->getText(), this));
- 	}
 
        if (parser->matchKeyword("EXIT"))
  	{
@@ -228,8 +214,13 @@ string temp;
       }
 			else
       {
+        if(!parser->matchWord().empty())
+        {
 					mode =  movementModes[parser->getWord()];
 					days = parser->getInteger();
+        }
+        else
+          break;
       }    
 
 			if (mode == 0)
@@ -302,7 +293,7 @@ string temp;
        	GameData * temp =  /*GameData::*/prototypeManager->findInRegistry(keyword);
 			if(temp == 0)
 				{
-					cout << "Unknown market type " << keyword  << " for location " << printName()<< endl;
+					cout << "Unknown market type " << keyword  << " for location " << print()<< endl;
 				}
 			else
 				{
@@ -313,7 +304,9 @@ string temp;
       return OK;
     }
    if(market_) market_->initialize(parser);
-	  return OK;
+
+    return Entity::initialize(parser);
+
 
 }
 
@@ -374,7 +367,7 @@ LocationEntity::save(ostream &out)
   if(economy_) out << "ECONOMY " << economy_<<endl;
        out << "XY " << x_ << " "<< y_<<" "<<endl;
 
-  vector<Order *>::iterator orderIter;
+  vector<OrderLine *>::iterator orderIter;
   for ( orderIter = orders_.begin(); orderIter != orders_.end(); orderIter++)
     {
            (*orderIter)->save(out);
@@ -398,6 +391,24 @@ void    LocationEntity::preprocessData()
   {
     cout << this<<" has no  terrain defined. This may cause program to crash\n";
   }
+}
+
+
+
+/*
+ * Monthly post-processing
+ */
+void LocationEntity::postProcessData()
+{
+  // For all tokens call upkeep method
+  for(UnitIterator iter = units_.begin(); iter != units_.end(); ++iter)
+  {
+    (*iter)->payUpkeep();
+  }
+//  for(ConstructionIterator iter = constructions_.begin(); iter != constructions_.end(); ++iter)
+//  {
+//    (*iter)->payUpkeep();
+//  }
 }
 
 
@@ -446,16 +457,16 @@ void LocationEntity::removeUnit(UnitEntity * unit)
 
 
 /** prints  report for Entity (stats, posessions, private events) */
-void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
+void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter & out)
 {
   bool isFirst = true;
-  out << printName() << " " <<terrain_->getName();
+  out << print() << " " <<terrain_->getName();
   if(getOwner())
   {
     out << " lands of ";
 //  if(title)
 //  out <<getTitleHolder()->printFullName()<< " of ";
-    out <<getOwner()->printName();
+    out <<getOwner()->print();
   }
   out << endl;
       faction->addKnowledge(terrain_);
@@ -467,7 +478,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
     {
       for( TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
       {
-        (*iter)->report(out);
+        (*iter)->produceReport(out);
         out << " ";
         faction->addKnowledge((*iter)->getTitle());
       }
@@ -484,7 +495,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
       out << ". Wages: $" << wages_ << ", entertainment: $"
           << entertainment_ << ", tax income: $" <<taxes_<<".\n";
 
-      if(market_) market_->report(faction,out);
+      if(market_) market_->produceFactionReport(faction,out);
     }
 
   if(!resources_.empty())
@@ -500,7 +511,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
         {
           out << ", ";
         }
-      (*iter)->report(out);
+      out<< *(*iter);
       faction->addKnowledge((*iter)->getResource());
     }
     out << ".\n";
@@ -522,7 +533,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
           {
             out << ", ";
           }
-      (*iter2)->report(out);
+      out<< (*iter2);
       faction->addSkillKnowledge((*iter2)->getSkill(), (*iter2)->getLevel());
     }
     out << ".\n";
@@ -538,7 +549,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
             {
               out << ", ";
             }
-          (*iter)->print(out);
+          out << (*iter);
           faction->addSkillKnowledge((*iter)->getSkill(), 1);
         }
       out <<". ";
@@ -549,7 +560,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
 
   for(ExitIterator iter= exits_.begin(); iter != exits_.end(); iter++)
   {
-    (*iter)->report(out); 
+    (*iter)->produceReport(out); 
   }
     out << "\n";
 
@@ -574,7 +585,7 @@ void LocationEntity::report(FactionEntity * faction, ReportPrinter & out)
         {
             if(iter != localItems_.begin())
               out << ", ";
-            out <<(*iter).printName();
+            out <<(*iter).print();
         }
       out << ".\n";
     }
@@ -665,14 +676,14 @@ void LocationEntity::setResource(ItemRule * item, int num)
 
 int  LocationEntity::getResource(ItemRule * item) 
 {
-//        cout << "Looking for " <<item->printName()<< " at " <<printName()<<endl;
+//        cout << "Looking for " <<item->print()<< " at " <<print()<<endl;
   ResourceElementIterator iter;
   for(iter = resources_.begin(); iter != resources_.end();iter++)
   {
     if ( (*iter)->getResource() == item)
       {
-//        cout << "   ...have " <<(*iter)->getResource()->printName()<<endl;
-//        cout << (*iter)->getResourceAmount() << " of " <<item->printName()<< " at " <<printName()<<endl;
+//        cout << "   ...have " <<(*iter)->getResource()->print()<<endl;
+//        cout << (*iter)->getResourceAmount() << " of " <<item->print()<< " at " <<print()<<endl;
         return (*iter)->getResourceAmount();
       }
   }
@@ -687,7 +698,7 @@ int  LocationEntity::getResource(ItemRule * item)
 
 
 
-Rational  LocationEntity::getAvailableResource(ItemRule * item)
+RationalNumber  LocationEntity::getAvailableResource(ItemRule * item)
 {
   ResourceElementIterator iter;
   for(iter = resources_.begin(); iter != resources_.end();iter++)
@@ -702,10 +713,10 @@ Rational  LocationEntity::getAvailableResource(ItemRule * item)
 
 
 
-Rational  LocationEntity::takeAvailableResource(ItemRule * item, Rational amount)
+RationalNumber  LocationEntity::takeAvailableResource(ItemRule * item, RationalNumber amount)
 {
   ResourceElementIterator iter;
-  Rational currentAmount;
+  RationalNumber currentAmount;
   for(iter = resources_.begin(); iter != resources_.end();iter++)
   {
   if ( (*iter)->getResource() == item)
@@ -757,7 +768,7 @@ void LocationEntity::dailyPreProcess()
 }
 void LocationEntity::processDailyConflict()
 {
-//  cout << "Processing daily conflict for "<< printName()<< " \n";
+//  cout << "Processing daily conflict for "<< print()<< " \n";
   dailyConflict_->process();
 }
 
@@ -772,19 +783,19 @@ void LocationEntity::addMarketRequest(MarketRequest * request)
 
 void LocationEntity::processMarket()
 {
-//  cout << "<><><><><><><><><><>   Processing Market conflict at " << printName()<<endl;
+//  cout << "<><><><><><><><><><>   Processing Market conflict at " << print()<<endl;
   market_->process();
 }
 
 
-void LocationEntity::harvestResource(ItemRule * item, Rational& num)
+void LocationEntity::harvestResource(ItemRule * item, RationalNumber& num)
 {
   ResourceElementIterator iter;
   for(iter = resources_.begin(); iter != resources_.end();iter++)
   {
   if ( (*iter)->getResource() == item)
       {
-        Rational old((*iter)->getAvailableResource());
+        RationalNumber old((*iter)->getAvailableResource());
         (*iter)->setAvailableResource(old - num);
         return;
       }
@@ -798,7 +809,7 @@ void LocationEntity::harvestResource(ItemRule * item, Rational& num)
 //      }
 //  else
   {
-   cout << "Error: resource "<<item->printName() << " was not found at "<< printName()<<endl;
+   cout << "Error: resource "<<item->print() << " was not found at "<< print()<<endl;
    }    
 }
 
@@ -880,7 +891,7 @@ void LocationEntity::addConstruction(ConstructionEntity * construction)
 {
   if(construction == 0)
 			return;
-//      cout << "Construction "<< construction->printName() <<" was added to " <<printName()<<endl;
+//      cout << "Construction "<< construction->print() <<" was added to " <<print()<<endl;
 	   constructions_.push_back(construction);
 		construction->setLocation(this);
 }

@@ -83,7 +83,7 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
     if(realEntity == 0)
     {
 	    if (unit->isTraced())
-        cout <<"== TRACING " << unit->printName()<< " merges into new unit " << number << " of " <<  unit->getRace()->getName() << "\n";
+        cout <<"== TRACING " << unit->print()<< " merges into new unit " << number << " of " <<  unit->getRace()->getName() << "\n";
       newUnit   = new UnitEntity(unit);
       if(units.addNew(newUnit) != OK)
       {
@@ -93,6 +93,8 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
        unit->setFigures(unit->getFiguresNumber() - number);
        unit->recalculateStats();
        RaceRule * race = unit->getRace();
+
+       newUnit->setDiscontenting( unit->getDiscontenting());
 
        placeholder->setRealEntity(newUnit);
        unit->getFaction()->addUnit(newUnit);
@@ -113,14 +115,14 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
             ItemRule * item = (*iterEquip)->getItemType();
             int num = (*iterEquip)->getItemNumber();
             newUnit->addToInventory(item,num);
-            unit->takeFromInventoryExactly(item,num);
+            unit->takeFromInventory(item,num);
             newUnit->equipItem(item,num);
           }
 
 
        // efects
        newUnit->recalculateStats();
-//        cout << "New unit created: "<<newUnit->printName() <<" \n";
+//        cout << "New unit created: "<<newUnit->print() <<" \n";
 
 //QQQ
     newUnit ->addReport(new BinaryPattern (newSplitReporter,

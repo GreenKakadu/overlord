@@ -237,7 +237,7 @@ ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int l
     }
     default:
     {
-      cout << "Unexpected result ("<< result<<") of "<< skill->printName() <<" learning for " << unit->printTag() <<endl;
+      cout << "Unexpected result ("<< result<<") of "<< skill->print() <<" learning for " << unit->printTag() <<endl;
  		  return FAILURE;
     }
   }

@@ -11,6 +11,8 @@
 //SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
 SkillCondition::SkillCondition(const SkillCondition * prototype):BasicCondition(prototype)
 {
+	skillRequirement_ = 0;
+  subject_ = 0;
 }
 
 GameData * SkillCondition::createInstanceOfSelf()
@@ -20,7 +22,7 @@ GameData * SkillCondition::createInstanceOfSelf()
 
 
 
-bool SkillCondition::isSatisfied(PhysicalEntity * unit)
+bool SkillCondition::isSatisfied(TokenEntity * unit)
 {
 	return unit->hasSkill(skillRequirement_);
 }
@@ -97,8 +99,8 @@ void    SkillCondition::extractKnowledge (Entity * recipient, int parameter )
 
 
 
-ostream & SkillCondition::print(ostream & out)
-{
-   skillRequirement_->print(out);
-   return  out;
-}
+//ostream & SkillCondition::reportCondition(ostream & out)
+//{
+//   skillRequirement_->print(out);
+//   return  out;
+//}

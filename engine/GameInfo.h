@@ -46,6 +46,7 @@ public:
   string * getFactionsFile() ;
   string * getLocationsFile() ;
   string * getBuildingsFile() ;
+  string * getEffectsFile() ;
   bool isNPCFaction(FactionEntity * faction);
   
   inline string getNewEntityPrefix() const {return newEntityPrefix_;}
@@ -73,6 +74,7 @@ public:
 	string locationsFile_;
 	string factionsFile_;
   string buildingsFile_;
+  string effectsFile_;
   vector <string> npcFactions_;
 };
 extern GameInfo game;

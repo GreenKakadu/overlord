@@ -14,7 +14,9 @@
 #include "ConstructionEntity.h"
 extern Reporter * harvestReporter;
 
-ResourceCompetitiveRequest::ResourceCompetitiveRequest(UnitEntity * unit, Order * orderId, ItemRule * resource,  Rational& amount)  :BasicCompetitiveRequest(unit, orderId)
+ResourceCompetitiveRequest::ResourceCompetitiveRequest(UnitEntity * unit,
+        OrderLine * orderId, ItemRule * resource,  RationalNumber& amount)
+                                    :BasicCompetitiveRequest(unit, orderId)
 {
    resourceType_ = resource;
   amount_ = amount;  
@@ -27,7 +29,7 @@ ResourceCompetitiveRequest::~ResourceCompetitiveRequest()
 }
 
 
-Rational ResourceCompetitiveRequest::getValue() const
+RationalNumber ResourceCompetitiveRequest::getValue() const
 {
   return amount_;
 }
@@ -45,16 +47,16 @@ AbstractData * ResourceCompetitiveRequest::getType() const
 
 
 
-Rational ResourceCompetitiveRequest::getTotalAvailableValue() const
+RationalNumber ResourceCompetitiveRequest::getTotalAvailableValue() const
 {
     return unit_->getLocation()->getAvailableResource(resourceType_);
 }
 
 
 
-void ResourceCompetitiveRequest::answerRequest(Rational& answer)
+void ResourceCompetitiveRequest::answerRequest(RationalNumber& answer)
 {
-    Rational bonus = 0;
+    RationalNumber bonus = 0;
    if(answer <  amount_)
    {
     // Building effect on harvesting
@@ -70,14 +72,15 @@ void ResourceCompetitiveRequest::answerRequest(Rational& answer)
 
 
   unit_->getLocation()->harvestResource(resourceType_, answer);
-  Rational hadBefore = unit_->getItemAmount(resourceType_);
+  RationalNumber hadBefore = unit_->getItemAmount(resourceType_);
   unit_->addToInventory(resourceType_, answer);
-  Rational nowHas = hadBefore + answer + bonus;
+  RationalNumber nowHas = hadBefore + answer + bonus;
   int added = nowHas.getValue() - hadBefore.getValue();
 
   if(added !=0)
   {
-//  cout << unit_->printName()<<" harvests " << answer << " " << resourceType_->printName() << " at "<<  unit_->getLocation()->printName() <<endl;
+//  cout << unit_->print()<<" harvests " << answer << " "
+// << resourceType_->print() << " at "<<  unit_->getLocation()->print() <<endl;
 //QQQ
   unit_->addReport(
     new BinaryPattern(harvestReporter, unit_,

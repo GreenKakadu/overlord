@@ -28,13 +28,12 @@ public:
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
       USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
-      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
-      void reportUse(USING_RESULT result, PhysicalEntity * tokenEntity);
+//      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       void extractKnowledge (Entity * recipient, int parameter = 0);
       void printSkillDescription(ostream & out);
 private:
       ItemRule * productType_;
-      int productionDays_;
 };
 extern CraftUsingStrategy       sampleCraftUsing;
 

@@ -37,6 +37,10 @@ Reporter * leavePublicReporter = new Reporter(""," leaves location.");
 Reporter * leavePrivateReporter = new Reporter("Leaves ",".");
 Reporter * arrivePublicReporter = new Reporter(""," arrives.");
 Reporter * arrivePrivateReporter = new Reporter("Arrives to ",".");
+Reporter * consumeFoodReporter = new Reporter("Consumes "," food.");
+Reporter * upkeepReporter = new Reporter("Pays "," for upkeep.");
+Reporter * cannotPayUpkeepReporter = new Reporter("Have not enough money to pay upkeep.");
+
 // Accept
 Reporter *  acceptOwnReporter         = new Reporter("Warning: "," belongs to your faction. Accept has no sence.");
 Reporter *	acceptReporter            = new Reporter("Accepting ",".");
@@ -181,5 +185,21 @@ Reporter * noYieldTitleReporter    = new Reporter("No ", " title available to yi
 Reporter * publicYieldTitleReporter = new Reporter(""," yields title of ",".");
 Reporter * privateYieldTitleReporter = new Reporter("Yields title of ",".");
 Reporter * cannotOathYourselfReporter = new Reporter("Can't oath to yourself"); 
+//
+
+
+Reporter * privateEnchantmentReporter = new Reporter(""," enchanted with "," by ",".");
+Reporter * privateEnchanterReporter = new Reporter(""," enchants "," with ",".");
+Reporter * publicEnchantmentReporter = new Reporter(""," produces ",".");
+Reporter * privateActionReporter  = new Reporter(""," produces ",".");
+Reporter * publicActionReporter   = new Reporter(""," produces ",".");
+//==================== PickPocket
+
+Reporter * pickPocketNoTargetReporter = new Reporter("Failed to find ",".");
+Reporter * pickPocketEmptyPocketReporter = new Reporter("Failed to find anything in pockets of ",".");
+Reporter * pickPocketStealingFailureReporter = new Reporter("Failed to steal from ",".");
+Reporter * pickPocketStealingPrivateReporter = new Reporter("Stole "," from ","." );
+Reporter * pickPocketStealingTargetReporter = new Reporter( "Hep! Somebody stole some "," from us!");
+//Reporter * pickPocket Reporter = new Reporter( );
 
 

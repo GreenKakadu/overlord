@@ -25,23 +25,24 @@ LocalRecruitOffer::LocalRecruitOffer(int amount, RaceRule * race, int price)
   race_ = race;
 }
 
+
+
 LocalRecruitOffer::~LocalRecruitOffer(){
 }
+
+
+
 string LocalRecruitOffer::print()
 {
-  char buffer1[12];
-  char buffer2[12];
-  longtostr(amount_, buffer1);
-  longtostr(price_, buffer2);
-
-  return  string("Local opportunity to recruit ") + buffer1 +
-          " of " + race_->printName() + " for " + buffer2  + "coins\n";
+  return  string("Local opportunity to recruit ") + longtostr(amount_) +
+          " of " + race_->print() + " for " + longtostr(price_)  + "coins\n";
 }
 
-void  LocalRecruitOffer::report(FactionEntity * faction, ostream &out)
+
+void  LocalRecruitOffer::produceFactionReport(FactionEntity * faction, ostream &out)
 {
-  out << RaceElement(race_,initialAmount_).printName() << " at $"<< price_;
-//  out << amount_ << " " << race_->printName() << " at $"<< price_;
+  out << RaceElement(race_,initialAmount_).print() << " at $"<< price_;
+//  out << amount_ << " " << race_->print() << " at $"<< price_;
   faction->addKnowledge(race_);
 }
 

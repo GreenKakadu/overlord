@@ -41,7 +41,7 @@ STATUS DescribeOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS DescribeOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  string  newName = (parameters[0])->printName();
+  string  newName = (parameters[0])->print();
   entity->setDescription(newName);
   return SUCCESS;
 }

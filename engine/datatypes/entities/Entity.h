@@ -13,11 +13,13 @@
 #include "OverlordTypes.h"
 #include "NewEntityPlaceholder.h"
 #include "assert.h"
+#include "EnchantmentAttribute.h"
 //#include "SkillElement.h"
 #include "ReportPrinter.h"
+//#include "InternalPropertiesCollection.h"
 using namespace std;
 
-class Order;
+class OrderLine;
 class ReportRecord;
 class ReportElement;
 class ReportPattern;
@@ -26,9 +28,10 @@ class SkillRule;
 class TeachingOffer;
 class FactionEntity;
 class Rule;
-class PhysicalEntity;
-
-typedef vector<Order *>::iterator OrderIterator;
+class TokenEntity;
+class EnchantmentElement;
+//class BasicAttribute;
+typedef vector<OrderLine *>::iterator OrderIterator;
 //class InventoryElement;
 //class ItemRule;
 extern int currentDay;
@@ -37,12 +40,13 @@ class Entity : public GameData
 {
     public:
       Entity (const string & keyword, GameData * parent ) : GameData(keyword, parent){}
-      Entity ( const Entity * prototype ): GameData(prototype){fullDayOrder_ = 0;}
+      Entity ( const Entity * prototype );
    virtual    ~Entity ();
    virtual     STATUS  initialize      ( Parser *parser ); // temporary: may be virtual?
    virtual     void      save (ostream &out);
    virtual     void      loadOrders ();
            GameData *    createInstanceOfSelf();
+//               void registerAttribute(BasicAttribute * attribute);
    virtual     bool      process(ProcessingMode * processingMode);
    virtual     bool      processOrderResults(ORDER_STATUS result,
                                     OrderIterator & currentIterator);
@@ -52,27 +56,30 @@ class Entity : public GameData
    virtual     void      preprocessData();
    virtual     void      dailyPreProcess();
    virtual     void      dailyUpdate();
+   virtual     void      payUpkeep(){}
+   
    virtual     void 	   postProcessOrder(ORDER_STATUS result, OrderIterator  iter);
   /** prints  report for Entity (stats, posessions, private events) */
-  virtual      void      report(FactionEntity * faction, ReportPrinter &out);
+  virtual      void      produceFactionReport(FactionEntity * faction, ReportPrinter &out);
   virtual      bool      defaultAction();
-  virtual void addOrder(Order * newOrder);
+  virtual void addOrder(OrderLine * newOrder);
   virtual void clearOrders();
 //  virtual void prepareOrders();
   virtual void addReport(ReportRecord * report);
-  virtual void addReport(ReportPattern * report,Order *  orderId = 0, BasicCondition * observationCriteria = 0 );
+  virtual void addReport(ReportPattern * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
   virtual void extractReport(UnitEntity * unit, vector < ReportElement * > & reports);
   virtual Entity * getReportDestination();
   /** prints list of events related to this Entity */
   virtual void reportEvents(ReportPrinter &out);
-  inline virtual Order * getLastOrder() const {return lastOrder_;}
-  inline virtual  void   setLastOrder(Order * order) {lastOrder_ = order;}
-  inline virtual Order * getCurrentOrder() const {return currentOrder_;}
-  inline virtual  void   setCurrentOrder(Order * order) {currentOrder_ = order;}
+  inline virtual OrderLine * getLastOrder() const {return lastOrder_;}
+  inline virtual  void   setLastOrder(OrderLine * order) {lastOrder_ = order;}
+  inline virtual OrderLine * getCurrentOrder() const {return currentOrder_;}
+  inline virtual  void   setCurrentOrder(OrderLine * order) {currentOrder_ = order;}
 
   /** Deletes all unused event messages. */
   virtual void finalizeReports();
-  virtual void cleanReports();
+  virtual void cleanCollectedReports();
+  virtual void cleanPublicReports();
   virtual inline void setFullDayOrderFlag() {fullDayOrder_ = currentDay;}
   virtual inline void clearFullDayOrderFlag() {fullDayOrder_ = 0;}
   virtual inline bool isFullDayOrderFlagSet() const {return (fullDayOrder_ == currentDay);}
@@ -81,7 +88,7 @@ class Entity : public GameData
   inline bool isSilent() const {return silent_;}
   inline void setSilent (bool value) { silent_ = value;}
   virtual bool mayInterract(UnitEntity * unit);
-  virtual bool mayInterractPhysicalEntity(PhysicalEntity * tokenEntity);
+  virtual bool mayInterractTokenEntity(TokenEntity * tokenEntity);
   virtual void addTeachingOffer(TeachingOffer * offer);
   virtual void clearTeachingOffers();
   virtual int  getSkillLevel(SkillRule  * const skill);
@@ -90,20 +97,26 @@ class Entity : public GameData
   /** How many seats occupies this entity in the class. Number of entities that can be tought by one teacher determined by this value. */
   virtual int getLearningCapacity();
   virtual  bool teacherRequired(SkillRule * skill);
+   void addEnchantment(EnchantmentElement *enchantment) {enchantments_.add(enchantment); }
+   void removeEnchantment(EnchantmentElement *enchantment) {enchantments_.remove(enchantment); }
+  
 //===============================  Knowledge ============
   virtual bool addKnowledge(Rule * info);
   virtual bool addSkillKnowledge(SkillRule * knowledge, int level);
   virtual bool isHidden() {return false;}
 friend  ostream &operator << ( ostream &out, Entity * entity);
     protected:
+//     static vector <BasicAttribute *> attributes;
 //      bool isItem_(ItemRule * item);
-    Order * lastOrder_; // Last Full-day or movement order
-    Order * currentOrder_; //  order that is processed now
+    OrderLine * lastOrder_; // Last Full-day or movement order
+    OrderLine * currentOrder_; //  order that is processed now
     int fullDayOrder_;
-    vector <Order *> orders_;
+    vector <OrderLine *> orders_;
     vector <ReportRecord *> publicReports_;
     vector <ReportElement *> collectedReports_;
     vector <TeachingOffer  *> teachingOffers_;
+//    InternalPropertiesCollection<EffectElement *> effects_;
+    EnchantmentsAttribute  enchantments_;
     bool silent_;
     private:
 };

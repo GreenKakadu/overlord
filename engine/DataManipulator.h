@@ -9,19 +9,11 @@
 #ifndef DATA_MANIPULATOR_H
 #define DATA_MANIPULATOR_H
 #include  <vector>
-//#include "../collections/BasicCollection.h"
-//#include "../collections/BasicEntitiesCollection.h"
-//#include "../collections/BasicRulesCollection.h"
-//#include "../collections/EntitiesCollection.h"
-//#include "../collections/RulesCollection.h"
-//#include "../collections/OrderPrototypesCollection.h"
-//#include "../entities/Entity.h"
-//#include "../rules/Rule.h"
-//class OrderPrototypesCollection;
 class BasicEntitiesCollection;
 class BasicRulesCollection;
 class BasicVarietiesCollection;
 class ProcessingMode;
+class NewEntityPlaceholder;
 
 class DataManipulator {
 public:
@@ -29,7 +21,8 @@ public:
   ~DataManipulator();
   STATUS load();
   STATUS save();
-  void print();
+  void clear();
+  void printAllData();
   STATUS initialize(); 
   void addEntities( BasicEntitiesCollection * collection);
   void addVarieties( BasicVarietiesCollection * collection);
@@ -42,6 +35,8 @@ public:
   void dailyPreProcessData();
   void turnPostProcessing();
   void turnPreProcessing();
+  GameData * findGameData(const string & tag);
+  NewEntityPlaceholder * findOrAddPlaceholder(const string & tag);
 protected:
 private:
   vector < BasicEntitiesCollection  * > entities_;

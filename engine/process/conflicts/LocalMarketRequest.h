@@ -28,7 +28,7 @@ public:
 	~LocalMarketRequest();
    string print();
    bool isValid();
-   virtual void  report(FactionEntity * faction, ostream &out);
+   virtual void  produceFactionReport(FactionEntity * faction, ostream &out);
    void free();
     void answerMarketRequest(int price, int  amount);
    virtual void save(ostream &out);

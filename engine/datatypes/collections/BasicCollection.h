@@ -24,11 +24,13 @@ public:
 	  virtual ~BasicCollection();
 	virtual GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
 	virtual GameData* findByIndex      (const long intindex, bool errorReportEnabled = true);
-	virtual NewEntityPlaceholder * findPlaceholder(const string &tag);
+	virtual NewEntityPlaceholder * checkPlaceholder(const string &tag);
+	virtual NewEntityPlaceholder * findOrAddPlaceholder(const string &tag);
   virtual void       add  ( GameData * /*const*/ newRule);
   virtual bool      isValidTag (const string &tag)  ;//const;
   virtual bool      checkDataType    (const string &tag);
-	virtual long       size()                       const;  
+	virtual long       size()                       const;
+	virtual void       clear(){}    
   virtual long       getIndex    (const string &tag);
   virtual void    redimention (long intsize);
           void    bindHandler(DataStorageHandler * handler);
@@ -36,7 +38,7 @@ public:
           void setCollectionKeyword(const string &keyword) {collectionKeyword_ =keyword; }// not needed
   inline  STATUS getStatus() const {return status;}
   inline  string getCollectionKeyword() const {return collectionKeyword_;}
-  inline  string printName() const {return collectionKeyword_;}
+  inline  string print() const {return collectionKeyword_;}
   virtual void addRIPindex(long intindex){}
   virtual long int getRIPsize() const{return 0;}
   virtual long int getRIPbyIndex(long int i) const {return 0;}

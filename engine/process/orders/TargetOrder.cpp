@@ -21,14 +21,16 @@
 #include "EntitiesCollection.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
+#include "DataManipulator.h"
 
+extern DataManipulator * dataManipulatorPtr;
 extern RulesCollection <ConstructionRule>      constructions;
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <LocationEntity>      locations;
 extern GameInfo game;
-
+extern DataManipulator * dataManipulatorPtr;
 //TargetOrder instantiateTargetOrder;
 TargetOrder * instantiateTargetOrder = new TargetOrder();
 
@@ -49,38 +51,29 @@ TargetOrder::TargetOrder(){
 
 STATUS TargetOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 // Player can't detect not-existing rules and enties by trying them as targets
-   string tag = parser->matchWord();
+//
+   string tag = parser->getWord();
    if (tag.size() != 0)
         {
-//          if(TargetOrder::isValidTarget(tag))
-//				    {
-              parameters.push_back( new StringData (parser->getWord()));
-              return OK;
-//				    }
+          parameters.push_back(TargetOrder::findTarget(tag));
         }
   return IO_ERROR;
 }
 
 
+
 ORDER_STATUS TargetOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * tokenEntity = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
 
 
  if(parameters.size() >0)
     {
-     StringData * target       =  dynamic_cast<StringData *>(parameters[0]);
-     if(target)
-      {
-//        if(isValidTarget(target->printName()))
-//        {
-          tokenEntity->setTarget(target->printName());
-//        }
-      }
+          tokenEntity->setTarget(parameters[0]);
      }
       return SUCCESS;
 }
@@ -142,3 +135,62 @@ bool TargetOrder::isValidTarget(const string & target)
  return isLocation(target) || isBuildingOrShip(target) ||
         isConstruction(target)  || isUnit(target);
 }
+
+
+
+// if entity / rule - return pointer
+// if name may be newEntityPlaceholder -create it and return pointer
+// otherwise - just return stringdata
+AbstractData * TargetOrder::findTarget(const string & tag)
+{
+  AbstractData * target;
+  assert(dataManipulatorPtr);
+  
+  target =  dataManipulatorPtr->findGameData(tag);
+  if(target)
+		{
+      return target;
+		}
+
+  if(game.isNewEntityName(tag))
+    {
+      NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(tag);
+      if(placeholder != 0)  // this is  placeholder.
+        {
+          GameData* realEntity = placeholder->getRealEntity();
+          if(realEntity) // We can get real entity id from placeholder
+   		      return realEntity;
+          else   // placeholder is still empty
+   		      return placeholder;
+        }
+		}
+//		parameter is not a tag and not a placeholder
+      return (new StringData (tag));
+}
+//AbstractData * TargetOrder::findTarget(const string & tag)
+//{
+//  AbstractData * target;
+//
+//      target = units.findByTag(tag,false);
+//      if (target)
+//        return target;
+//
+//      target = locations.findByTag(tag,false);
+//      if (target)
+//        return target;
+//
+//      target = buildingsAndShips.findByTag(tag,false);
+//      if (target)
+//        return target;
+//
+//      target = constructions.findByTag(tag,false);
+//      if (target)
+//        return target;
+//
+//  if(game.isNewEntityName(tag))
+// 	  {
+//      return (new StringData(tag));
+//		}
+//
+//      return 0;
+//}

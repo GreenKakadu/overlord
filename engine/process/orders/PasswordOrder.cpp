@@ -9,7 +9,7 @@
 #include "StringData.h"
 #include "Entity.h"
 #include "FactionEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
@@ -33,7 +33,7 @@ STATUS PasswordOrder::loadParameters(Parser * parser,
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
-   if(entityIsPhysicalEntity(entity,NO_PARSING_REPORT))
+   if(entityIsTokenEntity(entity,NO_PARSING_REPORT))
             return OK;
    if(entityIsFaction(entity,NO_PARSING_REPORT))
             return OK;
@@ -45,11 +45,11 @@ STATUS PasswordOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS PasswordOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  string  newPassword = (parameters[0])->printName();
+  string  newPassword = (parameters[0])->print();
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction)
     faction->setPassword(newPassword);
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   if(unit)
     unit->getFaction()->setPassword(newPassword);
      

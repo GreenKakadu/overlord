@@ -26,7 +26,7 @@ public:
   inline  void     setDescription  ( const string  &description){ description_ = description;}
           void     saveAsParameter (ostream &out);
   string printTag() const;
-  virtual string printName() /*const*/;
+  virtual string print() /*const*/;
     protected:
   static const string l_bracket;
   static const string r_bracket;

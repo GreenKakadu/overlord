@@ -313,7 +313,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 //============================================================================
 //
-//      Rational  getRational ()
+//      Rational  getRationalNumber ()
 //
 // This function is intended for input parsing.
 //
@@ -325,7 +325,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 //
 // NOTE: it uses isspace and isdigit macro which are locale-dependent
 //============================================================================
-Rational Parser::getRational ()
+RationalNumber Parser::getRationalNumber ()
 {
  int num = getInteger();
 
@@ -337,16 +337,16 @@ Rational Parser::getRational ()
     if(denom == 0)
     {
       status = IO_ERROR;
-      return Rational(0);
+      return RationalNumber(0);
     }
     matchChar(')');
     status = OK;
-    return Rational(num * denom +  residue,denom);
+    return RationalNumber(num * denom +  residue,denom);
   }
   else
   {
     status = OK;
-    return Rational(num);
+    return RationalNumber(num);
   }
 }
 //============================================================================

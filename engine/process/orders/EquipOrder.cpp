@@ -56,7 +56,7 @@ STATUS EquipOrder::loadParameters(Parser * parser,
 //  if (itemTag.size() == 0)  // Missing parameter
 //        {
 //					cout  << "=<>= ACCEPT: missing Parameter (item tag expected) for "
-//								<< entity->printName() << endl;
+//								<< entity->print() << endl;
 //         entity->addReport(new BinaryPattern(missingParameterReporter, new StringData(keyword_), new StringData("unit id")));
 //         return IO_ERROR;
 //        }

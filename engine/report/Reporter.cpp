@@ -51,36 +51,36 @@ Reporter::Reporter(const char *rep1, const char *rep2, const char *rep3, const c
 
 
 
-void Reporter::print (ostream &out)
+void Reporter::printReport (ostream &out)
 {
 	out << rep1_ << endl;
 }
 
-void Reporter::print (ostream &out, AbstractData * param1)
+void Reporter::printReport (ostream &out, AbstractData * param1)
 {
-	out << rep1_ << param1->printName() << rep2_ << endl;
+	out << rep1_ << param1->print() << rep2_ << endl;
 }
 
 
-void Reporter::print (ostream &out, AbstractData * param1, AbstractData * param2)
+void Reporter::printReport (ostream &out, AbstractData * param1, AbstractData * param2)
 {
-	out << rep1_ << param1->printName() << rep2_ << param2->printName() << rep3_  << endl;
+	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << endl;
 }
 
 
-void Reporter::print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3)
+void Reporter::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3)
 {
-	out << rep1_ << param1->printName() << rep2_ << param2->printName() << rep3_  << param3->printName() << rep4_  << endl;
+	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << endl;
 }
 
-void Reporter::print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4)
+void Reporter::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4)
 {
-	out << rep1_ << param1->printName() << rep2_ << param2->printName() << rep3_  << param3->printName() << rep4_  << param4->printName() << rep5_  << endl;
+	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << param4->print() << rep5_  << endl;
 }
 
-void Reporter::print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5)
+void Reporter::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5)
 {
-	out << rep1_ << param1->printName() << rep2_ << param2->printName() << rep3_  << param3->printName() << rep4_  << param4->printName() << rep5_    << param5->printName() << rep6_  << endl;
+	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << param4->print() << rep5_    << param5->print() << rep6_  << endl;
 }
 
 

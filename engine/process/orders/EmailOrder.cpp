@@ -8,7 +8,7 @@
 #include "EmailOrder.h"
 #include "StringData.h"
 #include "Entity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "FactionEntity.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
@@ -32,7 +32,7 @@ STATUS EmailOrder::loadParameters(Parser * parser,
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
-   if(entityIsPhysicalEntity(entity,NO_PARSING_REPORT))
+   if(entityIsTokenEntity(entity,NO_PARSING_REPORT))
             return OK;
    if(entityIsFaction(entity,NO_PARSING_REPORT))
             return OK;
@@ -44,7 +44,7 @@ STATUS EmailOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS EmailOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  string  newEmail = (parameters[0])->printName();
+  string  newEmail = (parameters[0])->print();
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction)
   {
@@ -53,7 +53,7 @@ ORDER_STATUS EmailOrder::process (Entity * entity, vector <AbstractData *>  &par
     entity->addReport(new UnaryPattern(changeEmailReporter,new StringData(newEmail)));
     return SUCCESS;
   }
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   if(unit)
     unit->getFaction()->setEMail(newEmail);
      

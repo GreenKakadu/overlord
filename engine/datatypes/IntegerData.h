@@ -20,7 +20,7 @@
 class IntegerData : public AbstractData  {
 public: 
 	IntegerData(int num) {value_ = num;}
-  string printName();
+  string print();
   inline int  getValue() const {return value_;}
   inline void setValue(int num)  {value_ = num;}
   void saveAsParameter (ostream &out);

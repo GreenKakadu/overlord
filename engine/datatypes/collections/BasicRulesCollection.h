@@ -52,7 +52,7 @@ template <class T>  T * GET_FROM_COLLECTION(BasicRulesCollection * collection, c
   T * castedData = dynamic_cast<T*>(rawData);
   if(castedData == 0)
   {
-      cout << "Casting failed for " << collection->printName() << "["<<tag<<"]"<<endl;
+      cout << "Casting failed for " << collection->print() << "["<<tag<<"]"<<endl;
       return 0;
   }
    return castedData;

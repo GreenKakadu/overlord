@@ -12,25 +12,25 @@
 #include "Element.h"
 #include "ItemRule.h"
 #include "RulesCollection.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 class Parser;
 extern RulesCollection <ItemRule>      items;
 using namespace std;
-typedef Element3<  ItemRule,  Rational ,  int> BasicInventoryElement;
+typedef Element3<  ItemRule,  RationalNumber ,  int> BasicInventoryElement;
 
 class InventoryElement : public BasicInventoryElement  {
 public: 
 	InventoryElement(ItemRule * rule, int num, int equip=0)  : BasicInventoryElement (rule,num,equip)
 			{	if (equip > num)		parameter2_ = num;}
-	InventoryElement(ItemRule * rule, Rational num, int equip=0)  : BasicInventoryElement (rule,num,equip)
+	InventoryElement(ItemRule * rule, RationalNumber num, int equip=0)  : BasicInventoryElement (rule,num,equip)
 			{	if (equip > num)		parameter2_ = num.getValue();}
 	~InventoryElement(){}
 
    inline ItemRule *   getItemType()      const {return rule_;}
    inline int          getItemNumber()         {return parameter1_.getValue();}
    inline void         setItemNumber(int value)     { parameter1_ = value;}
-   inline Rational     getRationalItemNumber()         {return parameter1_;}
-   inline void         setRationalItemNumber(const Rational& value)     { parameter1_ = value;}
+   inline RationalNumber     getRationalItemNumber()         {return parameter1_;}
+   inline void         setRationalItemNumber(const RationalNumber& value)     { parameter1_ = value;}
    inline void         setItemType(ItemRule * rule) { rule_ = rule;}
    inline int          getEquipedNumber()    const  {return parameter2_;}
    inline void         setEquipedNumber(int value)  { parameter2_  = value;}
@@ -43,24 +43,24 @@ public:
           return rule_->getCapacity(modeIndex) * (parameter1_.getValue() -
             parameter2_) + rule_->getEquipCapacity(modeIndex) * parameter2_;
     }
-   void save(ostream & out)
-   {
-      out << rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
-   }
+//   void save(ostream & out)
+//   {
+//      out << rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
+//   }
 
-   void print(ostream & out)
+   void reportEquipment(ostream & out)
    {
-     out<< printName();// << " "; 
+     out<< print();// << " "; 
      if (parameter2_) out << " (" << parameter2_ <<" equiped)";
    }
 
-   string printName()
+   string print()
    {
     if (rule_ == 0) return "";
     if( parameter1_.getValue() > 1)
-      return parameter1_.printName() + " " + rule_->getPluralName()  + rule_->printTag();
+      return parameter1_.print() + " " + rule_->getPluralName()  + rule_->printTag();
     else
-      return parameter1_.printName()  + " " + rule_->printName();
+      return parameter1_.print()  + " " + rule_->print();
    }
 
 	
@@ -83,7 +83,7 @@ public:
   InventoryElement read(Parser * parser)
 {
 	return InventoryElement (items[parser->getWord()],
-														parser->getRational(),
+														parser->getRationalNumber(),
 														parser->getInteger()
 														);
 }

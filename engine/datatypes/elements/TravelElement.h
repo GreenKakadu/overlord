@@ -29,7 +29,7 @@ public:
 	virtual ~TravelElement();
   static TravelElement *    readElement      ( Parser *parser);
   virtual void save(ostream & out);
-  virtual void print(ostream & out);
+  virtual void reportTravel(ostream & out);
    void retreat();
    void advance();
    bool isCrossingBorder();

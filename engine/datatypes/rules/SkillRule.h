@@ -15,11 +15,10 @@
 class SkillElement;
 class SkillLevelElement;
 class Entity;
-class PhysicalEntity;
+class TokenEntity;
 class BasicLearningStrategy;
 class InventoryElement;
 class Reporter;
-class Order;
 class TeachingOffer;
 
 class SkillRule : public Rule  {
@@ -37,21 +36,21 @@ public:
 						{ description_[currentLevel_] = description;}
       void printSkillDescription(int level, ostream & out);
       SkillElement * getMax();
-      LEARNING_RESULT mayBeStudied(PhysicalEntity * unit);
-      USING_RESULT     mayUse(PhysicalEntity * unit);
-      bool teacherRequired(PhysicalEntity * unit);
-      void addLearningExperience(PhysicalEntity * unit, int exp);
-      void addUsingExperience(PhysicalEntity * unit, int exp);
+      LEARNING_RESULT mayBeStudied(TokenEntity * unit);
+      USING_RESULT     mayBeUsedBy(TokenEntity * unit);
+      bool teacherRequired(TokenEntity * unit);
+      void addLearningExperience(TokenEntity * unit, int exp);
+      void addUsingExperience(TokenEntity * unit, int exp);
 //      void addRecursiveLearningExperience(UnitEntity * unit, SkillElement & skill);
       int getLevel(int expPoints);
       int getMaxLevel();
-      int getStudyCost(PhysicalEntity * const unit);
+      int getStudyCost(TokenEntity * const unit);
   /** Determines if current skill is in the tree growing from the given skill  */
           bool isDescendFrom(SkillRule * skill, int level);
           SkillLevelElement * getRequirement( int level) const;
           void addDerivative(SkillLevelElement * skill, int level);
-          int  calculateLearningExperience(PhysicalEntity * unit, TeachingOffer * teacher);
-          int  calculateUsingExperience(PhysicalEntity * unit);
+          int  calculateLearningExperience(TokenEntity * unit, TeachingOffer * teacher);
+          int  calculateUsingExperience(TokenEntity * unit);
   /** No descriptions */
           int  getLevelExperience(int level) const;
    inline EntityStatistics * getStats(int level)  {return &(stats_[level]);}
@@ -61,12 +60,12 @@ public:
    inline bool isCombatSkill(){return isCombat_;}
    inline bool isMagicSkill(){return isMagic_;}
    inline int  getCapacity(int modeIndex, int level){return (capacity_[level])[modeIndex];}
-          USING_RESULT use(PhysicalEntity * unit, int & useCounter);
-          void reportUse(USING_RESULT result, PhysicalEntity * unit);
+          USING_RESULT use(TokenEntity * unit, int & useCounter);
+          void reportUse(USING_RESULT result, TokenEntity * unit);
    SkillRule * getBasicSkill();
           void extractKnowledge (Entity * recipient, int parameter = 0);
-          int getUseDuration(PhysicalEntity * unit);
-          InventoryElement * getItemRequired(PhysicalEntity * tokenEntity);
+          int getUseDuration(TokenEntity * unit);
+          InventoryElement * getItemRequired(TokenEntity * tokenEntity);
     inline static int getMaxSkillLevel()  {return maxSkillLevel;}
     protected:
 	  static const int maxSkillLevel = 7;

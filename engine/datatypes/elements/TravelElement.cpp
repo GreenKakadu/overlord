@@ -67,10 +67,10 @@ void TravelElement::save(ostream & out)
 
 
 
-void TravelElement::print(ostream & out)
+void TravelElement::reportTravel(ostream & out)
 {
-  out << movingMode_->getName() << " " << origin_->printName(); 
-  out << " to "<< destination_->printName() << " " <<time_ << " days from ";
+  out << movingMode_->getName() << " " << origin_->print(); 
+  out << " to "<< destination_->print() << " " <<time_ << " days from ";
   out << totalTravelTime_ << ".\n";
 }
 

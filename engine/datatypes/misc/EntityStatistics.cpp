@@ -14,12 +14,9 @@ EntityStatistics::EntityStatistics()
 
 
 
-EntityStatistics::~EntityStatistics(){
-}
-
-
-
-/** Does Initialization of stats data */
+/*
+ * Does Initialization of stats data
+ */
 STATUS EntityStatistics::initialize(Parser * parser)
 {
   if (parser->matchKeyword("MELEE"))
@@ -85,26 +82,13 @@ STATUS EntityStatistics::initialize(Parser * parser)
       return OK;
 }
 
-void EntityStatistics::save(ostream &out)
-{
-  out << "Stats: ";
-  if(initiative_) out<< " init: " << initiative_<<",";
-  if(melee_) out<< " att: " << melee_ << ",";
-  if(missile_) out<< " miss: " << missile_<< ",";
-  if(defence_) out<< " def: " << defence_<< ",";
-  if(damage_) out<< " dmg: " << damage_<< ",";
-  if(numOfHits_) out<< " hits: " << numOfHits_<< ",";
-  if(life_) out<< " life: " << life_<< ",";
-  if(mana_) out<< " mana: " << mana_<< ",";
-//  if(upkeep_) out<< ": " << upkeep_; // upkeep calculation 
-  if(controlPoints_) out<< " CP: " << controlPoints_<< ",";
-  if(stealth_) out<< " ste: " << stealth_<< ",";
-  if(observation_) out<< " obs: " << observation_<< ".";
-}
 
 
 
-void EntityStatistics::print(ostream &out)
+/*
+ * Print stats data to output stream
+ */
+void EntityStatistics::reportStatistics(ostream &out)
 {
    bool isFirst = true;
   printThisStat_(initiative_, "init", isFirst, out);
@@ -115,24 +99,16 @@ void EntityStatistics::print(ostream &out)
   printThisStat_(numOfHits_, "hits", isFirst, out);
   printThisStat_(life_, "life", isFirst, out);
   printThisStat_(mana_, "mana", isFirst, out);
+//  printThisStat_(upkeep_, "upkeep", isFirst, out); printed separately for all unit
   printThisStat_(controlPoints_, "CP", isFirst, out);
   printThisStat_(stealth_, "ste", isFirst, out);
   printThisStat_(observation_, "obs", isFirst, out);
-//  if(initiative_) out<< " init: " << initiative_<<",";
-//  if(melee_) out<< " att: " << melee_<< ",";
-//  if(missile_) out<< " miss: " << missile_<< ",";
-//  if(defence_) out<< " def: " << defence_<< ",";
-//  if(damage_) out<< " dmg: " << damage_<< ",";
-//  if(numOfHits_) out<< " hits: " << numOfHits_<< ",";
-//  if(life_) out<< " life: " << life_<< ",";
-//  if(mana_) out<< " mana: " << mana_<< ",";
-////  if(upkeep_) out<< ": " << upkeep_; // upkeep calculation
-//  if(controlPoints_) out<< " CP: " << controlPoints_<< ",";
-//  if(stealth_) out<< " ste: " << stealth_<< ",";
-//  if(observation_) out<< " obs: " << observation_; 
   out << ". ";
 }
 
+/*
+ * Prints to output one statistic data if it is non-zero.
+ */
 void  EntityStatistics::printThisStat_(int thisStat, const char * name, bool & isFirst, ostream &out)
 {
     if(thisStat)
@@ -146,6 +122,9 @@ void  EntityStatistics::printThisStat_(int thisStat, const char * name, bool & i
        }
 }
 
+/*
+ * Adds stat modifiers 
+ */
 void EntityStatistics::addStats(EntityStatistics * stats)
 {
  	initiative_ += stats->getInitiative();
@@ -166,6 +145,9 @@ void EntityStatistics::addStats(EntityStatistics * stats)
 
 
 
+/*
+ * Adds proportional part of stat modifier 
+ */
 void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, int denominator)
 {
   
@@ -177,7 +159,7 @@ void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, 
 	missile_ += (stats->getMissile()* numenator) / denominator;
 	life_ += (stats->getLife()* numenator) / denominator;
 	mana_ += (stats->getMana()* numenator) / denominator;
-	upkeep_ += (stats->getUpkeep()* numenator) / denominator;
+	upkeep_ += (stats->getUpkeep()* numenator / denominator) ; 
 	controlPoints_ += (stats->getControlPoints()* numenator); // CP are not scaled!
 	stealth_ += (stats->getStealth()* numenator) / denominator;
 	observation_ += (stats->getObservation()* numenator) / denominator;
@@ -186,6 +168,9 @@ void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, 
 
 
 
+/*
+ * Sets all stats to 0
+ */
 void EntityStatistics::clearStats()
 {
 	initiative_ = 0;
@@ -202,6 +187,9 @@ void EntityStatistics::clearStats()
 	observation_= 0;
 }
 
+/*
+ * Checks that stats have some non-trivial info
+ */
 bool EntityStatistics::empty()
 {
 	if(initiative_ != 0)
@@ -220,8 +208,8 @@ bool EntityStatistics::empty()
     return false;
 	if(mana_!= 0)
     return false;
-	if(upkeep_!= 0)
-    return false;
+//	if(upkeep_!= 0)
+//    return false;
 	if(controlPoints_!= 0)
     return false;
 	if(stealth_!= 0)

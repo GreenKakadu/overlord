@@ -13,10 +13,10 @@
  *                                                                                            *
  ***************************************************************************/
 #include "TeachingOffer.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "SkillRule.h"
 
-TeachingOffer::TeachingOffer(PhysicalEntity * teacher, SkillRule * skill, vector <Entity *> &students)
+TeachingOffer::TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <Entity *> &students)
 {
   teacher_ =  teacher;
   skill_   =  skill;
@@ -39,7 +39,7 @@ TeachingOffer::~TeachingOffer()
 
 
 
-ostream&  TeachingOffer::print(ostream& out) const
+ostream&  TeachingOffer::reportOffer(ostream& out) const
 {
  out << teacher_<< "Offers to teach "<< *skill_<< " on level "<< level_<<" to ";
  for(vector <Entity *>::const_iterator  iter =students_.begin();

@@ -18,7 +18,7 @@
 #include "BasicUsingStrategy.h"
 class ConstructionRule;
 class ItemRule;
-class PhysicalEntity;
+class TokenEntity;
 class UnitEntity;
 
 /**

@@ -11,13 +11,13 @@
 
 #include <vector>
 #include "BasicUsingStrategy.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 
 /**Harvesting skill
   *@author Alex Dribin
   */
 class ItemRule;
-class Rational;
+class RationalNumber;
 class ToolUseElement;
 class Order;
 class UnitEntity;
@@ -25,14 +25,14 @@ class UnitEntity;
 class HarvestUsingStrategy : public BasicUsingStrategy  {
 public: 
       HarvestUsingStrategy ( const string & keyword, GameData * parent): BasicUsingStrategy(keyword, parent){}
-      HarvestUsingStrategy ( const HarvestUsingStrategy * prototype ): BasicUsingStrategy(prototype){}
+      HarvestUsingStrategy ( const HarvestUsingStrategy * prototype ); 
 		 ~HarvestUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
       USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
-      void reportUse(USING_RESULT result, PhysicalEntity * tokenEntity);
-      Rational getDailyProduction(); // should return scaled int
+      void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
+      RationalNumber getDailyProduction(); // should return scaled int
       inline ItemRule * getHarvestedResource(){return resourceHarvested_;}
       inline ItemRule * getConsumedResource(){return resourceConsumed_;}
       void extractKnowledge (Entity * recipient, int parameter = 0);

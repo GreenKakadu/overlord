@@ -28,6 +28,7 @@ TitleRule::TitleRule(const TitleRule * prototype) : Rule(prototype)
     range_   = 0;
     condition_ = 0;
     learningLevelBonus_ = 0;
+    studyBonus_ = 0;
 }
 
 
@@ -98,7 +99,7 @@ TitleRule::initialize        ( Parser *parser)
 
 void TitleRule::printDescription(ReportPrinter & out)
 {
-   out << printName()<< ": "<< getDescription()<<". ";
+   out << print()<< ": "<< getDescription()<<". ";
     
    if(range_)   out << "Range "<< range_ <<" days of walking. ";
    if(cost_)    out << "Costs $"<< cost_ <<". ";

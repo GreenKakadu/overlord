@@ -52,7 +52,7 @@ ORDER_STATUS ChristenOrder::process (Entity * entity, vector <AbstractData *>  &
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  string  newName = (parameters[0])->printName();
+  string  newName = (parameters[0])->print();
   ConstructionEntity * construction = unit->getContainingConstruction();
   if(construction)
   	{

@@ -22,9 +22,9 @@ void  BinaryPattern::operator delete(void * deadObject, size_t size)
 }
 
 
-void BinaryPattern::print(ostream &out) const
+void BinaryPattern::printReport(ostream &out) const
 {
-  reporter_->print(out, param1_, param2_);
+  reporter_->printReport(out, param1_, param2_);
 }
 
 void BinaryPattern::clean()

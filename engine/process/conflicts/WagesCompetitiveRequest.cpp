@@ -12,6 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include <typeinfo> 
 #include "WagesCompetitiveRequest.h"
 #include "AbstractData.h"
 #include "IntegerData.h"
@@ -25,7 +26,7 @@ Reporter * WagesCompetitiveRequest::workPublicReporter = new Reporter(""," is wo
 Reporter * WagesCompetitiveRequest::workPrivateReporter = new Reporter("Working at "," earning "," coins.");
 
 
-WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, Order * orderId, Rational& amount) :BasicCompetitiveRequest(unit,0)
+WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount) :BasicCompetitiveRequest(unit,0)
 {
   resourceAmount_ =  amount;
 }
@@ -47,12 +48,12 @@ bool WagesCompetitiveRequest::isEqualTo (BasicCompetitiveRequest * request)
 
 
 
-Rational WagesCompetitiveRequest::getValue() const
+RationalNumber WagesCompetitiveRequest::getValue() const
 {
   return resourceAmount_;
 }
 
-void WagesCompetitiveRequest::setValue(const Rational& value)
+void WagesCompetitiveRequest::setValue(const RationalNumber& value)
 {
   resourceAmount_ = value;
 }
@@ -65,19 +66,19 @@ AbstractData * WagesCompetitiveRequest::getType() const
 
 
 
-Rational WagesCompetitiveRequest::getTotalAvailableValue() const
+RationalNumber WagesCompetitiveRequest::getTotalAvailableValue() const
 {
     return  unit_->getLocation()->getWages() * 50 ; // Temp
 }
 
 
 
-void WagesCompetitiveRequest::answerRequest(Rational& answer)
+void WagesCompetitiveRequest::answerRequest(RationalNumber& answer)
 {
 //  int answer =  scale_down(scaledAnswer);
   unit_->addToInventory( cash,answer);
   unit_->addReport(new BinaryPattern(workPrivateReporter, unit_->getLocation(), new IntegerData(answer.getValue())));
   unit_->getLocation()->addReport(new UnaryPattern(workPublicReporter, unit_));
-//  cout << unit_->printName() << " is working at "<< unit_->getLocation()->printName()<<"earning "<< answer<< " coins.\n";
+//  cout << unit_->print() << " is working at "<< unit_->getLocation()->print()<<"earning "<< answer<< " coins.\n";
 
 }

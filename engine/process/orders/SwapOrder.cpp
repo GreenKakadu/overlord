@@ -18,7 +18,7 @@
 #include "RulesCollection.h"
 #include "ItemRule.h"
 #include "SwapOrderRequest.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 
 extern EntitiesCollection <UnitEntity>      units;
 extern RulesCollection <ItemRule>      items;
@@ -64,9 +64,9 @@ STATUS SwapOrder::loadParameters(Parser * parser,
 ORDER_STATUS SwapOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   	
-  PhysicalEntity * tokenEntity = dynamic_cast<UnitEntity *>(entity);
+  TokenEntity * tokenEntity = dynamic_cast<UnitEntity *>(entity);
   assert(tokenEntity);
-  PhysicalEntity * swapTarget =DOWNCAST_ENTITY<PhysicalEntity>(parameters[0]);
+  TokenEntity * swapTarget =DOWNCAST_ENTITY<TokenEntity>(parameters[0]);
   if(swapTarget == 0)
   	return INVALID;
   int num1 = 	getIntegerParameter(parameters,1);
@@ -114,7 +114,7 @@ ORDER_STATUS SwapOrder::process (Entity * entity, vector <AbstractData *>  &para
   {
       if(tokenEntity->getFaction() != swapTarget->getFaction() )
       {
-      if(!tokenEntity->mayInterractPhysicalEntity(swapTarget)) // Units of the same faction
+      if(!tokenEntity->mayInterractTokenEntity(swapTarget)) // Units of the same faction
           return FAILURE;
       }
 // Do work here
@@ -128,8 +128,8 @@ ORDER_STATUS SwapOrder::process (Entity * entity, vector <AbstractData *>  &para
       return FAILURE;
 }
 
-void SwapOrder::doSwap(PhysicalEntity * tokenEntity, ItemRule * item1, int num1,
-      PhysicalEntity * swapTarget, ItemRule * item2, int num2)
+void SwapOrder::doSwap(TokenEntity * tokenEntity, ItemRule * item1, int num1,
+      TokenEntity * swapTarget, ItemRule * item2, int num2)
 {
 // Do work here
       tokenEntity->takeFromInventory(item1,num1);

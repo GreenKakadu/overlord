@@ -25,6 +25,8 @@ DataStorageHandler::DataStorageHandler (string * filename)
 //cout << "Collection "<< filename << " created.\n";
 }
 
+
+
 DataStorageHandler::DataStorageHandler (const char * filename)
 {
   filenameString_ = string(filename);
@@ -33,37 +35,7 @@ DataStorageHandler::DataStorageHandler (const char * filename)
 //cout << "Collection "<< string(filename) << " created.\n";
 }
 
-//DataStorageHandler::DataStorageHandler(const char * filename)
-//{
-////  	collection_ =  collection;
-//	filename_ = filename;
-//
-// 	parser_ = new FileParser ( filename );
-//	if (parser_->status != OK)
-//			{
-//				status = IO_ERROR;
-//				return;
-//			}
-//	status = OK;
-//  	beginning_ = parser_->getPosition();
-//  	do //Find collection keyword  definition
-//    	{
-//      		parser_->getLine();
-//    	} while (! ( parser_->matchKeyword ("KEYWORD"))  || parser_->eof() );
-//
-//	if(parser_->eof() )
-//		{
-//			cout <<"Can't find KEYWORD definition "<<endl;
-//		}
-//  	collectionKeyword_ = parser_->getWord();
-////    collection->setCollectionKeyword(collectionKeyword_);
-//  	if( parser_ -> matchInteger() )
-//    		{
-//      			collectionSize_ = parser_->getInteger();
-////      			collection->redimention(collectionSize_);
-//    		}
-//cout << "Collection "<< collectionKeyword_ << " created.\n";
-//}
+
 void DataStorageHandler::setCollection(BasicCollection  *collection)
 {
   	collection_ =  collection;
@@ -74,11 +46,16 @@ void DataStorageHandler::setCollection(BasicCollection  *collection)
     }
 }
 
+
+
 DataStorageHandler::~DataStorageHandler()
 {
   if(parser_) delete parser_;
+//   collection_->clear(); 
   if(!collectionKeyword_.empty())cout << "Data handler ["<<collectionKeyword_ <<"] Destroyed " << endl;
 }
+
+
 
 STATUS DataStorageHandler::open()
 {
@@ -110,6 +87,8 @@ STATUS DataStorageHandler::open()
 //cout << "Collection "<< collectionKeyword_ << " created.\n";
 				return status;
 }
+
+
 
 STATUS DataStorageHandler::load()
 {
@@ -154,7 +133,7 @@ string optionalDerivativeKeyword;
 //	  				if(newObject->checkObjectType(collectionKeyword_))
 						{
 	    					collection_ -> add (newObject) ;
-//                cout << " After adding "<< newObject->printName();
+//                cout << " After adding "<< newObject->print();
                 
 						}
 				 }
@@ -187,7 +166,7 @@ STATUS DataStorageHandler::save()
 //  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
   outfile << "# Overlord units data " <<endl;
   time ( &rawtime );
-  outfile << "# Ver" <<game.getVersion()<<" " <<ctime(&rawtime) <<endl;
+  outfile << "# Ver " <<game.getVersion()<<" " <<ctime(&rawtime) <<endl;
   outfile << "KEYWORD " << collectionKeyword_ << " " <<collection_ -> size() <<endl;
 
 
@@ -257,7 +236,7 @@ return OK;
 }
 
 
-void  DataStorageHandler::print()
+void  DataStorageHandler::printCollection()
 {
     cout << "====================== "<< collectionKeyword_  << " (" << collection_ -> size() << ") ======================" <<endl;
  //   collection_ -> print();
@@ -266,7 +245,7 @@ for (i=0; i < collection_ -> size() ; i++)
     {
       if (collection_->findByIndex(i) != 0)
 	      {
- 				(collection_->findByIndex(i)) -> printName();
+ 				(collection_->findByIndex(i)) -> print();
 		 }
 	 }
 }

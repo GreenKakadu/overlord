@@ -22,7 +22,7 @@ class ItemRule;
 class Rule;
 class BasicRulesCollection;
 class BasicEntitiesCollection;
-class PhysicalEntity;
+class TokenEntity;
 class ConstructionEntity;
 
 class FactionEntity : public Entity  {
@@ -48,8 +48,8 @@ class FactionEntity : public Entity  {
   void removeUnit(UnitEntity * unit);
   void addConstruction(ConstructionEntity * construction);
   void removeConstruction(ConstructionEntity * construction);
-  STATUS loadFactionOrders(Parser * parser, PhysicalEntity ** entity);
-  PhysicalEntity * currentEntityOrders(BasicEntitiesCollection & collection,
+  STATUS loadFactionOrders(Parser * parser, TokenEntity ** entity);
+  TokenEntity * currentEntityOrders(BasicEntitiesCollection & collection,
                                   Parser * parser);
   virtual Entity * getReportDestination();
   StanceVariety * getStance(UnitEntity * unit) ;
@@ -74,14 +74,14 @@ class FactionEntity : public Entity  {
   void saveKnowledge(ostream &out);
   void reportNewKnowledge(ReportPrinter &out);
   void loadKnowledge(Parser *parser);
-  void setTotalControlPoints(int totalControlPoints) {totalControlPoints_ = totalControlPoints;}
-  void addTotalControlPoints(int controlPoints) {totalControlPoints_ += controlPoints;}
-  void removeTotalControlPoints(int controlPoints) {totalControlPoints_ -= controlPoints;}
-  int  getTotalControlPoints() const {return totalControlPoints_;}
-  int  getControlPoints() const {return controlPoints_;}
-  bool isExeededControlPoints() const {return totalControlPoints_< controlPoints_;}
-  void setTerseBattleReport(bool value){terseBattleReport_ = value;}
-  bool getTerseBattleReport(){return terseBattleReport_;}
+  inline void setMaxControlPoints(int maxControlPoints) {maxControlPoints_ = maxControlPoints;}
+  inline void addMaxControlPoints(int controlPoints) {maxControlPoints_ += controlPoints;}
+  inline void removeMaxControlPoints(int controlPoints) {maxControlPoints_ -= controlPoints;}
+  inline int  getMaxControlPoints() const {return maxControlPoints_;}
+  inline int  getControlPoints() const {return controlPoints_;}
+  inline bool isExeededControlPoints() const {return maxControlPoints_< controlPoints_;}
+  inline void setTerseBattleReport(bool value){terseBattleReport_ = value;}
+  inline bool getTerseBattleReport(){return terseBattleReport_;}
   void markCollectionToReshow(BasicRulesCollection  * collection);
   void markKnowledgeToReshow(Rule  * knowledge);
   inline void markAllSkillsToReshow(){allSkillsToReshow_ = true;}
@@ -105,7 +105,7 @@ class FactionEntity : public Entity  {
   vector<UnitEntity *> loyalUnits_;
   vector<ConstructionEntity *> loyalConstructions_;
   vector<ItemElement *> funds_;
-  int totalControlPoints_;
+  int maxControlPoints_;
   int controlPoints_;
   bool terseBattleReport_;
   bool isResigned_;

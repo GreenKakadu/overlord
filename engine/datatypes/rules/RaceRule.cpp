@@ -288,7 +288,7 @@ void    RaceRule::extractKnowledge (Entity * recipient, int parameter)
 
 void RaceRule::printDescription(ReportPrinter & out)
 {
-  out << printName()<< ": ";
+  out << print()<< ": ";
   if(weight_)
   {
     out <<"weight "  <<weight_ ;
@@ -333,7 +333,7 @@ void RaceRule::printDescription(ReportPrinter & out)
     
    if(!stats.empty())
    {
-      out << " Stats: "; stats.print(out);
+      out << " Stats: "<< stats;
    }
 
    if(!intristicSkills_.empty())
@@ -345,7 +345,7 @@ void RaceRule::printDescription(ReportPrinter & out)
             {
               out << ", ";
             }
-          (*iter).print(out);
+          (*iter).reportExperience(out);
         }
       out <<". ";
     }
@@ -360,7 +360,7 @@ void RaceRule::printDescription(ReportPrinter & out)
             {
               out << ", ";
             }
-          (*iter).print(out);
+          out << (*iter);
         }
       out <<". ";
     }

@@ -15,17 +15,17 @@ using namespace std;
   *@author Alex Dribin
   */
 class ReportPattern;
-class Order;
+class OrderLine;
 class BasicCondition;
-class PhysicalEntity;
+class TokenEntity;
 
 class ReportRecord {
 public: 
-	ReportRecord(ReportPattern * report, Order *  orderId = 0, BasicCondition * condition = 0);
+	ReportRecord(ReportPattern * report, OrderLine *  orderId = 0, BasicCondition * condition = 0);
 	~ReportRecord();
-  bool observableBy(PhysicalEntity * unit) /*const*/;
+  bool observableBy(TokenEntity * unit) /*const*/;
 	ReportPattern * reportMessage;
-  Order *  orderId;
+  OrderLine *  orderId;
 
  protected:
 

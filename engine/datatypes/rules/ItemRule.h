@@ -29,6 +29,7 @@ public:
   /** gets nimber of equipement slots item demands to be equiped */
   inline int getNumEquipSlotsRequired() const {return numEquipSlotsRequired_;}
   inline int getWeight() const {return weight_;}
+  inline int getFormalPrice() const {return price_;}
   inline  EntityStatistics * getStats()  {return &stats;}
   inline  BasicCondition * demandsEquipCondition(){return equipCondition_;}
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
@@ -54,6 +55,7 @@ public:
     private:
 };
 extern ItemRule * cash; // special value
+extern ItemRule * food; // special value
 extern ItemRule       sampleItem;
 #include "RulesCollection.h"
 extern RulesCollection <ItemRule>      items;

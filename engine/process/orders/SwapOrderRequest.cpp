@@ -17,7 +17,7 @@
 #include "SwapOrderRequest.h"
 
 SwapOrderRequest::SwapOrderRequest(OrderPrototype * orderType,
-                  PhysicalEntity * swapTarget, ItemRule * item, int number)
+                  TokenEntity * swapTarget, ItemRule * item, int number)
                     :BasicOrderSynchronizationRequest(orderType)
 {
    swapTarget_ = swapTarget;

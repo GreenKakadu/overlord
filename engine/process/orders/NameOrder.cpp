@@ -43,22 +43,22 @@ ORDER_STATUS NameOrder::process (Entity * entity, vector <AbstractData *>  &para
 //  StringData * h1 = new StringData("zaraza");
 //  StringData * nameParameter =dynamic_cast<StringData *>(parameters[0]);
 //  assert(nameParameter);
-//  string  newName = nameParameter->printName();
-//  string  newName = (parameters[0])->printName();
-  string  g1 = ((parameters[0])->printName()).c_str();
-//  string  g1 = h1->printName();
+//  string  newName = nameParameter->print();
+//  string  newName = (parameters[0])->print();
+  string  g1 = ((parameters[0])->print()).c_str();
+//  string  g1 = h1->print();
 //  entity->setName(newName);
   entity->setName(g1);
 //  entity->setName("zaraza");
-//  entity->setName((parameters[0])->printName());
+//  entity->setName((parameters[0])->print());
 //   cout<< "NameOrder::process  "<< g1 <<endl;
 //   cout<< "NameOrder::process  "<< newName <<endl;
 //  entity->addReport(new UnaryPattern(changeNameReporter,new StringData(newName)));
   entity->addReport(new UnaryPattern(changeNameReporter,new StringData(g1)));
-//   cout<< "NameOrder::process  "<< (parameters[0])->printName() <<endl;
+//   cout<< "NameOrder::process  "<< (parameters[0])->print() <<endl;
 //   cout<< "NameOrder::process  "<< g1 <<endl;
 //   cout<< "NameOrder::process  "<< g1 <<endl;
-//  entity->addReport(new UnaryPattern(changeNameReporter,new StringData((parameters[0])->printName())));
+//  entity->addReport(new UnaryPattern(changeNameReporter,new StringData((parameters[0])->print())));
   return SUCCESS;
 }
 

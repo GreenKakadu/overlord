@@ -62,7 +62,12 @@ void       BasicCollection::redimention (long int size)
 {
 }
 
-NewEntityPlaceholder * BasicCollection::findPlaceholder(const string &tag)
+NewEntityPlaceholder * BasicCollection::findOrAddPlaceholder(const string &tag)
+{
+  return 0;
+}
+
+NewEntityPlaceholder * BasicCollection::checkPlaceholder(const string &tag)
 {
   return 0;
 }

@@ -21,7 +21,8 @@ extern RulesCollection    <ItemRule>     items;
 
 CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ): BasicProductionStrategy(prototype)
 {
-  productNumber_ = 1; 
+  productNumber_ = 1;
+  productType_ =0;
 }
 
 
@@ -143,55 +144,55 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
 
 
 
-USING_RESULT CraftUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
-{
-/** We may be in the middle of production. Then we anyway may continue.*/
-/** Otherwise we'll need resources */
-
- if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
-  {
-    if(checkResourcesAvailability(unit) == 0)
-      {
-        return NO_RESOURCES;
-      }
-     else
-     {
-        consumeResources(unit,1);
-        return  USING_OK;
-     }
-  }
-    return  USING_OK;
-
-
- 
-
-//  vector <ToolUseElement *>::iterator iter;
-//  Rational dailyProduction(productNumber_ * unit->getFiguresNumber(), productionDays_);
-//  for(iter = tools_.begin(); iter != tools_.end();iter++)
+//USING_RESULT CraftUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
+//{
+///** We may be in the middle of production. Then we anyway may continue.*/
+///** Otherwise we'll need resources */
+//
+// if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
 //  {
-//    dailyProduction = dailyProduction + dailyProduction * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-//  }
-
-//  Rational  currentAmount = unit->getItemAmount(productType_);
-// Check for new production cycle + check for production counter
-//  if( currentAmount.isInteger() )
-//  {
-//      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
+//    if(checkResourcesAvailability(unit) == 0)
 //      {
 //        return NO_RESOURCES;
-//       }
-//   }
-//  else if( (currentAmount + dailyProduction).getValue() > currentAmount.getValue() )
-//    {
-//      if(!unit->takeFromInventoryExactly(resourceType_, resourceNumber_))
-//      {
-//        // no resources but old production in progress
-//        dailyProduction =  currentAmount + 1 - currentAmount.getValue();
-//        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
-//        }
-//    }
+//      }
+//     else
+//     {
+//        consumeResources(unit,1);
+//        return  USING_OK;
+//     }
+//  }
 //    return  USING_OK;
-}
+//
+//
+//
+//
+////  vector <ToolUseElement *>::iterator iter;
+////  RationalNumber dailyProduction(productNumber_ * unit->getFiguresNumber(), productionDays_);
+////  for(iter = tools_.begin(); iter != tools_.end();iter++)
+////  {
+////    dailyProduction = dailyProduction + dailyProduction * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+////  }
+//
+////  RationalNumber  currentAmount = unit->getItemAmount(productType_);
+//// Check for new production cycle + check for production counter
+////  if( currentAmount.isInteger() )
+////  {
+////      if(resourceNumber_ != unit->takeFromInventory(resourceType_, resourceNumber_))
+////      {
+////        return NO_RESOURCES;
+////       }
+////   }
+////  else if( (currentAmount + dailyProduction).getValue() > currentAmount.getValue() )
+////    {
+////      if(resourceNumber_ != unit->takeFromInventory(resourceType_, resourceNumber_))
+////      {
+////        // no resources but old production in progress
+////        dailyProduction =  currentAmount + 1 - currentAmount.getValue();
+////        unit->addReport(new BinaryPattern(notEnoughResourcesReporter,resourceType_ ,productType_));
+////        }
+////    }
+////    return  USING_OK;
+//}
 
 
 
@@ -221,7 +222,7 @@ void    CraftUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
 
 
 
-void CraftUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
+void CraftUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntity)
 {
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
@@ -242,7 +243,7 @@ void CraftUsingStrategy::printSkillDescription(ostream & out)
  if(productNumber_ > 1)
   out << productType_->getPluralName()<< " " << productType_->printTag();
  else
-  out << productType_->printName();
+  out << productType_->print();
 
   out<<" in "<< productionDays_ <<" days.";
 }

@@ -61,7 +61,7 @@ STATUS StanceOrder::loadParameters(Parser * parser,
   StanceVariety * stance = dynamic_cast<StanceVariety *>(parameters[parameters.size()-1]);
   if(stance == 0)
   {
-        entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(parameters[parameters.size()-1]->printName()), new StringData("stance")));
+        entity->addReport(new TertiaryPattern(invalidParameterReporter, new StringData(keyword_), new StringData(parameters[parameters.size()-1]->print()), new StringData("stance")));
         return IO_ERROR;
   }
   return OK;
@@ -75,7 +75,7 @@ ORDER_STATUS StanceOrder::process (Entity * entity, vector <AbstractData *>  &pa
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction == 0)
   	{
-  		PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  		TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   		if(unit)
   			faction = unit->getFaction();
   		else

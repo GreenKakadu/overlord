@@ -27,7 +27,7 @@ extern EntitiesCollection <UnitEntity>      units;
 extern Reporter * recruiterReporter;
 extern Reporter * newRecruitReporter;
 
-NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, Order * orderId,
+NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
                               NewEntityPlaceholder * targetUnit):
                   MarketRequest( unit, orderId, amount, 0, price,BUY)
@@ -35,18 +35,21 @@ NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, Order * orderId,
   race_ = race;
   targetUnit_ = targetUnit;
 }
+
+
+
 NewRecruitRequest::~NewRecruitRequest(){
 }
+
+
+
 string NewRecruitRequest::print()
 {
-  char buffer1[12];
-  char buffer2[12];
-  longtostr(amount_, buffer1);
-  longtostr(price_, buffer2);
-
-  return  unit_->printName() + " requests to recruit into new unit" + buffer1 +
-          " of " + race_->printName() + " for " + buffer2  + " coins\n";
+  return  unit_->print() + " requests to recruit into new unit" + longtostr(amount_) +
+          " of " + race_->print() + " for " + longtostr(price_)  + " coins\n";
 }
+
+
 
 bool NewRecruitRequest::isValid()
 {
@@ -77,8 +80,9 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
 {
 
     if (unit_->isTraced())
-        cout <<"== TRACING "  << unit_->printName()<< " recruits into new unit " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
-    assert(unit_->takeFromInventoryExactly(cash, price * amount));
+        cout <<"== TRACING "  << unit_->print()<< " recruits into new unit " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
+     int taken = unit_->takeFromInventory(cash, price * amount); //pay
+      assert(taken == price * amount);
      // create new unit and assign it to placeholder  targetUnit_
      UnitEntity * newUnit   = new UnitEntity(unit_);
       if(units.addNew(newUnit) != OK)
@@ -92,7 +96,7 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
        newUnit->setRace(race_,amount);
        newUnit->recalculateStats();
 	     if (unit_->isTraced())
-        cout  <<"== TRACING " << "New unit created: "<<newUnit->printName() <<" \n";
+        cout  <<"== TRACING " << "New unit created: "<<newUnit->print() <<" \n";
        
     // report new unit created
 //QQQ

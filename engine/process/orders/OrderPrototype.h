@@ -54,7 +54,7 @@ class OrderPrototype
     protected:
     bool entityIsUnit(Entity *entity, PARSING_MODE mode = NORMAL_PARSING) ;
     bool entityIsFaction(Entity *entity, PARSING_MODE  mode = NORMAL_PARSING) ;
-    bool entityIsPhysicalEntity(Entity *entity,PARSING_MODE  mode = NORMAL_PARSING) ;
+    bool entityIsTokenEntity(Entity *entity,PARSING_MODE  mode = NORMAL_PARSING) ;
     bool parseGameDataParameter(Entity *entity, Parser * parser, BasicCollection & collection,
           const string & parameterTypeName, vector <AbstractData *>  &parameters);
     bool parseGameDataParameter(Entity *entity, const string & tag, BasicCollection & collection,

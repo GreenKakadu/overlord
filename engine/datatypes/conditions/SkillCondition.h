@@ -22,7 +22,7 @@ public:
 	~SkillCondition(){delete skillRequirement_;}
   STATUS      initialize ( Parser *parser );
   GameData * createInstanceOfSelf();
-  bool isSatisfied(PhysicalEntity * unit);
+  bool isSatisfied(TokenEntity * unit);
   void conditionHandler(Entity * entity);
   void setSubject(Rule * subject);
   void extractKnowledge (Entity * recipient, int parameter = 0);
@@ -30,8 +30,8 @@ public:
   Rule * getSubject() const ;
   SkillRule * getSkill() const ;
   int  getLevel() const ;
-  ostream & print(ostream & out);
-  string printName(){return skillRequirement_->printName();}
+//  ostream & reportCondition(ostream & out);
+  string print(){return string("condition: ") + skillRequirement_->print();}
 protected:
 	SkillLevelElement * skillRequirement_;
   ItemRule * subject_;

@@ -39,7 +39,7 @@ public:
    void process();
    void dailyPreProcess();
    void  save(ostream &out);
-   void  report(FactionEntity * faction, ostream &out);
+   void produceFactionReport(FactionEntity * faction, ostream &out);
    void setLocation(LocationEntity * location);
    void setMerchantPrince(UnitEntity *prince){ merchantPrince_ = prince;}
    UnitEntity * getMerchantPrince() const {return merchantPrince_;}

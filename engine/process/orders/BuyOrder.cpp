@@ -116,11 +116,11 @@ BuyOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &paramet
   {
     par0->setValue(amount - result);
     entity->updateOrderResults(FAILURE);
-//  cout << "Saving order for "<< unit->printName() <<"=[ ";
+//  cout << "Saving order for "<< unit->print() <<"=[ ";
 //  orderId->save(cout);
     return FAILURE;
   }
   entity->updateOrderResults(SUCCESS);
-//  cout << "Order completed for "<< unit->printName() <<".\n";
+//  cout << "Order completed for "<< unit->print() <<".\n";
   return SUCCESS;
 }

@@ -10,7 +10,7 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "SimplePattern.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
@@ -62,12 +62,12 @@ STATUS OathOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS OathOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   FactionEntity * faction = dynamic_cast<FactionEntity *>(parameters[0]);
   if(faction == 0)
     {
-        PhysicalEntity * recipient = DOWNCAST_ENTITY<PhysicalEntity>(parameters[0]);
+        TokenEntity * recipient = DOWNCAST_ENTITY<TokenEntity>(parameters[0]);
         assert(recipient);
         faction = recipient->getFaction();
     }

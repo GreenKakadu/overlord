@@ -29,6 +29,9 @@ extern EntitiesCollection    <UnitEntity>     units;
 
 MarketStrategy::MarketStrategy( const  MarketStrategy* prototype ) : Strategy(prototype)
 {
+   marketConflict_ = 0;
+   location_ = 0;
+   merchantPrince_ = 0;
 
 }
 
@@ -129,6 +132,8 @@ void  MarketStrategy::save(ostream &out)
   out << "PRINCE "<< merchantPrince_->getTag()<<endl;
 }
   
+
+
 void MarketStrategy::dailyPreProcess()
 {
  RequestIterator iter;
@@ -159,7 +164,7 @@ void MarketStrategy::setLocation(LocationEntity * location)
 
 
 
-void  MarketStrategy::report(FactionEntity * faction, ostream &out)
+void  MarketStrategy::produceFactionReport(FactionEntity * faction, ostream &out)
 {
  RequestIterator iter;
  bool isFirst = true;
@@ -177,7 +182,7 @@ void  MarketStrategy::report(FactionEntity * faction, ostream &out)
         {
           out << ", ";
         }
-        (*iter)->report(faction, out);
+        (*iter)->produceFactionReport(faction, out);
         
     }
   out << ".\n";
@@ -197,7 +202,7 @@ void  MarketStrategy::report(FactionEntity * faction, ostream &out)
         {
           out << ", ";
         }
-        (*iter)->report(faction, out);
+        (*iter)->produceFactionReport(faction, out);
     }
   out << ".\n";
   }
@@ -216,7 +221,7 @@ void  MarketStrategy::report(FactionEntity * faction, ostream &out)
         {
           out << ", ";
         }
-        (*iter)->report(faction, out);
+        (*iter)->produceFactionReport(faction, out);
     }
   out << ".\n";
   }

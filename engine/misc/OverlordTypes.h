@@ -51,7 +51,9 @@ enum using_result {
   TARGET_NOT_EXIST   = 5,
   NO_RESOURCES       = 6,
   USING_IN_PROGRESS  = 7,
-  USING_COMPLETED    = 8
+  USING_COMPLETED    = 8,
+  NO_TARGET          = 9,
+  USING_RESULT_END   = 99
                    };
 typedef using_result  USING_RESULT;
 enum processing_state {
@@ -67,5 +69,12 @@ enum order_repetition_state {
   ACTIVE    = 2
 };
 typedef enum  order_repetition_state ORDER_REPETITION_STATE;
+
+enum action_result {
+  ACTION_SUCCESS           = 0,
+  ACTION_FAILURE           = 1,
+  ACTION_RESULT_END   = 99
+                   };
+typedef action_result  ACTION_RESULT;
 #endif
 

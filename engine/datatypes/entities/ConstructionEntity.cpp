@@ -41,9 +41,10 @@ extern Reporter * arrivePrivateReporter;
 extern Reporter * arrivePublicReporter;
 
 
-ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) : PhysicalEntity(prototype)
+ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) : TokenEntity(prototype)
 {
   effectiveStaff_ = 0;
+  construction_ = 0;
 }
 
 
@@ -80,7 +81,7 @@ ConstructionEntity::initialize        ( Parser *parser )
           buildingWorks_.push_back(newResource);
 	    return OK;
 	  }
-	return PhysicalEntity::initialize(parser );
+	return TokenEntity::initialize(parser );
 }
 
 
@@ -90,7 +91,7 @@ void    ConstructionEntity::preprocessData()
 	if(faction_)
 	faction_-> addConstruction(this);
    if(construction_ == 0)
-    cout << "ERROR: "<< printName() << " has undefined construction type"<<endl;
+    cout << "ERROR: "<< print() << " has undefined construction type"<<endl;
 }
 
 
@@ -104,12 +105,19 @@ void ConstructionEntity::postProcessData()
 
 
 
+//void      payUpkeep()
+//{
+//
+//}
+
+
+
 void      ConstructionEntity::save (ostream &out)
 {
   if(isDisbanded())
       return;
 
-  PhysicalEntity::save(out);
+  TokenEntity::save(out);
   if(moving_ !=0)  moving_->save(out);
 
   if(construction_) out << "CONSTRUCTION " << construction_->getTag()<<endl;
@@ -162,22 +170,22 @@ bool ConstructionEntity::addBuildingWork(ConstructionWorksElement * buildingWork
         return  isCompleted();
     }
   }
-  cout << "BUILDING ERROR on building "<< construction_->printName()<<" - no such material as" <<buildingWorks->getWorkType()->printName()<<endl;
+  cout << "BUILDING ERROR on building "<< construction_->print()<<" - no such material as" <<buildingWorks->getWorkType()->print()<<endl;
   return false;
 }
 
 
 
-void      ConstructionEntity::report (FactionEntity * faction, ReportPrinter &out)
+void      ConstructionEntity::produceFactionReport (FactionEntity * faction, ReportPrinter &out)
 {
-    out << printName() << " " <<construction_->getName();
+    out << print() << " " <<construction_->getName();
     if(isDisbanded())
     {
       out << " (destroyed) "<<endl;
       out <<endl;
       return;
     }
-     out<< " at "<< location_->printName()<<".\n";
+     out<< " at "<< location_->print()<<".\n";
      out.incr_indent();
   for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
   {
@@ -186,7 +194,7 @@ void      ConstructionEntity::report (FactionEntity * faction, ReportPrinter &ou
     else
         out << ", ";
 
-    out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->printName();
+    out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->print();
   }
    
  reportAppearence(getFaction(), out);
@@ -194,7 +202,7 @@ void      ConstructionEntity::report (FactionEntity * faction, ReportPrinter &ou
  reportSkills(getFaction(), out);
 // recalculateStats();  // Do we really need that?
 //   out << "Stats: ";stats.print(out);
- if(!getTarget().empty())
+ if(getTarget())
   out<< " Targeting "<< getTarget()<<".\n";
  out <<endl;
  out.decr_indent();
@@ -207,7 +215,7 @@ void      ConstructionEntity::report (FactionEntity * faction, ReportPrinter &ou
 void      ConstructionEntity::privateReport (ReportPrinter &out)
 {
     
-    out << " * " << printName()  <<" "<<construction_->getName(); out.incr_indent();
+    out << " * " << print()  <<" "<<construction_->getName(); out.incr_indent();
     if(isDisbanded())
     {
       out << " (destroyed) "<<endl;
@@ -220,7 +228,7 @@ void      ConstructionEntity::privateReport (ReportPrinter &out)
  reportSkills(getFaction(), out);
 // recalculateStats();  // Do we really need that?
 //   out << "Stats: ";stats.print(out);
- if(!getTarget().empty())
+ if(getTarget())
   out<< "Targeting "<< getTarget()<<".\n";
  out <<endl;
  out.decr_indent();
@@ -233,17 +241,17 @@ void      ConstructionEntity::publicReport (int observation, ReportPrinter &out)
 {
     if(isDisbanded())
           return;
-    out << " - "<< printName()  <<construction_->getName();
+    out << " - "<< print()  <<construction_->getName();
     if(getFaction())
     {
       out << " (belongs to ";
-      out <<getFaction()->printName()<<")";
+      out <<getFaction()->print()<<")";
       if(!isCompleted())
         out << " unfinished.";
     }
 
  if(moving_)
-    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->printName()
+    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
   // report crew
       out<<endl;
@@ -271,7 +279,7 @@ void ConstructionEntity::reportInventory(FactionEntity * faction, ReportPrinter 
             {
               out << ", ";
             }
-          (*iter)->print(out);
+          (*iter)->reportEquipment(out);
         }
     out <<". ";
     }
@@ -304,7 +312,7 @@ void ConstructionEntity::reportInventory(FactionEntity * faction, ReportPrinter 
 void    ConstructionEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out)
 {
  if(moving_)
-    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->printName()
+    out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
 
 //  if((getFaction() == faction) || isObservableBy(faction) )
@@ -333,7 +341,7 @@ void    ConstructionEntity::reportAppearence(FactionEntity * faction, ReportPrin
         {
           out << ", " ;
         }
-          out << (*iter)->printName();
+          out << (*iter)->print();
       }
   if(construction_->getMaxStaff())
     {
@@ -397,7 +405,7 @@ bool ConstructionEntity::recalculateSkills()
         {
          if((*skillIter).getSkill()->isDescendFrom(condition->getSkill(), condition->getLevel()))
           {
-            PhysicalEntity::addSkill( (*skillIter).getSkill(),
+            TokenEntity::addSkill( (*skillIter).getSkill(),
                               (*skillIter).getExpPoints() * (*staffIter)->getFiguresNumber());
           }
         }
@@ -458,7 +466,7 @@ int ConstructionEntity::addSkill(SkillElement  skill)
 
 int ConstructionEntity::addSkill(SkillRule  * skill, int expPoints)
 {
- return PhysicalEntity::addSkill(skill,expPoints);
+ return TokenEntity::addSkill(skill,expPoints);
 }
 
 
@@ -621,7 +629,7 @@ void ConstructionEntity::setProductionBonus(ItemRule * product, SkillRule * skil
 
 
 
-Rational ConstructionEntity::useProductionBonus(ItemRule * product, Rational number)
+RationalNumber ConstructionEntity::useProductionBonus(ItemRule * product, RationalNumber number)
 {
   for (vector <ResourceElement *>::iterator iter = resourceQuotas_.begin();
        iter != resourceQuotas_.end(); ++iter)
@@ -717,7 +725,7 @@ void ConstructionEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 
 void ConstructionEntity::moveToLocation()
 {
-  PhysicalEntity::moveToLocation();
+  TokenEntity::moveToLocation();
   getLocation()->removeConstruction(this);
   moving_->getDestination()->addConstruction(this);
 }

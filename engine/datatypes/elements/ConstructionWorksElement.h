@@ -17,7 +17,7 @@
 #include "Element.h"
 #include "ConstructionWorksVariety.h"
 #include "VarietiesCollection.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 
 using namespace std;
 extern VarietiesCollection <ConstructionWorksVariety>     construction_works;
@@ -26,34 +26,33 @@ extern VarietiesCollection <ConstructionWorksVariety>     construction_works;
 /**
   *@author Alex Dribin
   */
-typedef  Element2<ConstructionWorksVariety,Rational> BasicConstructionWorksElement;
+typedef  Element2<ConstructionWorksVariety,RationalNumber> BasicConstructionWorksElement;
 
 class ConstructionWorksElement : public BasicConstructionWorksElement  {
 public: 
-	ConstructionWorksElement(ConstructionWorksVariety * works, Rational amount): BasicConstructionWorksElement (works,amount){}
+	ConstructionWorksElement(ConstructionWorksVariety * works, RationalNumber amount): BasicConstructionWorksElement (works,amount){}
 	ConstructionWorksElement(ConstructionWorksVariety * works, int amount): BasicConstructionWorksElement (works,amount){}
 	~ConstructionWorksElement(){}
    inline ConstructionWorksVariety *   getWorkType()      const     {return rule_;}
-   inline Rational          getWorkAmount()    const     {return parameter1_;}
+   inline RationalNumber          getWorkAmount()    const     {return parameter1_;}
 //   inline void         setWorkAmount(int value)     { parameter1_ = value;}
-   inline void         setWorkAmount(Rational value)     { parameter1_ = value;}
+   inline void         setWorkAmount(RationalNumber value)     { parameter1_ = value;}
    inline bool isValidElement() const {return (( rule_ != 0 ) && (parameter1_ != 0));}
 
-   void save(ostream & out)
-    {out << rule_->getTag() << " " <<  parameter1_   << endl;}
-   void print(ostream & out)
+//   void save(ostream & out)
+//    {out << rule_->getTag() << " " <<  parameter1_   << endl;}
+   string print()
     {
-      out << parameter1_<<" of ";
       if(parameter1_ > 1)
-        out<< rule_->getPluralName();
+        return parameter1_.print() + " of " + rule_->getPluralName();
       else
-        out<<rule_->getName();
+        return parameter1_.print() + " of " + rule_->getName();
     }
 
   static ConstructionWorksElement  * readElement (Parser * parser)
       {
         ConstructionWorksVariety * works = construction_works[parser->getWord()];
-        Rational amount = parser->getRational();
+        RationalNumber amount = parser->getRationalNumber();
         if(( works == 0 ) || (parser->status != OK) )
           return 0;
         else

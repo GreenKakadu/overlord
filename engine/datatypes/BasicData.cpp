@@ -24,7 +24,7 @@ string BasicData::printTag() const{
 /** returns name for use in reports and messages
  * (followed by tag enbraced in square brackets)
  */
-string BasicData::printName() /*const*/
+string BasicData::print() /*const*/
 {
  return (name_ + l_bracket + tag_ + r_bracket);
 }

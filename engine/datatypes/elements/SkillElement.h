@@ -21,19 +21,17 @@ class SkillElement : public BasicSkillElement {
 public:
 	SkillElement(SkillRule * rule, int expPoints) : BasicSkillElement (rule,expPoints){}
  ~SkillElement(){}
-  void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
-  void print(ostream & out)
+//  void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
+  void reportExperience(ostream & out)
     {rule_->printLevel(getLevel(),out); out  << " (" <<  parameter1_ /BasicLearningStrategy::getPointsPerDay() <<")";}
-  void printNextLevel(ostream & out)
+  void reportNextLevel(ostream & out)
     {rule_->printLevel(getLevel() +1 ,out);}
-  string printName()
+  string print()
   { 
-    char buffer[12];
-    longtostr(parameter1_/100, buffer);
     if(parameter1_ > 1)
-      return string( buffer) + " days of "+ rule_->printName();
+      return longtostr(parameter1_/BasicLearningStrategy::getPointsPerDay()) + " days of "+ rule_->print();
     else  
-      return string( buffer) + " day of "+ rule_->printName();
+      return longtostr(parameter1_/BasicLearningStrategy::getPointsPerDay()) + " day of "+ rule_->print();
   } 
    inline SkillRule *   getSkill()      const     {return rule_;}
    inline int          getExpPoints()    const     {return parameter1_;}

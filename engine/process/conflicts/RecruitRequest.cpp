@@ -22,7 +22,7 @@
 extern Reporter * recruiterReporter;
 extern Reporter * recruitedReporter;
 
-RecruitRequest::RecruitRequest(UnitEntity * unit, Order * orderId,
+RecruitRequest::RecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
                               UnitEntity * targetUnit):
                   MarketRequest( unit, orderId, amount, 0, price,BUY)
@@ -36,13 +36,8 @@ RecruitRequest::~RecruitRequest(){
 
 string RecruitRequest::print()
 {
-  char buffer1[12];
-  char buffer2[12];
-  longtostr(amount_, buffer1);
-  longtostr(price_, buffer2);
-
-  return  unit_->printName() + " requests to recruit " + buffer1 +
-          " of " + race_->printName() + " for " + buffer2  + " coins\n";
+  return  unit_->print() + " requests to recruit " + longtostr(amount_) +
+          " of " + race_->print() + " for " + longtostr(price_)  + " coins\n";
 }
 
 bool RecruitRequest::isValid()
@@ -75,9 +70,10 @@ void RecruitRequest::answerMarketRequest(int price, int amount)
 {
 
   if (unit_->isTraced())
-      cout<<"== TRACING "  << unit_->printName()<< " recruits " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
+      cout<<"== TRACING "  << unit_->print()<< " recruits " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
    targetUnit_ ->addNewFigures(amount);
-    assert(unit_->takeFromInventoryExactly(cash, price * amount));
+    int taken = unit_->takeFromInventory(cash, price * amount); //pay
+    assert(taken == price * amount);
     // report to targetUnit_
 //QQQ
     targetUnit_ ->addReport(new BinaryPattern(recruitedReporter,

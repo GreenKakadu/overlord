@@ -35,8 +35,8 @@ void BasicConflict::addRequest(BasicCompetitiveRequest *request)
 //      int old = (*iter)->getValue();
 //      int add =  request->getValue();
 //      int newv = old + request->getValue();
-//      cout << "Summarizing requests for "<< (*iter)->getRequestingUnit()->printName()<< " was "<< old<< " after addition of" <<add<<" it is "<<newv <<endl;
-//      cout << "Summarizing requests for "<< (*iter)->getRequestingUnit()->printName()<< " was "<< old<< " after addition " <<newv <<endl;
+//      cout << "Summarizing requests for "<< (*iter)->getRequestingUnit()->print()<< " was "<< old<< " after addition of" <<add<<" it is "<<newv <<endl;
+//      cout << "Summarizing requests for "<< (*iter)->getRequestingUnit()->print()<< " was "<< old<< " after addition " <<newv <<endl;
 //      (*iter)->setValue( newv);
 //      cout << "Check requests: it is " << (*iter)->getValue() <<endl;
       
@@ -90,7 +90,7 @@ void BasicConflict::process()
       resolve(currentList);
     }
   else
-    cout << location_->printName()<<" Request list is empty\n";  
+    cout << location_->print()<<" Request list is empty\n";  
 // Here all request object deleted and  currentList cleaned
   for(iter = currentList.begin() ; iter != currentList.end();++iter)
   {

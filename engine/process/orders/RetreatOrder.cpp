@@ -38,7 +38,7 @@ RetreatOrder::RetreatOrder(){
 STATUS RetreatOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
   return OK;
@@ -47,7 +47,7 @@ STATUS RetreatOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS RetreatOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   if( unit->retreat())
     {

@@ -20,7 +20,7 @@ using namespace std;
 class AbstractData {
 public: 
 	virtual ~AbstractData(){}
-  virtual string printName(){return "";}
+  virtual string print(){return "";}
 	AbstractData(){}
    virtual void saveAsParameter (ostream &out){}
    virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.
@@ -30,6 +30,6 @@ public:
 };
 
    inline ostream& operator << (ostream& out,  AbstractData& data)
-                                { out<<data.printName(); return out;}
+                                { out<<data.print(); return out;}
 
 #endif

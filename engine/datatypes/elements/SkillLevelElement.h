@@ -19,7 +19,6 @@ class SkillLevelElement : public BasicSkillLevelElement {
 public:
 	SkillLevelElement(SkillRule * rule, int level) : BasicSkillLevelElement (rule,level){}
  ~SkillLevelElement(){}
-  string printName() { return rule_->printLevel(parameter1_); }
   inline bool operator ==  (SkillLevelElement  rule2)  {return ( (rule_ == rule2.getRule()) && (parameter1_ == rule2.getLevel()) );}
   inline bool operator !=  (SkillLevelElement  rule2)  {return ( (rule_ != rule2.getRule())||(parameter1_ != rule2.getLevel()) );}
   inline bool operator >   (SkillLevelElement  rule2)  {return ( (rule_->getTag() > rule2.getRule()->getTag())|| (parameter1_ >rule2.getLevel()) );}
@@ -33,19 +32,20 @@ public:
 
 
   public:
-void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
-void print(ostream & out)
-    {rule_->printLevel(parameter1_,out);}
-void report(ostream & out)
-    {rule_->printLevel(parameter1_,out);}
+  string print() { return rule_->printLevel(parameter1_); }
+//void save(ostream & out) {out << rule_->getTag() << " " <<  parameter1_  << endl;}
+
+//void print(ostream & out)
+//    {rule_->printLevel(parameter1_,out);}
+
 void printNextLevel(ostream & out)
     {rule_->printLevel(parameter1_ +1 ,out);}
 
-friend  ostream &operator << ( ostream &out, SkillLevelElement element)
-{
-  element.save(out);
-	return out;
-}
+//friend  ostream &operator << ( ostream &out, SkillLevelElement element)
+//{
+//  element.save(out);
+//	return out;
+//}
 
 
 

@@ -1,5 +1,5 @@
 # Overlord skills data
-# Ver 0.23 06.08.2003
+# Ver 0.31 23.01.2003
 
 KEYWORD  SKILL 999
 
@@ -41,17 +41,18 @@ NAME marketing
 DESCRIPTION How to sell, buy and make a tidy profit by the way. You can try to sell and buy things that are not sold on the market
 STUDY_COST 1
 REQUIRES rela
+USING_PARADIGM USING_ACTION
 LEVEL 3000
 STUDENT LEADER
 LEVEL 9000
 DESCRIPTION A leader with this marketing sense may find markets where no one has found them out before. Any unfulfilled transaction may succeed in selling or buying one item if the marketer made use of its skill prior to the transaction
-PRODUCES effmktg 8
+GRANTS effmktg 8
 LEVEL 18000
 DESCRIPTION At this level, the astute marketer will make the best out of marketing studies. Up to two items may be sold or bought for each market study effected
-PRODUCES effmktg 5
+GRANTS effmktg 5
 LEVEL 30000
 DESCRIPTION This incredible marketing sense allows the astute marketer to sell up to three items per market study
-PRODUCES effmktg 4
+GRANTS effmktg 4
 LEVEL 45000
 DESCRIPTION At this level of marketing, each study allows to sell or buy up to four items not on the market
 
@@ -275,6 +276,7 @@ DESCRIPTION The skilled thief will pick someone's pockets. One object will be pi
 REQUIRES stea 2
 COMBAT_SKILL
 LEARNING_PARADIGM LEARNING_NORMAL
+USING_PARADIGM USING_ACTION
 LEVEL  12000
 STUDENT LEADER
 STUDY_COST 2
@@ -2727,23 +2729,23 @@ PRODUCES evtupkp 3
 MANA 2
 OBSERVATION 2
 
-SKILL arma
-NAME armageddon
-DESCRIPTION The ultimate death bringer. When used correctly, it causes death in agonising convulsions to all units at a location, anywhere in the world. The population of the target region is reduced to 0, all living products removed, and all units slain without escape. If five mages ever cast armageddon during the same turn, the effect is to call for the end of the world. All units, anywhere in the world, are transported to a single location, to fight the Final Battle there. It takes a full month to call down the armageddon. This spell can only be cast within a mage circle
-STUDY_COST 5
-LEVEL  12000
-REQUIRES mage 5
-LEARNING_PARADIGM LEARNING_MAGIC
-STUDENT LEADER
-MANA 1
-USING_PARADIGM USING_CRAFT
-CONSUME mana 40
-CONSUME msto 1
-TARGET LOCATION
-PRODUCES evtarma 30
-LEVEL 999999
-STUDY_COST 0
-DESCRIPTION Armageddon cannot be declared faster
+# SKILL arma
+# NAME armageddon
+# DESCRIPTION The ultimate death bringer. When used correctly, it causes death in agonising convulsions to all units at a location, anywhere in the world. The population of the target region is reduced to 0, all living products removed, and all units slain without escape. If five mages ever cast armageddon during the same turn, the effect is to call for the end of the world. All units, anywhere in the world, are transported to a single location, to fight the Final Battle there. It takes a full month to call down the armageddon. This spell can only be cast within a mage circle
+# STUDY_COST 5
+# LEVEL  12000
+# REQUIRES mage 5
+# LEARNING_PARADIGM LEARNING_MAGIC
+# STUDENT LEADER
+# MANA 1
+# USING_PARADIGM USING_CRAFT
+# CONSUME mana 40
+# CONSUME msto 1
+# TARGET LOCATION
+# PRODUCES evtarma 30
+# LEVEL 999999
+# STUDY_COST 0
+# DESCRIPTION Armageddon cannot be declared faster
 
 SKILL wate
 NAME water magics
@@ -2776,9 +2778,9 @@ REQUIRES wate
 LEARNING_PARADIGM LEARNING_MAGIC
 STUDENT LEADER
 MANA 1
-USING_PARADIGM USING_CRAFT
+USING_PARADIGM USING_ENCHANT
 CONSUME mana 1
-PRODUCES effsail 1
+GRANTS effsail 1
 MULTIPLE 4
 LEVEL 9000
 DESCRIPTION At this level, the caster may sustain its walking for longer durations
@@ -3720,6 +3722,7 @@ LEVEL  6000
 REQUIRES raur
 LEARNING_PARADIGM LEARNING_MAGIC
 STUDENT LEADER
+# produce permanent  SeeResourcesEffect Element
 MANA 1
 FX 2
 LEVEL 999999
@@ -3748,7 +3751,7 @@ DESCRIPTION Further progress in mind reading does not yield additional benefits
 
 SKILL mswp
 NAME mind swap
-DESCRIPTION By using this skill, the mage swaps his mind with the target leader. All its skills, mana, target affiliation and the order stack will be exchanged between the caster and the target unit. Each unit retains its possessions, but no longer equips any item requiring a skill for equipment if that skill is not known. The target must be of your faction, or have specified the mind swapper as its target setting, but need not to be at the same location
+DESCRIPTION By using this skill, the mage swaps his mind with the target leader. All its skills, mana, target affiliation and the order stack will be exchanged between the caster and the target unit. Each unit retains its possessions, but no longer equips any item requiring a skill for equipment if that skill is not known. The target must be of your faction, or have specified the mind swapper as its target setting and needs to be at the same location
 STUDY_COST 3
 LEVEL  12000
 REQUIRES rmin
@@ -3789,7 +3792,7 @@ COMBAT RANGE 5
 
 SKILL mmnd
 NAME meeting of minds
-DESCRIPTION By using this skill, the mage may enhance the study of any skill he knows by another leader. The target unit will enjoy an additional 0.5 days of experience if it is studying a skill. The target need not be at the same location
+DESCRIPTION By using this skill, the mage may enhance the study of any skill he knows by another leader. The target unit will enjoy an additional 0.5 days of experience if it is studying a skill. The target need  be at the same location
 STUDY_COST 3
 LEVEL  9000
 REQUIRES rmin
@@ -3946,10 +3949,11 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES eriv
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 10
-PRODUCES efftsig 1
+GRANTS efftsig 1
 MULTIPLE 3
 LEVEL 9000
 MANA 2
@@ -4006,11 +4010,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES mprs
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT
-PRODUCES effdes4 1
+GRANTS effdes4 1
 MULTIPLE 5
 LEVEL 18000
 DESCRIPTION At this level, the despair produced is more pronounced
@@ -4387,11 +4392,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES void 2
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 SPECIALIST 
 CONSUME mana 1
-PRODUCES efffors 1
+GRANTS efffors 1
 MULTIPLE 4
 LEVEL 18000
 MANA 2
@@ -4496,12 +4502,13 @@ STUDY_COST 3
 LEVEL  12000
 REQUIRES fene
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 8
 CONSUME hrbs 1
 TARGET UNIT NEAR
-PRODUCES effcowa 5
+GRANTS effcowa 5
 MULTIPLE 6
 LEVEL 36000
 DESCRIPTION At this level, the cowardice may be caused from farther. The unit must only be within 45 days at walking speed
@@ -4541,11 +4548,12 @@ STUDY_COST 3
 LEVEL  9000
 REQUIRES ervo
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 TARGET UNIT LOCAL
 CONSUME mana 2
-PRODUCES effwand 1
+GRANTS effwand 1
 MULTIPLE 5
 LEVEL 27000
 DESCRIPTION At this level, the wandering effect is more pronounced, lasting longer
@@ -5078,12 +5086,13 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES fire
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 TARGET UNIT LOCAL
 CONSUME mana 2
 CONSUME hrbs 1
-PRODUCES effblnd 1
+GRANTS effblnd 1
 MULTIPLE 3
 LEVEL 9000
 DESCRIPTION At this level, the mage makes blindness last longer
@@ -5400,11 +5409,12 @@ REQUIRES mgro
 STUDY_COST 3
 LEVEL  9000
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 3
 TARGET UNIT LOCAL
-PRODUCES effliqf 1
+GRANTS effliqf 1
 MULTIPLE 2
 LEVEL 27000
 DESCRIPTION At this level, the fire courses longer
@@ -6252,12 +6262,13 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES eart 2
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 SPECIALIST
 TARGET UNIT LOCAL
 CONSUME mana 1
-PRODUCES effstfi 1
+GRANTS effstfi 1
 MULTIPLE 2
 LEVEL 18000
 MANA 2
@@ -6271,11 +6282,12 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES eart 2
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 TARGET UNIT LOCAL
 CONSUME mana 2
-PRODUCES effpetr 1
+GRANTS effpetr 1
 MULTIPLE 4
 LEVEL 9000
 MANA 2
@@ -6483,10 +6495,11 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES airs
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
-PRODUCES effride 1
+GRANTS effride 1
 MULTIPLE 2
 LEVEL 9000
 DESCRIPTION At this level, the caster can moves with less effort
@@ -6704,11 +6717,12 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES airs
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT LOCAL
-PRODUCES effini2 1
+GRANTS effini2 1
 MULTIPLE 4
 LEVEL 9000
 DESCRIPTION At this level, morale is increased for a longer time
@@ -6722,11 +6736,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES rmor
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT
-PRODUCES effdisc 1
+GRANTS effdisc 1
 MULTIPLE -1
 LEVEL 18000
 DESCRIPTION At this level, morale is increased for a longer time
@@ -6740,11 +6755,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES cdis
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT LOCAL
-PRODUCES effmele 1
+GRANTS effmele 1
 MULTIPLE 4
 LEVEL 18000
 DESCRIPTION At this level, reflexes are increased for a longer time
@@ -6758,11 +6774,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES cdis
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT LOCAL
-PRODUCES effmiss 1
+GRANTS effmiss 1
 MULTIPLE 4
 LEVEL 18000
 DESCRIPTION At this level, reflexes are increased for a longer time
@@ -6817,11 +6834,12 @@ STUDY_COST 3
 LEVEL  6000
 REQUIRES cdis
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 CONSUME mana 1
 TARGET UNIT LOCAL
-PRODUCES effdefe 1
+GRANTS effdefe 1
 MULTIPLE 4
 LEVEL 18000
 DESCRIPTION At this level, reflexes are increased for a longer time
@@ -7128,11 +7146,12 @@ STUDY_COST 3
 LEVEL  3000
 REQUIRES airs 2
 LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
 STUDENT LEADER
 MANA 1
 TARGET UNIT LOCAL
 CONSUME mana 2
-PRODUCES effflig 1
+GRANTS effflig 1
 MULTIPLE 4
 LEVEL 9000
 DESCRIPTION At this level, the mage produces longer flight effects
@@ -7391,19 +7410,20 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME grai 1
 TARGET UNIT LOCAL
-PRODUCES effini3 10
+GRANTS effini3 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
-CONSUME herb 1
-PRODUCES effini3 8
+CONSUME hrbs 1
+GRANTS effini3 8
 MULTIPLE 12
 LEVEL 18000
 DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
 CONSUME catt 1
-PRODUCES effini3 6
+GRANTS effini3 6
 MULTIPLE 15
 
 SKILL wpai
@@ -7413,15 +7433,16 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME iron 1
 TARGET UNIT LOCAL
-PRODUCES effmele 10
+GRANTS effmele 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION At this level, the paints are more terrible, and yields more fearsome warriors
 RECONSUME
 CONSUME silv 1
-PRODUCES effmele 8
+GRANTS effmele 8
 MULTIPLE 12
 
 SKILL bles
@@ -7431,15 +7452,16 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME hide 1
 TARGET UNIT LOCAL
-PRODUCES effbles 10
+GRANTS effbles 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION At this level, blessing are more effective
 RECONSUME
 CONSUME hide 2
-PRODUCES effbles 8
+GRANTS effbles 8
 MULTIPLE 12
 
 SKILL rsac
@@ -7449,19 +7471,20 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME catt 1
 TARGET UNIT LOCAL
-PRODUCES effstre 10
+GRANTS effstre 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
 CONSUME mule 1
-PRODUCES effstre 8
+GRANTS effstre 8
 MULTIPLE 12
 LEVEL 18000
 DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
 CONSUME hrse 1
-PRODUCES effstre 6
+GRANTS effstre 6
 MULTIPLE 15
 
 SKILL spiw
@@ -7471,19 +7494,20 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME hrbs 1
 TARGET UNIT LOCAL
-PRODUCES effride 10
+GRANTS effride 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION At this level, the shaman's powers are more effective, and last longer
 CONSUME grai 1
-PRODUCES effride 8
+GRANTS effride 8
 MULTIPLE 12
 LEVEL 18000
 DESCRIPTION At this level, the shaman's powers are more effective, and last longer
 CONSUME houn 1
-PRODUCES effride 6
+GRANTS effride 6
 MULTIPLE 15
 
 SKILL rocf
@@ -7493,15 +7517,16 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME ston 1
 TARGET UNIT LOCAL
-PRODUCES effdefe 10
+GRANTS effdefe 10
 MULTIPLE 10
 LEVEL 12000
 RECONSUME
 CONSUME gran 1
 DESCRIPTION A more elaborate ceremony proffers lasting benefits
-PRODUCES effedef 8
+GRANTS effdefe 8
 MULTIPLE 12
 
 SKILL drew
@@ -7528,9 +7553,10 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME eben 1
 TARGET UNIT LOCAL
-PRODUCES effbers 10
+GRANTS effbers 10
 MULTIPLE 10
 LEVEL 12000
 
@@ -7541,15 +7567,16 @@ STUDY_COST 1
 LEVEL  6000
 SPECIALIST
 STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
 CONSUME fish 1
 TARGET UNIT LOCAL
-PRODUCES effseam 10
+GRANTS effseam 10
 MULTIPLE 10
 LEVEL 12000
 DESCRIPTION Invoking more powerful spirits allow a shaman to bless sailors prior to their travels across the waters
 RECONSUME
 CONSUME fish 2
-PRODUCES effseam 8
+GRANTS effseam 8
 MULTIPLE 12
 
 SKILL pgaz
@@ -7758,14 +7785,15 @@ LEVEL  1000
 LEARNING_PARADIGM LEARNING_CREATURE
 STUDENT LEADER # mage only
 REQUIRES mage
+USING_PARADIGM USING_ENCHANT
 CONSUME mana 3
-PRODUCES effmldr 4
+GRANTS effmldr 4
 LEVEL 3000
 DESCRIPTION At this level, slipping into the mask of a leader is really easy
-PRODUCES effmldr 3
+GRANTS effmldr 3
 LEVEL 5000
 DESCRIPTION At this level, slipping into the mask of a leader is simple
-PRODUCES effmldr 2
+GRANTS effmldr 2
 
 SKILL apco
 NAME appear common
@@ -7774,21 +7802,22 @@ LEVEL  1000
 STUDY_COST 3
 REQUIRES mman
 STUDY_COST 1
+USING_PARADIGM USING_ENCHANT
 CONSUME mana 1
-PRODUCES effmfol 3
+GRANTS effmfol 3
 LEVEL 3000
 STUDY_COST 2
 DESCRIPTION The art of disguise comes naturally to the practicionner
 OBSERVATION 1
-PRODUCES effmfol 2
+GRANTS effmfol 2
 LEVEL 6000
 DESCRIPTION A long practice in disguising its self
-PRODUCES effmfol 1
+GRANTS effmfol 1
 
 SKILL skxx
 NAME skxx
 DESCRIPTION skxx
-LEVEL  20
+LEVEL  2000
 LEARNING_PARADIGM LEARNING_CREATURE
 PRODUCES evtskxx 30
 LEVEL 999999
@@ -7798,7 +7827,7 @@ SKILL evil
 NAME evil
 DESCRIPTION The mark of the evil necromancer
 LEARNING_PARADIGM LEARNING_CREATURE
-LEVEL  20
+LEVEL  2000
 STUDY_COST 1
 SPECIALIST
 LEVEL 999999

@@ -6,16 +6,15 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "IntegerData.h"
-extern void longtostr(unsigned long u, char *out);
+extern string longtostr(unsigned long u);
 
 /** returns name for use in reports and messages
  * (string)
  */
-string IntegerData::printName() 
+string IntegerData::print() 
 {
-  char buffer[12];
-  longtostr(value_,buffer);
-  return string(buffer);
+
+  return longtostr(value_);
 }
 
 

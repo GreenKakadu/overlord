@@ -1,4 +1,4 @@
-I# Overlord locations data
+# Overlord locations data
 # Ver 0.3 06.11.2003
 
 KEYWORD LOCATION 199
@@ -17,6 +17,8 @@ RECRUIT 1 afre  400
 RESOURCE grai 50
 BUY   100 food 10
 CLIMATE 1
+UNIT U8
+UNIT U222
 UNIT U130
 UNIT U140
 UNIT U141
@@ -36,6 +38,7 @@ WAGES 10
 RECRUIT 3 man  55
 RECRUIT 1 ldr  400
 RESOURCE grai 50
+EFFECT E001
 CLIMATE 1
 
 LOCATION L2

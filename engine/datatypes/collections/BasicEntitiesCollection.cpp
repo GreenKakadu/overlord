@@ -12,7 +12,7 @@
 #include "BasicEntitiesCollection.h"
 #include "Entity.h"
 #include "DataStorageHandler.h"
-extern void longtostr(unsigned long u, char *out);
+extern string longtostr(unsigned long u);
 extern bool ciCharCompare(char c1, char c2);
 extern GameInfo game;
 //extern Entity * RIPplaceholder;
@@ -56,7 +56,7 @@ GameData* BasicEntitiesCollection::findByIndex (const long int index, bool error
 
 void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity)
 {
-// cout << "Adding " << newEntity->printName()<<endl;
+// cout << "Adding " << newEntity->print()<<endl;
  long int index ;
  if (prefix_ == 0)
 		{
@@ -77,7 +77,7 @@ void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity)
   else
     data_[index] =  dynamic_cast< Entity*> (newEntity);
  //   if (data_[index] == 0) cout << "Cast error\n";
-// cout <<index<<"                "<< data_[index]->printName()<<" Added "<<endl;
+// cout <<index<<"                "<< data_[index]->print()<<" Added "<<endl;
    emptyPlaces_ --;
    if((emptyPlaces_ < 1) || (dimensions_ / emptyPlaces_ > 10 )) // Collection is almost full
      {
@@ -232,21 +232,15 @@ void BasicEntitiesCollection:: setEntityTagPrefix (char prefix)
 
 
 string BasicEntitiesCollection::tagFromIndex(long int index)
-{
-  char buffer[Parser::INTEGER_LENGTH+2];
-  
+{  
 		if(prefix_ == 0)
     {
-//		  sprintf(buffer,"%lu",index); // May use hand-made convertor itoa
-      longtostr(index,buffer);
+      return longtostr(index);
     }
 		else
     {
-        buffer[0]=prefix_;
-        longtostr(index,buffer + 1);        
-//		  sprintf(buffer,"%c%lu",prefix_,index);
-     }
-      return string(buffer);
+      return string(1,prefix_) + longtostr(index);
+    }
 }
 
 
@@ -262,13 +256,15 @@ long int BasicEntitiesCollection::getRIPsize() const
 
 long int BasicEntitiesCollection::getRIPbyIndex(long int i) const
 {
-  if(i < RIP_.size())
+  if(static_cast<unsigned int>(i) < RIP_.size())
    return RIP_[i];
  cerr << "Error: RIP Array index (" << i << ") is out of array dimensions!\n";
  return 0 ;
 }
 
-NewEntityPlaceholder * BasicEntitiesCollection::findPlaceholder(const string &tag)
+
+
+NewEntityPlaceholder * BasicEntitiesCollection::findOrAddPlaceholder(const string &tag)
 {
  vector <NewEntityPlaceholder *>::iterator iter;
  for (iter = newEntities_.begin(); iter != newEntities_.end(); iter++)
@@ -280,4 +276,39 @@ NewEntityPlaceholder * BasicEntitiesCollection::findPlaceholder(const string &ta
  NewEntityPlaceholder * newPlaceholder = new NewEntityPlaceholder(tag);
  newEntities_.push_back(newPlaceholder);
  return newPlaceholder;
+}
+
+
+
+NewEntityPlaceholder * BasicEntitiesCollection::checkPlaceholder(const string &tag)
+{
+ vector <NewEntityPlaceholder *>::iterator iter;
+ for (iter = newEntities_.begin(); iter != newEntities_.end(); iter++)
+   {
+      if ((*iter) ->getName() == tag)
+       return (*iter);
+   }
+ return 0;
+}
+
+
+
+void BasicEntitiesCollection::clear()
+{
+ for (EntitiesIterator iter = begin(); iter != end(); iter++)
+   {
+      if(*iter == 0)
+          continue;
+      delete (*iter);
+   }
+ data_.clear();
+ RIP_.clear();
+ for (vector <NewEntityPlaceholder *>::iterator iter = newEntities_.begin();
+          iter != newEntities_.end(); iter++)
+   {
+      if(*iter == 0)
+          continue;
+      delete (*iter);
+   }
+ newEntities_.clear();
 }

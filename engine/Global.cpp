@@ -4,6 +4,7 @@
     begin                : Wed Nov 27 2002
     copyright            : (C) 2002 by Alex Dribin
     email                : alexliza@netvision.net.il
+ This file contains Overlord Engine definitions   
  ***************************************************************************/
 #include "Global.h"
 #include "DataStorageHandler.h"
@@ -22,6 +23,7 @@ PrototypeManager * prototypeManager = 0; // will be created on first call
 BasicCondition  sampleBasicCondition ("CONDITION",      &sampleGameData);
 ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
 SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
+GameData  targetTypeSelf("SELF", &sampleGameData);
 GameInfo game;
 // Varieties
 Variety          sampleVariety  ("VARIETY",  &sampleGameData);
@@ -36,6 +38,8 @@ TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
 ItemRule      sampleItem      ("ITEM",     &sampleGameData);
 SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
 RaceRule      sampleRace      ("RACE",     &sampleGameData);
+ActionRule    sampleAction    ("FX_ACTION",&sampleGameData);
+EnchantmentRule    sampleEnchantment    ("FX_EFFECT",&sampleGameData);
 ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);// Derived Rules
 
 // Derived Rules
@@ -44,12 +48,15 @@ OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sa
 LeaderRaceRule     sampleLeaderRaceRule =     LeaderRaceRule("LEADER", &sampleRace);
 FollowerRaceRule   sampleFollowerRaceRule =   FollowerRaceRule("FOLLOWER", &sampleRace);
 CreatureRaceRule   sampleCreatureRaceRule =   CreatureRaceRule("CREATURE", &sampleRace);// Entities
+
+// Entities
 Entity         sampleEntity  ("ENTITY",  &sampleGameData);
-PhysicalEntity samplePhysicalEntity  ("PHYSICAL_ENTITY",  &sampleEntity);
-UnitEntity     sampleUnit    ("UNIT",    &samplePhysicalEntity);
+TokenEntity sampleTokenEntity  ("PHYSICAL_ENTITY",  &sampleEntity);
+UnitEntity     sampleUnit    ("UNIT",    &sampleTokenEntity);
 FactionEntity  sampleFaction ("FACTION", &sampleEntity);
-LocationEntity sampleLocation("LOCATION",&samplePhysicalEntity);
-ConstructionEntity   sampleConstructionEntity =   ConstructionEntity("BUILDING", &samplePhysicalEntity);
+LocationEntity sampleLocation("LOCATION",&sampleTokenEntity);
+EffectEntity         sampleEffectEntity  ("EFFECT",  &sampleTokenEntity);
+ConstructionEntity   sampleConstructionEntity =   ConstructionEntity("BUILDING", &sampleTokenEntity);
 //Entity * RIPplaceholder = new  Entity(sampleEntity);
 // Strategys
 BasicLearningStrategy     sampleLearning          ("LEARNING",           &sampleGameData);
@@ -59,7 +66,10 @@ CreatureLearningStrategy  sampleCreatureLearning  ("LEARNING_CREATURE",  &sample
 BasicUsingStrategy        sampleUsing             ("USING",              &sampleGameData);
 HarvestUsingStrategy      sampleHarvestUsing      ("USING_HARVEST",      &sampleUsing);
 CraftUsingStrategy        sampleCraftUsing        ("USING_CRAFT",        &sampleUsing);
+EnchantmentUsingStrategy  sampleEnchantmentUsing  ("USING_ENCHANT",      &sampleUsing);
 SummonUsingStrategy       sampleSummonUsing       ("USING_SUMMON",       &sampleUsing);
+ActionUsingStrategy       sampleActionUsing       ("USING_ACTION",       &sampleUsing);
+//EffectUsingStrategy       sampleEffectUsing       ("USING_EFFECT",       &sampleUsing);
 CombatUsingStrategy       sampleCombatUsing       ("USING_COMBAT",       &sampleUsing);
 BuildUsingStrategy        sampleBuildUsing        ("USING_BUILD",        &sampleUsing);
 ConstructionUsingStrategy sampleConstructionUsing ("USING_CONSTRUCTION", &sampleUsing);
@@ -79,6 +89,8 @@ RulesCollection <TitleRule>     titles(new DataStorageHandler("titles"));
 RulesCollection <ItemRule>      items(new DataStorageHandler("items"));
 RulesCollection <SkillRule>     skills(new DataStorageHandler("skills"));
 RulesCollection <RaceRule>      races(new DataStorageHandler("races"));
+RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions"));
+RulesCollection <EnchantmentRule>    enchantments(new DataStorageHandler("enchantments"));
 RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions"));
 RuleIndex ruleIndex;
 
@@ -86,6 +98,7 @@ EntitiesCollection <UnitEntity>   units(new DataStorageHandler(game.getUnitsFile
 EntitiesCollection <FactionEntity>   factions(new DataStorageHandler(game.getFactionsFile() ));
 EntitiesCollection <LocationEntity>   locations(new DataStorageHandler(game.getLocationsFile() ));
 EntitiesCollection <ConstructionEntity>   buildingsAndShips(new DataStorageHandler(game.getBuildingsFile() ));
+EntitiesCollection <EffectEntity>   effects(new DataStorageHandler(game.getEffectsFile()));
 
 
 bool testMode = false;
@@ -97,7 +110,8 @@ ProcessingMode 	 dayOrders  (DAY_LONG_ORDER);
 // symbol loading from libraries.
 #include "libraryWorkaround.h"
 // special values
-ItemRule * cash; 
+ItemRule * cash;
+ItemRule * food;
 MovementVariety * walkingMode;
 MovementVariety * swimingMode;
 MovementVariety * flyingMode;
@@ -154,6 +168,31 @@ void longtostr(unsigned long u, char *out)
                 p--; r++;
         }
 }
+
+
+
+string longtostr(unsigned long u)
+{
+        char buffer[12];
+        char *p=buffer, *r;
+	/* Process the number, output to the string in reverse */
+        r = p;
+        do {
+		/* Turn the digit into a character */
+                *p = '0' + u%10;
+                u=u/10;
+                p++;
+        } while(u != 0);
+
+        *p=0;
+        p--;
+        /* Reverse The String. */
+        while(r < p) {
+                *p ^= *r ^= *p ^= *r; /* A Crazy Swap */
+                p--; r++;
+        }
+        return string(buffer);
+}
 #include "Element.h"
 #include "ItemElement.h"
 #include "RaceElement.h"
@@ -161,6 +200,8 @@ void longtostr(unsigned long u, char *out)
 #include "ResourceElement.h"
 #include "MovementElement.h"
 #include "ConstructionWorksElement.h"
+#include "EnchantmentElement.h"
+
 // Template instantiation
 #ifdef BCC
 template  <> BasicSkillElement * BasicSkillElement::headOfFreeList;
@@ -176,6 +217,7 @@ template  <> BasicConstructionWorksElement * BasicConstructionWorksElement::head
 template  <> BSwapRequestElement * SwapRequestElement::headOfFreeList;
 #else
              BasicSkillElement * BasicSkillElement::headOfFreeList;
+             BasicEnchantmentElement * BasicEnchantmentElement::headOfFreeList;
              BasicItemElement * BasicItemElement::headOfFreeList;
              Element2<RaceRule, int > * Element2<RaceRule, int >::headOfFreeList;
              BasicInventoryElement * BasicInventoryElement::headOfFreeList;
@@ -187,3 +229,5 @@ template  <> BSwapRequestElement * SwapRequestElement::headOfFreeList;
              BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList;
              SwapRequestElement * SwapRequestElement::headOfFreeList;
 #endif
+// Temporary: Implementation Definitions
+//PickpocketActionRule     samplePickpocketActionRule =     PickpocketActionRule("PICKPOCKET_ACTION", &sampleAction);

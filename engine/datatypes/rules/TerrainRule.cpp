@@ -80,6 +80,6 @@ int TerrainRule::getTravelTime(MovementVariety * mode)
 
 void TerrainRule::printDescription(ReportPrinter & out)
 {
-    out << printName()<< ": "<< getDescription()<<".";    
+    out << print()<< ": "<< getDescription()<<".";    
     if(! buildEnabled_) out << " Construction of buildings  is not allowed here.";
 }

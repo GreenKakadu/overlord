@@ -16,7 +16,7 @@
 #ifndef EVEN_CONFLICT_H
 #define EVEN_CONFLICT_H
 
-#include "Rational.h"
+#include "RationalNumber.h"
 #include "BasicConflict.h"
 
 /**
@@ -29,7 +29,7 @@ public:
 	EvenConflict(LocationEntity * location):BasicConflict(location){}
 	~EvenConflict(){}
    void resolve(vector  <BasicCompetitiveRequest *> &requests);
-  Rational getTotalAvailableValue(ItemRule * item) const;
+  RationalNumber getTotalAvailableValue(ItemRule * item) const;
 };
 
 #endif

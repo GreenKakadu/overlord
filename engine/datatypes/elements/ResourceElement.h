@@ -12,46 +12,40 @@
 #include "Element.h"
 #include "ItemRule.h"
 #include "RulesCollection.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 class Parser;
 extern RulesCollection <ItemRule>      items;
 using namespace std;
 //class ItemRule;
-typedef Element3<  ItemRule,  int ,  Rational> BasicResourceElement;
+typedef Element3<  ItemRule,  int ,  RationalNumber> BasicResourceElement;
 
 class ResourceElement : public BasicResourceElement  {
 public: 
 	ResourceElement(ItemRule * rule, int num)  : BasicResourceElement (rule,num,num){}
 	~ResourceElement(){}
-  /** No descriptions */
-   void save(ostream & out)
-   {out << rule_->getTag() << " " <<  parameter1_  << endl;}
-   void print(ostream & out)
+//  /** No descriptions */
+//   void save(ostream & out)
+//   {out << rule_->getTag() << " " <<  parameter1_  << endl;}
+   void reportResourse(ostream & out)
    {
-     out<< printName() << " (" << parameter2_ <<" available).";
+     out<< print() << " (" << parameter2_ <<" available).";
    }
-   void report(ostream & out)
-   {
-     out<<printName();
-   }
-   string printName()
+
+   string print()
    {
     if (rule_ == 0) return "";
-    char buffer[12];
-      longtostr(parameter1_,buffer);
-//		  sprintf(buffer,"%d",parameter1_);// May use hand-made convertor itoa
     if( parameter1_ > 1)
-      return  string(buffer) + " " + rule_->getPluralName()  + rule_->printTag();
+      return longtostr(parameter1_) + " " + rule_->getPluralName()  + rule_->printTag();
     else
-      return string(buffer) + " " + rule_->printName();
+      return longtostr(parameter1_) + " " + rule_->print();
   }
 
    inline ItemRule *   getResource()      const     {return rule_;}
    inline int          getResourceAmount()         {return parameter1_;}
    inline void         setResourceAmount(int value)     { parameter1_ = value;}
    inline void         setResource(ItemRule * rule) { rule_ = rule;}
-   inline Rational     getAvailableResource()    const  {return parameter2_;}
-   inline void         setAvailableResource(const Rational& value)  { parameter2_  = value;}
+   inline RationalNumber     getAvailableResource()    const  {return parameter2_;}
+   inline void         setAvailableResource(const RationalNumber& value)  { parameter2_  = value;}
 	
   /** Checks if it is possible to read Resource Element from the input parser */
   static ResourceElement read(Parser * parser)

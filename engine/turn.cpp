@@ -12,6 +12,7 @@
 #include "Global.h"
 #include "GameInfo.h"
 #include "DataManipulator.h"
+//#include "ReportElement.h" //temp
 // tests
 extern GameInfo game;
 extern int currentDay;
@@ -20,8 +21,10 @@ extern ProcessingMode   immediateOrders;
 extern ProcessingMode   stackOrders;
 extern ProcessingMode 	dayOrders;
 #ifndef VERSION
-#define VERSION 0.3
+#define VERSION 0.32
 #endif
+DataManipulator * dataManipulatorPtr = 0;
+
 int main(int argc, char *argv[])
 {
   clock_t tick =0;
@@ -68,7 +71,8 @@ int main(int argc, char *argv[])
    cout<< "Locations data taken from " <<*(game.getLocationsFile())<<endl;
 //   cout<< "Orders taken from " <<game.getOrdersFileName()<<endl;
    DataManipulator dataManipulator;
-
+   dataManipulatorPtr = &dataManipulator;
+   
    dataManipulator.turnPreProcessing();
 
 	if ((game.runMode == MEMORY_TEST)||(game.runMode == DAILY_MEMORY_TEST))
@@ -85,6 +89,7 @@ int main(int argc, char *argv[])
 		cout <<"......................................................................."<<endl;
 	}
 
+//cout << "Number of free positions in ReportElement pool: "<<countList(BasicReportElement::headOfFreeList)<<endl;
 	cout <<endl << endl << " ================= Turn processing ==============="<< endl<<endl;
 
 for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
@@ -117,6 +122,7 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 	{
 		cout << "After Processing reports on day "<<currentDay<<"\n"; getchar();
 	}
+//cout << "Number of free positions in ReportElement pool: "<<countList(BasicReportElement::headOfFreeList)<<endl;
 }
 	cout <<endl << endl << " ============== End of Turn processing ============"<< endl<<endl;
 
@@ -127,7 +133,7 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 		time(&start);
 	}
 #ifdef TEST_MODE
-//   if(testMode)  dataManipulator.print();
+//   if(testMode)  dataManipulator.printAllData();
 #endif
     dataManipulator.turnPostProcessing();
   	dataManipulator.save();
@@ -152,14 +158,30 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 //  cout << "Plains swiming "<<terrains["moun"]->getTravelTime(movementModes["swim"])<<endl;
 //  cout << "Plains climbing "<<terrains["moun"]->getTravelTime(movementModes["climb"])<<endl;
 
-if(currentDay<0) samplePhysicalEntity.cancelTeachingOffer();  // to provide instantiation of samplePhysicalEntity
+if(currentDay<0) sampleTokenEntity.cancelTeachingOffer();  // to provide instantiation of sampleTokenEntity
 
 cout << "The size of sampleGameData is " << sizeof(sampleGameData) <<endl;
 cout << "The size of sampleEntity is " << sizeof(sampleEntity) <<endl;
-cout << "The size of samplePhysicalEntity is " << sizeof(samplePhysicalEntity) <<endl;
+cout << "The size of sampleTokenEntity is " << sizeof(sampleTokenEntity) <<endl;
 cout << "The size of sampleUnit is " << sizeof(sampleUnit) <<endl;
 cout << "The size of sampleFaction is " << sizeof(sampleFaction) <<endl;
 cout << "The size of sampleLocation is " << sizeof(sampleLocation) <<endl;
+
+
+//cout << endl<<endl<<endl<< "before deleting memory"<<endl;
+//getchar();
+//    dataManipulator.clear();
+//BasicReportElement  * listElement = BasicReportElement::headOfFreeList;
+//BasicReportElement  * newListElement ;
+//cout << "Number of free positions in ReportElement pool: "<<countList(BasicReportElement::headOfFreeList)<<endl;
+//while(listElement)
+//{
+//  newListElement = listElement;
+//  listElement = listElement->getNext();
+//  delete newListElement;
+//}
+//cout << endl<<endl<<endl<< "after deleting memory"<<endl;
+//getchar();
 
 //	cout << " ===================   Pathfinding tests   ====================="<<endl;
 //  cout << "Travel time from L165 to L175 is "<<

@@ -9,7 +9,7 @@
 #define COMBAT_USING_H
 
 #include "BasicUsingStrategy.h"
-class PhysicalEntity;
+class TokenEntity;
 
 /**
   *@author Alex Dribin
@@ -22,7 +22,7 @@ public:
 		 ~CombatUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT use(PhysicalEntity * tokenEntity, SkillRule * skill, int & useCounter);
+      USING_RESULT use(TokenEntity * tokenEntity, SkillRule * skill, int & useCounter);
 };
 extern CombatUsingStrategy      sampleCombatUsing;
 

@@ -23,8 +23,8 @@ public:
   }
 	~ToolUseElement(){}
   /** No descriptions */
-   void save(ostream & out)
-   {out << rule_->getTag() << " " <<  parameter1_   << endl;}
+//   void save(ostream & out)
+//   {out << rule_->getTag() << " " <<  parameter1_   << endl;}
 
   /** No descriptions */
    inline ItemRule *   getItemType()      const     {return rule_;}

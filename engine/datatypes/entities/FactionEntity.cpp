@@ -17,7 +17,7 @@
 
 #include "FactionEntity.h"
 #include "UnitEntity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
 
@@ -42,11 +42,11 @@ extern VarietiesCollection <StanceVariety>    stances;
 
 FactionEntity::FactionEntity ( const FactionEntity * prototype ) : Entity(prototype)
 {
-  totalControlPoints_ = 200;
+  maxControlPoints_ = 200;
   controlPoints_ = 0;
   terseBattleReport_ = false;
   allSkillsToReshow_ = false;
-  isResigned_ = false;
+  isResigned_ = false; 
 }
 
 void    FactionEntity::preprocessData()
@@ -55,6 +55,10 @@ void    FactionEntity::preprocessData()
   newKnowledge = knowledge_.size();
   newSkillKnowledge = skillKnowledge_.size();
 //  cout <<"Begin: (" <<knowledge_.size()<<") -> " <<newKnowledge <<" ->end: " << (knowledge_.end() - knowledge_.begin())<<endl;
+  maxControlPoints_ = 200;
+  controlPoints_ = 0;
+  terseBattleReport_ = false;
+  isResigned_= false;;
 }
 
 
@@ -69,17 +73,6 @@ STATUS
 FactionEntity::initialize        ( Parser *parser )
 {
 
-
-      if (parser->matchKeyword ("NAME") )
-        {
-	  setName(parser->getText());
-	  return OK;
-	}
-      if (parser->matchKeyword("DESCRIPTION"))
-	{
-	  setDescription(parser->getText());
-	  return OK;
-	}
        if (parser->matchKeyword("EMAIL"))
 	{
 	  email_ = parser->getParameter();
@@ -135,15 +128,10 @@ FactionEntity::initialize        ( Parser *parser )
 //	  set(parser->getText());
 //	  return OK;
 //	}
-      if (parser->matchKeyword("ORDER"))
- 	{
-	  //          cout << "Reading order..." << endl;
-	  orders_.push_back(new Order(parser->getText(),this));
- 	}
 
     loadKnowledge(parser);
 
-    return OK;
+  return Entity::initialize(parser);
 
 }
 
@@ -180,7 +168,7 @@ void FactionEntity::save(ostream &out)
 
    saveKnowledge(out);
    
-  for (vector<Order *>::iterator  iter = orders_.begin(); iter != orders_.end(); ++iter)
+  for (vector<OrderLine *>::iterator  iter = orders_.begin(); iter != orders_.end(); ++iter)
     {
            (*iter)->save(out);
     }
@@ -202,7 +190,7 @@ void FactionEntity::loadOrders()
 		return;
 	else		
 	cout << "Orders file " << orderFlename << " opened" <<endl;
-   PhysicalEntity * currentEntity;
+   TokenEntity * currentEntity;
     parser -> getLine() ;
 
    if(IO_ERROR == loadFactionOrders(parser,&currentEntity))
@@ -261,7 +249,7 @@ void FactionEntity::loadOrders()
 		if( !order.empty() )
 			{
 //    				cout << "Entity order " << order<<endl;
-				currentEntity  -> addOrder(new Order(order,currentEntity));
+				currentEntity  -> addOrder(new OrderLine(order,currentEntity));
 			}
 		
   			   parser -> getLine();   		
@@ -276,7 +264,7 @@ void FactionEntity::loadOrders()
 /*
  * Load faction orders from the input
  */
-STATUS  FactionEntity::loadFactionOrders(Parser * parser, PhysicalEntity ** entity)
+STATUS  FactionEntity::loadFactionOrders(Parser * parser, TokenEntity ** entity)
 {
  string currentGame ;
  string order;
@@ -349,7 +337,7 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, PhysicalEntity ** enti
 		  if( !order.empty() )
 			  {
 //          				cout << "Faction order " << order<<endl;
-				  orders_.push_back(new Order(order, this));
+				  orders_.push_back(new OrderLine(order, this));
 			  }
 	  }
 
@@ -363,7 +351,7 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, PhysicalEntity ** enti
 /*
  * Load  from the input orders for one entity
  */
-PhysicalEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & collection,
+TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & collection,
                                   Parser * parser)
 {    
   string entityName =  parser->getWord();
@@ -375,7 +363,7 @@ PhysicalEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & co
   		return 0;
 		}
   
-  PhysicalEntity * currentEntity = dynamic_cast<PhysicalEntity *>(current);
+  TokenEntity * currentEntity = dynamic_cast<TokenEntity *>(current);
   if(currentEntity == 0)
 		{
 		  cout << "Wrong entity name " << entityName <<endl;
@@ -392,7 +380,7 @@ PhysicalEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & co
 		}
   else
 		{
-//      cout << "Entity "<< currentEntity->printName()<<endl;
+//      cout << "Entity "<< currentEntity->print()<<endl;
 		  currentEntity -> clearOrders();
    	  parser -> getLine();
   		return currentEntity;
@@ -482,7 +470,7 @@ void FactionEntity::saveReport()
 	outfile << "To: " << email_<<"\n";
 	outfile << "\n";
 // Report
-   outfile << game.getGameId() <<" Report for Turn "<< game.turn <<" for "<< printName() << ", "<<email_<<"\n";
+   outfile << game.getGameId() <<" Report for Turn "<< game.turn <<" for "<< print() << ", "<<email_<<"\n";
    if(isResigned_)
       {
        outfile<< "---- Resigned. ----"<<endl;
@@ -499,7 +487,7 @@ void FactionEntity::saveReport()
 
     for(StanceIterator iter = stances_.begin(); iter != stances_.end();++iter)
       {
-   outfile <<  "Attitude to " <<(*iter).getParameter1()->printName()<<" is "<<(*iter).getRule()->getName() <<  endl;
+   outfile <<  "Attitude to " <<(*iter).getParameter1()->print()<<" is "<<(*iter).getRule()->getName() <<  endl;
 
       }
    }
@@ -510,7 +498,7 @@ void FactionEntity::saveReport()
 		 {
       if (  this == (*reportIterator)->getDestination())
 				    {
-               (*reportIterator)->print(outfile);
+               (*reportIterator)->printReport(outfile);
               collectedReports_.erase(reportIterator);
 				    }
             else
@@ -521,13 +509,13 @@ void FactionEntity::saveReport()
 
  for ( vector< UnitEntity *>::iterator unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
 	{
- 		(*unitIterator) -> report(this, outfile);
+ 		(*unitIterator) -> produceFactionReport(this, outfile);
 	}
 
    outfile <<  endl << "// Constructions " <<  endl <<  endl;
  for ( vector< ConstructionEntity *>::iterator constructionIterator = loyalConstructions_.begin(); constructionIterator != loyalConstructions_.end(); constructionIterator++)
 	{
- 		(*constructionIterator) -> report(this, outfile);
+ 		(*constructionIterator) -> produceFactionReport(this, outfile);
 	}
 
    outfile <<  endl << "// Locations " <<  endl <<  endl;
@@ -537,14 +525,14 @@ void FactionEntity::saveReport()
   bool eventsReported = false;
 	for ( locIterator = visitedLocations_.begin(); locIterator != visitedLocations_.end(); locIterator++)
 		{
-        (*locIterator) -> report(this, outfile);
+        (*locIterator) -> produceFactionReport(this, outfile);
         outfile << "\nEvents during turn: \n";
         eventsReported = false;
         for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); )
 		      {
          	  if (  (*locIterator) == (*reportIterator)->getDestination())
 				    {
-               (*reportIterator)->print(outfile);
+               (*reportIterator)->printReport(outfile);
               collectedReports_.erase(reportIterator);
               eventsReported = true;
 				    }
@@ -619,7 +607,7 @@ void FactionEntity::addUnit(UnitEntity * unit)
 		}
 	else
 	{
-		cout << "Cant register" << unit->printName() <<" to faction " << printTag()<<endl;
+		cout << "Cant register" << unit->print() <<" to faction " << printTag()<<endl;
 	}
 }
 
@@ -633,14 +621,14 @@ void FactionEntity::removeUnit(UnitEntity * unit)
 {
 	if (!unit)
 		{
-		  cout << "Cant remove" << unit->printName() <<" from faction " << printTag()<<endl;
+		  cout << "Cant remove" << unit->print() <<" from faction " << printTag()<<endl;
        return;
     }
     
  vector< UnitEntity *>::iterator iter = find (loyalUnits_.begin(), loyalUnits_.end(), unit);
 	if (iter == loyalUnits_.end())
 		{
-		  cout << "Cant find" << unit->printName() <<" in faction " << printTag()<<endl;
+		  cout << "Cant find" << unit->print() <<" in faction " << printTag()<<endl;
        return;
     }
        controlPoints_ -= unit->getControlPoints();
@@ -667,7 +655,7 @@ void FactionEntity::addConstruction(ConstructionEntity * construction)
 		}
 	else
 	{
-		cout << "Cant register" << construction->printName() <<" to faction " << printTag()<<endl;
+		cout << "Cant register" << construction->print() <<" to faction " << printTag()<<endl;
 	}
 }
 
@@ -681,14 +669,14 @@ void FactionEntity::removeConstruction(ConstructionEntity * construction)
 {
   	if (!construction)
 		{
-		  cout << "Cant remove" << construction->printName() <<" from faction " << printTag()<<endl;
+		  cout << "Cant remove" << construction->print() <<" from faction " << printTag()<<endl;
        return;
     }
 
  vector< ConstructionEntity *>::iterator iter = find (loyalConstructions_.begin(), loyalConstructions_.end(), construction);
 	if (iter == loyalConstructions_.end())
 		{
-		  cout << "Cant find" << construction->printName() <<" in faction " << printTag()<<endl;
+		  cout << "Cant find" << construction->print() <<" in faction " << printTag()<<endl;
        return;
     }
 
@@ -893,7 +881,9 @@ SkillLevelElement * FactionEntity::hasSkillKnowledge(SkillRule * knowledge, int 
 
 
 
-/** No descriptions */
+/*
+ * Prints rule knowledge if it is known to faction. 
+ */
 void FactionEntity::reshow(Rule * info, ReportPrinter &out)
 {
   if(hasKnowledge(info))
@@ -1054,7 +1044,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
               if(isFirst)
               {
                 isFirst = false;
-                 string collName = (*collIter)->printName();
+                 string collName = (*collIter)->print();
                  transform (collName.begin() + 1, collName.end(),
                               collName.begin() + 1, (int(*)(int))tolower);
 
@@ -1075,7 +1065,7 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
               if(isFirst)
               {
                 isFirst = false;
-                 string collName = (*collIter)->printName();
+                 string collName = (*collIter)->print();
                  transform (collName.begin() + 1, collName.end(),
                               collName.begin() + 1, (int(*)(int))tolower);
 
@@ -1092,7 +1082,9 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
 
 
 
-/** No descriptions */
+/*
+ * Loads all information about knoeledge already known.
+ */
 void FactionEntity::loadKnowledge(Parser *parser)
 {
    	 if (parser->matchKeyword ("SKILL_KNOWLEDGE") )

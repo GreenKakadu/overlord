@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CombatUsingStrategy.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 GameData * CombatUsingStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<CombatUsingStrategy> (this);
@@ -26,7 +26,7 @@ CombatUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT CombatUsingStrategy::use(PhysicalEntity * tokenEntity, SkillRule * skill, int &useCounter)
+USING_RESULT CombatUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, int &useCounter)
 {
   return UNUSABLE;
 }

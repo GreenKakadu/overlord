@@ -67,9 +67,9 @@ CONTROL 0
 FATE 0
 ATTITUDE 1
 STANCE f002 ally
-ORDER 3 TEST 0 # ==================Faction order
-ORDER 3 TEST 1 # ==================Faction order
-ORDER 3 TEST 2 # ==================Faction order
+#ORDER 3 TEST 0 # ==================Faction order
+#ORDER 3 TEST 1 # ==================Faction order
+#ORDER 3 TEST 2 # ==================Faction order
 SKILL_KNOWLEDGE mane 1
 SKILL_KNOWLEDGE cmbt 2
 SKILL_KNOWLEDGE mart 1

@@ -15,7 +15,7 @@
   */
 class Reporter;
 class AbstractData;
-class PhysicalEntity;
+class TokenEntity;
 class ItemRule;
 
 class SwapOrder : public OrderPrototype  {
@@ -24,8 +24,8 @@ public:
 	~SwapOrder(){}
   STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
   ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  void doSwap(PhysicalEntity * tokenEntity, ItemRule * item1, int num1,
-      PhysicalEntity * synchroTarget, ItemRule * item2, int num2);
+  void doSwap(TokenEntity * tokenEntity, ItemRule * item1, int num1,
+      TokenEntity * synchroTarget, ItemRule * item2, int num2);
     protected:
 };
 

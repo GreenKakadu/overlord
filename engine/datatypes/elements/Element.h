@@ -13,6 +13,7 @@ Template for implementation of small objects demanding efficient memory use.
 class Entity;
 extern const int BLOCK_SIZE;
 extern void longtostr(unsigned long u, char *out);
+extern string longtostr(unsigned long u);
 template <class R, class P> class Element2 : public AbstractData {
 public: 
 	  Element2(R * rule, P parameter) {	rule_ = rule;	parameter1_ = parameter;}
@@ -21,6 +22,7 @@ public:
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
    static void   operator delete(void * deadObject, size_t size);
+   inline Element2<R,P> *   getNext()      const  {return next;}
    inline R *   getRule()      const  {return rule_;}
    inline P     getParameter1() const  {return parameter1_;}
    inline void  setParameter1(P value) { parameter1_ = value;}
@@ -30,6 +32,12 @@ public:
    inline bool operator >  (Element2 <R,P>  rule2)  {return this->rule_->getTag() > rule2.getRule()->getTag();}
    inline bool operator <  (Element2 <R,P>  rule2)  {return this->rule_->getTag() < rule2.getRule()->getTag();}
    virtual inline bool isValidElement() const {return (rule_ != 0);}
+/*
+ * saves data into output stream  as tags and numbers
+ * Examples: "SWRD 5"
+ */
+   virtual void save(ostream & out)
+    {out << rule_->getTag() << " " <<  parameter1_   << endl;}
 	static Element2<R,P>  * headOfFreeList;
   /**  */
 protected:
@@ -81,7 +89,7 @@ template <class R, class P> void  Element2<R,P>::operator delete (void * deadObj
 	Element2<R,P> ::headOfFreeList = p;
 }
 //   inline ostream& operator << (ostream& out, Element2 <R,P> & data)
-//                                { out<<data.printName(); return out;}
+//                                { out<<data.print(); return out;}
 
 
  
@@ -93,6 +101,8 @@ public:
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
    static void   operator delete(void * deadObject, size_t size);
+   inline Element3<R,P1,P2> *   getNext()      const  {return next;}
+   
    inline R *   getRule()      const  {return rule_;}
    inline P1     getParameter1() const  {return parameter1_;}
    inline P2     getParameter2() const  {return parameter2_;}
@@ -104,6 +114,14 @@ public:
    inline bool operator <   (Element3 <R,P1,P2>  rule2)  {return this->rule_->getTag() < rule2.getRule()->getTag();}
    inline bool operator >   (Element3 <R,P1,P2>  rule2)  {return this->rule_->getTag() > rule2.getRule()->getTag();}
    virtual inline bool isValidElement() const {return (rule_ != 0);}
+/*
+ * saves data into output stream  as tags and numbers
+ * Examples: "SWRD 5 5"
+ */
+   virtual void save(ostream & out)
+   {
+      out << rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
+   }
 	static Element3<R,P1,P2>  * headOfFreeList;
   /**  */
 protected:

@@ -20,8 +20,7 @@ using namespace std;
 class EntityStatistics {
 public: 
 	EntityStatistics();
-	~EntityStatistics();
-  /** Does Initialization of stats data */
+	~EntityStatistics(){}
   STATUS initialize(Parser * parser);
   inline int getInitiative() const {return initiative_;}
   inline int getMelee() const {return melee_;}
@@ -49,8 +48,7 @@ public:
   inline void modifyStealth(int stealth) {stealth_ += stealth;}
   inline void modifyObservation(int observation) {observation_ += observation;}
 
-        void save(ostream &out);  
-        void print(ostream &out); // for debugging
+        void reportStatistics(ostream &out); 
         void addStats(EntityStatistics * stats);
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
         void clearStats();
@@ -71,5 +69,7 @@ protected:
 	void printThisStat_(int thisStat, const char * name, bool & isFirst, ostream &out);
 };
 
+   inline ostream& operator << (ostream& out,  EntityStatistics& data)
+                                { data.reportStatistics(out); return out;}
 
 #endif

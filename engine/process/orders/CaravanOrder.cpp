@@ -8,7 +8,7 @@
 #include "CaravanOrder.h"
 #include "StringData.h"
 #include "Entity.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "LocationEntity.h"
 #include "UnaryPattern.h"
 #include "BinaryPattern.h"
@@ -42,7 +42,7 @@ CaravanOrder::CaravanOrder(){
 STATUS CaravanOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
             
 	LocationEntity * location;
@@ -80,7 +80,7 @@ STATUS CaravanOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   
   LocationEntity * location = unit->getGlobalLocation();

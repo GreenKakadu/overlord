@@ -43,7 +43,7 @@ void   BasicVarietiesCollection::add  ( GameData * /*const*/ newVariety)
 {
   data_.push_back ( dynamic_cast< Variety*> (newVariety) );
 //  vector <Variety *>::iterator iter = data_.end() - 1;
-//  if (*iter) cout <<" inside " << (*iter)-> printName()  <<endl;
+//  if (*iter) cout <<" inside " << (*iter)-> print()  <<endl;
 }
 
 

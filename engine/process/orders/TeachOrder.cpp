@@ -23,7 +23,7 @@
 #include "BinaryPattern.h"
 #include "TertiaryPattern.h"
 #include "EntitiesCollection.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "TeachingOffer.h"
 extern Reporter * teachingReporter;
 extern Reporter * teachingReporter2; //debug
@@ -68,7 +68,7 @@ STATUS TeachOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * teacher = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * teacher = dynamic_cast<TokenEntity *>(entity);
   assert(teacher);
 
   SkillRule * skill = dynamic_cast<SkillRule *>(parameters[0]);

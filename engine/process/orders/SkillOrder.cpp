@@ -72,7 +72,7 @@ ORDER_STATUS SkillOrder::process (Entity * entity, vector <AbstractData *>  &par
   
   if (parameters.size() > 2)
     {
-      string par = parameters[2]->printName();
+      string par = parameters[2]->print();
       if(par == string("DAYS"))
         {
         	if(unit->hasSkill(skill,parameter))

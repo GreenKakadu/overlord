@@ -20,6 +20,21 @@ extern Reporter * notAvailableReporter;
 
 extern RulesCollection    <ItemRule>     items;
 
+
+
+HarvestUsingStrategy::HarvestUsingStrategy ( const HarvestUsingStrategy * prototype )
+        : BasicUsingStrategy(prototype)
+{
+     resourceHarvested_ = 0;
+     resourceConsumed_ = 0;
+     harvest_ = 0;
+     days_ = 1;
+  
+}
+
+
+
+
 GameData * HarvestUsingStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<HarvestUsingStrategy> (this);
@@ -56,16 +71,16 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
 
 
 
-Rational HarvestUsingStrategy::getDailyProduction()
+RationalNumber HarvestUsingStrategy::getDailyProduction()
 {
-  return  Rational(harvest_ , days_); 
+  return  RationalNumber(harvest_ , days_); 
 }
 
 
 
 USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
 {
-  Rational request = getDailyProduction() * unit->getFiguresNumber();
+  RationalNumber request = getDailyProduction() * unit->getFiguresNumber();
   if( request.isEmpty())
   {
 //    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
@@ -117,7 +132,7 @@ void    HarvestUsingStrategy::extractKnowledge (Entity * recipient, int paramete
 
 USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {
-  Rational request = getDailyProduction();
+  RationalNumber request = getDailyProduction();
   if( !harvest_)
   {
 //    unit->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
@@ -128,7 +143,7 @@ USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * ski
 
 
 
-void HarvestUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
+void HarvestUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntity)
 {
     tokenEntity->addReport(new BinaryPattern(notAvailableReporter,resourceConsumed_ ,tokenEntity->getLocation()));
 
@@ -147,7 +162,7 @@ void HarvestUsingStrategy::printSkillDescription(ostream & out)
  if(harvest_ > 1)
   out << resourceHarvested_->getPluralName()<< " " << resourceHarvested_->printTag();
  else
-  out << resourceHarvested_->printName();
+  out << resourceHarvested_->print();
 
   out<<" in "<< days_ <<" days.";
 }

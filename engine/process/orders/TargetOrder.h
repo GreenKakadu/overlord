@@ -33,6 +33,7 @@ public:
   static bool isConstruction(const string & target);
   static bool isLocation(const string & target);
   static bool isValidTarget(const string & target);
+  static AbstractData * findTarget(const string & tag);
 };
 
 #endif

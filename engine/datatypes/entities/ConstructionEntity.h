@@ -16,7 +16,7 @@
 #ifndef CONSTRUCTION_ENTITY_H
 #define CONSTRUCTION_ENTITY_H
 
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 
 /**Ships and buildings entities
   *@author Alex Dribin
@@ -31,14 +31,14 @@ class ResourceElement;
 class SkillRule;
 class ItemRule;
 
-class ConstructionEntity : public PhysicalEntity  {
+class ConstructionEntity : public TokenEntity  {
 public: 
-      ConstructionEntity (const string & keyword, Entity * parent ) : PhysicalEntity(keyword, parent){}
+      ConstructionEntity (const string & keyword, Entity * parent ) : TokenEntity(keyword, parent){}
       ConstructionEntity ( const ConstructionEntity * prototype );
 	   ~ConstructionEntity();
       STATUS  initialize      ( Parser *parser );
        void      save (ostream &out);
-       void      report (FactionEntity * faction, ReportPrinter &out);
+       void      produceFactionReport (FactionEntity * faction, ReportPrinter &out);
        void      publicReport (int observation, ReportPrinter &out);
        void      privateReport (ReportPrinter &out);
        void    reportAppearence(FactionEntity * faction, ReportPrinter &out);
@@ -46,6 +46,7 @@ public:
       GameData * createInstanceOfSelf();
        void    preprocessData();
        void    postProcessData();
+//       void      payUpkeep();
        inline LocationEntity * getLocation()const {return location_;}
        inline void setLocation(LocationEntity * location){location_ = location;}
        inline void initializeBuildingWorks(vector<ConstructionWorksElement *> buildingWorks) {buildingWorks_  = buildingWorks;}
@@ -67,7 +68,7 @@ public:
       int getLandUse();
       int getProductionBonus(ItemRule * item, SkillRule * skill,int level);
       void setProductionBonus(ItemRule * product, SkillRule * skill,int level);
-      Rational useProductionBonus(ItemRule * product, Rational number);
+      RationalNumber useProductionBonus(ItemRule * product, RationalNumber number);
 //      void recalculateCapacity();
      int getCapacity(int modeIndex);
      bool leaveStaying();

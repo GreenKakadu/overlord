@@ -40,29 +40,21 @@ void TitleElement::save(ostream & out)
 
 
 
-string TitleElement::printName()
+string TitleElement::print()
 {
-  return ( title_->getName() + " of " + location_->printName());
+  return ( title_->getName() + " of " + location_->print());
 }
 
 
 
-void TitleElement::print(ostream & out)
+
+void TitleElement::produceReport(ostream & out)
 {
-  out << title_->getName() <<" of "<<location_->printName();
-}
-
-
-
-void TitleElement::report(ostream & out)
-{
-  out << "Available title of " <<title_->getName() <<" of "<<location_->printName();
-  if(unit_)  out<< " held by "<< unit_->printName();
+  out << "Available title of " <<title_->getName() <<" of "<<location_->print();
+  if(unit_)  out<< " held by "<< unit_->print();
   if(title_->getClaimingCondition())
     {
-        out<< " requires ";
-        title_->getClaimingCondition()->print(out);
-        out << ". ";
+        out<< " requires " << *(title_->getClaimingCondition()) << ". ";
     }
   out<<endl;
 }

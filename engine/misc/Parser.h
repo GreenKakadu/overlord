@@ -12,7 +12,7 @@
 #include <string>
 #include "OverlordTypes.h"
 #include "Symbols.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 using namespace std;
 
 class Parser {
@@ -30,7 +30,7 @@ public:
        string   getWord ();
        string   matchWord ();
        int      getInteger ();
-       Rational getRational ();
+       RationalNumber getRationalNumber ();
        string   getText ();
        virtual void      getLine();
        virtual bool      eof();

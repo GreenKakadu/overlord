@@ -30,7 +30,7 @@ typedef enum market_offer MARKET_OFFER;
 
 class MarketRequest : public BasicCompetitiveRequest  {
 public: 
-	MarketRequest(UnitEntity * unit, Order * orderId, int amount, ItemRule * item,  int price, MARKET_OFFER type);
+	MarketRequest(UnitEntity * unit, OrderLine * orderId, int amount, ItemRule * item,  int price, MARKET_OFFER type);
 	~MarketRequest();
        string print();
  AbstractData * getType() const;

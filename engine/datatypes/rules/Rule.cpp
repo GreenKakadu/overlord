@@ -30,5 +30,5 @@ void    Rule::extractKnowledge (Entity * recipient, int parameter)
 
 void Rule::printDescription(ReportPrinter & out)
 {
-    out << printName()<< ": "<< getDescription()<<".";
+    out << print()<< ": "<< getDescription()<<".";
 }

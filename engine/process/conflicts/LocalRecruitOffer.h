@@ -28,7 +28,7 @@ public:
 	~LocalRecruitOffer();
    AbstractData * getType() const;
    string print();
-   void  report(FactionEntity * faction, ostream &out);
+   void produceFactionReport(FactionEntity * faction, ostream &out);
    void answerMarketRequest(int price, int  amount);
    void save(ostream &out);
 protected:

@@ -56,16 +56,14 @@ STATUS UseOrder::loadParameters(Parser * parser,
     if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
             return IO_ERROR;
 
-
-   string tag = parser->matchWord();
-   if (tag.size() != 0)
+   if( ! parser->matchInteger()) // non-integer parameter is target
+   {
+    string tag = parser->getWord();
+    if (tag.size() != 0)
         {
-          if(TargetOrder::isValidTarget(tag))
-				    {
-              parameters.push_back( new StringData (parser->getWord()));
-				    }
-
-             }
+          parameters.push_back(TargetOrder::findTarget(tag));
+        }
+    }
     parseIntegerParameter(parser, parameters);
 
   return OK;
@@ -91,18 +89,17 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
 
  if(parameters.size() >1)
     {
-     StringData * target       =  dynamic_cast<StringData *>(parameters[1]);
-     if(target)
+      par1       =  dynamic_cast<IntegerData *>(parameters[1]);
+      if(!par1)
       {
         parameterOffset = 1;
-        if(TargetOrder::isValidTarget(target->printName()))
-        {
-          unit->setTarget(target->printName());
-        }
+        unit->setTarget(parameters[1]);
       }
-     }
+      else
+        useCounter = par1->getValue();
+    }
 
-  if(parameters.size() >1 + parameterOffset)
+  if(parameters.size() >2)
     {
       par1       =  dynamic_cast<IntegerData *>(parameters[ 1+ parameterOffset]);
       assert(par1);
@@ -111,7 +108,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
 //         useCounter = 1;
     }
    // check that entity may use skill (has enough resources ETC.)
- USING_RESULT result = skill->mayUse(unit);
+ USING_RESULT result = skill->mayBeUsedBy(unit);
 
  switch (result)
   {
@@ -153,6 +150,12 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
  		  return INVALID;
       break;
     }
+    case NO_TARGET:
+    {
+//       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
+ 		  return INVALID;
+      break;
+    }
     case TARGET_NOT_EXIST:
     {
 //       unit->addReport( new UnaryPattern(unusableSkillReporter, parameters[0]));
@@ -160,13 +163,13 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
       break;
     }
     default:
-      cout << "ILLEGAL USING_RESULT (" << result<<") for evaluation of use of "<<skill->printName()<<"\n";
+      cout << "ILLEGAL USING_RESULT (" << result<<") for evaluation of use of "<<skill->print()<<"\n";
       return FAILURE;
   }
   if(parameterOffset)
   {
-     delete parameters[1];
-     parameters[1] = new StringData(unit->getTarget());
+    (parameters[1])->clean();
+     parameters[1] = unit->getTarget();
   }
   result = skill->use(unit,useCounter);
   
@@ -197,9 +200,10 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
     case NO_RESOURCES:
     case CONDITION_FAILURE:
     case WRONG_TARGET:
+    case NO_TARGET:
     case TARGET_NOT_EXIST:
     default:
-      cout << "ILLEGAL USING_RESULT (" << result<<") for use of "<<skill->printName()<<"\n";
+      cout << "ILLEGAL USING_RESULT (" << result<<") for use of "<<skill->print()<<"\n";
       return FAILURE;
   }
 }
@@ -232,13 +236,13 @@ UseOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &paramet
     {
       par1->setValue(amount - result);
       entity->updateOrderResults(FAILURE);
-//  cout << "Saving order for "<< unit->printName() <<"=[ ";
+//  cout << "Saving order for "<< unit->print() <<"=[ ";
 //  orderId->save(cout);
       return FAILURE;
     }
   }
   entity->updateOrderResults(SUCCESS);
-//  cout << "Order completed for "<< unit->printName() <<".\n";
+//  cout << "Order completed for "<< unit->print() <<".\n";
   return SUCCESS;
 }
 

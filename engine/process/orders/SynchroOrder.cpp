@@ -36,7 +36,7 @@ SynchroOrder::SynchroOrder(){
 STATUS SynchroOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
     if(!parseGameDataParameter(entity,  parser, units, "tokenEntity id", parameters))
@@ -49,9 +49,9 @@ STATUS SynchroOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * tokenEntity = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
-  PhysicalEntity * synchroTarget =DOWNCAST_ENTITY<PhysicalEntity>(parameters[0]);
+  TokenEntity * synchroTarget =DOWNCAST_ENTITY<TokenEntity>(parameters[0]);
   if(synchroTarget == 0)
 
   	return INVALID;
@@ -89,7 +89,7 @@ ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &p
   {
       if(tokenEntity->getFaction() != synchroTarget->getFaction() )
       {
-      if(!tokenEntity->mayInterractPhysicalEntity(synchroTarget)) // Units of the same faction
+      if(!tokenEntity->mayInterractTokenEntity(synchroTarget)) // Units of the same faction
           return FAILURE;
       }
 // Do work here

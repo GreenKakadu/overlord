@@ -35,7 +35,7 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
 {
   // if it is a basic skill AND level is 0 AND unit already has some other skill
 
-//   cout << "==check== Can "<< unit->printName()<< " learn " << skill->printName()<<" ?\n";
+//   cout << "==check== Can "<< unit->print()<< " learn " << skill->print()<<" ?\n";
 
 //   if(skill->getRequirement(0))
 //        return true;   //    This is not basic skill

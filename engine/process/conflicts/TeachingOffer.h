@@ -24,21 +24,21 @@
   *@author Alex Dribin
   */
 class SkillRule;
-class PhysicalEntity;
+class TokenEntity;
 
 class TeachingOffer {
 public: 
-	TeachingOffer(PhysicalEntity * teacher, SkillRule * skill, vector <Entity *>& students);
+	TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <Entity *>& students);
 	virtual ~TeachingOffer();
-  ostream&  print(ostream& out) const;
+  ostream&  reportOffer(ostream& out) const;
   virtual int getTeachingBonus();
   virtual void confirmTeachingOffer(Entity * unit);
   bool isConfirmed() const;
-  inline PhysicalEntity * getTeacher() const {return teacher_;}
+  inline TokenEntity * getTeacher() const {return teacher_;}
   inline SkillRule * getSkill() const {return skill_;}
   inline int getLevel() const {return level_;}
     protected:
-  PhysicalEntity * teacher_;
+  TokenEntity * teacher_;
   SkillRule * skill_;
   int level_;
   vector <Entity *> confirmedStudents_;
@@ -46,6 +46,6 @@ public:
 
 };
    inline ostream& operator << (ostream& out,  TeachingOffer& data)
-                                { return data.print(out); }
+                                { return data.reportOffer(out); }
 
 #endif

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Order.cpp
+                          OrderLine.cpp
                     .
                              -------------------
     begin                : Tue Nov  5 11:46:00 IST 2002
@@ -13,9 +13,9 @@
 extern int currentDay;
 extern bool testMode;
 
-Order::Order(const string & order, Entity * entity)
+OrderLine::OrderLine(const string & order, Entity * entity)
 {
-//    cout << entity->printName()<<" New Order created: " << order<<endl;
+//    cout << entity->print()<<" New Order created: " << order<<endl;
 //  isParsed = false;
   Parser * parser = new Parser(order);
   executedOnDay_ = 0;
@@ -32,13 +32,13 @@ Order::Order(const string & order, Entity * entity)
 	comment_ = parser->getText();
  delete parser;
 }
-const UINT Order::NO_NORMAL_REPORT_FLAG = 0x01;
-const UINT Order::NO_ERROR_REPORT_FLAG = 0x02;
-bool Order::getCompletionFlag() const {return  isCompleted_;}
+const UINT OrderLine::NO_NORMAL_REPORT_FLAG = 0x01;
+const UINT OrderLine::NO_ERROR_REPORT_FLAG = 0x02;
+bool OrderLine::getCompletionFlag() const {return  isCompleted_;}
 
 
 
-Order::~Order()
+OrderLine::~OrderLine()
 {
 //#ifdef TEST_MODE
 //   if(testMode)  cout << "Order deleted" << endl;
@@ -54,7 +54,7 @@ Order::~Order()
 
 
 void
-Order::parseModifiers(Parser * parser )
+OrderLine::parseModifiers(Parser * parser )
 {
 bool isParsing =true;
 
@@ -114,8 +114,11 @@ bool isParsing =true;
 		isParsing = false;
 	}
 }
+
+
+
 bool
-Order::parse(Parser * parser, Entity * entity )
+OrderLine::parse(Parser * parser, Entity * entity )
 {
   string tempKeyword = parser -> getWord();
  	orderPrototype_ = orderPrototypesCollection->find (tempKeyword);
@@ -133,10 +136,12 @@ Order::parse(Parser * parser, Entity * entity )
   			return false;
 			}
 
- }
+}
+
+
 
 ORDER_STATUS
-Order::process(ProcessingMode * processingMode, Entity * entity, ostream &out)
+OrderLine::process(ProcessingMode * processingMode, Entity * entity, ostream &out)
 {
 ORDER_STATUS result;
 #ifdef TEST_MODE
@@ -192,7 +197,7 @@ if( orderPrototype_ == 0)
 
 
 ORDER_STATUS 
-Order::completeProcessing(Entity * entity, int result)
+OrderLine::completeProcessing(Entity * entity, int result)
 {
   entity->setCurrentOrder(this);
   ORDER_STATUS status	= orderPrototype_ -> completeProcessing(entity, parameters_,result);
@@ -202,15 +207,15 @@ Order::completeProcessing(Entity * entity, int result)
 
 
 void
-Order::save(ostream &out)
+OrderLine::save(ostream &out)
 {
     out << "ORDER ";
-    print(out);
+    printOrderLine(out);
 }
 
 
 void
-Order::print(ostream &out)
+OrderLine::printOrderLine(ostream &out)
 {
  vector< AbstractData *>::const_iterator iterator2;
 	int i;
@@ -240,22 +245,29 @@ Order::print(ostream &out)
 }
 
 
-bool Order::isFullDayOrder()
+
+bool OrderLine::isFullDayOrder()
 {
   return orderPrototype_->isFullDayOrder();
   
 }
 
-void Order::setReportingFlag(UINT flag)
+void OrderLine::setReportingFlag(UINT flag)
 {
   reportFlags |= translate_(flag);
 }
-void Order::clearReportingFlag(UINT flag)
+
+
+
+void OrderLine::clearReportingFlag(UINT flag)
 {
   reportFlags &= translate_(~flag);
   
 }
-bool Order::getReportingFlag(UINT flag)
+
+
+
+bool OrderLine::getReportingFlag(UINT flag)
 {
   return ( reportFlags &  translate_(flag));
 }
@@ -265,15 +277,24 @@ bool Order::getReportingFlag(UINT flag)
 // NO_NORMAL_REPORT_FLAG and NO_ERROR_REPORT_FLAG
 // all other bits may be used be used by order objects
 
-UINT Order::translate_(UINT flag)
+
+
+
+UINT OrderLine::translate_(UINT flag)
 {
   return flag << 2; // 2 internal flags are already defined
 }
-PROCESSING_STATE Order::getProcessingState() const
+
+
+
+PROCESSING_STATE OrderLine::getProcessingState() const
 {
    return state_;
   }
-void Order::setProcessingState(PROCESSING_STATE state)
+
+
+
+void OrderLine::setProcessingState(PROCESSING_STATE state)
 {
    state_ =  state;
   }

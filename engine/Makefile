@@ -9,6 +9,7 @@ CXXFLAGS = -O3 -W -Wall -Wno-unused -Wno-sign-compare $(INCLUDES)
 INCLUDES = -I$(BASE_DIR)                       \
            -I$(BASE_DIR)/datatypes             \
            -I$(BASE_DIR)/datatypes/rules       \
+           -I$(BASE_DIR)/datatypes/attributes  \
            -I$(BASE_DIR)/datatypes/entities    \
            -I$(BASE_DIR)/datatypes/varieties   \
            -I$(BASE_DIR)/datatypes/elements    \
@@ -21,7 +22,8 @@ INCLUDES = -I$(BASE_DIR)                       \
            -I$(BASE_DIR)/process/conflicts     \
            -I$(BASE_DIR)/report/patterns       \
            -I$(BASE_DIR)/report                \
-           -I$(BASE_DIR)/misc
+           -I$(BASE_DIR)/misc                  \
+           -I$(BASE_DIR)/implementation/actions
 
 ######################## Compilation dependency #########################
 
@@ -43,7 +45,6 @@ SOURCES = turn.cpp \
           datatypes/entities/UnitEntity.cpp \
           datatypes/entities/LocationEntity.cpp \
           datatypes/entities/FactionEntity.cpp \
-          datatypes/entities/PhysicalEntity.cpp \
           datatypes/varieties/ConstructionWorksVariety.cpp \
           datatypes/varieties/Variety.cpp \
           datatypes/varieties/MovementVariety.cpp \
@@ -202,6 +203,16 @@ SOURCES = turn.cpp \
           misc/ReportPrinter.cpp   \
           misc/dgChannelBuf.cpp   \
           Global.cpp    \
+					datatypes/attributes/BasicAttribute.cpp
+					datatypes/attributes/EnchantmentAttribute.cpp
+					implementation/actions/PickpocketActionRule.cpp \
+          datatypes/elements/EnchantmentElement.cpp \
+          datatypes/entities/EffectEntity.cpp \
+          datatypes/entities/TokenEntity.cpp \
+          datatypes/rules/ActionRule.cpp \
+          datatypes/rules/EnchantmentRule.cpp \
+          datatypes/strategies/ActionUsingStrategy.cpp   \
+          datatypes/strategies/EnchantmentUsingStrategy.cpp   \
 
 OBJECTS := $(patsubst %.cpp,%.o,$(wildcard $(SOURCES) ) )
 

@@ -7,7 +7,7 @@
  ***************************************************************************/
 
 #include "BasicLearningStrategy.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
 #include "BonusElement.h"
@@ -80,7 +80,7 @@ bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill)
  * Ability of entity to study skill  
  *  Level limitations also taken into considerations
  */
-LEARNING_RESULT BasicLearningStrategy::mayStudy(PhysicalEntity * tokenEntity, SkillRule * skill) const
+LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, SkillRule * skill) const
 {
 // Check that Entity is able to study this skill at current level
     LEARNING_RESULT  result = tokenEntity->mayLearn(skill);
@@ -122,7 +122,7 @@ int BasicLearningStrategy::expBase_ = 100;
 
 
 
-int BasicLearningStrategy::calculateLearningExperience(PhysicalEntity * tokenEntity, SkillRule * skill, TeachingOffer * teacher)
+int BasicLearningStrategy::calculateLearningExperience(TokenEntity * tokenEntity, SkillRule * skill, TeachingOffer * teacher)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
   if(unit)
@@ -180,7 +180,7 @@ int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, S
 
 
 
-void BasicLearningStrategy::addLearningExperience(PhysicalEntity * tokenEntity, SkillElement & skill)
+void BasicLearningStrategy::addLearningExperience(TokenEntity * tokenEntity, SkillElement & skill)
 {
    if(tokenEntity->isTraced())
    {
@@ -209,7 +209,7 @@ void BasicLearningStrategy::addLearningExperience(PhysicalEntity * tokenEntity, 
      }  
       //  problem with teaching requests
 }
-void BasicLearningStrategy::addRecursiveLearningExperience(PhysicalEntity * tokenEntity, SkillElement  & skill)
+void BasicLearningStrategy::addRecursiveLearningExperience(TokenEntity * tokenEntity, SkillElement  & skill)
 {
    if(tokenEntity->isTraced())
    {

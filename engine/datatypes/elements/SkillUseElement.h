@@ -27,48 +27,37 @@
 #include "RulesCollection.h"
 extern RulesCollection <SkillRule>      skills;
 using namespace std;
-typedef Element3<SkillRule, Rational , int> BasicSkillUseElement;
-class SkillUseElement : public  Element3< class SkillRule,  Rational , int> {
+typedef Element3<SkillRule, RationalNumber , int> BasicSkillUseElement;
+class SkillUseElement : public  Element3< class SkillRule,  RationalNumber , int> {
 public:
-	SkillUseElement(SkillRule * rule, Rational effectiveSkillDays, int duration)  : BasicSkillUseElement (rule,effectiveSkillDays,duration){}
+	SkillUseElement(SkillRule * rule, RationalNumber effectiveSkillDays, int duration)  : BasicSkillUseElement (rule,effectiveSkillDays,duration){}
 	//SkillUseElement(Parser * parser) : BasicSkillUseElement (0,0,0)
   //{rule_ = skills[parser->getWord()] ;parameter1_ = parser->getInteger();}
 	 ~SkillUseElement(){}
 
    inline SkillRule *  getSkillUsed()      const {return rule_;}
-   inline Rational     getDaysUsed()       const {return parameter1_;}
+   inline RationalNumber     getDaysUsed()       const {return parameter1_;}
    inline int          getDuration()      const {return parameter2_;}
 
    inline void  setSkillUsed(SkillRule * skill)  {rule_ = skill;}
-   inline void  setDaysUsed(Rational effectiveSkillDays)       {parameter1_ = effectiveSkillDays;}
+   inline void  setDaysUsed(RationalNumber effectiveSkillDays)       {parameter1_ = effectiveSkillDays;}
    inline void  setDuration(int duration)    {parameter2_ = duration;}
 
          
-   void save(ostream & out)
-    {out << rule_->getTag() << " " <<  parameter1_   << " " <<  parameter2_   << endl;}
+//   void save(ostream & out)
+//    {out << rule_->getTag() << " " <<  parameter1_   << " " <<  parameter2_   << endl;}
 
-   string printName()
+   string print()
    {
     if (rule_ == 0) return "";
-//    char buffer[12];
-//      longtostr(parameter1_,buffer);
-//    if( parameter1_ > 1)
-//      return string(buffer) + " days of using " + rule_->printName();
-//    else
-//      return string(buffer) + " day of using " + rule_->printName();
-      return parameter1_.printName() + " days of using " + rule_->printName();
+      return parameter1_.print() + " days of using " + rule_->print();
   }
 
-   void report(ostream & out)
-   {
-    if (rule_ != 0) 
-      out << parameter1_ <<" of "<< parameter2_<< " days of using " + rule_->printName();
-  }
 
   static SkillUseElement  * readElement (Parser * parser)
       {
         SkillRule * skill = skills[parser->getWord()];
-        Rational effectiveSkillDays = parser->getRational();
+        RationalNumber effectiveSkillDays = parser->getRationalNumber();
         int duration = parser->getInteger();
         if( skill == 0  )
           return 0;

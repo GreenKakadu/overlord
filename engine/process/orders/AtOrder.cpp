@@ -35,7 +35,7 @@ AtOrder::AtOrder(){
 STATUS AtOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
     if(!parseGameDataParameter(entity,  parser, locations, "location id", parameters))
@@ -48,7 +48,7 @@ STATUS AtOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS AtOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
- PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+ TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   LocationEntity * location = dynamic_cast<LocationEntity *>(parameters[0]);
 	

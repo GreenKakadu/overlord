@@ -91,7 +91,7 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  Order * orderId = unit->getCurrentOrder();
+  OrderLine * orderId = unit->getCurrentOrder();
 
   if(!unit->getRace()->mayRectuit())
   {
@@ -200,11 +200,11 @@ RecruitOrder::completeProcessing (Entity * entity, vector <AbstractData *>  &par
   {
     par1->setValue(amount - result);
     entity->updateOrderResults(FAILURE);
-//  cout << "Saving order for "<< unit->printName() <<"=[ ";
+//  cout << "Saving order for "<< unit->print() <<"=[ ";
 //  orderId->save(cout);
     return FAILURE;
   }
   entity->updateOrderResults(SUCCESS);
-//  cout << "Order completed for "<< unit->printName() <<".\n";
+//  cout << "Order completed for "<< unit->print() <<".\n";
   return SUCCESS;
 }

@@ -9,7 +9,7 @@
 #include "BasicCompetitiveRequest.h"
 #include "UnitEntity.h"
 
-BasicCompetitiveRequest::BasicCompetitiveRequest(UnitEntity * unit, Order * orderId)
+BasicCompetitiveRequest::BasicCompetitiveRequest(UnitEntity * unit, OrderLine * orderId)
 {
   unit_ = unit;
   orderId_ =  orderId;
@@ -47,5 +47,5 @@ bool BasicCompetitiveRequest::isValid()
 }
 string BasicCompetitiveRequest::print()
 {
-  return  string("Request for ") + unit_->printName();
+  return  string("Request for ") + unit_->print();
 }

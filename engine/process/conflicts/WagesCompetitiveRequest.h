@@ -28,20 +28,20 @@ class ItemRule;
 class WagesCompetitiveRequest : public BasicCompetitiveRequest  {
 public: 
 //	WagesCompetitiveRequest(UnitEntity * unit, int requestedSalary);
-	WagesCompetitiveRequest(UnitEntity * unit, Order * orderId, Rational& amount);
+	WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount);
 	~WagesCompetitiveRequest();
 //   bool operator ==  (WagesCompetitiveRequest request);
     bool isEqualTo (BasicCompetitiveRequest * request);
 //   inline int getSalaryRequest() const {return requestedSalary_;}
-   Rational getValue() const;
-   void setValue(const Rational& value);
+   RationalNumber getValue() const;
+   void setValue(const RationalNumber& value);
    AbstractData * getType() const;
-  Rational getTotalAvailableValue() const;
-  void answerRequest(Rational& answer);
+  RationalNumber getTotalAvailableValue() const;
+  void answerRequest(RationalNumber& answer);
   static Reporter * workPublicReporter;
   static Reporter * workPrivateReporter;
 protected:
-  Rational resourceAmount_;
+  RationalNumber resourceAmount_;
 //  int requestedSalary_;
 };
 

@@ -23,9 +23,9 @@ void  UnaryPattern::operator delete(void * deadObject, size_t size)
 
 
 
-void UnaryPattern::print(ostream &out) const
+void UnaryPattern::printReport(ostream &out) const
 {
-  reporter_->print(out, param1_);
+  reporter_->printReport(out, param1_);
 }
 
 

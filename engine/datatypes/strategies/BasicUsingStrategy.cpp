@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "BasicUsingStrategy.h"
-#include "PhysicalEntity.h"
+#include "TokenEntity.h"
 #include "UnitEntity.h"
 
 BasicUsingStrategy::BasicUsingStrategy ( const BasicUsingStrategy * prototype ) : Strategy(prototype)
@@ -37,7 +37,7 @@ BasicUsingStrategy::initialize        ( Parser *parser )
 
 
 
-void BasicUsingStrategy::addUsingExperience(PhysicalEntity * tokenEntity, SkillElement & skill)
+void BasicUsingStrategy::addUsingExperience(TokenEntity * tokenEntity, SkillElement & skill)
 {
    if(tokenEntity->isTraced())
    {
@@ -58,8 +58,7 @@ void BasicUsingStrategy::addUsingExperience(PhysicalEntity * tokenEntity, SkillE
       SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
       if(requirement != 0)
         {
-          SkillElement recursive(requirement->getSkill(),exp);
-          addRecursiveUsingExperience(tokenEntity,recursive);
+          addRecursiveUsingExperience(tokenEntity,requirement->getSkill(),exp);
         }
      }
 
@@ -67,22 +66,22 @@ void BasicUsingStrategy::addUsingExperience(PhysicalEntity * tokenEntity, SkillE
 
 
 
-void BasicUsingStrategy::addRecursiveUsingExperience(PhysicalEntity * tokenEntity, SkillElement  & skill)
+void BasicUsingStrategy::addRecursiveUsingExperience(TokenEntity * tokenEntity,  SkillRule * skill, int experience)
 {
    if(tokenEntity->isTraced())
    {
-    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive using experience added to " << skill.getSkill()->printTag()<<endl;
+    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << experience<<" recursive using experience added to " << skill->printTag()<<endl;
    }
-    tokenEntity->addSkill(skill);
+    tokenEntity->addSkill(skill,experience);
 
-   int level = tokenEntity->getSkillLevel(skill.getSkill());
+   int level = tokenEntity->getSkillLevel(skill);
    int tryLevel;
    for (tryLevel = 0; tryLevel< level ; tryLevel++)
     {
-      SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
+      SkillLevelElement * requirement = skill->getRequirement(tryLevel);
       if(requirement != 0)
         {
-          addRecursiveUsingExperience(tokenEntity,skill);
+          addRecursiveUsingExperience(tokenEntity,requirement->getSkill(),experience);
         }
      }
 
@@ -95,7 +94,7 @@ int BasicUsingStrategy::expBase_ = 10;
 
 
 int
-BasicUsingStrategy::calculateUsingExperience(PhysicalEntity * tokenEntity, SkillRule * skill)
+BasicUsingStrategy::calculateUsingExperience(TokenEntity * tokenEntity, SkillRule * skill)
 {
 // Amount of experience tokenEntity getting from skill use may vary but in Overlord it
 // is constant - 1/10 of base.
@@ -116,8 +115,13 @@ USING_RESULT BasicUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
 }
 
 
+/*
+ * This is a part of simplified double dispatching mechanism for skill use.
+ * for each type of entity using skill appropriate method should be called
+ * currently only units may use skills
+ */
 
-USING_RESULT BasicUsingStrategy::mayUse(PhysicalEntity * tokenEntity, SkillRule * skill)
+USING_RESULT BasicUsingStrategy::mayUse(TokenEntity * tokenEntity, SkillRule * skill)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
   if(unit)
@@ -127,8 +131,13 @@ USING_RESULT BasicUsingStrategy::mayUse(PhysicalEntity * tokenEntity, SkillRule 
 }
 
 
+/*
+ * This is a part of simplified double dispatching mechanism for skill use.
+ * for each type of entity using skill appropriate method should be called
+ * currently only units may use skills
+ */
 
-USING_RESULT BasicUsingStrategy::use(PhysicalEntity * tokenEntity, SkillRule * skill, int & useCounter)
+USING_RESULT BasicUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, int & useCounter)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
   if(unit)
@@ -159,7 +168,7 @@ void    BasicUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
 
 
 
-void BasicUsingStrategy::reportUse(USING_RESULT result, PhysicalEntity * tokenEntity)
+void BasicUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntity)
 {
 }
 

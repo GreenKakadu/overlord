@@ -36,7 +36,7 @@ AcceptOrder::AcceptOrder(){
 STATUS AcceptOrder::loadParameters(Parser * parser,
                             vector <AbstractData *>  &parameters, Entity * entity )
 {
-   if(!entityIsPhysicalEntity(entity))
+   if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
     if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
@@ -50,7 +50,7 @@ STATUS AcceptOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
-  PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
  assert(unit);
 	UnitEntity * follower   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 

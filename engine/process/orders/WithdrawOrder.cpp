@@ -80,7 +80,7 @@ WithdrawOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-  Order * orderId = unit->getCurrentOrder();
+  OrderLine * orderId = unit->getCurrentOrder();
 // May withdraw only in city (or bank)
 //   if(unit->getLocation()->getTerrain() != terrains["city"])
    if(unit->getLocation()->getTerrain() != terrains.findByTag("city",false))

@@ -13,23 +13,23 @@
   */
 class AbstractData;
 class ItemRule;
-class Rational;
+class RationalNumber;
   
 #include "BasicCompetitiveRequest.h"
-#include "Rational.h"
+#include "RationalNumber.h"
 
 class ResourceCompetitiveRequest : public BasicCompetitiveRequest  {
 public: 
-	ResourceCompetitiveRequest(UnitEntity * unit, Order * orderId, ItemRule * resource,  Rational& amount);
+	ResourceCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, ItemRule * resource,  RationalNumber& amount);
 	~ResourceCompetitiveRequest();
 //  virtual bool isEqualTo (BasicCompetitiveRequest * request);
-   Rational getValue() const;
+   RationalNumber getValue() const;
    AbstractData * getType() const;
-  Rational getTotalAvailableValue() const;
-  void answerRequest(Rational& answer);
+  RationalNumber getTotalAvailableValue() const;
+  void answerRequest(RationalNumber& answer);
 protected:
   ItemRule * resourceType_;
-  Rational amount_;
+  RationalNumber amount_;
 };
 
 #endif

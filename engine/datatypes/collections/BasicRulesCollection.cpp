@@ -41,7 +41,7 @@ void   BasicRulesCollection::add  ( GameData * /*const*/ newRule)
 {
   data_.push_back ( dynamic_cast< Rule*> (newRule) );
 //  vector <Rule *>::iterator iter = data_.end() - 1;
-//  if (*iter) cout <<" inside " << (*iter)-> printName()  <<endl;
+//  if (*iter) cout <<" inside " << (*iter)-> print()  <<endl;
 }
 
 

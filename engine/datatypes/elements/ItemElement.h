@@ -32,22 +32,20 @@ public:
  * saves data into output stream  as tags and numbers
  * Examples: "SWRD 5" 
  */
-   void save(ostream & out)
-    {out << rule_->getTag() << " " <<  parameter1_   << endl;}
+//   void save(ostream & out)
+//    {out << rule_->getTag() << " " <<  parameter1_   << endl;}
     
 /*
  * returns string with textual representation for reports and debuggers
  * Examples: "5 swords" or "1 horse"
  */
-string printName()
+string print()
 {
     if (rule_ == 0) return "";
-    char buffer[12];
-      longtostr(parameter1_,buffer);
-    if( parameter1_ > 1)
-      return string(buffer) + " " + rule_->getPluralName()  + rule_->printTag();
+     if( parameter1_ > 1)
+      return longtostr(parameter1_) + " " + rule_->getPluralName()  + rule_->printTag();
     else
-      return string(buffer) + " " + rule_->printName();
+      return longtostr(parameter1_) + " " + rule_->print();
 }
 
 /*

@@ -167,9 +167,9 @@ bool OrderPrototype::entityIsUnit(Entity *entity, PARSING_MODE mode)
 /*
  * Checks that entity is unit or construction.
  */ 
-bool OrderPrototype::entityIsPhysicalEntity(Entity *entity, PARSING_MODE mode)
+bool OrderPrototype::entityIsTokenEntity(Entity *entity, PARSING_MODE mode)
 {
-   PhysicalEntity * unit = dynamic_cast<PhysicalEntity *>(entity);
+   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   if(unit==0)  // Wrong Entity type
 				{
          if(mode == NORMAL_PARSING) 
@@ -258,14 +258,14 @@ bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
 //        {
           if(game.isNewEntityName(tag/*,unit->getFaction()*/))
             {
-              NewEntityPlaceholder * placeholder = collection.findPlaceholder(tag);
+              NewEntityPlaceholder * placeholder = collection.findOrAddPlaceholder(tag);
  //              cout <<"placeholder=  "<< (int) placeholder <<endl;
               if(placeholder != 0)  // this is  placeholder.
               {
-                GameData* entity = placeholder->getRealEntity();
- //              cout <<"entity=  "<< (int) entity <<endl;
-                if(entity) // We can get real entity id from placeholder
-   		            parameters.push_back(entity);
+                GameData* realEntity = placeholder->getRealEntity();
+ //              cout <<"realEntity=  "<< (int) entity <<endl;
+                if(realEntity) // We can get real entity id from placeholder
+   		            parameters.push_back(realEntity);
                  else   // placeholder is still empty
    		              parameters.push_back(placeholder);
                 return true;

@@ -8,6 +8,11 @@
 #include "ObservationCondition.h"
 #include "UnitEntity.h"
 //ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
+ObservationCondition::ObservationCondition(const ObservationCondition * prototype)
+  : BasicCondition(prototype)
+{
+  observationRequired_ =0;
+}
 
 
 GameData * ObservationCondition::createInstanceOfSelf()
@@ -18,9 +23,9 @@ GameData * ObservationCondition::createInstanceOfSelf()
 //#include "LocationEntity.h"
 
 
-bool ObservationCondition::isSatisfied(PhysicalEntity * entity)
+bool ObservationCondition::isSatisfied(TokenEntity * entity)
 {
-//  cout << unit->printName()<< "at "<<unit->getLocation()->printName() << "observing with "<< unit->getObservation() << " vs " <<observationRequired_<<endl;
+//  cout << unit->print()<< "at "<<unit->getLocation()->print() << "observing with "<< unit->getObservation() << " vs " <<observationRequired_<<endl;
    UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
    if(unit==0)
     return false;

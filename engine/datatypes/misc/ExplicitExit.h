@@ -18,7 +18,7 @@ public:
               LocationEntity * dest, MovementMode <int> standardTravelTime);
 	~ExplicitExit(){}
    void save(ostream & out);
-   void print();
+   string print();
   int getTravelTime(MovementVariety * mode);
     protected:
     MovementMode <int> standardTravelTime_;

@@ -23,12 +23,12 @@ public:
 	Reporter(const char *rep1, const char *rep2, const char *rep3, const char *rep4);
 	Reporter(const char *rep1, const char *rep2, const char *rep3, const char *rep4, const char *rep5);
 	Reporter(const char *rep1, const char *rep2, const char *rep3, const char *rep4, const char *rep5, const char *rep6);
-	void print (ostream &out);
-	void print (ostream &out, AbstractData * param1);
-	void print (ostream &out, AbstractData * param1, AbstractData * param2);
-	void print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3);
-	void print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4);
-	void print (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5);
+	void printReport (ostream &out);
+	void printReport (ostream &out, AbstractData * param1);
+	void printReport (ostream &out, AbstractData * param1, AbstractData * param2);
+	void printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3);
+	void printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4);
+	void printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5);
 
 	protected:
 	~Reporter(){}

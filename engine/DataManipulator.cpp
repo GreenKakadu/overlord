@@ -28,6 +28,8 @@ DataManipulator::DataManipulator()
    ruleIndex.addRules (&skills);
    ruleIndex.addRules (&items);
    ruleIndex.addRules (&races);
+   ruleIndex.addRules (&fx_actions);
+   ruleIndex.addRules (&enchantments);
    ruleIndex.addRules (&constructions);
 
 
@@ -36,6 +38,7 @@ DataManipulator::DataManipulator()
    addEntities  (&factions);
    addEntities  (&locations);
    addEntities  (&buildingsAndShips);
+   addEntities  (&effects);
 
 }
 
@@ -48,8 +51,9 @@ DataManipulator::~DataManipulator()
 
 
 
-
-
+/*
+ *
+ */
 void DataManipulator::addEntities ( BasicEntitiesCollection * collection)
 {
 		if(collection->getStatus()  == OK)
@@ -60,6 +64,9 @@ void DataManipulator::addEntities ( BasicEntitiesCollection * collection)
 
 
 
+/*
+ *
+ */
 void DataManipulator::addVarieties ( BasicVarietiesCollection * collection)
 {
 		if(collection->getStatus()  == OK)
@@ -72,6 +79,9 @@ void DataManipulator::addVarieties ( BasicVarietiesCollection * collection)
 
 
 
+/*
+ *
+ */
 STATUS DataManipulator::load()
 {
   RulesCollectionIterator ruleIter;
@@ -99,6 +109,7 @@ STATUS DataManipulator::load()
 // Define some global variables for special use
 
   cash = items["coin"];
+  food = items["food"];
   walkingMode = movementModes["walk"];
   swimingMode = movementModes["swim"];
   flyingMode = movementModes["fly"];
@@ -111,6 +122,9 @@ STATUS DataManipulator::load()
 
 
 
+/*
+ *
+ */
 STATUS DataManipulator::save()
 {
   EntitiesCollectionIterator iter;
@@ -123,6 +137,9 @@ STATUS DataManipulator::save()
 
 
 
+/*
+ *
+ */
 STATUS DataManipulator::initialize()
 {
   RulesCollectionIterator ruleIter;
@@ -154,28 +171,34 @@ for (iter = entities_.begin(); iter != entities_.end(); iter++)
 
 
 
-void DataManipulator::print()
+/*
+ *
+ */
+void DataManipulator::printAllData()
 {
   EntitiesCollectionIterator collIter;
   RulesCollectionIterator ruleIter;
   EntitiesIterator iter;
   for( ruleIter = ruleIndex.getAllRules().begin(); ruleIter != ruleIndex.getAllRules().end(); ruleIter++)
 	   {
-        for_each((*ruleIter)->begin(), (*ruleIter)->end(), mem_fun (&Rule::printName) );
+        for_each((*ruleIter)->begin(), (*ruleIter)->end(), mem_fun (&Rule::print) );
      }
   for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {
-      cout << "Collection  "<<    (*collIter)->printName()<<endl;
+      cout << "Collection  "<<    (*collIter)->print()<<endl;
       for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
         {
             if(*iter )
-              cout << (*iter)->printName()<<endl;
+              cout << (*iter)->print()<<endl;
         }
 		}
 }
 
 
 
+/*
+ *
+ */
 void DataManipulator::processOrders(ProcessingMode * processingMode )
 {
   bool localChanges;
@@ -262,6 +285,9 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
 
 
 
+/*
+ *
+ */
 STATUS DataManipulator::checkOrders()
 {
 //  EntitiesCollectionIterator collIter;
@@ -359,7 +385,7 @@ void DataManipulator::dailyUpdate()
       for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
         {
             if(*iter )
-               (*iter) ->cleanReports();
+               (*iter) ->cleanPublicReports();
         }
 		}
 }
@@ -488,4 +514,86 @@ void DataManipulator::turnPostProcessing()
                (*iter) ->postProcessData();
         }
 		}
+// add Reports events from post-processing stage
+  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+	   {
+      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+        {
+            if(*iter )
+               (*iter) ->finalizeReports();
+        }
+		}
+  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+	   {
+      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+        {
+            if(*iter )
+               (*iter) ->cleanPublicReports();
+        }
+		}
+}
+
+
+
+void DataManipulator::clear()
+{
+  RulesCollectionIterator ruleIter;
+  EntitiesCollectionIterator iter;
+  VarietiesCollectionIterator varietyIter;
+
+
+for (varietyIter = varieties_.begin(); varietyIter != varieties_.end(); varietyIter++)
+   {
+      (*varietyIter)->clear();
+   }
+
+ for (ruleIter = ruleIndex.getAllRules().begin(); ruleIter != ruleIndex.getAllRules().end(); ruleIter++)
+   {
+      (*ruleIter) ->clear();
+   }
+
+for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+      (*iter) ->clear();
+   }
+}
+
+
+
+GameData * DataManipulator::findGameData(const string & tag)
+{
+  EntitiesCollectionIterator iter;
+  RulesCollectionIterator ruleIter;
+  GameData * data;
+  for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+      data = (*iter) ->findByTag(tag,false);
+      if (data)
+        return data;
+
+   }
+ for (ruleIter = ruleIndex.getAllRules().begin(); ruleIter != ruleIndex.getAllRules().end(); ruleIter++)
+   {
+      data = (*ruleIter) ->findByTag(tag,false);
+      if (data)
+        return data;
+   }
+  return 0;
+}
+
+
+// Looks for placeholder "tag"
+// If such placeholder doesn't exist yet - creates it
+NewEntityPlaceholder * DataManipulator::findOrAddPlaceholder(const string & tag)
+{
+  EntitiesCollectionIterator iter;
+  NewEntityPlaceholder * data;
+  for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+      data = (*iter) ->findOrAddPlaceholder(tag);
+      if (data)
+        return data;
+
+   }
+  return 0;
 }
