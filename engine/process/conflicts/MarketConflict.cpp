@@ -1,5 +1,5 @@
 /***************************************************************************
-                          MarketConflict.cpp 
+                          MarketConflict.cpp
                              -------------------
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -13,7 +13,7 @@
  *                                                                                            *
  ***************************************************************************/
 #include <algorithm>
-#include "Parser.h"
+#include "LineParser.h"
 #include "MarketConflict.h"
 #include "MarketRequest.h"
 #include "LocationEntity.h"
@@ -68,18 +68,18 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
       continue;
       }
 #ifdef TEST_MODE
-  if(testMode) cout << "                       request for "<< request->print()<<endl;  
+  if(testMode) cout << "                       request for "<< request->print()<<endl;
 #endif
-  
-    if( request->isBuying()) 
+
+    if( request->isBuying())
       {
         buyOffers.push_back(request);
       }
-    else if( request->isSelling())  
+    else if( request->isSelling())
       {
          sellOffers.push_back(request);
       }
-    else // request can't be processed 
+    else // request can't be processed
       {
 //       cout << "    ERROR                   request for "<< request->print()<<endl;
         continue;
@@ -88,15 +88,15 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
 
   if(sellOffers.empty() || buyOffers.empty())
   {
-    return; 
+    return;
   }
 
-    
+
   //  Sort  sellOffers and buyOffers by price if price equal by skill
 
   sort(buyOffers.begin(), buyOffers.end(), offerNotLessThan);
   sort(sellOffers.begin(), sellOffers.end(), offerNotLessThan);
-  
+
   //  get sellMin and BuyMax
   MarketRequest * sellMin = sellOffers.front();
   MarketRequest * buyMax =  buyOffers.back();
@@ -108,7 +108,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
     return;
   }
   else
-  {  
+  {
   //  remove too low buy and too high sell  offers
     for(marketIter = buyOffers.begin(); marketIter != buyOffers.end(); )
     {

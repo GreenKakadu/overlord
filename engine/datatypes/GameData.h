@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GameData.h 
+                          GameData.h
                     Basic Polymorphic Persistent Object.
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
@@ -9,9 +9,9 @@
 
 #ifndef GAME_DATA_H
 #define GAME_DATA_H
-#include "Parser.h"
 #include "OverlordTypes.h"
 #include "BasicData.h"
+#include "LineParser.h"
 using namespace std;
 
 class ProcessingMode;
@@ -35,7 +35,7 @@ class GameData : public BasicData
 
    inline  string     getKeyword() const{ return keyword_;}
    inline  GameData * getParent() const { return parent_;}
-   
+
    virtual STATUS dataConsistencyCheck();
            bool operator ==  (GameData data2);
 
@@ -50,9 +50,9 @@ class GameData : public BasicData
 /** Macro for cloning */
 template <class T>  GameData * CREATE_INSTANCE(const T * prototype)
 {
-      T * object = new T(prototype); 
+      T * object = new T(prototype);
       return object;
-     
+
 }
 /** Function object for use in STL algorithms (not used yet) */
 #include <functional>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Parser.cpp  
+                          Parser.cpp
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "Parser.h"
+#include "LineParser.h"
 //#include "Rational.h"
 Parser::Parser ( const char *input )
 {
@@ -38,16 +38,16 @@ Parser::Parser()
 //
 //  This function is intended for parsing of keyword-based text input.
 //
-// It is supposed that input is \n - terminated c-string starting from keyword. 
-// (There may be also some spaces  before keyword). 
-// matchKeyword case-insensitive looks for specified keyword at the beginning 
+// It is supposed that input is \n - terminated c-string starting from keyword.
+// (There may be also some spaces  before keyword).
+// matchKeyword case-insensitive looks for specified keyword at the beginning
 // of the string.
 //
-// If keyword found it shifts input string pointer to the right 
+// If keyword found it shifts input string pointer to the right
 // so that resulting string it points to starts from the next  symbol after
 //  keyword. Function in this case returns TRUE.
 //
-// If keyword was not found at the beginning of the string 
+// If keyword was not found at the beginning of the string
 // function returns FALSE.
 //
 // This is modified  Vincent Archers's code.
@@ -65,8 +65,8 @@ bool  Parser::matchKeyword (const char *keyword)
     if (*keyword != *scan) {
       if ( !isalpha (*keyword) || !isalpha (*scan) )
 		return false; // illegal characters in the input or in the keyword
-	
-      if ( (*keyword & 0x1F) != (*scan & 0x1F) )// after throwing away all 
+
+      if ( (*keyword & 0x1F) != (*scan & 0x1F) )// after throwing away all
      //non-alpha  symbols this works as case-nonsensitive comparison of symbols
 	return false;
     }
@@ -79,7 +79,7 @@ bool  Parser::matchKeyword (const char *keyword)
     return false;
   if ( *scan == '_' )  // May be part of keyword
     return false;
-      
+
   input_ = scan;
   return true;
 }
@@ -91,15 +91,15 @@ bool  Parser::matchKeyword (const char *keyword)
 //
 //  This function is intended for parsing of keyword-based text input.
 //
-// It is supposed that input is c-string starting from specified character. 
-// (There may be also some spaces  before it). 
-// matchChar case-insensitive looks for specified character at the beginning 
+// It is supposed that input is c-string starting from specified character.
+// (There may be also some spaces  before it).
+// matchChar case-insensitive looks for specified character at the beginning
 // of the string.
 //
-// If character found it shifts input string pointer to the next 
+// If character found it shifts input string pointer to the next
 // position after character. Function in this case returns TRUE.
 //
-// If character was not found at the beginning of the string 
+// If character was not found at the beginning of the string
 // function returns FALSE.
 //
 // NOTE: it uses isspace  and isalpha macro which are locale-dependent
@@ -122,7 +122,7 @@ bool  Parser::matchChar (const char symbol)
     {
       if (symbol != *scan)
 	return false;
-    }    
+    }
   input_ = scan + 1;
   return true;
 }
@@ -136,7 +136,7 @@ bool  Parser::matchChar (const char symbol)
 // It extracts first parameter from the input and interprets it as a single
 //  word. Parameter may be also quoted string with spaces .
 // Returns 0 if failed.
-// Input string pointer shifted to the right 
+// Input string pointer shifted to the right
 // so that resulting string  it points to starts from the next  symbol after
 // parameter.
 // This is modified  Vincent Archers's code.
@@ -167,7 +167,7 @@ char    *scan;
       if (*scan == separatorSymbol) { // Closing separator was found.
 	break;
       }
-    } else 
+    } else
       if (isspace (*scan) )  // Closing space was found.
 	break;
 	  if (*scan == COMMENT_SYMBOL)
@@ -178,7 +178,7 @@ char    *scan;
   string Parameter (input_, 0, scan - input_ );
   if (separatorSymbol)
     scan++;
-  
+
     input_=scan;
     status = OK;
     return Parameter;
@@ -235,7 +235,7 @@ char    *scan;
 // This function is intended for input parsing.
 //
 // It extracts first word from the input
-// Input string pointer is NOT shifted 
+// Input string pointer is NOT shifted
 // Returns 0 if failed.
 //
 // NOTE: it uses isspace  macro which are locale-dependent
@@ -271,7 +271,7 @@ char    *scan;
 // This function is intended for input parsing.
 //
 // It extracts first token from the input and interprets it as integer
-// Input string pointer shifted to the right 
+// Input string pointer shifted to the right
 // so that resulting string  it points to starts from the next  symbol after
 //  integer. Returns integer, prints error message if failed.
 //
@@ -293,7 +293,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
       if (!isdigit (*input_) )  // Non-digit was found
 	break;
       if (!*input_)  // End of string
-	break; 
+	break;
       buffer[i] = *input_;
       *input_++;
     }
@@ -356,8 +356,8 @@ RationalNumber Parser::getRationalNumber ()
 // This function is intended for input parsing.
 //
 // It extracts first token from the input and checks it for being integer
-// in the case of success returns TRUE, else - FALSE 
-// Input string pointer shifted in the position of the first isdigit symbol. 
+// in the case of success returns TRUE, else - FALSE
+// Input string pointer shifted in the position of the first isdigit symbol.
 //
 // NOTE: it uses isspace and isdigit macro which are locale-dependent
 //============================================================================
@@ -378,11 +378,11 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
       if (!isdigit (*scan) )  // Non-digit was found
 	break;
       if (!*scan)  // End of string
-	break; 
+	break;
       buffer[i] = *scan;
       *scan++;
     }
-  if ( (i >=  1) && (i <  INTEGER_LENGTH ) ) // At least one 
+  if ( (i >=  1) && (i <  INTEGER_LENGTH ) ) // At least one
     // but less than 6 digits were found.
     return true;
   else
@@ -437,9 +437,9 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
   if ( (i >=  1) && (i <  INTEGER_LENGTH ) ) // At least one
     // but less than 6 digits were found.
     {
-     if (atoi(buffer) != 0) 
+     if (atoi(buffer) != 0)
         return true;
-     else   
+     else
         return false;
     }
   else

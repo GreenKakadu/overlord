@@ -1,5 +1,5 @@
 /***************************************************************************
-                          OrderPrototype.h 
+                          OrderPrototype.h
      Generic order object               .
                              -------------------
     begin                : Wen Aug  7 13:28:00 IST 2002
@@ -12,7 +12,7 @@
 #include <string>
 #include <iostream>
 
-#include "Parser.h"
+#include "LineParser.h"
 #include "SystemTypes.h"
 #include "OverlordTypes.h"
 #include "ProcessingMode.h"
@@ -47,7 +47,7 @@ class OrderPrototype
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
      virtual ORDER_STATUS completeProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
-	inline string getKeyword() const {return keyword_;} 
+	inline string getKeyword() const {return keyword_;}
     bool isFullDayOrder();
     bool mayInterrupt();
     bool mayBeProcessed(ProcessingMode * processingMode, Entity * entity);
@@ -60,9 +60,9 @@ class OrderPrototype
     bool parseGameDataParameter(Entity *entity, const string & tag, BasicCollection & collection,
           const string & parameterTypeName, vector <AbstractData *>  &parameters);
     bool parseIntegerParameter(Parser * parser, vector <AbstractData *>  &parameters);
-    bool parseStringParameter(Entity *entity, Parser * parser, 
+    bool parseStringParameter(Entity *entity, Parser * parser,
 									vector <AbstractData *>  &parameters);
-    bool parseOptionalStringParameter(Entity *entity, Parser * parser, 
+    bool parseOptionalStringParameter(Entity *entity, Parser * parser,
 						vector <AbstractData *>  &parameters, const char * stringParameter);
     bool parseOptionalGameDataParameter(Entity *entity, Parser * parser,
           BasicCollection & collection, vector <AbstractData *>  &parameters);

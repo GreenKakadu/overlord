@@ -1,5 +1,5 @@
 /***************************************************************************
-                          FileParser.h 
+                          FileParser.h
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -10,13 +10,12 @@
 #define FILEPARSER_H
 #include <iostream>
 #include <fstream>
-//#include "SystemTypes.h"
 #include "OverlordTypes.h"
-#include "Parser.h"
+#include "LineParser.h"
 using namespace std;
 
 class FileParser : public Parser {
-public: 
+public:
        explicit FileParser ( ifstream &input );
        explicit FileParser ( const char * filename );
        explicit FileParser ( const string &filename );

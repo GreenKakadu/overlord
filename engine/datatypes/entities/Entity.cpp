@@ -74,7 +74,7 @@ bool Entity::processOrderResults(ORDER_STATUS result, OrderIterator & currentIte
 {
   assert (result != SUSPENDED);
 
-  bool orderWasExecuted = false;   
+  bool orderWasExecuted = false;
   if((result == SUCCESS) || (result == IN_PROGRESS))
   {
           if ((*currentIterator)->isFullDayOrder())
@@ -89,7 +89,7 @@ bool Entity::processOrderResults(ORDER_STATUS result, OrderIterator & currentIte
       	{
 					orderWasExecuted = true;
 				}
-        
+
   switch (result)
         {
 					case SUCCESS:
@@ -178,29 +178,29 @@ bool Entity::processOrderResults(ORDER_STATUS result, OrderIterator & currentIte
 	    				break;
 	  //default:
 				}// End of result switch
-  return orderWasExecuted;      
+  return orderWasExecuted;
 }
 
 
 /*
  * When order completed  state of all conditional orders depending on it
- * should be reexamined:  
+ * should be reexamined:
  * For successfuly completed orders "-" modifiers should be removed and
  * orders with "+" removed.
  * For orders completed with invalid status  "+" modifiers should be
  * removed and orders with "-" removed.
- 
+
  */
-void 	    
+void
 Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 
 {
   OrderIterator    currentIterator = iter;
-  currentIterator++;	
+  currentIterator++;
   for ( ; currentIterator != orders_.end(); )
     {
 			if( !((*currentIterator)->whileCondition()) && !((*currentIterator)->ifConditionLevel > 0))
-			return;		
+			return;
 #ifdef TEST_MODE
    if(testMode)
 			{
@@ -218,7 +218,7 @@ Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 		// Checking next conditional modifier
 		// if it is "+" Order will be deleted in the next "if" (combination "-+" is illegal (?))
 		// otherwise put "else"
-	
+
 	    			if ((*currentIterator)->whileCondition()) // Delete order
 	      			{
 #ifdef TEST_MODE
@@ -249,10 +249,10 @@ Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 		    						currentIterator = orders_.erase(currentIterator);
 		  					}
 							else
-		    						currentIterator++;						
+		    						currentIterator++;
 	    				break;
 	      		}
-	
+
 	    		if ((*currentIterator)->ifConditionLevel > 0) // Delete order
 	      		{
 #ifdef TEST_MODE
@@ -268,7 +268,7 @@ Entity::postProcessOrder(ORDER_STATUS result, OrderIterator  iter)
 				case SUSPENDED:
 	    		break;
 		} // switch
-     
+
    }// end of for cycle
 }
 
@@ -286,7 +286,7 @@ Entity::initialize        ( Parser *parser )
 {
 STATUS currentResult = OK;
 //STATUS result = OK;
-	
+
       if (parser->matchKeyword ("NAME") )
         {
 	  setName(parser->getText());
@@ -305,7 +305,7 @@ STATUS currentResult = OK;
    currentResult = enchantments_.initialize(parser);
    if(currentResult != OK)
     return currentResult;
-    
+
 	  return OK;
 
 }
@@ -434,7 +434,7 @@ void Entity::dailyUpdate()
 
 
 /*
- * Unit tries to obtain public reports from given entity 
+ * Unit tries to obtain public reports from given entity
  */
 void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extractedReports)
 {
@@ -447,7 +447,7 @@ void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extra
 //             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter)->reportMessage->print(cout);
             	extractedReports.push_back
 							(new ReportElement((*iter)->reportMessage,this));
-			}			
+			}
 	}
 }
 
@@ -517,9 +517,9 @@ void Entity::finalizeReports()
 		    	}
 			if (duplicate)
 					{
-          if(*iter1)  
+          if(*iter1)
 					  delete (*iter1);
-					publicReports_.erase(iter1);	
+					publicReports_.erase(iter1);
 					}
 			else
 					iter1++;
@@ -653,7 +653,7 @@ int Entity::getLearningCapacity()
 
 
 
-bool Entity::teacherRequired(SkillRule * skill) 
+bool Entity::teacherRequired(SkillRule * skill)
 {
   return false;
 }

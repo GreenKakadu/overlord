@@ -1,12 +1,12 @@
 /***************************************************************************
-                          Strategy.cpp 
+                          Strategy.cpp
                              -------------------
     begin                : Sun Mar 16 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "Strategy.h"
-#include "Parser.h"
+#include "LineParser.h"
 
 GameData * Strategy::createInstanceOfSelf()
 {

@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "BasicExit.h"
-#include "Parser.h"
+#include "LineParser.h"
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
 //extern MovementVariety * walkingMode;
@@ -16,7 +16,7 @@ BasicExit::BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEn
 {
  origin_ = origin;
  dir_ = dir;
- destination_ = dest; 
+ destination_ = dest;
 }
 
 /** No descriptions */
@@ -45,7 +45,7 @@ string BasicExit::print()
 
 
 /*
- * Outputs exit information for use in reports 
+ * Outputs exit information for use in reports
  */
 void BasicExit::produceReport(ReportPrinter & out)
 {
@@ -78,7 +78,7 @@ void BasicExit::produceReport(ReportPrinter & out)
 
 
 /*
- * 
+ *
  */
 void BasicExit::save(ostream & out)
 {
@@ -106,6 +106,6 @@ int BasicExit::getTravelTime(MovementVariety * mode)
 
  if((time1) && (time2))
     return (time1 +3 * time2) / 4;
- else   
-  return 0;   
+ else
+  return 0;
 }

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BasicAttribute.cpp 
+                          BasicAttribute.cpp
                              -------------------
     begin                : Thu Mar 11 2004
     copyright            : (C) 2004 by Alex Dribin
@@ -13,12 +13,12 @@
  *                                                                                            *
  ***************************************************************************/
 #include "BasicAttribute.h"
-#include "Parser.h"
+#include "LineParser.h"
 #include "Entity.h"
 
 BasicAttribute::BasicAttribute()
 {
-// attributeOwner->registerAttribute(this); 
+// attributeOwner->registerAttribute(this);
 }
 
 BasicAttribute::~BasicAttribute()

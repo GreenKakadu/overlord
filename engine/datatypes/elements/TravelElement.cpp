@@ -1,12 +1,12 @@
 /***************************************************************************
-                          TravelElement.cpp 
+                          TravelElement.cpp
                              -------------------
     begin                : Fri Apr 4 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "TravelElement.h"
-#include "misc/Parser.h"
+#include "misc/LineParser.h"
 #include "entities/LocationEntity.h"
 #include "varieties/MovementVariety.h"
 #include "collections/EntitiesCollection.h"
@@ -62,14 +62,14 @@ void TravelElement::save(ostream & out)
   out << "MOVING "<<movingMode_->getTag() << " " << origin_->getTag();
   out << " "<< destination_->getTag() << " " <<time_ << " ";
   out << totalTravelTime_ << ".\n";
-  
+
 }
 
 
 
 void TravelElement::reportTravel(ostream & out)
 {
-  out << movingMode_->getName() << " " << origin_->print(); 
+  out << movingMode_->getName() << " " << origin_->print();
   out << " to "<< destination_->print() << " " <<time_ << " days from ";
   out << totalTravelTime_ << ".\n";
 }
@@ -105,7 +105,7 @@ bool TravelElement::isArrived()
   return false;
  else
   return true;
-  
+
 }
 
 

@@ -18,7 +18,7 @@ operations on all objects stored in the collection.
 #include <stdlib.h>
 #include <ctype.h>
 #include <algorithm>
-#include "Parser.h"
+#include "LineParser.h"
 
 template <class T>
 EntitiesCollection<T>::EntitiesCollection (DataStorageHandler * handler,
@@ -31,7 +31,7 @@ template <class T> T* EntitiesCollection <T>::operator [] (long int index)
 {
 	if ( /*(index >= 0) &&*/ (index <= dimensions_))
          return dynamic_cast< T*> (data_[index]);
-  else       
+  else
     cout << "Error: Array index (" << index << ") is out of array dimensions (" <<dimensions_<<")"<<endl;
 		status = IO_ERROR;
     return 0 ;
@@ -56,7 +56,7 @@ STATUS   EntitiesCollection <T>::addNew  ( T * const newEntity)
   for (i=0; i <1000; i++)
     {
       randomIndex = rand() % dimensions_;
-      if(data_[randomIndex] == 0) 
+      if(data_[randomIndex] == 0)
 		  {
 	     if (binary_search(RIP_.begin(),RIP_.end(),randomIndex) )
             continue;  // no reuse of indexes of entities which are now dead

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EntityStatistics.h 
+                          EntityStatistics.h
                              -------------------
     begin                : Wed Feb 5 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -9,7 +9,7 @@
 #ifndef ENTITY_STATISTICS_H
 #define ENTITY_STATISTICS_H
 #include <iostream>
-#include "Parser.h"
+#include "LineParser.h"
 #include "OverlordTypes.h"
 using namespace std;
 
@@ -18,7 +18,7 @@ using namespace std;
   */
 
 class EntityStatistics {
-public: 
+public:
 	EntityStatistics();
 	~EntityStatistics(){}
   STATUS initialize(Parser * parser);
@@ -48,7 +48,7 @@ public:
   inline void modifyStealth(int stealth) {stealth_ += stealth;}
   inline void modifyObservation(int observation) {observation_ += observation;}
 
-        void reportStatistics(ostream &out); 
+        void reportStatistics(ostream &out);
         void addStats(EntityStatistics * stats);
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
         void clearStats();

@@ -28,7 +28,7 @@ using namespace std;
   */
 
 class BasicAttribute {
-public: 
+public:
 	BasicAttribute();
 	~BasicAttribute();
   STATUS     initialize      ( Parser *);

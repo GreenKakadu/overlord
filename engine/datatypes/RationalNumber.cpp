@@ -1,5 +1,5 @@
 /***************************************************************************
-                          RationalNumber.cpp 
+                          RationalNumber.cpp
                              -------------------
     begin                : Sun May 11 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -14,7 +14,7 @@
  ***************************************************************************/
 #include "RationalNumber.h"
 #include <iostream>
-#include "Parser.h"
+#include "LineParser.h"
 using namespace std;
 
 
@@ -131,7 +131,7 @@ RationalNumber operator += ( RationalNumber& leftArgument, const RationalNumber&
   {
     leftArgument.numenator_   = leftArgument.numenator_ * rightArgument.denominator_ +
                               rightArgument.numenator_ * leftArgument.denominator_;
-    leftArgument.denominator_ = leftArgument.denominator_ * rightArgument.denominator_;             
+    leftArgument.denominator_ = leftArgument.denominator_ * rightArgument.denominator_;
   }
  leftArgument.cancel_();
  return  leftArgument;
@@ -154,7 +154,7 @@ RationalNumber operator -= ( RationalNumber& leftArgument, const RationalNumber&
 }
 
 
-    
+
 const     bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
@@ -243,7 +243,7 @@ string RationalNumber::print()
     char buffer[30];
  if (!(numenator_ % denominator_))
     sprintf(buffer,"%d",getValue());// May use hand-made convertor itoa
- else   
+ else
     sprintf(buffer,"%d %d/%d",getValue(),numenator_ % denominator_,denominator_);// May use hand-made convertor itoa
       return string(buffer);
 
@@ -286,7 +286,7 @@ const int RationalNumber::getValue() const
 
 bool RationalNumber::isInteger()
 {
- return  (numenator_ % denominator_ == 0); 
+ return  (numenator_ % denominator_ == 0);
 }
 
 
@@ -320,5 +320,5 @@ int RationalNumber::roundUp() const
 
 bool RationalNumber::isEmpty()
 {
-  return(!numenator_);  
+  return(!numenator_);
 }

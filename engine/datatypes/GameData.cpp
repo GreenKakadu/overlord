@@ -1,5 +1,5 @@
 /***************************************************************************
-                          GameData.cpp  
+                          GameData.cpp
                        Basic Polymorphic Persistent object
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
@@ -17,7 +17,7 @@ GameData       sampleGameData("GameData",0);
 /** Used only for creation of sample objects for use in PrototypeManager  */
 GameData::GameData (const string & keyword, GameData * parent)
 {
-  keyword_= keyword; 
+  keyword_= keyword;
   parent_ = parent;
   name_ = keyword;
   transform (name_.begin() + 1, name_.end(),
@@ -28,7 +28,7 @@ GameData::GameData (const string & keyword, GameData * parent)
 	  cout << "Prototype Manager created on "<< keyword<< " call"<<endl;
     prototypeManager = new PrototypeManager;
   }
-  prototypeManager->addToRegistry(this); 
+  prototypeManager->addToRegistry(this);
 }
 
 
@@ -51,7 +51,7 @@ GameData::createInstanceOfSelf ( )
 {
   return CREATE_INSTANCE<GameData> (this);
 }
- 
+
 
 
 /** initialization  with saved object data */
