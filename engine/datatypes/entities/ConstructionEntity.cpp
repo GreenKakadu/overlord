@@ -744,7 +744,7 @@ void ConstructionEntity::moveGroupToLocation()
 }
 
 
-void ConstructionEntity::movingGroupReport(ReportRecord * report )
+void ConstructionEntity::movingGroupReport(ReportRecord  report )
 {
   for(vector <UnitEntity *>::iterator iter = units_.begin(); iter != units_.end(); ++iter)
   {

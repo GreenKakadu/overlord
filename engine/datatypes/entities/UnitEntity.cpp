@@ -1121,7 +1121,7 @@ void UnitEntity::setStackMoving(TravelElement * moving)
 /*
  * recursively adds report to all units in the stack 
  */
-void UnitEntity::movingGroupReport(ReportRecord * report )
+void UnitEntity::movingGroupReport(ReportRecord report )
 {
 	recursionCounter++;
 	if ( recursionCounter > 100 )
@@ -1213,7 +1213,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
             addSkillExperience((*iter).getSkill(),(*iter).getExpPoints() *  number);
         else
           { 
-  	        addReport( new   ReportRecord(new BinaryPattern(mergeSkillReporter, unit, (*iter).getSkill())));
+  	        addReport( new BinaryPattern(mergeSkillReporter, unit, (*iter).getSkill()));
           }                 
       }
    }
@@ -1238,7 +1238,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 //     (*iter).print(cout);cout <<endl;
       if( (*iter).getLevel() < oldLevel)
         {
-  	        addReport( new   ReportRecord(new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) )));
+  	        addReport( new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
            (*iter).getSkill()->checkConditions(this);
         }
     }
@@ -1265,7 +1265,7 @@ void UnitEntity::addNewFigures(int number)
       (*iter).setExpPoints( ( (*iter).getExpPoints() *  oldFigures ) / (oldFigures + number));
       if( (*iter).getLevel() < oldLevel)
         {
-  	        addReport( new   ReportRecord(new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) )));
+  	        addReport( new BinaryPattern(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
            (*iter).getSkill()->checkConditions(this);
         }
 		}

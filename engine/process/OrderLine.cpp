@@ -200,7 +200,7 @@ ORDER_STATUS
 OrderLine::completeProcessing(Entity * entity, int result)
 {
   entity->setCurrentOrder(this);
-  ORDER_STATUS status	= orderPrototype_ -> completeProcessing(entity, parameters_,result);
+  ORDER_STATUS status	= orderPrototype_ -> completeOrderProcessing(entity, parameters_,result);
   entity->setCurrentOrder(0);
   return status;
 }

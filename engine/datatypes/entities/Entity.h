@@ -16,11 +16,11 @@
 #include "EnchantmentAttribute.h"
 //#include "SkillElement.h"
 #include "ReportPrinter.h"
+#include "ReportRecord.h"
 //#include "InternalPropertiesCollection.h"
 using namespace std;
 
 class OrderLine;
-class ReportRecord;
 class ReportElement;
 class ReportPattern;
 class BasicCondition;
@@ -65,7 +65,7 @@ class Entity : public GameData
   virtual void addOrder(OrderLine * newOrder);
   virtual void clearOrders();
 //  virtual void prepareOrders();
-  virtual void addReport(ReportRecord * report);
+  virtual void addReport(ReportRecord report);
   virtual void addReport(ReportPattern * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
   virtual void extractReport(UnitEntity * unit, vector < ReportElement * > & reports);
   virtual Entity * getReportDestination();
@@ -112,7 +112,7 @@ friend  ostream &operator << ( ostream &out, Entity * entity);
     OrderLine * currentOrder_; //  order that is processed now
     int fullDayOrder_;
     vector <OrderLine *> orders_;
-    vector <ReportRecord *> publicReports_;
+    vector <ReportRecord> publicReports_;
     vector <ReportElement *> collectedReports_;
     vector <TeachingOffer  *> teachingOffers_;
 //    InternalPropertiesCollection<EffectElement *> effects_;

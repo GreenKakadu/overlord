@@ -726,8 +726,7 @@ int TokenEntity::addSkill(SkillRule  * skill, int expPoints)
 void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
 {
 	    TertiaryPattern * Message = new TertiaryPattern(newLevelReporter, this, new IntegerData(newLevel), skill);
-	    ReportRecord * currentReport = new   ReportRecord(Message, 0);
-		  addReport( currentReport);
+		  addReport(Message, 0,0);
 
    // Add knowledge to faction
      getFaction()->addSkillKnowledge(skill, newLevel);
@@ -737,8 +736,7 @@ void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
        if  ( newLevel >= skill->getMaxLevel() )
         {
 	    BinaryPattern * Message = new BinaryPattern(maxLevelReporter, this, skill);
-	    ReportRecord * currentReport = new   ReportRecord(Message, 0);
-		  addReport( currentReport);
+		  addReport(Message, 0,0 );
          }
 }
 
@@ -1166,15 +1164,16 @@ ORDER_STATUS TokenEntity::oath(FactionEntity * faction)
  	  if(*(faction->getStance(getFaction())) < *friendlyStance)
       {
         // not accepting. Reports to both sides
-      addReport(new   ReportRecord(new UnaryPattern(oathRejectedReporter, faction)) );
-      faction->addReport(new   ReportRecord(new UnaryPattern(oathRejectedReporter, faction)) );
+      UnaryPattern * oathRejectedMessage = new UnaryPattern(oathRejectedReporter, faction);  
+      addReport(oathRejectedMessage,0,0);
+      faction->addReport(oathRejectedMessage,0,0);
 		  return INVALID;
       }
   }
-  getFaction()->addReport(new   ReportRecord(new BinaryPattern(oathReporter, this,faction)) );
+  BinaryPattern * oathReportMessage = new BinaryPattern(oathReporter, this,faction);
+  getFaction()->addReport(oathReportMessage,0,0 );
   markToOath(faction);
-  addReport(new   ReportRecord(new BinaryPattern(oathReporter, this,faction)) );
-  faction->addReport(new   ReportRecord(new BinaryPattern(oathReporter, this,faction)) );
+  faction->addReport(oathReportMessage,0,0);
 	return SUCCESS;
 
 }

@@ -135,7 +135,7 @@ class LocationEntity : public Entity  {
       int x_;
       int y_;
 //      int z_;
-//	 vector <ReportRecord *> reports_;
+//	 vector <ReportRecord> reports_;
 //=======================================================================
 // For PathFinding
     public:
@@ -161,7 +161,6 @@ extern bool betterDistance( const locPtr & loc1, const locPtr & loc2);
 typedef vector <BonusElement *>::iterator BonusIterator;
 typedef vector <SkillLevelElement *>::iterator TeachingIterator;
 typedef vector <BasicExit*>::iterator ExitIterator;
-typedef vector <UnitEntity *>::iterator  UnitIterator;
 typedef vector <ConstructionEntity *>::iterator  ConstructionIterator;
 extern LocationEntity     sampleLocation;
 #include "EntitiesCollection.h"

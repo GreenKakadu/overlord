@@ -96,7 +96,7 @@ class UnitEntity : public TokenEntity
           bool            isFollowingInStackTo(UnitEntity * unit);
           void            moveGroupToLocation();
           void            movingGroupArrived();
-          void            movingGroupReport(ReportRecord * report);
+          void            movingGroupReport(ReportRecord report);
           bool            addStackLandwalkExperience(bool newLevel);
           bool            leaveStaying();
           void            enterStack(ConstructionEntity * containingConstruction);
@@ -187,6 +187,7 @@ bool mayCancelTitle(TitleElement * title);
 
 };
 typedef vector <UnitEntity *>::iterator StackIterator;
+typedef vector <UnitEntity *>::iterator  UnitIterator;
 extern UnitEntity     sampleUnit;
 #include "EntitiesCollection.h"
 extern EntitiesCollection <UnitEntity>      units;

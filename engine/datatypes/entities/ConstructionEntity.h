@@ -79,7 +79,7 @@ public:
      void moveGroupToLocation();
      void movingGroupArrived();
      void movingEntityArrived();
-     void movingGroupReport(ReportRecord * report );
+     void movingGroupReport(ReportRecord report );
      void addStaff(UnitEntity * unit);
      void removeStaff(UnitEntity * unit);
      inline int getEffectiveStaff() {return effectiveStaff_;}

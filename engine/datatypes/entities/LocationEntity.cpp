@@ -17,7 +17,6 @@
 #include "EntitiesCollection.h"
 #include "VarietiesCollection.h"
 #include "MovementVariety.h"
-#include "ReportRecord.h"
 #include "BasicExit.h"
 #include "ExplicitExit.h"
 #include "ReportElement.h"

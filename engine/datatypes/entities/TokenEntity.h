@@ -138,7 +138,7 @@ public:
    virtual void movingEntityArrived(){}
    void setPassenger(bool value) {passenger_ = value;}
    bool retreat();
-   virtual void movingGroupReport(ReportRecord * report ){}
+   virtual void movingGroupReport(ReportRecord report ){}
 // Flags ========================================================
                   void setAdvertising(bool value) {advertising_ = value;}
                   void setAnnouncing(bool value) {announcing_ = value;}

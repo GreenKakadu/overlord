@@ -8,7 +8,6 @@
 #include <algorithm>
 #include "Entity.h"
 #include "UnitEntity.h"
-#include "ReportRecord.h"
 #include "ReportElement.h"
 #include "InventoryElement.h"
 #include "TeachingOffer.h"
@@ -409,7 +408,7 @@ void Entity::dailyPreProcess()
 
 
 
-void Entity::addReport(ReportRecord * report)
+void Entity::addReport(ReportRecord  report)
 {
 if (!isSilent())
 	publicReports_.push_back(report);
@@ -421,7 +420,7 @@ if (!isSilent())
 void Entity::addReport(ReportPattern * report,OrderLine *  orderId, BasicCondition * observationCriteria)
 {
 if (!isSilent())
-  publicReports_.push_back(new  ReportRecord(report, orderId, observationCriteria));
+  publicReports_.push_back(ReportRecord(report, orderId, observationCriteria));
 }
 /** No descriptions */
 
@@ -439,14 +438,14 @@ void Entity::dailyUpdate()
 void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extractedReports)
 {
 //	cout << "Extracting Reports for [" <<tag_ <<"] " << unit->printTag()<< endl;
-   vector<ReportRecord *>::iterator iter;
+   vector<ReportRecord >::iterator iter;
   for ( iter = publicReports_.begin(); iter != publicReports_.end(); iter++)
     {
-       if( (*iter)->observableBy(unit))
+       if( (*iter).observableBy(unit))
 			{
-//             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter)->reportMessage->print(cout);
+//             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter).reportMessage->print(cout);
             	extractedReports.push_back
-							(new ReportElement((*iter)->reportMessage,this));
+							(new ReportElement((*iter).reportMessage,this));
 			}
 	}
 }
@@ -495,21 +494,21 @@ void Entity::finalizeReports()
 // (results of multiple attempts of the execution of the same order)
 // the earlier one should be deleted
 
-   vector<ReportRecord *>::iterator iter1;
-   vector<ReportRecord *>::iterator iter2;
+   vector<ReportRecord>::iterator iter1;
+   vector<ReportRecord>::iterator iter2;
 		bool duplicate;
 
   for ( iter1 = publicReports_.begin(); iter1 != publicReports_.end(); )
 		{
        duplicate = false;
-       if((*iter1)->orderId == 0)
+       if((*iter1).orderId == 0)
        {
 					  iter1++;
             continue; // This is non-order generated report
        }
   		for ( iter2 = iter1 + 1; iter2 != publicReports_.end(); iter2++)
 					{
-					if( (*iter2)->orderId == (*iter1)->orderId)
+					if( (*iter2).orderId == (*iter1).orderId)
 							{
 							  duplicate = true;
 								break;
@@ -517,8 +516,6 @@ void Entity::finalizeReports()
 		    	}
 			if (duplicate)
 					{
-          if(*iter1)
-					  delete (*iter1);
 					publicReports_.erase(iter1);
 					}
 			else
@@ -528,7 +525,7 @@ void Entity::finalizeReports()
   for ( iter1 = publicReports_.begin(); iter1 != publicReports_.end(); iter1++)
 		{
 					collectedReports_.push_back
-							(new ReportElement((*iter1)->reportMessage,this));
+							(new ReportElement((*iter1).reportMessage,this));
 		}
 }
 
@@ -539,11 +536,6 @@ void Entity::finalizeReports()
  */
 void Entity::cleanPublicReports()
 {
-   vector<ReportRecord *>::iterator iter;
-  for ( iter = publicReports_.begin(); iter != publicReports_.end(); iter++)
-		{
-          delete (*iter);
-		}
 					publicReports_.clear();
 }
 

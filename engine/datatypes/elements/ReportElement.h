@@ -23,7 +23,7 @@ class ReportElement : public  BasicReportElement  {
 public:
 	ReportElement(ReportPattern * pattern, Entity* destination, int time = currentDay)  : BasicReportElement (pattern,destination,time)
 			{}
-	~ReportElement(){/*if (getRecord()) getRecord()->clean();*/}
+	~ReportElement(){}
   void printReport(ReportPrinter &out) const
 			{
         out << "Day " << parameter2_ << " ";

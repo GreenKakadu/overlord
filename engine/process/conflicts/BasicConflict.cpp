@@ -15,13 +15,21 @@ BasicConflict::BasicConflict(LocationEntity * location)
 {
   location_ = location;
 }
+
+
+
 BasicConflict::~BasicConflict(){
 }
+
+
+
 /** add new request without checks */
 void BasicConflict::insertRequest(BasicCompetitiveRequest *request)
 {
   requests_.push_back(request);
 }
+
+
 
 /** add new request if it was'n already added */
 void BasicConflict::addRequest(BasicCompetitiveRequest *request)

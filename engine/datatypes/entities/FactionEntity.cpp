@@ -32,7 +32,6 @@
 
 #include "ReportElement.h"
 #include "ItemElement.h"
-#include "ReportRecord.h"
 #include "ReportPattern.h"
 
 extern GameInfo game;
