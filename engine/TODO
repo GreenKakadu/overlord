@@ -89,6 +89,11 @@ Known Bugs/features:
 22.
 23.
 
+Portability:
+
+In Compillation with Borland C++BuilderX data structures use much more memory than with GCC (try to play with data allignment)
+Big scale code(200 factios x 100 units 10000 locations)  BCC-compiled with debugging  first time runs ok but on second time hangs computer.(but my computer regulary hangs anyway)
+
 
 Orders implementation status:
 																	( * - means known bugs)
