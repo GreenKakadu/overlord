@@ -5,6 +5,8 @@
     copyright            : (C) 2001 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
+#include <stdlib.h>
+#include <time.h>
 
 #include "GameData.h"
 #include "PrototypeManager.h"
@@ -40,12 +42,14 @@ RulesCollection <TitleRule>   titles;
 EntitiesCollection <UnitEntity>   units;
 
 
-//... More collections
+#include <stdlib.h>
+#include <time.h>//... More collections
 
 
 int main()
 {
-
+  srand ( time(NULL) ); // init random
+  
   DataManipulator dataManipulator;
   
   dataManipulator.addRules(terrains,"terrains" );
@@ -65,6 +69,27 @@ int main()
 
   dataManipulator.load();
   dataManipulator.initialize();
+
+  UnitEntity * currentUnit; // for test
+  int i;
+  char buffer[Parser::INTEGER_LENGTH];
+  for (i=0; i<20 ; i++)
+    {
+      currentUnit = new UnitEntity(&sampleUnit);
+      sprintf(buffer,"U%d",i);
+      currentUnit->setTag(buffer);
+      units.add(currentUnit);
+    }
+  for (i=0; i<20 ; i++)
+    {
+      currentUnit = new UnitEntity(&sampleUnit);
+      units.addNew(currentUnit);
+    }
+
+
+
+
+  
   dataManipulator.print();
   dataManipulator.save();
   

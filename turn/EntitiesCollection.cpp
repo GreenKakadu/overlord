@@ -101,11 +101,13 @@ void   EntitiesCollection <T>::addNew  ( GameData * const newEntity)
   for (i=0; i <1000; i++)
     {
       randomIndex = rand() % dimensions_;
-      if(data_[randomIndex] != 0)
+      //  cout << "randomIndex " << randomIndex << endl;
+      if(data_[randomIndex] == 0)
 	{
 	  
 	  //	  newEntity->setTag(prefix_ + itoa(randomIndex,buffer,10));
-	  sprintf(buffer,"%d",randomIndex); newEntity->setTag(prefix_ + buffer );
+	  sprintf(buffer,"%c%d",prefix_,randomIndex); newEntity->setTag(buffer );
+	  newEntity->setName(newEntity->getKeyword() );
 	  data_[randomIndex] = dynamic_cast< T*> (newEntity);
 	  emptyPlaces_ --;
 	  if(dimensions_ / emptyPlaces_ > 10 ) // Collection is almost full 
@@ -157,6 +159,7 @@ void EntitiesCollection <T>::resize (unsigned long size)
 {
   data_.resize(size);
   emptyPlaces_ = emptyPlaces_ + (size - dimensions_);
+  cout << dimensions_<< " - Reallocating memory to " <<size<<endl;// for test
   dimensions_ = size;
 
 }

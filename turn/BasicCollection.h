@@ -23,6 +23,7 @@ public:
 
 	  /* virtual GameData* findByTag    (const string &tag);        //  access by tag */
 	  virtual GameData* operator []       (const string &tag);        //  access by tag
+	  virtual GameData* operator []       (const unsigned long index);     
           virtual bool      isValidTag (const string &tag)  const; // check 
                                              //for string being valid title tag
 	  virtual unsigned long        getSize()                       const;

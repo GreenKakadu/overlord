@@ -41,6 +41,12 @@ GameData* BasicCollection::operator [] (const string &tag)
 }
 
 
+GameData* BasicCollection::operator [] (const unsigned long index)
+{
+ return 0 ;    
+}
+
+
 
 
 

@@ -86,7 +86,7 @@ return OK;
 STATUS DataHandler::save()
 {
   time_t rawtime;
-
+  unsigned long i;
 
   cout << "Saving data for "<< collectionKeyword_  <<endl;
   ofstream outfile ((filename_ + ".new").c_str());
@@ -94,6 +94,18 @@ STATUS DataHandler::save()
   time ( &rawtime );
   outfile << "# Ver 0.1 "<<ctime(&rawtime) <<endl;
   outfile << "KEYWORD " << collectionKeyword_ << " " <<collection_ -> getSize() <<endl;
+
+
+  for (i=0; i < collectionSize_ ; i++)
+    {
+      if ((*collection_)[i] != 0)
+	{
+	  // cout << "Saving entity "<< ((*collection_)[i])->getTag()  <<endl;
+	   ((*collection_)[i]) -> save(outfile);
+	}
+    }
+
+
   outfile.close();
 
 return OK;
@@ -102,7 +114,7 @@ STATUS DataHandler::initialize()
 {
  GameData * currentObject = 0;
   string currentTag;
-  int i=0;
+  unsigned long i=0;
 
    parser_->setPosition ( beginning_ );
   while (!  parser_->eof() )

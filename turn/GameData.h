@@ -33,6 +33,7 @@ class GameData
    virtual GameData * createInstanceOfSelf ();
    virtual STATUS      initialize ( Parser *parser );
    virtual void      print(); // for debugging
+   virtual void      save (ostream &out); 
    static PrototypeManager * prototypeManager;
 
   string   getTag()          const;

@@ -133,4 +133,12 @@ GameData::setDescription        ( const string &description)
  description_ = description;
 }
 
+void
+GameData::save(ostream &out)
+{
+  out << keyword_ << " " <<tag_ << endl;
+  if(name_.size()) out << "NAME " <<name_ << endl;
+  if(description_.size()) out << "DESCRIPTION " <<description_  << endl;
+  out << endl;
+}
 
