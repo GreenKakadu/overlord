@@ -1,159 +1,10 @@
-Consistency check for rules
-define targetType for any skill?
-
-check reports on unknown parameter
-reports
-
-there is create effect function in Ench. Rule it is not used
-
-
-
-
-define FX_NOE				0
-#define FX_SEEK_CITY			1
-#define FX_SEE_RESOURCES		2
-#define FX_SKILL_KICKS_IN_BATTLE	3
-
-#define FX_SPEEDUP_STRUCTURE		5
-#define FX_SPEEDUP_HARVEST		6
-
-#define FX_CONTAINS_MINERALS		10
-#define FX_RAISE_TO_HERO		11
-#define FX_RANDOM_MOUNT			12
-#define FX_MINERAL_SCRY			13
-#define FX_BATTLE_QUAGMIRE		14
-#define FX_BATTLE_DRAINLIFE		15
-#define FX_SUMMONING			16
-#define FX_SINGLE_SUMMONING		17
-#define FX_CONTAINS_FISH		18
-#define FX_WAYFINDER			19
-#define FX_CORPSE_RAISING		20
-#define FX_FAIR_WEATHER			21
-#define FX_METAMORPHOSIS		22
-#define FX_ABSORB_SKILL_0		23
-#define FX_ABSORB_SKILL_1		24
-#define FX_ABSORB_SKILL_2		25
-#define FX_ABSORB_SKILL_3		26
-#define FX_CONTAINS_ENTERTAINERS	27
-#define FX_MOUNT_CLONING		28
-#define FX_BEAST_CALL			29
-#define FX_TIDAL_WAVE			30
-#define FX_STONE_HAND			31
-#define FX_BATTLE_FIRE_CLOAK		32
-#define FX_BIT_FIRE_CLOAK		0x00000001
-#define FX_CATCH_SOUL			33
-#define FX_WRAITH_CALL			34
-#define FX_FIREWALL			35
-#define FX_BIT_WALKTHRU			0x00000002
-#define FX_EARTH_CLEAVING		36
-#define FX_MIND_SWAPPING		37
-#define FX_MIND_CONFUSION		38
-#define FX_LIFT_COINS			39
-#define FX_DRAGONSLICER			40
-#define FX_WATERY_VISION		41
-#define FX_ALTERED_UNIT			42
-#define FX_MAGIC_EYE			43
-#define FX_SCROLL_XXXX			44
-#define FX_WILD_GROWTH			45
-#define FX_GRAIN_PLANT			46
-#define FX_SACRIFICE			47
-#define FX_MEETING_MIND			48
-#define FX_CONTAINS_LIVE		49
-#define FX_FORTRESS			50
-#define FX_WEATHER_FAIR			51
-#define FX_WEATHER_SUNNY		52
-#define FX_WEATHER_RAINY		53
-#define FX_WEATHER_WINDY		54
-#define FX_WEATHER_STORM		55
-#define FX_CALL_SEA			56
-#define FX_PICK_POCKETS			57
-#define FX_INSTANT_FORTRESS		58
-#define FX_BATTLE_DROWN			59
-#define FX_BEAST_GATHERING		60
-#define FX_INSTANT_MOVEMENT		61
-#define FX_LURE_OTHER			62
-#define FX_CHASM_OPENS			63
-#define FX_CEMETARY			64
-#define FX_BLACK_AURA			65
-#define FX_HEAVINESS			66
-#define FX_COUNTER_WINDS		67
-#define FX_ASSASSINATION		68
-#define FX_EVALUATE_VOID		69
-#define FX_MOSS_POLLUTION		70
-#define FX_CAPTURE_BEAST		71
-#define FX_CAPTURE_CREATURE		72
-#define FX_CAPTURE_MONSTER		73
-#define FX_SWIRLINGVORTEX		74
-#define FX_DEVASTATION			75
-#define FX_COINSPINNER			76
-#define FX_PORTAL_OF_AIR		77
-#define FX_PORTAL_OF_EARTH		78
-#define FX_PORTAL_OF_FIRE		79
-#define FX_PORTAL_OF_VOID		80
-#define FX_PORTAL_OF_WATER		81
-#define FX_STONE_HEADS			82
-#define FX_RESHAPE_EQUIPMENT		83
-#define FX_CALL_HELP			84
-#define FX_ARMAGEDDON			85
-#define FX_OPEN_THE_WAY			86
-#define FX_ANGEL_OF_DEATH		87
-#define FX_BATTLE_FLOW			88
-#define FX_HEALING			89
-#define FX_BATTLE_PRESSURE		90
-#define FX_BATTLE_MISHAP		91
-#define FX_SHIELDBREAKER		92
-#define FX_LAVA_FLOW			93
-#define FX_HELM_SPEED			94
-#define FX_BATTLE_CONFUSED		95
-#define FX_BATTLE_INVISIBLE		96
-#define FX_SEE_ALL_MAGE			97
-#define FX_BATTLE_GUST_WIND		98
-#define FX_ONDINS			99
-#define FX_STINKING_CLOUD		100
-#define FX_PUPPET_MASTER		101
-#define FX_TERRIFY			102
-#define FX_RESHAPE_SELF			103
-#define FX_MELT_GROUND			104
-#define FX_FIRE_PILLAR			105
 Overlord Engine ToDo list:
 
-Last updated 30.12.2003
-1  FarVisionAction observe far location
-2  BorrowRandomKnowledgeAction <- read minds
-3  TeleportAction <- wway
-4  IncreaseResourceAction  <-- add resource to location
-5  ChangeRaceAction
-6  CreateRandomMountAction    <- random object of specific equipment type
-7  LocateMineralAction
-9  RaiseDeadAction
-10 ChangeWeatherAction
-12 CloneMountAction
-13 SummonRandomBeastAction
-14 LiftCoinsAction
-15 PickpocketAction
-16 WaterVisionAction observe far location (water only)
-18 IncreaseLivingResourcesAction
-19 SacrificeAction
-20 MagicTeachingAction (mmnd)
-21 CreateConstructionAction
-22 ChangeClimateAction
-23 CallSeaAction <- transfer resources from sea to the current location
-24 CallBeastsAction <- one each of horse or cattles will be substracted from all adjacent areas, and added to the local area.
-25 OpenChasmAction
-26 AssasinateAction
-27 MossPolutionAction
-28 CaptureAction
-29 DevastationAction
-30 OpenPortalAction
-31 LureUnitAction <-- attract unit from neighbouring location
-32 OpenMagicWayAction <- create exit
-SwapMindsAction <- Local only
+Last updated 14.05.2004
 ==================================================================================
 	Alpha version features:
-
--FX
 -Combat.
--Effects
+-Actions implementation
 -combat-related Orders
 -Guarding/Patrolling/Stances
   -- Start/Stop Guarding
@@ -212,11 +63,6 @@ Solutions  to change/improve:
 - Incorporate possibility of placeholders into tokens so that it becomes invisible from outside
   (make all placeholders/alias completely internal)
 
-We have: AbstractData - Integer + String + GameData + Elements
-         BasicData -   Now: tagged/named objects - GameData + BasicExit.
-May be it should be : Elements derived from BasicData. Basic data has no tag/name/Description fields
-	(move to GameData). They provide unified interface for Gamedata and Elements. Method sameAs() or
-	full set of comparison methods so that we can search Rule in RuleElement.
 
 
 
@@ -243,10 +89,6 @@ Known Bugs/features:
 22.
 23.
 
-Known Porting problems:
-
-1. In Visual Studio 7.0 compillation parsing works incorrectly.
-2. Memory leaks under Windows.
 
 Orders implementation status:
 																	( * - means known bugs)
@@ -314,6 +156,43 @@ Orders implementation status:
 * WITHDRAW ---- implemented ---- tested
 * WORK     ---- implemented ---- tested
 * YIELD	   ---- implemented ---- tested
+
+Actions:
+
+1  FarVisionAction observe far location
+2  BorrowRandomKnowledgeAction <- read minds
+3  TeleportAction <- wway
+4  IncreaseResourceAction  <-- add resource to location
+5  ChangeRaceAction
+6  CreateRandomMountAction    <- random object of specific equipment type
+7  LocateMineralAction
+9  RaiseDeadAction
+10 ChangeWeatherAction
+12 CloneMountAction
+13 SummonRandomBeastAction
+14 LiftCoinsAction
+16 WaterVisionAction observe far location (water only)
+18 IncreaseLivingResourcesAction
+19 SacrificeAction
+20 MagicTeachingAction (mmnd)
+21 CreateConstructionAction
+22 ChangeClimateAction
+23 CallSeaAction <- transfer resources from sea to the current location
+24 CallBeastsAction <- one each of horse or cattles will be substracted from all adjacent areas, and added to the local area.
+25 OpenChasmAction
+26 AssasinateAction
+27 MossPolutionAction
+28 CaptureAction
+29 DevastationAction
+30 OpenPortalAction
+31 LureUnitAction <-- attract unit from neighbouring location
+32 OpenMagicWayAction <- create exit
+SwapMindsAction <- Local only
+
+
+
+
+
 FX_SPEEDUP_STRUCTURE <- faster building at location (effect)
 FX_SPEEDUP_HARVEST<- faster harvesting at location (effect)
 17 FX_ALTERED_UNIT mana maskarade (effect)
@@ -359,5 +238,4 @@ FX_SINGLE_SUMMONING <--- Summoning
 33 FX_ONDINS
 
 
-FX_INCREASE_RESOURCES
 

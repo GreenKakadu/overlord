@@ -103,10 +103,10 @@ SOURCES = turn.cpp \
           datatypes/strategies/BuildUsingStrategy.cpp   \
           datatypes/strategies/CraftUsingStrategy.cpp   \
           datatypes/strategies/MarketStrategy.cpp   \
-          datatypes/Rational.cpp   \
+          datatypes/RationalNumber.cpp   \
           datatypes/StringData.cpp   \
           datatypes/SkillLevelElementData.cpp   \
-          datatypes/RaceElementData.cpp   \
+          datatypes/RaceElementData.cpp   \ 
           process/orders/AcceptOrder.cpp   \
           process/orders/AtOrder.cpp   \
           process/orders/AttackOrder.cpp   \
@@ -166,7 +166,6 @@ SOURCES = turn.cpp \
           process/orders/TacticOrder.cpp   \
           process/orders/TargetOrder.cpp   \
           process/orders/TeachOrder.cpp   \
-          process/orders/TestOrder.cpp   \
           process/orders/UnstackOrder.cpp   \
           process/orders/UseOrder.cpp   \
           process/orders/WaitOrder.cpp   \
