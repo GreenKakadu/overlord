@@ -1,0 +1,281 @@
+# Overlord Terrain definitions
+# Ver 0.1 12.11.2001 
+
+KEYWORD TERRAIN
+
+TERRAIN plai
+NAME plains
+OPTIMA 500
+TYPE 0
+LANDWALK plwk
+TOKEN tokplai
+DAYS 9
+
+TERRAIN tund
+NAME tundra
+OPTIMA 100
+TYPE 0
+LANDWALK icwk
+DAYS 11
+
+TERRAIN moun
+NAME mountains
+OPTIMA 50
+TYPE 0
+LANDWALK mnwk
+TOKEN tokmoun
+DAYS -1
+
+TERRAIN hill
+NAME hills
+OPTIMA 400
+TYPE 0
+LANDWALK hiwk
+TOKEN tokhill
+DAYS 13
+
+TERRAIN fore
+NAME forest
+OPTIMA 250
+TYPE 0
+LANDWALK fowk
+TOKEN tokfore
+DAYS 15
+
+TERRAIN dese
+NAME desert
+OPTIMA 50
+TYPE 0
+LANDWALK dewk
+TOKEN tokdese
+DAYS 15
+
+TERRAIN swmp
+NAME swamp
+OPTIMA 100
+TYPE 0
+LANDWALK swwk
+TOKEN tokswmp
+DAYS 25
+
+TERRAIN ocea
+NAME ocean
+OPTIMA 50
+TYPE 0
+LANDWALK sail
+DAYS 5
+MODE 3
+
+TERRAIN lake
+NAME lake
+TYPE 0
+OPTIMA 40
+LANDWALK sail
+DAYS 5
+MODE 3
+
+TERRAIN plan
+NAME elemental plane
+OPTIMA 50
+TYPE 0
+DAYS 12
+COVERED
+
+TERRAIN astr
+NAME astral plane
+OPTIMA 0
+TYPE 0
+DAYS 12
+COVERED
+
+TERRAIN twis
+NAME twisted terrain
+OPTIMA 10
+TYPE 0
+DAYS 25
+COVERED
+
+TERRAIN city
+NAME city
+OPTIMA 5000
+TYPE 1
+RESOURCE evtblir 300
+RESOURCE evtblst 2500
+RESOURCE evtblwd 500
+
+TERRAIN vill
+NAME village
+OPTIMA 1000
+TYPE 1
+RESOURCE evtblst 800
+RESOURCE evtblwd 200
+
+TERRAIN mtow
+NAME magical tower
+TYPE 1
+RESOURCE evtblco 1
+RESOURCE evtblks 10
+RESOURCE evtblst 300
+RESOURCE evtblwd 50
+FX 25
+
+TERRAIN cave
+NAME cave
+LANDWALK scou
+TYPE 1
+
+TERRAIN chsm
+NAME deep chasm
+LANDWALK scou
+TYPE 1
+
+TERRAIN grot
+NAME grotto
+LANDWALK scou
+COVERED
+
+TERRAIN mgld
+NAME mage's guild
+TYPE 2
+RESOURCE evtblco 1
+RESOURCE evtblks 10
+RESOURCE evtblst 300
+RESOURCE evtblwd 50
+FX 25
+
+TERRAIN mrkt
+NAME marketplace
+TYPE 2
+RESOURCE evtblst 50
+RESOURCE evtblwd 50
+
+TERRAIN guld
+NAME guild hall
+TYPE 2
+RESOURCE evtblst 20
+RESOURCE evtblwd 80
+FX 23
+
+TERRAIN bank
+NAME bank
+TYPE 2
+RESOURCE evtblwd 50
+RESOURCE evtblst 50
+RESOURCE evtblks 50
+RESOURCE evtblir 25
+RESOURCE evtbldc 5
+
+TERRAIN tave
+NAME tavern
+TYPE 2
+RESOURCE evtblwd 75
+RESOURCE evtblst 25
+FX 27
+
+TERRAIN taxo
+NAME tax office
+TYPE 2
+RESOURCE evtblwd 30
+RESOURCE evtblst 30
+RESOURCE evtblks 15
+RESOURCE evtbltx 1
+
+TERRAIN mine
+NAME mine
+TYPE 2
+RESOURCE evtblwd 75
+FX 10
+
+TERRAIN fsry
+NAME fishery
+TYPE 2
+RESOURCE evtblwd 50
+RESOURCE evtblst 25
+TOKEN fish
+FX 18
+
+TERRAIN farm
+NAME farm
+TYPE 2
+RESOURCE evtblwd 90
+FX 49
+
+TERRAIN dock
+NAME docks
+TYPE 2
+RESOURCE evtblwd 100
+RESOURCE evtblst 100
+
+TERRAIN barr
+NAME barracks
+TYPE 2
+RESOURCE evtblwd 100
+RESOURCE evtblst 50
+FX 24
+
+TERRAIN gtow
+NAME guard tower
+TYPE 2
+RESOURCE evtblir 10
+RESOURCE evtblmi 50
+RESOURCE evtblst 50
+RESOURCE evtblwd 40
+DEFENSE 3
+INITIATIVE -1
+
+TERRAIN fort
+NAME fortress
+TYPE 2
+RESOURCE evtblir 50
+RESOURCE evtblmi 150
+RESOURCE evtblst 150
+RESOURCE evtblwd 100
+
+TERRAIN cast
+NAME castle
+TYPE 1
+OPTIMA 150
+RESOURCE evtblir 90
+RESOURCE evtblks 10
+RESOURCE evtblmi 250
+RESOURCE evtblst 250
+RESOURCE evtblwd 150
+
+TERRAIN mcir
+NAME mage circle
+TYPE 2
+RESOURCE evtmcir 1
+
+TERRAIN tent
+NAME tent
+TYPE 2
+RESOURCE evtblhi 15
+RESOURCE evtblwd 15
+FX 26
+
+TERRAIN ceme
+NAME cemetary
+TYPE 2
+FX 64
+RESOURCE evtblwd 50
+RESOURCE evtblst 50
+
+TERRAIN wall
+NAME protecting wall
+TYPE 2
+RESOURCE evtblwl 1
+RESOURCE evtblmi 100
+RESOURCE evtblks 100
+
+TERRAIN pfrm
+NAME tree platforms
+TYPE 2
+RESOURCE evtblpf 1
+RESOURCE evtblhi 100
+RESOURCE evtblwd 200
+
+TERRAIN lsea
+NAME lava sea
+OPTIMA 0
+TYPE 0
+DAYS -1
