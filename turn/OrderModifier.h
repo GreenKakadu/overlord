@@ -25,12 +25,6 @@ enum modifier_type {
 
 typedef enum modifier_type MODIFIER_TYPE;
 
-#define PERMANENT_ORDER_SYMBOL '@'
-#define DAY_SPECIFIC_ORDER_SYMBOL 'd'
-#define IF_CONDITION_SYMBOL '-'
-#define WHILE_CONDITION_SYMBOL '+'
-#define NO_ERROR_REPORT_SYMBOL '!'
-#define NO_NORMAL_REPORT_SYMBOL '|'
 
 class OrderModifier
 {

@@ -85,7 +85,7 @@ void   EntitiesCollection <T>::add  ( GameData * const newEntity)
    emptyPlaces_ --;
    if(dimensions_ / emptyPlaces_ > 10 ) // Collection is almost full 
      {
-       resize(dimensions_ * 1.1 ); // reallocate additional 10% of storage
+        resize((unsigned long)(dimensions_ * 1.1) ) ; // reallocate additional 10% of storage
      }
       
 }
@@ -113,7 +113,7 @@ void   EntitiesCollection <T>::addNew  ( GameData * const newEntity)
 	  emptyPlaces_ --;
 	  if(dimensions_ / emptyPlaces_ > 10 ) // Collection is almost full 
 	    {
-	      resize(dimensions_ * 1.1 ); // reallocate additional 10% of storage
+	      resize((unsigned long)(dimensions_ * 1.1) ); // reallocate additional 10% of storage
 	    }
 	  return;
 

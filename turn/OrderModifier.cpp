@@ -8,6 +8,7 @@
  ***************************************************************************/
 
 #include "OrderModifier.h"
+#include "Symbols.h"
 
 OrderModifier::OrderModifier( MODIFIER_TYPE  type, int  value)
 {

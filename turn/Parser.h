@@ -10,7 +10,7 @@
 #define PARSER_H
 /* #include <string.h> */
 #include <string>
-
+#include "Symbols.h"
 class Parser {
 public: 
        explicit Parser ( const string &input );

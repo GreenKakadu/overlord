@@ -48,8 +48,7 @@ OrderPrototypesCollection orderPrototypesCollection;
 #include <stdlib.h>
 #include <time.h>//... More collections
 
-
-int main()
+int main(int argc, char *argv[])
 {
   srand ( time(NULL) ); // init random
   

@@ -10,8 +10,8 @@ operations on all objects stored in the collection.
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 
-#ifndef ENTITIESCCOLLECTION_H
-#define ENTITIESCCOLLECTION_H
+#ifndef ENTITIES_COLLECTION_H
+#define ENTITIES_COLLECTION_H
 #include <string>
 #include <vector>
 #include "BasicCollection.h"

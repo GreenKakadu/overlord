@@ -16,14 +16,10 @@
 #include "Parser.h"
 #include "OrderModifier.h"
 #include "ParameterHandler.h"
+#include "OverlordTypes.h"
 
 
-enum order_status {
-  SUCCESS = 0,
-  FAILURE = 1,
-  INVALID = 2
-};
-typedef enum order_status ORDER_STATUS;
+
 extern int current_day;
 class OrderPrototype
 {

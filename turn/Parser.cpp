@@ -128,7 +128,8 @@ bool  Parser::matchChar (const char symbol)
 // This function is intended for input parsing.
 //
 // It extracts first parameter from the input and interprets it as a single
-//  word. Returns 0 if failed.
+//  word. Parameter may be also quoted string with spaces .
+// Returns 0 if failed.
 // Input string pointer shifted to the right 
 // so that resulting string  it points to starts from the next  symbol after
 // parameter.
@@ -163,7 +164,8 @@ char    *scan;
     } else 
       if (isspace (*scan) )  // Closing space was found.
 	break;
-
+	  if (*scan == COMMENT_SYMBOL)
+	  break;
     scan++;
 
   }
@@ -203,7 +205,8 @@ char    *scan;
   while (*scan) { // Untill end of string
     if (isspace (*scan) )  // Closing space was found.
       break;
-
+  if (*scan == COMMENT_SYMBOL)
+	  break;
     scan++;
 
   }
