@@ -37,6 +37,8 @@ class OrderModifier
        void save(ostream &out);
        bool isControlModifier() const;
        bool isReportModifier() const;
+       bool isConditionModifier() const;
+       bool isDurationModifier() const;
  static bool fetchModifier(Parser * parser, MODIFIER_TYPE & type, int & value);
     protected:
        MODIFIER_TYPE type_;

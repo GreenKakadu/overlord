@@ -8,23 +8,22 @@
 
 #ifndef UNIT_H
 #define UNIT_H
-#include "GameData.h"
-class OrderElementNode;
-#include "OrderElementNode.h"
+#include "Entity.h"
 
-class UnitEntity : public GameData
+
+class UnitEntity : public Entity
 {
     public:
       UnitEntity (const string & keyword, GameData * parent );
       UnitEntity ( const UnitEntity * prototype );
       UnitEntity ();
       ~UnitEntity ();
-      virtual STATUS  initialize      ( Parser *parser );
+      STATUS  initialize      ( Parser *parser );
        void      save (ostream &out); 
       GameData * createInstanceOfSelf();
       void  print();
     protected:
-      list <OrderElementNode *> orders_;
+
     private:
 };
 class UnitEntity1 : public UnitEntity

@@ -81,11 +81,6 @@ UnitEntity::save(ostream &out)
 }
 
 
-// void UnitEntity::addOrder(const string & order)
-// {
-// orders.push_back (order);
-// }
-
 void UnitEntity::print() // For debugging
 {
     cout  << getName();

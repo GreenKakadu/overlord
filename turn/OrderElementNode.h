@@ -19,12 +19,12 @@ class OrderElementNode
   ~OrderElementNode();
   OrderElement * getOrderElement();
   void setNext(OrderElementNode * next);
-  void setPrev(OrderElementNode * prev);
+  void setLast(OrderElementNode * last);
   OrderElementNode * next();
-  OrderElementNode * prev();
+  OrderElementNode * last();
     protected:
   OrderElementNode * next_;
-  OrderElementNode * prev_;
+  OrderElementNode * last_;
   OrderElement * order_;
     private:
   

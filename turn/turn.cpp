@@ -37,7 +37,8 @@ PrototypeManager * GameData::prototypeManager= new PrototypeManager;
 GameData sampleGameData("GameData",0);
 TerrainRule sampleTerrain("TERRAIN",&sampleGameData);
 TitleRule sampleTitle("TITLE",&sampleGameData);
-UnitEntity sampleUnit("UNIT",&sampleGameData);
+Entity sampleEntity("ENTITY",&sampleGameData);
+UnitEntity sampleUnit("UNIT",&sampleEntity);
 
 RulesCollection <TerrainRule>   terrains;
 RulesCollection <TitleRule>   titles;

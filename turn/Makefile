@@ -29,6 +29,7 @@ SOURCES = GameData.cpp \
 	  OrderModifier.cpp \
 	  OrderPrototype.cpp \
 	  OrderElement.cpp \
+	  Entity.cpp \
 #
 #	  SkillRule.cpp \
 #	  ItemRule.cpp \
@@ -66,4 +67,5 @@ depend$(MODULE_NAME):
 		 $(CXX) -MM  $(CXXFLAGS)  $(wildcard $(SOURCES) ) > $@
 
 include	depend$(MODULE_NAME)
+
 

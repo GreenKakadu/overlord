@@ -70,7 +70,7 @@ STATUS DataManipulator::save()
  for (iter = entities_.begin(); iter != entities_.end(); iter++)
    {
       (*iter) ->save();
-   } 
+   }
  return OK;
 }
 STATUS DataManipulator::initialize()
@@ -99,3 +99,44 @@ void DataManipulator::print()
       (*iter) ->print();
    } 
 }
+
+void DataManipulator::processOrders()
+{
+  list<DataHandler *>::const_iterator iter;
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+     // (*iter) ->process();
+   }
+ // process orders for all Entities
+}
+
+STATUS DataManipulator::checkOrders()
+{
+// detect faction
+// check password
+// detect unit
+// check each line of orders
+// produce report
+return OK;
+}
+
+void DataManipulator::loadOrders()
+{
+// load orders for all Entities
+// for each entity in orders
+// replace orders in entity data with orders from orders stream (fill orders list)
+// establish node links
+
+list<DataHandler *>::const_iterator iter;
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+  //    (*iter) ->loadOrders();
+   }
+
+
+}
+
+//void DataManipulator::saveOrders()
+//{
+//// save orders for all Entities
+//}

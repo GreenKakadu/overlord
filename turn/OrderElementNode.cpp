@@ -12,7 +12,7 @@ OrderElementNode::OrderElementNode(OrderElement * order)
   //  cout << "New OrderElementNode created" << endl;  
  order_ = order;
  next_ = 0;
- prev_ = 0;
+ last_ = 0;
  order_ -> load();
     cout << "New OrderElementNode created and loaded" << endl;  
 }
@@ -21,9 +21,10 @@ OrderElementNode::~OrderElementNode()
 {
   
  delete order_; // ?
- if(prev_)
-   prev_ -> setNext(next_);
- next_ -> setPrev(prev_);
+ if(last_)
+ 	  last_ -> setNext(next_);
+  if(next_)
+ 	next_ -> setLast(last_);
 }
 
 OrderElement * OrderElementNode::getOrderElement()
@@ -36,9 +37,9 @@ void OrderElementNode::setNext(OrderElementNode * next)
   next_ = next;
 }
 
-void OrderElementNode::setPrev(OrderElementNode * prev)
+void OrderElementNode::setLast(OrderElementNode * last)
 {
-  prev_ = prev;
+  last_ = last;
 }
 
 OrderElementNode * OrderElementNode::next()
@@ -46,8 +47,8 @@ OrderElementNode * OrderElementNode::next()
   return next_;
 }
 
-OrderElementNode * OrderElementNode::prev()
+OrderElementNode * OrderElementNode::last()
 {
-  return prev_;
+  return last_;
 }
 

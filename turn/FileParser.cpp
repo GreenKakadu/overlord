@@ -24,7 +24,7 @@ FileParser::FileParser (ifstream &input)
 }
 
 
-
+SYMBOLS_H
 FileParser::FileParser (const char * filename)
 {
  streamInput_= new ifstream(filename);

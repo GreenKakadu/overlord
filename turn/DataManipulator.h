@@ -21,6 +21,10 @@ public:
   STATUS initialize(); 
   void addRules( BasicCollection &newCollection, const char * filename);
   void addEntities( BasicCollection &newCollection, const char * filename);
+  void processOrders();
+  STATUS checkOrders();
+  //void saveOrders();
+  void loadOrders();
 protected:
 private:
   list < DataHandler * > rules_;

@@ -32,6 +32,10 @@ class OrderElement
 	void load(); 
 	void parse(); 
 	bool isParsed;
+	OrderModifier * getTopDurationModifier();
+	OrderModifier * getTopConditionModifier();
+	void deleteModifier(OrderModifier * );
+
     protected:
 	/* OrderParameters parameters_; */
 	list <OrderModifier *> controlModifiers_;

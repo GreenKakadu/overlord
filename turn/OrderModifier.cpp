@@ -111,7 +111,32 @@ OrderModifier::isReportModifier() const
       return false;
     }
 }
- 
+bool
+OrderModifier::isConditionModifier() const
+{
+  switch (type_)
+    {
+
+    case IF_CONDITION:
+    case WHILE_CONDITION:
+      return true;
+    default:
+      return false;
+    }
+}
+bool
+OrderModifier::isDurationModifier() const
+{
+ switch (type_)
+    {
+    case PERMANENT_ORDER:
+    case COUNTER_CONDITION:
+      return true;
+    default:
+      return false;
+    }
+}
+
 //============================================================================
 //
 //   bool   fetchModifier (MODIFIER_TYPE & type, int & value)

@@ -113,3 +113,45 @@ OrderElement::save(ostream &out)
     }
  out << endl;
 }
+
+OrderModifier *
+OrderElement::getTopDurationModifier()
+{
+ list<OrderModifier *>::const_iterator iterator;
+ for (iterator = controlModifiers_.begin(); iterator != controlModifiers_.end(); iterator++)
+   {
+     if ( (*iterator) -> isDurationModifier() )
+	return (*iterator);
+   }
+	return 0;
+}
+
+OrderModifier *
+OrderElement::getTopConditionModifier()
+{
+ list<OrderModifier *>::const_iterator iterator;
+ for (iterator = controlModifiers_.begin(); iterator != controlModifiers_.end(); iterator++)
+   {
+     if ( (*iterator)-> isConditionModifier() )
+	return (*iterator);
+   }
+	return 0;
+}
+void OrderElement::deleteModifier(OrderModifier * orderModifier)
+{
+ list<OrderModifier *>::iterator iterator;
+ for (iterator = controlModifiers_.begin(); iterator != controlModifiers_.end(); iterator++)
+   {
+     if ( (*iterator) == orderModifier)
+     		{
+     			controlModifiers_.erase(iterator);
+     		}
+     	else
+     		{
+     			cout << "Error on attenpt to delete order modifier in order " << endl;
+     			save(cout) ;
+     			cout << endl;
+     		}
+	delete orderModifier;
+   }
+}
