@@ -1,0 +1,154 @@
+/***************************************************************************
+                          Turn.cpp  -  main object of turn generator
+                             -------------------
+    begin                : Fri Nov  9 19:24:42 IST 2001
+    copyright            : (C) 2001 by Alex Dribin
+    email                : alexliza@netvision.net.il
+ ***************************************************************************/
+#include <stdlib.h>
+#include <time.h>
+#include <iostream>
+#include "config.h"
+
+#include "Global.h"
+#include "general/GameInfo.h"
+#include "DataManipulator.h"
+// tests
+//#include "elements/InventoryElement.h"
+extern GameInfo game;
+extern int currentDay;
+extern bool testMode;
+extern ProcessingMode   immediateOrders;
+extern ProcessingMode   stackOrders;
+extern ProcessingMode 	dayOrders;
+
+
+int main(int argc, char *argv[])
+{
+  clock_t tick =0;
+  tick = clock();
+  time_t start, end;
+  double dif1, dif2,dif3;
+  time(&start);
+
+  srand ( time(NULL) ); // init random
+
+	cout <<endl << endl << " ==================================================="<<endl;
+	cout << " ===================== Overlord "<<VERSION<<"===================="<<endl;
+	cout << " ==================================================="<<endl;
+
+
+  if (argc >=2)
+  {
+#ifdef TEST_MODE
+  	if(!strcmp (argv[1],"test"))
+  		{
+    		cout << "Test Mode"<< endl;
+    		testMode = true;
+ 			 if (argc >=3)
+ 			 {
+ 				game.init(argv[2]);
+ 			 }
+   			else
+  				{
+  	 			game.init("game");
+  				}
+ 		}
+  		else
+ #endif
+  		{
+  	   	game.init(argv[1]);
+  	   }
+  }
+  else
+  {
+  	 game.init("game");
+  }
+
+
+   DataManipulator dataManipulator;
+
+   dataManipulator.turnPreProcessing();
+
+	if ((game.runMode == MEMORY_TEST)||(game.runMode == DAILY_MEMORY_TEST))
+	{
+		cout << "After loading orders \n"; getchar();
+	}
+
+	if (game.runMode == TIME_TEST)
+	{
+		time(&end);
+  	dif1 = difftime(end,start);
+		time(&start);
+  	cout << endl<<"Reading: "<<dif1 << " sec." <<endl;
+		cout <<"......................................................................."<<endl;
+	}
+
+	cout <<endl << endl << " ================= Turn processing ==============="<< endl<<endl;
+
+for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
+	{
+		cout <<endl << "    #### Processing day "<<currentDay<<" ####"<<endl;
+
+    cout <<endl<< "Processing immediate orders " <<endl<<endl;
+  	dataManipulator.processOrders(&immediateOrders);
+		// process competitive requests resolution for all locations  (take buy recruit)
+
+    cout << "Processing stack orders " <<endl<<endl;
+ 		dataManipulator.processOrders(&stackOrders);
+		// process combat resoution  for all combats
+
+    cout <<"Processing full day orders " <<endl<<endl;
+	 	dataManipulator.processOrders(&dayOrders);
+		// process competitive requests resolution for all locations  (harvesting)
+
+	if (game.runMode == DAILY_MEMORY_TEST)
+	{
+		cout << "After Processing orders on day "<<currentDay<<"\n"; getchar();
+	}
+
+		dataManipulator.dailyUpdate();  // mana, time-lasting effects, item decay,  reports
+
+	if (game.runMode == DAILY_MEMORY_TEST)
+	{
+		cout << "After Processing reports on day "<<currentDay<<"\n"; getchar();
+	}
+}
+	cout <<endl << endl << " ============== End of Turn processing ============"<< endl<<endl;
+
+	if (game.runMode == TIME_TEST)
+	{
+		time(&end);
+		dif2 = difftime(end,start);
+		time(&start);
+	}
+#ifdef TEST_MODE
+//   if(testMode)  dataManipulator.print();
+#endif
+  	dataManipulator.save();
+   	game.save();
+
+	//... More operations
+	cout <<endl << endl << " ==================================================="<<endl;
+	cout << " ===================== The End ===================="<<endl;
+
+
+	if (game.runMode == TIME_TEST)
+	{
+		time(&end);
+  	dif3 = difftime(end,start);
+  	cout << endl<<"Reading: "<<dif1 << " sec." <<"Processing: "<<dif2 << " sec." <<" Saving : "<<dif3 <<" sec." <<" Total RunTime: "<< (dif1+dif2+dif3) << " sec." <<endl;
+	}
+	cout << " ==================================================="<<endl;
+
+//  cout << "Plains walking "<<terrains["moun"]->getTravelTime(movementModes["walk"])<<endl;
+//  cout << "Plains riding "<<terrains["moun"]->getTravelTime(movementModes["ride"])<<endl;
+//  cout << "Plains flying "<<terrains["moun"]->getTravelTime(movementModes["fly"])<<endl;
+//  cout << "Plains swiming "<<terrains["moun"]->getTravelTime(movementModes["swim"])<<endl;
+//  cout << "Plains climbing "<<terrains["moun"]->getTravelTime(movementModes["climb"])<<endl;
+
+
+
+
+}
+

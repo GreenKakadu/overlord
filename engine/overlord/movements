@@ -1,0 +1,21 @@
+# Overlord movement Modes data
+# Ver 0.2 15.01.2003
+
+KEYWORD MOVEMENT 9
+
+
+MOVEMENT walk
+NAME walking
+
+MOVEMENT ride
+NAME riding
+
+MOVEMENT swim
+NAME swimming
+
+MOVEMENT fly
+NAME flying
+
+MOVEMENT climb
+NAME climbing
+SKILL mnwk 2
