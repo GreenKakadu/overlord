@@ -54,6 +54,7 @@ FileParser::FileParser (const string &filename)
 if(*streamInput_)
        {
  			useAllocatedMemory_ = true;
+      status = OK;
 		}
 	else
 		{

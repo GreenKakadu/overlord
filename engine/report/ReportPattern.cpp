@@ -7,46 +7,63 @@
  ***************************************************************************/
 #include "ReportPattern.h"
 #include "AbstractData.h"
-ReportPattern::ReportPattern(const char *rep1)
+#include "FileParser.h"
+
+vector<ReportPattern *> ReportPattern::reportPatternsRegistry;
+const string ReportPattern::keyword = "TEXT_PATTERN";
+
+ReportPattern::ReportPattern(const string & keytag)
 {
- rep1_ = rep1;
-// rep2_ = "";
-}
-ReportPattern::ReportPattern(const char *rep1, const char *rep2)
-{
- rep1_ = rep1;
- rep2_ = rep2;
-}
-ReportPattern::ReportPattern(const char *rep1, const char *rep2, const char *rep3)
-{
- rep1_ = rep1;
- rep2_ = rep2;
- rep3_ = rep3;
+  keytag_ = keytag;
+  ReportPattern::reportPatternsRegistry.push_back(this);
 }
 
-ReportPattern::ReportPattern(const char *rep1, const char *rep2, const char *rep3, const char *rep4)
+
+
+STATUS ReportPattern::initialize(const string & fileName)
 {
- rep1_ = rep1;
- rep2_ = rep2;
- rep3_ = rep3;
- rep4_ = rep4;
-}
-ReportPattern::ReportPattern(const char *rep1, const char *rep2, const char *rep3, const char *rep4, const char *rep5)
-{
- rep1_ = rep1;
- rep2_ = rep2;
- rep3_ = rep3;
- rep4_ = rep4;
- rep5_ = rep5;
-}
-ReportPattern::ReportPattern(const char *rep1, const char *rep2, const char *rep3, const char *rep4, const char *rep5, const char *rep6)
-{
- rep1_ = rep1;
- rep2_ = rep2;
- rep3_ = rep3;
- rep4_ = rep4;
- rep5_ = rep5;
- rep6_ = rep6;
+  STATUS status = OK;
+  FileParser * parser = new FileParser(fileName);
+	if (parser->status != OK)
+			{
+				status = IO_ERROR;
+				return status;
+			}
+	status = OK;
+  string tag;
+  ReportPattern * currentPattern;
+  do //Find class keyword  definition
+    {
+      	parser->getLine();
+    	  if (parser->matchKeyword (keyword.c_str()) )
+       	{
+	  			tag = parser->getWord();
+          if(tag.empty())
+            continue;
+          currentPattern = 0;
+          for (vector<ReportPattern *>::iterator iter = reportPatternsRegistry.begin();
+               iter != reportPatternsRegistry.end(); ++iter)
+               {
+                 if ((*iter)->getKeytag() == tag)
+                   currentPattern = *iter;
+               }
+          if(currentPattern)
+          {
+            currentPattern->rep1_ = parser->getParameter();
+            currentPattern->rep2_ = parser->getParameter();
+            currentPattern->rep3_ = parser->getParameter();
+            currentPattern->rep4_ = parser->getParameter();
+            currentPattern->rep5_ = parser->getParameter();
+            currentPattern->rep6_ = parser->getParameter();
+          }
+          else
+          {
+            cout << "Can't find report pattern with keytag ["<<tag<<"].\n";
+          }    
+        }
+    } while (!  parser->eof() );
+  delete parser;
+  return status;
 }
 
 

@@ -27,5 +27,5 @@ was successfully executed.
 In Non-Repetitive mode only one attempt of order execution will be done. */
 bool ProcessingMode::isRepetitive()
 {
-	return ( orderType_ == IMMEDIATE_ORDER);	
+	return ( orderType_ == IMMEDIATE_ORDER) || ( orderType_ == INSTANT_ORDER);
 }

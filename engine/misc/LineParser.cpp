@@ -135,7 +135,8 @@ bool  Parser::matchChar (const char symbol)
 //
 // It extracts first parameter from the input and interprets it as a single
 //  word. Parameter may be also quoted string with spaces .
-// Returns 0 if failed.
+// Returns string containing parameter
+// status is set to  IO_ERROR if failed.
 // Input string pointer shifted to the right
 // so that resulting string  it points to starts from the next  symbol after
 // parameter.
@@ -176,11 +177,14 @@ char    *scan;
 
   }
   string Parameter (input_, 0, scan - input_ );
+  if(scan > input_)
+      status = OK;
+  else
+      status = IO_ERROR;    
   if (separatorSymbol)
     scan++;
 
     input_=scan;
-    status = OK;
     return Parameter;
 }
 
