@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DataManipulator.cpp  
+                          DataManipulator.cpp
 
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "Global.h"
 #include "DataManipulator.h"
+#include "CombatManager.h"
 
 #include "DataStorageHandler.h"
 #include "MovementVariety.h"
@@ -22,7 +23,7 @@ DataManipulator::DataManipulator()
    addVarieties  (&stances);
    addVarieties  (&equipments);
    addVarieties  (&construction_works);
-    
+
    ruleIndex.addRules (&terrains);
    ruleIndex.addRules (&titles);
    ruleIndex.addRules (&skills);
@@ -165,7 +166,7 @@ for (iter = entities_.begin(); iter != entities_.end(); iter++)
 			status = IO_ERROR;
    }
 
-
+  combatManager.initialize();
  return status;
 }
 
@@ -214,18 +215,18 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
    {
     if(factions[i] ==0)
           continue;
-     
+
      (factions[i])->process(processingMode);
     }
 // process orders for tokenEntities per Location
-      
+
    for ( i=0; i < locations.size();i++)
    {
     if(locations[i] ==0)
           continue;
     localChanges = true;
     while(localChanges)
-    {        
+    {
       localChanges = false;
       for ( vector <UnitEntity *>::iterator localIter = (locations[i])->unitsPresent().begin();
            localIter != (locations[i])->unitsPresent().end(); localIter++)
@@ -238,9 +239,9 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
               continue;
 
           if( (*localIter) ->process(processingMode))
-            localChanges = true;            
+            localChanges = true;
         }
-        
+
       for ( vector <ConstructionEntity *>::iterator localIter = (locations[i])->constructionsPresent().begin();
            localIter != (locations[i])->constructionsPresent().end(); localIter++)
         {
@@ -256,14 +257,14 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
             localChanges = true;
            }
          else
-         {  
+         {
             if(!processingMode->isRepetitive())
             break;
          }
 #ifdef TEST_MODE
    if((testMode) &&(localChanges)) 	cout << " ==== One more round of processing " << endl;
 #endif
-     } 
+     }
   }
 // For full day orders for all entities  process default order
   if(processingMode == &dayOrders)
@@ -356,7 +357,7 @@ void DataManipulator::prepareData()
 
 
 /*
- * Performs daily update of mana, time-lasting effects, item decay  
+ * Performs daily update of mana, time-lasting effects, item decay
  */
 void DataManipulator::dailyUpdate()
 {
@@ -395,7 +396,7 @@ void DataManipulator::dailyUpdate()
 /*
  * Loading, initialization of data.
  * Consistency checks
- * Pre-calculations 
+ * Pre-calculations
  */
 void DataManipulator::turnPreProcessing()
 {
@@ -431,7 +432,7 @@ void DataManipulator::turnPreProcessing()
 //           }
 //        }
 //		}
-    
+
   for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {
       for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
@@ -478,9 +479,9 @@ void DataManipulator::processCompetitiveRequests(ProcessingMode * )
           continue;
     locations[i]->processMarket();
     locations[i]->processDailyConflict();
-    if(currentDay ==game.daysInMonth )      
+    if(currentDay ==game.daysInMonth )
           locations[i]->processMonthlyConflict();
-  }  
+  }
 }
 
 
@@ -497,7 +498,7 @@ void DataManipulator::dailyPreProcessData()
                (*iter) ->dailyPreProcess();
         }
 		}
-  
+
 }
 
 

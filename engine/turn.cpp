@@ -12,6 +12,7 @@
 #include "Global.h"
 #include "GameInfo.h"
 #include "DataManipulator.h"
+#include "CombatManager.h"
 //#include "ReportElement.h" //temp
 // tests
 extern GameInfo game;
@@ -21,10 +22,9 @@ extern ProcessingMode   immediateOrders;
 extern ProcessingMode   stackOrders;
 extern ProcessingMode 	dayOrders;
 #ifndef VERSION
-#define VERSION 0.32
+#define VERSION 0.33
 #endif
 DataManipulator * dataManipulatorPtr = 0;
-
 int main(int argc, char *argv[])
 {
   clock_t tick =0;
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 //   cout<< "Orders taken from " <<game.getOrdersFileName()<<endl;
    DataManipulator dataManipulator;
    dataManipulatorPtr = &dataManipulator;
-   
+
    dataManipulator.turnPreProcessing();
 
 	if ((game.runMode == MEMORY_TEST)||(game.runMode == DAILY_MEMORY_TEST))
@@ -103,14 +103,17 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 
     cout << "Processing stack orders " <<endl<<endl;
  		dataManipulator.processOrders(&stackOrders);
-// process combat resoution  for all combats
+
+    cout << "Processing combat resoution  for all combats"<<endl<<endl;
+    combatManager.process();
+
 
     cout <<"Processing full day orders " <<endl<<endl;
 	 	dataManipulator.processOrders(&dayOrders);
 
     cout <<"Processing competitive requests " <<endl<<endl;
     dataManipulator.processCompetitiveRequests(0);
-    
+
 	if (game.runMode == DAILY_MEMORY_TEST)
 	{
 		cout << "After Processing orders on day "<<currentDay<<"\n"; getchar();
@@ -160,6 +163,7 @@ for (currentDay = 1;  currentDay<= game.daysInMonth ; currentDay ++)
 
 if(currentDay<0) sampleTokenEntity.cancelTeachingOffer();  // to provide instantiation of sampleTokenEntity
 
+cout << "The size of integer is " << sizeof(int) <<endl;
 cout << "The size of sampleGameData is " << sizeof(sampleGameData) <<endl;
 cout << "The size of sampleEntity is " << sizeof(sampleEntity) <<endl;
 cout << "The size of sampleTokenEntity is " << sizeof(sampleTokenEntity) <<endl;
