@@ -232,7 +232,7 @@ char    *scan;
 
 int  Parser::getInteger ()
 {
-int i; 
+unsigned i; 
 char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 
@@ -272,7 +272,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 int  Parser::matchInteger ()
 {
-int i; 
+unsigned i; 
 char    *scan;
 char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
@@ -330,11 +330,11 @@ bool Parser::eof()
  return 0;
 }
 
-void Parser::setPosition ( int position )
+void Parser::setPosition ( unsigned long  position )
 {
 
 }
-int Parser::getPosition()
+unsigned long  Parser::getPosition()
 {
   return 0;
 }

@@ -22,8 +22,8 @@ public:
 
        void      getLine();
        bool      eof();
-       void      setPosition         (int position);
-       int       getPosition();
+       void      setPosition         (unsigned long  position);
+       unsigned long        getPosition();
 protected:
 
 private:

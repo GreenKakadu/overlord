@@ -15,19 +15,19 @@
 
 class  TerrainRule : public GameData
 {
-public:
-          TerrainRule ( const string & keyword, GameData * parent);
-          TerrainRule ( const TerrainRule * prototype );
-          TerrainRule ();
-  virtual int     initialize      ( Parser *parser);
-  GameData * createInstanceOfSelf();
-  void     print();
+    public:
+      TerrainRule ( const string & keyword, GameData * parent);
+      TerrainRule ( const TerrainRule * prototype );
+      TerrainRule ();
+      virtual STATUS     initialize      ( Parser *parser);
+      GameData * createInstanceOfSelf();
+      void     print();
 
 
-protected:
-         int _optimalPopulation;
+    protected:
+      int _optimalPopulation;
 	 
-private:
+    private:
 };
-  
+
 #endif

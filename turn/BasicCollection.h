@@ -25,15 +25,17 @@ public:
 	  virtual GameData* operator []       (const string &tag);        //  access by tag
           virtual bool      isValidTag (const string &tag)  const; // check 
                                              //for string being valid title tag
-	  virtual int        getSize()                       const;
-          virtual int        getIndex    (const string &tag)  const;
-          virtual void       add  ( GameData * newRule)   ;
+	  virtual unsigned long        getSize()                       const;
+          virtual unsigned long        getIndex    (const string &tag)  const;
+          virtual void       add  ( GameData * const newRule)   ;
           virtual void       print ()  ;
+          virtual void     resize (unsigned long size)  ;
 
 protected:
 private:
 
 
 };
+
 #endif
 

@@ -16,13 +16,13 @@ This object is used in implementation of Prototype design pattern
 
 class PrototypeManager
 {
-public:
-        PrototypeManager();
-       ~PrototypeManager();
-        GameData * findInRegistry ( const string& keyword) const ;
-        void addToRegistry (GameData  * object);
-private:
-           list <GameData *> registry;
+    public:
+      PrototypeManager();
+      ~PrototypeManager();
+      GameData * findInRegistry ( const string& keyword) const ;
+      void addToRegistry (GameData  * object);
+    private:
+      list <GameData *> registry;
 };
 
 #endif

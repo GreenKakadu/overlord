@@ -9,15 +9,16 @@
 #include "GameData.h"
 #include "PrototypeManager.h"
 #include "RulesCollection.h"
+#include "EntitiesCollection.h"
 #include "DataManipulator.h"
 
-// #include "Title.h"
+#include "TitleRule.h"
 // #include "Skill.h"
 // #include "Item.h"
 // #include "Race.h"
 // #include "MovementMode.h"
 #include "TerrainRule.h"
-// #include "Unit.h"
+#include "UnitEntity.h"
 // #include "Faction.h"
 // #include "Location.h"
 // #include "Game.h"
@@ -30,8 +31,13 @@ PrototypeManager * GameData::prototypeManager= new PrototypeManager;
 // Game game("game");
 GameData sampleGameData("GameData",0);
 TerrainRule sampleTerrain("TERRAIN",&sampleGameData);
+TitleRule sampleTitle("TITLE",&sampleGameData);
+UnitEntity sampleUnit("UNIT",&sampleGameData);
 
 RulesCollection <TerrainRule>   terrains;
+RulesCollection <TitleRule>   titles;
+
+EntitiesCollection <UnitEntity>   units;
 
 
 //... More collections
@@ -43,18 +49,19 @@ int main()
   DataManipulator dataManipulator;
   
   dataManipulator.addRules(terrains,"terrains" );
+  dataManipulator.addRules(titles,"titles" );
 
-  // dataManipulator.addRules  (&titles );
-  // dataManipulator.addRules  (&skills );
-  // dataManipulator.addRules  (&items );
-  // dataManipulator.addRules  (&races );
-  // dataManipulator.addRules  (&movementModes );
+  // dataManipulator.addRules  (titles );
+  // dataManipulator.addRules  (skills );
+  // dataManipulator.addRules  (items );
+  // dataManipulator.addRules  (races );
+  // dataManipulator.addRules  (movementModes );
 
 
 //... add more collections
-  // dataManipulator.addEntities  (&units );
-  // dataManipulator.addEntities  (&factions );
-  // dataManipulator.addEntities  (&locations );
+   dataManipulator.addEntities  (units,"units" );
+  // dataManipulator.addEntities  (factions );
+  // dataManipulator.addEntities  (locations );
 
   dataManipulator.load();
   dataManipulator.initialize();

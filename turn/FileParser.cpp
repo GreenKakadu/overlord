@@ -67,14 +67,14 @@ bool FileParser::eof()
  return streamInput_->eof();
 }
 
-void FileParser::setPosition ( int position )
+void FileParser::setPosition ( unsigned long  position )
 {
   if(streamInput_->eof()) // clear error flags if EOF was reached 
     streamInput_->clear(); 
   streamInput_->seekg ( position );
 
 }
-int FileParser::getPosition()
+unsigned long  FileParser::getPosition()
 {
   return streamInput_->tellg();
 }

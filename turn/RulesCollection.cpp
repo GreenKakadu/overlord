@@ -17,7 +17,7 @@ operations on all objects stored in the collection.
 template <class T>
 RulesCollection<T>::RulesCollection ()
 {  
-  list <T*> data_;
+  // list <T*> data_;
 }
 
 
@@ -39,10 +39,10 @@ template <class T> RulesCollection <T>::~RulesCollection()
 
 
 
-template <class T> T* RulesCollection <T>::operator [] (int index)
+template <class T> T* RulesCollection <T>::operator [] (unsigned long index)
 {
  list<T *>::const_iterator iter;
- int i=0;                                            
+ unsigned long i=0;                                            
  for (iter = data_.begin(); iter != data_.end(); iter++)
    {
      if (i == index)
@@ -72,9 +72,9 @@ template <class T> T* RulesCollection <T>::operator [] (const string &tag)
 
 
 template <class T>
-void   RulesCollection <T>::add  (/*const*/ GameData * newRule)
+void   RulesCollection <T>::add  ( GameData * const newRule)
 {
-  data_.push_back ( dynamic_cast</*const*/ T*> (newRule) );
+  data_.push_back ( dynamic_cast< T*> (newRule) );
 }
 
 
@@ -110,7 +110,7 @@ void RulesCollection <T>::print ()
 
 
 template <class T>
-int  RulesCollection <T>::getSize() const
+unsigned long  RulesCollection <T>::getSize() const
 {
   return data_.size();
 }
@@ -119,10 +119,10 @@ int  RulesCollection <T>::getSize() const
 
 
 template <class T>
-int  RulesCollection <T>::getIndex (const string &tag) const
+unsigned long  RulesCollection <T>::getIndex (const string &tag) const
 {
  list<T *>::const_iterator iter;
- int i=0;
+ unsigned long i=0;
 
  for (iter = data_.begin(); iter != data_.end(); iter++)
    {

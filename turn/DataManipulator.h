@@ -15,15 +15,16 @@ class DataManipulator {
 public:
   DataManipulator();
   ~DataManipulator();
-  int load();
-  int save();
+  STATUS load();
+  STATUS save();
  void print();
-  int initialize(); 
+  STATUS initialize(); 
   void addRules( BasicCollection &newCollection, const char * filename);
+  void addEntities( BasicCollection &newCollection, const char * filename);
 protected:
 private:
   list < DataHandler * > rules_;
+  list < DataHandler * > entities_;
 };
-
 
 #endif

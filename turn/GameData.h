@@ -11,18 +11,17 @@
 #define GAME_DATA_H
 
 #include "Parser.h"
-
+#include "OverlordTypes.h"
 
 
 class PrototypeManager;
 
-
 class GameData
 {
-public:
+    public:
 
                     GameData (const string & keyword, GameData * parent );
-                    GameData ( );
+                    GameData ( ){};
                     GameData (const GameData * prototype);
    virtual         ~GameData ( ){};
 
@@ -32,7 +31,7 @@ public:
 
            GameData * checkObjectType  ( const string  &keyword); 
    virtual GameData * createInstanceOfSelf ();
-   virtual int      initialize ( Parser *parser );
+   virtual STATUS      initialize ( Parser *parser );
    virtual void      print(); // for debugging
    static PrototypeManager * prototypeManager;
 
@@ -43,24 +42,24 @@ public:
            void      setTag           ( const string  &tag);
            void      setName          ( const string  &name);
            void      setDescription    ( const string  &description);
-protected:
+    protected:
            string   keyword_;            
            GameData * parent_;
-private:
            string   tag_;                //unigue object identifier
            string   name_;               //name of the object
            string   description_;        //description of the object
-
+    private:
 
 };
 
 
 template <class T>  GameData * CREATE_INSTANCE(const T * prototype)
 {
-  T * object = new T(prototype); 
-  return object;
+      T * object = new T(prototype); 
+      return object;
      
 }
+
 #include "PrototypeManager.h"
 
       

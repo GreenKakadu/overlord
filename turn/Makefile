@@ -13,19 +13,20 @@ SOURCES = GameData.cpp \
 	  FileParser.cpp \
           PrototypeManager.cpp \
           RulesCollection.cpp \
+          EntitiesCollection.cpp \
           BasicCollection.cpp \
           RulesCollectionExplicit.cpp \
+          EntitiesCollectionExplicit.cpp \
 	  TerrainRule.cpp \
 	  DataManipulator.cpp \
 	  DataHandler.cpp \
-          turn.cpp \
-#          Rule.cpp \
-#	  TitleRule.cpp \
+	  UnitEntity.cpp \
+	  turn.cpp \
+	  TitleRule.cpp \
 #	  SkillRule.cpp \
 #	  ItemRule.cpp \
 #	  RaceRule.cpp \
 #	  MovementModeRule.cpp \
-#	  UnitRule.cpp \
 #	  LocationRule.cpp \
 #	  FactionRule.cpp \
 #	  GameRule.cpp \

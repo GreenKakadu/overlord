@@ -8,8 +8,9 @@
 
 #ifndef PARSER_H
 #define PARSER_H
-#include <string.h>
+/* #include <string.h> */
 #include <string>
+
 class Parser {
 public: 
        explicit Parser ( const string &input );
@@ -26,10 +27,10 @@ public:
        string  getText ();
        virtual void      getLine();
        virtual bool      eof();
-       virtual void      setPosition         (int position);
-       virtual int       getPosition();
+       virtual void      setPosition         (unsigned long  position);
+       virtual unsigned long        getPosition();
+static const unsigned INTEGER_LENGTH = 6;
 protected:
-static const int INTEGER_LENGTH = 6;
 enum { MAX_LINE_LENGTH = 800}; // just using static const  may not work
 char buffer_[MAX_LINE_LENGTH];
 char * input_;

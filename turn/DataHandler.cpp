@@ -6,6 +6,10 @@
     copyright            : (C) 2002 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
+
+#include <time.h>
+#include <iostream>
+#include <fstream>
 #include "DataHandler.h"
 #include "PrototypeManager.h" 
 // #include "PrototypeManager.h" 
@@ -15,6 +19,8 @@ DataHandler::DataHandler( BasicCollection &newCollection,
 			   const char * filename)
 {
   collection_ =  &newCollection;
+  //  filename_ = string(filename);
+  filename_ = filename;
   parser_ = new FileParser ( filename );
   beginning_ = parser_->getPosition();
   do //Find collection keyword  definition
@@ -23,6 +29,11 @@ DataHandler::DataHandler( BasicCollection &newCollection,
     } while (! ( parser_->matchKeyword ("KEYWORD"))  || parser_->eof() );
 
   collectionKeyword_ = parser_->getWord();
+  if( parser_ -> matchInteger() )
+    {
+      collectionSize_ = parser_->getInteger();
+      newCollection.resize(collectionSize_);
+    }
 
     
 }
@@ -36,7 +47,7 @@ DataHandler::~DataHandler()
 
 
 
-int DataHandler::load()
+STATUS DataHandler::load()
 {
 string tag;
 string keyword;
@@ -70,14 +81,24 @@ GameData * newObject;
 	    collection_ -> add (newObject) ;
 	 }
     } while (!  parser_->eof() );
-return 0;
+return OK;
 }
-int DataHandler::save()
+STATUS DataHandler::save()
 {
+  time_t rawtime;
 
-return 0;
+
+  cout << "Saving data for "<< collectionKeyword_  <<endl;
+  ofstream outfile ((filename_ + ".new").c_str());
+  outfile << "# Overlord units data " <<endl;
+  time ( &rawtime );
+  outfile << "# Ver 0.1 "<<ctime(&rawtime) <<endl;
+  outfile << "KEYWORD " << collectionKeyword_ << " " <<collection_ -> getSize() <<endl;
+  outfile.close();
+
+return OK;
 }
-int DataHandler::initialize()
+STATUS DataHandler::initialize()
 {
  GameData * currentObject = 0;
   string currentTag;
@@ -101,6 +122,7 @@ int DataHandler::initialize()
 		cerr << "Error while "<<  collectionKeyword_
 		     << " data initialisation.  Can't find  object for tag "
 		     <<	currentTag  <<   " ( " << i << " ) " << endl;
+		return ERROR;
 	      }
 	  }
      else
@@ -117,7 +139,7 @@ int DataHandler::initialize()
   // cerr << "Error while loading.  Expected " << collection_.size() << " "
   // <<  collectionKeyword_ << " Found " << i << endl;
 // }
-return 0;
+return OK;
 }
 
 void  DataHandler::print()

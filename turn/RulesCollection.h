@@ -18,23 +18,22 @@ operations on all objects stored in the collection.
 #include "GameData.h"
 
 
-
 template <class T> class RulesCollection : public BasicCollection {
-public:
-	  RulesCollection();
-	  ~RulesCollection();
-	  T* operator []       (int        index);
-	  T* operator []       (const string &tag);       
-          void       add  (/* const*/ GameData * newRule)   ; // ?
-          bool      isValidTag (const string &tag)  const;
-          int        getSize()                       const;
-          int        getIndex    (const string &tag)  const;
-          void  initialize            ();
-          void  print                ();
+  public:
+    RulesCollection();
+    ~RulesCollection();
+    T* operator []       (unsigned long        index);
+    T* operator []       (const string &tag);       
+    void       add  ( GameData * const newRule)   ; 
+      bool      isValidTag (const string &tag)  const;
+      unsigned long        getSize()                       const;
+      unsigned long        getIndex    (const string &tag)  const;
+      void  initialize            ();
+      void  print                ();
 
-protected:
-private:
-          list<T*> data_;
+  protected:
+  private:
+      list<T*> data_;
 
 };
 

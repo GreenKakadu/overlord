@@ -18,13 +18,6 @@ GameData::GameData (const string & keyword, GameData * parent)
 
 
 
-
-GameData::GameData()
-{
-}
-
-
-
 GameData::GameData(const GameData * prototype)
 {
       parent_ = prototype->getParent();
@@ -71,25 +64,20 @@ GameData::getParent()       const
 
  
 
-// void 
-// GameData::initialize        ()  
-// {
-// }
-
-int 
+STATUS 
 GameData::initialize        ( Parser *parser )
 {
   if (parser->matchKeyword ("NAME") )
     {
       setName(parser->getText());
-      return 0;
+      return OK;
     }
   if (parser->matchKeyword("DESCRIPTION"))
     {
       setDescription(parser->getText());
-      return 0;
+      return OK;
     } 
-      return 0;
+      return OK;
 }
 
 void GameData::print()

@@ -31,7 +31,7 @@ GameData * TerrainRule::createInstanceOfSelf()
 }
 
 
-int 
+STATUS 
 TerrainRule::initialize        ( Parser *parser )
 {
 
@@ -39,19 +39,19 @@ TerrainRule::initialize        ( Parser *parser )
   if (parser->matchKeyword ("NAME") )
     {
       setName(parser->getText());
-      return 0;
+      return OK;
     }
   if (parser->matchKeyword("DESCRIPTION"))
     {
       setDescription(parser->getText());
-      return 0;
+      return OK;
     }
   if (parser->matchKeyword ("OPTIMA") )
     {
       _optimalPopulation = parser->getInteger();
-      return 0;
+      return OK;
     }
-      return 0;
+      return OK;
 
  }
 

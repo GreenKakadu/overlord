@@ -45,7 +45,7 @@ GameData* BasicCollection::operator [] (const string &tag)
 
 
 
-int  BasicCollection::getSize() const
+unsigned long  BasicCollection::getSize() const
 {
   return 0;
   
@@ -55,16 +55,21 @@ int  BasicCollection::getSize() const
 
 
 
-int  BasicCollection::getIndex (const string &tag) const
+unsigned long  BasicCollection::getIndex (const string &tag) const
 {
   return 0;
 }
 
 
-void   BasicCollection::add  ( GameData * newRule)
+void   BasicCollection::add  ( GameData * const newRule)
 {
 
 }
+
 void       BasicCollection::print ()
+{
+}
+
+void       BasicCollection::resize (unsigned long size)
 {
 }

@@ -23,6 +23,10 @@ DataManipulator::~DataManipulator()
    {
      delete (*iter);
    } 
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+     delete (*iter);
+   } 
 }
 
 
@@ -37,37 +41,60 @@ void DataManipulator::addRules ( BasicCollection &newCollection,
 
 
 
-int DataManipulator::load()
+void DataManipulator::addEntities ( BasicCollection &newCollection,
+			   const char * filename)
+{
+
+ DataHandler * data  = new DataHandler(newCollection, filename);
+ entities_.push_back(data);
+}
+
+
+
+STATUS DataManipulator::load()
 {
   list<DataHandler *>::const_iterator iter;
  for (iter = rules_.begin(); iter != rules_.end(); iter++)
    {
       (*iter) ->load();
    } 
- return 0;
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+      (*iter) ->load();
+   } 
+ return OK;
 }
-int DataManipulator::save()
+STATUS DataManipulator::save()
 {
   list<DataHandler *>::const_iterator iter;
- for (iter = rules_.begin(); iter != rules_.end(); iter++)
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
    {
       (*iter) ->save();
    } 
- return 0;
+ return OK;
 }
-int DataManipulator::initialize()
+STATUS DataManipulator::initialize()
 {
   list<DataHandler *>::const_iterator iter;
  for (iter = rules_.begin(); iter != rules_.end(); iter++)
    {
       (*iter) ->initialize();
    }
- return 0;
+
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
+   {
+      (*iter) ->initialize();
+   }
+ return OK;
 }
 void DataManipulator::print()
 {
   list<DataHandler *>::const_iterator iter;
  for (iter = rules_.begin(); iter != rules_.end(); iter++)
+   {
+      (*iter) ->print();
+   } 
+ for (iter = entities_.begin(); iter != entities_.end(); iter++)
    {
       (*iter) ->print();
    } 
