@@ -100,7 +100,7 @@ STATUS DataHandler::save()
     {
       if ((*collection_)[i] != 0)
 	{
-	  // cout << "Saving entity "<< ((*collection_)[i])->getTag()  <<endl;
+	  //cout << "Saving entity "<< ((*collection_)[i])->getTag()  <<endl;
 	   ((*collection_)[i]) -> save(outfile);
 	}
     }

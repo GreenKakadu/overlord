@@ -20,7 +20,7 @@ public:
 
        bool    matchKeyword       ( const char * keyword );
        bool    matchChar          (const char);
-       int     matchInteger();
+       bool     matchInteger();
        string  getParameter();
        string  getWord ();
        int     getInteger ();

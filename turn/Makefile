@@ -23,6 +23,13 @@ SOURCES = GameData.cpp \
 	  UnitEntity.cpp \
 	  turn.cpp \
 	  TitleRule.cpp \
+	  OrderElementNode.cpp \
+	  OrderPrototypesCollection.cpp \
+	  ParameterHandler.cpp \
+	  OrderModifier.cpp \
+	  OrderPrototype.cpp \
+	  OrderElement.cpp \
+#
 #	  SkillRule.cpp \
 #	  ItemRule.cpp \
 #	  RaceRule.cpp \

@@ -9,7 +9,8 @@
 #ifndef UNIT_H
 #define UNIT_H
 #include "GameData.h"
-
+class OrderElementNode;
+#include "OrderElementNode.h"
 
 class UnitEntity : public GameData
 {
@@ -17,14 +18,13 @@ class UnitEntity : public GameData
       UnitEntity (const string & keyword, GameData * parent );
       UnitEntity ( const UnitEntity * prototype );
       UnitEntity ();
+      ~UnitEntity ();
       virtual STATUS  initialize      ( Parser *parser );
+       void      save (ostream &out); 
       GameData * createInstanceOfSelf();
       void  print();
-
-
-
     protected:
-      /*   list <Order> orders; */
+      list <OrderElementNode *> orders_;
     private:
 };
 class UnitEntity1 : public UnitEntity

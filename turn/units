@@ -5,7 +5,7 @@ KEYWORD UNIT 999
 
 ID U99
 
-UNIT U1
+UNIT U28
 FACTION f001
 NAME Black Guard
 DESCRIPTION Weared in Black Cloak
@@ -13,9 +13,10 @@ RACE hero 1
 SKILL cmbt 300
 ITEM leat 1 1 
 ITEM club 1 1 
-ORDER @study cmbt
-ORDER WITHDRAW 100
-ORDER RECRUIT f001n00 1 man 55
+ORDER GIVE U111 club 1 0
+ORDER +@ study cmbt
+ORDER d13 WITHDRAW 100
+ORDER 23 RECRUIT f001n00 1 man 55
 
 UNIT U111
 FACTION f002
@@ -24,9 +25,9 @@ DESCRIPTION Weared in Black Blanket
 RACE hero 1
 SKILL rela  300
 ITEM hrse 1 1  
-ORDER @study mktg
 ORDER WITHDRAW 1000
-ORDER RECRUIT f002n00 10 man 55
+ORDER -@study mktg
+ORDER -RECRUIT f002n00 10 man 55
 
 UNIT U35
 FACTION f002
@@ -40,7 +41,7 @@ DESCRIPTION Also Weared in Black
 RACE hero 1
 SKILL mage 300
 ITEM leat 1 1  
-ORDER @study fire
+ORDER @ -study fire
 ORDER WITHDRAW 300
 ORDER RECRUIT f003n00 1 man 55
 

@@ -270,7 +270,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 // NOTE: it uses isspace and isdigit macro which are locale-dependent
 //============================================================================
 
-int  Parser::matchInteger ()
+bool  Parser::matchInteger ()
 {
 unsigned i; 
 char    *scan;

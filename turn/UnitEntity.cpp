@@ -12,6 +12,15 @@ UnitEntity::UnitEntity()
 {
 }
 
+UnitEntity::~UnitEntity()
+{
+  list<OrderElementNode *>::const_iterator iter;
+  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
+    {
+      // delete (*iter);
+    }
+}
+
 
 UnitEntity::UnitEntity(const string & keyword, GameData * parent)
 {
@@ -48,13 +57,27 @@ UnitEntity::initialize        ( Parser *parser )
 	  setDescription(parser->getText());
 	  return OK;
 	}
-//       if (parser->matchKeyword("ORDER"))
-// 	{
-// 	  addOrder(parser->getText());
-// 	}
+       if (parser->matchKeyword("ORDER"))
+ 	{
+	  //          cout << "Reading order..." << endl;  
+	  orders_.push_back(new OrderElementNode(new OrderElement(parser->getText())));
+ 	}
 
 	  return OK;
 
+}
+void
+UnitEntity::save(ostream &out)
+{
+  out << keyword_ << " " <<tag_ << endl;
+  if(name_.size()) out << "NAME " <<name_ << endl;
+  if(description_.size()) out << "DESCRIPTION " <<description_  << endl;
+  out << endl;
+  list<OrderElementNode *>::const_iterator iter;
+  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
+    {
+           ((*iter)->getOrderElement())->save(out);
+    }
 }
 
 
@@ -68,11 +91,11 @@ void UnitEntity::print() // For debugging
     cout  << getName();
     cout << " [" << getTag()  << "] "<< endl;  
 
-//  list<string>::const_iterator iter;
-//  for ( iter = orders.begin(); iter != orders.end(); iter++)
-//    {
-//     cout  << (*iter)<< endl;
-//    }
+  list<OrderElementNode *>::const_iterator iter;
+  for ( iter = orders_.begin(); iter != orders_.end(); iter++)
+    {
+           ((*iter)->getOrderElement())->save(cout);
+    }
       
 }
 

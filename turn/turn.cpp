@@ -24,7 +24,10 @@
 // #include "Faction.h"
 // #include "Location.h"
 // #include "Game.h"
+#include "OrderPrototype.h"
+#include "OrderPrototypesCollection.h"
 
+int current_day = 1;
 
 // const int NUMBER_OF_DAYS = 30;
 
@@ -40,7 +43,7 @@ RulesCollection <TerrainRule>   terrains;
 RulesCollection <TitleRule>   titles;
 
 EntitiesCollection <UnitEntity>   units;
-
+OrderPrototypesCollection orderPrototypesCollection;
 
 #include <stdlib.h>
 #include <time.h>//... More collections
@@ -67,9 +70,17 @@ int main()
   // dataManipulator.addEntities  (factions );
   // dataManipulator.addEntities  (locations );
 
+   // Add OrderPrototypes - do it inside of some manipulator
+   GiveOrderPrototype giveOrder;
+   orderPrototypesCollection.add(&giveOrder);
+
+   
   dataManipulator.load();
   dataManipulator.initialize();
 
+
+
+  
   UnitEntity * currentUnit; // for test
   int i;
   char buffer[Parser::INTEGER_LENGTH];

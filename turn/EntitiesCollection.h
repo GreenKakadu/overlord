@@ -35,7 +35,8 @@ template <class T> class EntitiesCollection : public BasicCollection {
       void  print                ();
       void  resize                (unsigned long size);
       void  remove                (const string &tag);             
-
+      bool checkEntityType(const string &tag);
+      
   protected:
   private:
       vector<T*> data_;

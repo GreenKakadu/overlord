@@ -106,7 +106,8 @@ void   EntitiesCollection <T>::addNew  ( GameData * const newEntity)
 	{
 	  
 	  //	  newEntity->setTag(prefix_ + itoa(randomIndex,buffer,10));
-	  sprintf(buffer,"%c%d",prefix_,randomIndex); newEntity->setTag(buffer );
+	  sprintf(buffer,"%c%u",prefix_,randomIndex); //  <--- incorrect for indexes > 65K
+	  newEntity->setTag(buffer );
 	  newEntity->setName(newEntity->getKeyword() );
 	  data_[randomIndex] = dynamic_cast< T*> (newEntity);
 	  emptyPlaces_ --;
@@ -165,6 +166,19 @@ void EntitiesCollection <T>::resize (unsigned long size)
 }
 
 
+template <class T>
+bool EntitiesCollection <T>::checkEntityType(const string &tag)
+{
+  if (!isalpha (tag[0]) )
+    {
+      return false;
+    }
+ if ( (tag[0] & 0x1F) == (prefix_ & 0x1F) )// after throwing away all 
+   //non-alpha  symbols this works as case-nonsensitive comparison of symbols
+    return true;
+  else
+    return false;
+}
 
 
 template <class T>
