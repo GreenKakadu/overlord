@@ -11,6 +11,7 @@
 #include "SkillUseElement.h"
 #include "TitleElement.h"
 #include "EnchantmentElement.h"
+#include "EnchantmentAttribute.h"
 
 #include "EmailOrder.h"          
 #include "PasswordOrder.h"  
@@ -90,7 +91,6 @@ EnchantmentElement sampleEnchantmentElement(0,0);
 // Orders
 //std::cout << "Sample Order  instantiation  start \n";
 
-EnchantmentAttribute sampleEnchantmentAttribute;
 
 EmailOrder    sampleEmailOrder;     
 PasswordOrder samplePasswordOrder; 
@@ -154,6 +154,7 @@ WithdrawOrder sampleWithdrawOrder;
 WorkOrder     sampleWorkOrder;
 YieldOrder    sampleYieldOrder;	   
 
+//EnchantmentAttribute sampleEnchantmentAttribute;
 //=============================================================================
 #include "PickpocketActionRule.h" 
 PickpocketActionRule samplePickpocketAction = PickpocketActionRule("PICKPOCKET_ACTION",&sampleAction);

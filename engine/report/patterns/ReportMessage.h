@@ -16,7 +16,7 @@ ReportMessage is the Generic object for all report patterns.
 #include <stdlib.h>
 #include "ReportPattern.h"
 #include "ReportRecord.h"
-//extern const int BLOCK_SIZE;
+extern const int BLOCK_SIZE;
 using namespace std;
 class ReportMessage {
 public:

@@ -15,7 +15,7 @@
 #include "UnaryMessage.h"
 extern string longtostr(unsigned long u);
 extern ReportPattern * unusableSkillReporter;
-const int SkillRule::maxSkillLevel;
+const int SkillRule::maxSkillLevel = 7;
 //SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
 
 SkillRule::SkillRule ( const SkillRule * prototype ) : Rule(prototype)

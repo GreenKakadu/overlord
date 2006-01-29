@@ -66,7 +66,7 @@ class UnitEntity : public TokenEntity
    inline void setContainingConstruction(ConstructionEntity * containingConstruction)  { containingConstruction_ = containingConstruction;}
           void enterConstruction(ConstructionEntity * containingConstruction) ;
           void exitConstruction() ;
-   inline  int              getControlPoints();
+     int              getControlPoints();
 // Inventory methods ==============================================
 
         /** Updates number of equiped items after decreasing of number of figures in unit */

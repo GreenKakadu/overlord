@@ -14,6 +14,7 @@
  ***************************************************************************/
 #include "ReportPattern.h"
 // Generic
+ReportPattern *	invalidOrderReporter  = new ReportPattern("invalidOrderReporter");
 ReportPattern *	invalidParameterReporter  = new ReportPattern("invalidParameterReporter");
 ReportPattern *	unknownParameterReporter  = new ReportPattern("unknownParameterReporter");
 ReportPattern *	missingParameterReporter  = new ReportPattern("missingParameterReporter");

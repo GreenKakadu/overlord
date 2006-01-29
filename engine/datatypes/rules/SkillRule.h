@@ -68,7 +68,7 @@ public:
           InventoryElement * getItemRequired(TokenEntity * tokenEntity);
     inline static int getMaxSkillLevel()  {return maxSkillLevel;}
     protected:
-	  static const int maxSkillLevel = 7;
+	  static const int maxSkillLevel;
     int currentLevel_;
     vector <SkillLevelElement *> requirement_;
     vector <vector <SkillLevelElement *> > derivatives_;

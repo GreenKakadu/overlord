@@ -22,8 +22,8 @@
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
 extern RulesCollection    <ItemRule>    items;
-ReportPattern * WagesCompetitiveRequest::workPublicReporter = new ReportPattern(""," is working.");
-ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("Working at "," earning "," coins.");
+ReportPattern * WagesCompetitiveRequest::workPublicReporter = new ReportPattern("workPublicReporter");
+ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("WorkPrivateReporter");
 
 
 WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount) :BasicCompetitiveRequest(unit,0)

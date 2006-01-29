@@ -12,6 +12,7 @@
 #define BASIC_RULES_COLLECTION_H
 #include <string>
 #include <vector>
+#include <iostream>
 //#include "SystemTypes.h"
 #include "OverlordTypes.h"
 #include "BasicCollection.h"
@@ -30,7 +31,7 @@ public:
           bool          isValidTag   (const string &tag)  ;//const;
           long int       getIndex     (const string &tag)  ;
 
-   inline long int        size() const    {return data_.size();}
+   inline long int        size() const    {return (long int) data_.size();}
    inline RulesIterator begin()         {return data_.begin();}
    inline RulesIterator end()           {return data_.end();}
 protected:

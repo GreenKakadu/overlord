@@ -17,7 +17,7 @@ extern VarietiesCollection <MovementVariety> movementModes;
 
 template <class T> class MovementMode : public vector < T>  {
 public: 
-	MovementMode(){ resize(/*movementModes.size()*/5);}
+	MovementMode(){ MovementMode<T>::resize(/*movementModes.size()*/5);}
 	~MovementMode(){}
   T& operator []       (const string &tag);
   T& operator []       (const int index);
@@ -34,21 +34,21 @@ template <class T> T&  MovementMode<T>::operator [] (const string &tag)
  for (i = 0; i < movementModes.size(); i++)
    {
       if ( movementModes[i] ->getTag() == tag)
-       return  *(begin()+ i);
+       return  *(MovementMode<T>::begin()+ i);
 
    }
  cerr << "Error: Tag (" << tag  << ") was not found in Movement Rules \n";
- return *(begin()) ;
+ return *(MovementMode<T>::begin()) ;
 
 }
 template <class T> T&  MovementMode<T>::operator [] (const int index)
 {
     if (index < movementModes.size())
-       return  *(begin()+ index);
+       return  *(MovementMode<T>::begin()+ index);
 
 
  cerr << "Error: Index (" << index  << ") is too big in Movement Rules \n";
- return *(begin()) ;
+ return *(MovementMode<T>::begin()) ;
 
 }
 
@@ -58,11 +58,11 @@ template <class T> T&  MovementMode<T>::operator [] (const MovementVariety * mod
  for (i = 0; i < movementModes.size(); i++)
    {
       if ( movementModes[i] == mode)
-       return  *(begin()+ i);
+       return  *(MovementMode<T>::begin()+ i);
 
    }
  cerr << "Error: Tag (" << mode->getTag()  << ") was not found in Movement Rules \n";
- return *(begin()) ;
+ return *(MovementMode<T>::begin()) ;
 
 }
 
