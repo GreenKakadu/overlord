@@ -467,7 +467,142 @@ Two players of combat processing are CombatManager and CombatEngine<br>
 Combat processing is done by CombatEngine and&nbsp; CombatManager
 determines combat participants<br>
 <br>
-<p>&nbsp; </p>
+<p>How combat processing is done:<br>
+<br>
+CombatManager (CM) resolves all combat requests and also orders that
+may cause combat (pillage, guard) and determines how many combats will
+happen at location, which units will participate in combat and on which
+side.<br>
+<br>
+CombatEngine (CE) Processes one single combat.<br>
+Consists from pre-processor, round processor and post-processor<br>
+<br>
+pre-processor<br>
+&nbsp;It determines tactical bonuces,<br>
+<br>
+Round processor<br>
+&nbsp;&nbsp;&nbsp; round pre-processing<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; clear flags<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; update orders<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; plan orders<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; calculate initiative for this
+round<br>
+<br>
+&nbsp;&nbsp;&nbsp; round processing<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for each initiative try to
+process action and movement orders (two separate lists)<br>
+<br>
+&nbsp;&nbsp;&nbsp; round post-processing<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; determine combat end conditions<br>
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; moves enchantment counters<br>
+<br>
+<br>
+<br>
+post-processor<br>
+&nbsp;&nbsp;&nbsp; deals with dying units<br>
+&nbsp;&nbsp;&nbsp; distributes loot and titles<br>
+&nbsp;&nbsp;&nbsp; gives experience<br>
+<br>
+<br>
+All orders are divided to sequentual and non-sequential<br>
+Sequential are Overlord Combat style orders that are processed strictly
+in sequence, i.e. if current order can't be processed at current
+initiative it will wait for initiative.<br>
+Example:<br>
+PARRY (init -2) &lt;-- processed<br>
+MELEE (init 0)<br>
+<br>
+<br>
+Non-Sequential are Overlord non-Combat style orders that are processed
+according to initiative, i.e. if current order can't be processed at
+current initiative processor will try next order in the list.<br>
+Example:<br>
+PARRY (init -2)&lt;-- processed if melee targets are nor available<br>
+MELEE (init 0)&lt;-- processed if melee targets are available<br>
+<br>
+Combat Order processing is done by CombatOrderProcessor (COP)::process<br>
+<br>
+Checks conditions ('+' and '-' - not used for sequential orders)<br>
+try to process order by calling CombatOrderLine (COL)::process<br>
+deal with order processing consequences by calling
+(COP)::processOrderResults<br>
+<br>
+Now it's a time to explain the&nbsp; diference between orders and
+actions.<br>
+<br>
+The order is an instruction for order processor that may be processed
+or not depending on the situation. Duiring execution Order normally
+translated into&nbsp; some action or sequence of actions to be done
+when executing.<br>
+<br>
+Orders are:<br>
+&nbsp;&nbsp;&nbsp; Advance<br>
+&nbsp;&nbsp;&nbsp; Apply<br>
+&nbsp;&nbsp;&nbsp; Charge<br>
+&nbsp;&nbsp;&nbsp; Fire<br>
+&nbsp;&nbsp;&nbsp; Flee<br>
+&nbsp;&nbsp;&nbsp; Flank<br>
+&nbsp;&nbsp;&nbsp; Melee<br>
+&nbsp;&nbsp;&nbsp; Move<br>
+&nbsp;&nbsp;&nbsp; Parry<br>
+&nbsp;&nbsp;&nbsp; Ranged<br>
+&nbsp;&nbsp;&nbsp; Retreat<br>
+&nbsp;&nbsp;&nbsp; Stand<br>
+&nbsp;&nbsp;&nbsp; Support<br>
+&nbsp;&nbsp;&nbsp; Sweep<br>
+&nbsp;&nbsp;&nbsp; Use<br>
+<br>
+Actions are some actions that may be performed by entities duiring
+combat.<br>
+Entities duiring combat may move and/or attack or perform some actions.<br>
+Entities Movement is not considered an action and processed by
+BattleField::moveEntity() method.<br>
+<br>
+Some combat ations actually last longer than one initiative segment
+(example is multi-hit attacks, that are defined in such way that hits
+next to the first should be inflicted at lower initiative value). This
+doesn't fit well into current combat model and implemented as a hack:
+there are isProcessingRepeatingOrder flag may be set on Entity. If such
+flag is active no orders will be checked and RepeatingOrder will be
+executed (if possible)<br>
+<br>
+Actions are:<br>
+&nbsp;Melee (melee attack)<br>
+&nbsp;Ranged (ranged attack)<br>
+&nbsp;Special (<br>
+<br>
+&nbsp;special actions are normally result of using APPLY &lt;skill&gt;
+or USE &lt;item&gt;. SkillRule or ItemRule in this case will have
+CombatActionStrategy field pointing to some specific CombatAction that
+should be performed when this skil/item invoked.<br>
+<br>
+&nbsp;Before action may be executed the list of possible target should
+be determined. This is done while processing order (because if no
+target available, action is not possible and order can't be executed).<br>
+&nbsp;Then action is executed by calling CombatAction::makeAttack method<br>
+<br>
+virtual ::makeAttack&nbsp;&nbsp; Performs attacks (generally by calling
+virtual ::attack method of actual CombatAction) against all potential
+targets untill all of them are dead or maximum hits is reached. For
+special (non-melee/ranged) actions it should be overwritten by specific
+method.<br>
+<br>
+<br>
+::attack calls actual method for single target attack resolution (such
+as meleeAttack, rangedAttack)<br>
+<br>
+Result of such single attack is returned in MeleeAttackElement
+structure.<br>
+<br>
+they are summarized in CombatActionStrategy::makeAttack and later may
+be used for generation reports like<br>
+" Allied Guards[U520] strike 2 times against Stealth Infiltrator[U411]
+for 3<br>
+damage slaying all."<br>
+<br>
+<br>
+<br>
+&nbsp; </p>
 <h2>5. Report Processing</h2>
 <p><br>
 <br>
