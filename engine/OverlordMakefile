@@ -4,7 +4,7 @@ MODULE_DIR= $(BASE_DIR)
 MODULE_NAME = overlord
 CXX = c++
 LD = c++
-CXXFLAGS = -O3 -GCC_OLD -W -Wall -Wno-unused -Wno-sign-compare $(INCLUDES)
+CXXFLAGS = -O3 -DGCC_OLD -W -Wall -Wno-unused -Wno-sign-compare $(INCLUDES)
 ######################## Include Directories   #########################
 INCLUDES = -I$(BASE_DIR)                       \
            -I$(BASE_DIR)/datatypes             \
@@ -73,6 +73,7 @@ SOURCES = turn.cpp \
           datatypes/attributes/PermissionAttribute.cpp \
           datatypes/attributes/MovementBonusAttribute.cpp \
           datatypes/attributes/SkillBonusAttribute.cpp \
+          datatypes/attributes/SkillBonusComboAttribute.cpp \
           datatypes/attributes/SkillsAttribute.cpp \
           datatypes/attributes/TitlesAttribute.cpp \
           datatypes/AbstractData.cpp \
