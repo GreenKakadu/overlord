@@ -56,6 +56,7 @@ StudyOrder::StudyOrder()
   "The order will complete as soon as the unit can no longer study the skill, or\n" +
   "as soon as the skill level indicated is reached, whichever comes first.\n";
 
+    fullDayOrder_= true;
   orderType_   = DAY_LONG_ORDER;
   teacherRequired_ = false;
 }
@@ -63,7 +64,7 @@ StudyOrder::StudyOrder()
 
 
 STATUS StudyOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -80,7 +81,7 @@ STATUS StudyOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS StudyOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

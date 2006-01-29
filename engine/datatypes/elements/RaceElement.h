@@ -12,8 +12,7 @@
 #include <string>
 #include "Element.h"
 #include "RaceRule.h"
-#include "RulesCollection.h"
-extern RulesCollection <RaceRule>      races;
+
 using namespace std;
 typedef Element2<RaceRule, int > BasicRaceElement;
 class RaceElement : public  BasicRaceElement {
@@ -23,6 +22,7 @@ public:
 	 ~RaceElement(){}
    inline int getWeight()               const {return rule_->getWeight() * parameter1_;}
    inline int getCapacity(int moveMode) const {return rule_->getCapacity(moveMode) * parameter1_;}
+   inline int getCapacity(MovementVariety *  mode) const {return rule_->getCapacity(mode) * parameter1_;}
    inline RaceRule *   getRace()      const     {return rule_;}
    inline int          getFigures()    const     {return parameter1_;}
    inline void         setFigures(int value)     { parameter1_ = value;}

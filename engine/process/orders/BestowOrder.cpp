@@ -44,7 +44,7 @@ BestowOrder::BestowOrder(){
 }
 
 STATUS BestowOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -61,7 +61,7 @@ STATUS BestowOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS BestowOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -107,8 +107,8 @@ ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &pa
     {
       if(!unit->getCurrentOrder()->getReportingFlag(BESTOW_CONDITION_REPORT_FLAG))
 	    {
-      unit->addReport(new TertiaryMessage(noBestowTitleConditionReporter, unit,
-                      title->getClaimingCondition(),titleType));
+      unit->addReport(new TertiaryMessage(noBestowTitleConditionReporter,
+			  recipient, title->getClaimingCondition(),titleType));
         unit->getCurrentOrder()->setReportingFlag(BESTOW_CONDITION_REPORT_FLAG);
      }
 	    return FAILURE;
@@ -125,6 +125,6 @@ ORDER_STATUS BestowOrder::process (Entity * entity, vector <AbstractData *>  &pa
     unit->getLocation()->addReport(new TertiaryMessage(publicBestowReporter, entity,
         					title,recipient));
 
-	return FAILURE;
+	return SUCCESS;
 }
 

@@ -32,7 +32,7 @@ SkillOrder::SkillOrder(){
 }
 
 STATUS SkillOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -58,7 +58,7 @@ STATUS SkillOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SkillOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS SkillOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

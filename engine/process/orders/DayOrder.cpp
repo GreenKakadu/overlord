@@ -30,7 +30,7 @@ DayOrder::DayOrder(){
 }
 
 STATUS DayOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -47,7 +47,7 @@ STATUS DayOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS DayOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS DayOrder::process (Entity * entity, ParameterList &parameters)
 {
 	if (currentDay == getIntegerParameter(parameters,0))
 		return SUCCESS;

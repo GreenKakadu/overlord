@@ -25,6 +25,7 @@ enum  parsing_mode {
   PARSING_MODE_END    = 10
                 };
 typedef enum parsing_mode PARSING_MODE;
+typedef vector <AbstractData *> ParameterList;
 
 class Entity;
 class UnitEntity;
@@ -38,42 +39,59 @@ class OrderPrototype
         OrderPrototype();
         virtual ~OrderPrototype(){}
 
-           virtual STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
+           virtual STATUS loadParameters(Parser * parser,
+					 					ParameterList &parameters, Entity * entity );
                    STATUS save( ostream &out);
-	   virtual ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+	   virtual ORDER_STATUS process (Entity * entity,
+		 								ParameterList &parameters);
+		ORDER_TYPE getOrderType() const {return orderType_;}
 // some orders can't be processed immediatelly. Instead of that they are submiting
 // requests that are resolved later. completeOrderProcessing  is a second part of
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
-     virtual ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+     virtual ORDER_STATUS completeOrderProcessing (Entity * entity,
+		 									ParameterList &parameters, int result);
 	inline string getKeyword() const {return keyword_;}
     bool isFullDayOrder();
     bool mayInterrupt();
     bool mayBeProcessed(ProcessingMode * processingMode, Entity * entity);
+		virtual inline int getInitiative()const {return initiative_;}//
+	  inline bool isSequentive(){return isSequentive_;}//
+		virtual bool evaluate(Entity * , ParameterList  &){return true;}//
+
     protected:
-    bool entityIsUnit(Entity *entity, PARSING_MODE mode = NORMAL_PARSING) ;
-    bool entityIsFaction(Entity *entity, PARSING_MODE  mode = NORMAL_PARSING) ;
-    bool entityIsTokenEntity(Entity *entity,PARSING_MODE  mode = NORMAL_PARSING) ;
-    bool parseGameDataParameter(Entity *entity, Parser * parser, BasicCollection & collection,
-          const string & parameterTypeName, vector <AbstractData *>  &parameters);
-    bool parseGameDataParameter(Entity *entity, const string & tag, BasicCollection & collection,
-          const string & parameterTypeName, vector <AbstractData *>  &parameters);
-    bool parseIntegerParameter(Parser * parser, vector <AbstractData *>  &parameters);
+    bool entityIsUnit(Entity *entity, PARSING_MODE mode = NORMAL_PARSING);
+    bool entityIsFaction(Entity *entity, PARSING_MODE mode = NORMAL_PARSING);
+    bool entityIsTokenEntity(Entity *entity,PARSING_MODE mode = NORMAL_PARSING);
+    bool parseGameDataParameter(Entity *entity, Parser * parser,
+		    BasicCollection & collection, const string & parameterTypeName,
+		    ParameterList &parameters);
+    bool parseGameDataParameter(Entity *entity, const string & tag,
+					 BasicCollection & collection, const string & parameterTypeName,
+					 ParameterList &parameters);
+    bool parseIntegerParameter(Parser * parser,
+															ParameterList &parameters);
     bool parseStringParameter(Entity *entity, Parser * parser,
-									vector <AbstractData *>  &parameters);
+									ParameterList &parameters);
     bool parseOptionalStringParameter(Entity *entity, Parser * parser,
-						vector <AbstractData *>  &parameters, const char * stringParameter);
+						ParameterList &parameters, const char * stringParameter);
     bool parseOptionalGameDataParameter(Entity *entity, Parser * parser,
-          BasicCollection & collection, vector <AbstractData *>  &parameters);
+          BasicCollection & collection, ParameterList &parameters);
     bool checkParameterTag(Entity *entity,const string & tag,
-              BasicCollection & collection, vector <AbstractData *>  &parameters);
-    int getIntegerParameter(vector <AbstractData *>  &parameters, unsigned int parIndex);
+              BasicCollection & collection,
+							ParameterList &parameters);
+    int getIntegerParameter(ParameterList &parameters,
+														unsigned int parIndex);
       string   keyword_;
       string   description;
       ORDER_TYPE orderType_;
       bool mayInterrupt_;
+      bool fullDayOrder_;
+
     protected:
       bool registerOrder_();
+			int initiative_; //
+	    bool isSequentive_;//
     private:
 };
 enum report_type {

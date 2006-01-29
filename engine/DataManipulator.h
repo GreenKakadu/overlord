@@ -27,6 +27,7 @@ public:
   void addEntities( BasicEntitiesCollection * collection);
   void addVarieties( BasicVarietiesCollection * collection);
   void processOrders(ProcessingMode * processingMode);
+  void processCombat();
   void processCompetitiveRequests(ProcessingMode * processingMode);
   STATUS checkOrders();
   //void saveOrders();

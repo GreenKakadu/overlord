@@ -17,7 +17,8 @@
 extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * productionReporter;
 
-extern RulesCollection    <ItemRule>     items;
+
+CraftUsingStrategy        sampleCraftUsing        ("USING_CRAFT",        &sampleUsing);
 
 CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ): BasicProductionStrategy(prototype)
 {
@@ -80,14 +81,7 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
 {
    USING_RESULT result;
 // Production modifiers:
-
-// Tools accelerate production
-  vector <ToolUseElement *>::iterator iter;
-  int effectiveProductionRate = unit->getFiguresNumber();
-  for(iter = tools_.begin(); iter != tools_.end();iter++)
-  {
-    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-  }
+ RationalNumber effectiveProductionRate = getEffectiveProductionRate(unit,skill);
 
 
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);

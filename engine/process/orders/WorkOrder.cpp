@@ -23,11 +23,13 @@ WorkOrder::WorkOrder(){
   description = string("WORK \n") +
   "Full-day.  Leader/follower only.  Spend the time working for the minimum\n" +
   "wage.  This is the default order.\n";
+
+    fullDayOrder_= true;
   orderType_   = DAY_LONG_ORDER;
 }
 
 STATUS WorkOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -38,7 +40,7 @@ STATUS WorkOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS WorkOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS WorkOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

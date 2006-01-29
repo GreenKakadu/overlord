@@ -13,10 +13,10 @@
 
 
 class WithdrawOrder : public OrderPrototype  {
-public: 
+public:
 	WithdrawOrder();
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
 static const  UINT WITHDRAW_RESTRICTED_REPORT_FLAG;
 

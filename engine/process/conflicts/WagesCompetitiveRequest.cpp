@@ -23,7 +23,7 @@
 #include "BinaryMessage.h"
 extern RulesCollection    <ItemRule>    items;
 ReportPattern * WagesCompetitiveRequest::workPublicReporter = new ReportPattern("workPublicReporter");
-ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("WorkPrivateReporter");
+ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("workPrivateReporter");
 
 
 WagesCompetitiveRequest::WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount) :BasicCompetitiveRequest(unit,0)
@@ -38,13 +38,6 @@ WagesCompetitiveRequest::~WagesCompetitiveRequest()
 //  if(resource_) delete resource_;
 }
 
-
-bool WagesCompetitiveRequest::isEqualTo (BasicCompetitiveRequest * request)
-{
-  if(typeid(*request) != typeid(*this))
-    return false;
-  return true;
-}
 
 
 
@@ -78,7 +71,8 @@ void WagesCompetitiveRequest::answerRequest(RationalNumber& answer)
 //  int answer =  scale_down(scaledAnswer);
   unit_->addToInventory( cash,answer);
   unit_->addReport(new BinaryMessage(workPrivateReporter, unit_->getLocation(), new IntegerData(answer.getValue())));
-  unit_->getLocation()->addReport(new UnaryMessage(workPublicReporter, unit_));
+// Working is private!
+//  unit_->getLocation()->addReport(new UnaryMessage(workPublicReporter, unit_));
 //  cout << unit_->print() << " is working at "<< unit_->getLocation()->print()<<"earning "<< answer<< " coins.\n";
 
 }

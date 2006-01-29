@@ -54,7 +54,7 @@ SettingOrder::SettingOrder(){
 }
 
 STATUS SettingOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 	if(parseSetting(parser,parameters,"TERSE","ON"))
 		return OK;
@@ -90,7 +90,7 @@ STATUS SettingOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SettingOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS SettingOrder::process (Entity * entity, ParameterList &parameters)
 {
 	if (parameters.size() < 2)
     {
@@ -159,7 +159,7 @@ ORDER_STATUS SettingOrder::process (Entity * entity, vector <AbstractData *>  &p
 
 
 
-bool SettingOrder::parseSetting(Parser * parser, vector <AbstractData *>  &parameters,
+bool SettingOrder::parseSetting(Parser * parser, ParameterList &parameters,
 							const char *setting,  const char * defaultSetting)
 {
   if(parser ->matchKeyword(setting))
@@ -184,7 +184,7 @@ bool SettingOrder::parseSetting(Parser * parser, vector <AbstractData *>  &param
 
 
 
-//bool SettingOrder::getSettingParameter(vector <AbstractData *>  &parameters,
+//bool SettingOrder::getSettingParameter(ParameterList &parameters,
 //											const char *setting, bool &value)
 //{
 //	  if (parameters.size() > 2)

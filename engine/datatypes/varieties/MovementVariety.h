@@ -25,8 +25,8 @@ extern MovementVariety   sampleMode;
 extern MovementVariety * walkingMode;
 extern MovementVariety * swimingMode;
 extern MovementVariety * flyingMode;
-#include "VarietiesCollection.h"
 extern VarietiesCollection <MovementVariety> movementModes;
+extern MovementVariety  sampleMode;
 
 #endif
 

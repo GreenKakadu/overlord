@@ -22,8 +22,8 @@ class SwapOrder : public OrderPrototype  {
 public:
 	SwapOrder();
 	~SwapOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
   void doSwap(TokenEntity * tokenEntity, ItemRule * item1, int num1,
       TokenEntity * synchroTarget, ItemRule * item2, int num2);
     protected:

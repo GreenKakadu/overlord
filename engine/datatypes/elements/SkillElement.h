@@ -11,10 +11,10 @@
 #include "Element.h"
 #include "SkillRule.h"
 #include "BasicLearningStrategy.h"
-#include "RulesCollection.h"
+
 using namespace std;
 class SkillLevelElement;
-extern RulesCollection <SkillRule>     skills;
+
 
 typedef  Element2<SkillRule,int> BasicSkillElement;
 class SkillElement : public BasicSkillElement {
@@ -39,6 +39,7 @@ public:
    inline int          getLevel()    const     {return rule_->getLevel(parameter1_);}
    inline  EntityStatistics * getStats()  {return rule_->getStats(getLevel());}
    inline int getCapacity(int modeIndex){return rule_->getCapacity(modeIndex,getLevel());}
+   inline int getCapacity(MovementVariety *  mode){return rule_->getCapacity(mode,getLevel());}
    void  getAllDerivatives(vector <SkillLevelElement *> & derivatives)
    {
      int level;

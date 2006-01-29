@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "FollowerRaceRule.h"
-//FollowerRaceRule   sampleFollowerRaceRule =   FollowerRaceRule("FOLLOWER", &sampleRace);
+FollowerRaceRule sampleFollowerRaceRule= FollowerRaceRule("FOLLOWER",&sampleRace);
 
 FollowerRaceRule::FollowerRaceRule ( const FollowerRaceRule * prototype ) : RaceRule(prototype)
 {
@@ -31,6 +31,9 @@ FollowerRaceRule::initialize        ( Parser *parser )
 //    }
       return RaceRule::initialize(parser);
 }
+
+
+
 bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * unit)
 {
   // if it is a basic skill AND level is 0 AND unit already has some other skill
@@ -52,6 +55,9 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
    
    return true;
 }
+
+
+
 bool FollowerRaceRule::teacherRequired(SkillRule * skill, UnitEntity * unit)
 {
   if(skill->isCombatSkill())  // if it is a combat skill and level >= 2
@@ -83,15 +89,15 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 // Follower may not study magic skills
    if(skill->isMagicSkill())
      return CANNOT_STUDY_FAILURE;
-
+	int bonus = unit->getLearningLevelBonus(skill);
 // Follower may not study non-combat skill above 1-st level
 // and combat skill above 2-nd level
-  if(level >= 1)
+  if(level >= 1 + bonus)
   {
    if(!skill->isCombatSkill())
      return TEACHING_REQUIRED;
    else
-    if(level >=2)
+    if(level >=2+ bonus)
      return TEACHING_REQUIRED;
   }
   

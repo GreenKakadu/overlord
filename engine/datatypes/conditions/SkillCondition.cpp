@@ -8,7 +8,7 @@
 #include "SkillCondition.h"
 #include "UnitEntity.h"
 #include "SkillLevelElement.h"
-//SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
+SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
 SkillCondition::SkillCondition(const SkillCondition * prototype):BasicCondition(prototype)
 {
 	skillRequirement_ = 0;

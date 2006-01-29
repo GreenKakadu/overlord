@@ -31,7 +31,7 @@ DropOrder::DropOrder(){
 }
 
 STATUS DropOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -48,7 +48,7 @@ STATUS DropOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS DropOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS DropOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

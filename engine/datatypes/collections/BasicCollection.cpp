@@ -14,14 +14,14 @@ BasicCollection::~BasicCollection()
   // delete handler_; // <- check
 }
 
-bool BasicCollection::isValidTag (const string &tag) //const
+bool BasicCollection::isValidTag (const string &) //const
 {
  return false;
 }
 
 
 
-bool      BasicCollection::checkDataType    (const string &tag)
+bool      BasicCollection::checkDataType    (const string &)
 {
  return true;
 }
@@ -42,8 +42,8 @@ long  BasicCollection::size() const
   return 0;
   
 }
-GameData* BasicCollection::findByTag        (const string &tag, bool errorReportEnabled){return 0;}
-GameData* BasicCollection::findByIndex      (const long int index, bool errorReportEnabled){return 0;}
+GameData* BasicCollection::findByTag        (const string &, bool ){return 0;}
+GameData* BasicCollection::findByIndex      (const long int , bool){return 0;}
 
 
 void BasicCollection::add  ( GameData * /*const*/ newRule)
@@ -52,22 +52,22 @@ void BasicCollection::add  ( GameData * /*const*/ newRule)
 
 
 
-long   BasicCollection::getIndex (const string &tag)
+long   BasicCollection::getIndex (const string &)
 {
   return 0;
 }
 
 
-void       BasicCollection::redimention (long int size)
+void       BasicCollection::redimention (long int )
 {
 }
 
-NewEntityPlaceholder * BasicCollection::findOrAddPlaceholder(const string &tag)
+NewEntityPlaceholder * BasicCollection::findOrAddPlaceholder(const string &)
 {
   return 0;
 }
 
-NewEntityPlaceholder * BasicCollection::checkPlaceholder(const string &tag)
+NewEntityPlaceholder * BasicCollection::checkPlaceholder(const string &)
 {
   return 0;
 }

@@ -25,6 +25,7 @@ extern ReportPattern * pickPocketEmptyPocketReporter;
 extern ReportPattern * pickPocketStealingFailureReporter;
 extern ReportPattern * pickPocketStealingPrivateReporter;
 extern ReportPattern * pickPocketStealingTargetReporter;
+extern int Roll_1Dx(int n);
 
 PickpocketActionRule     samplePickpocketActionRule =     PickpocketActionRule("PICKPOCKET_ACTION", &sampleAction);
 PickpocketActionRule::PickpocketActionRule ( const PickpocketActionRule * prototype ) : ActionRule(prototype)
@@ -55,19 +56,19 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
       thief->addReport(new UnaryMessage(pickPocketNoTargetReporter, target));
     return ACTION_FAILURE;
   }
-  vector < InventoryElement *> & inventory = target->getAllInventory();
-  InventoryElementIterator currentPick = inventory.end();
+  vector < InventoryElement > & inventory = target->getAllInventory();
+  InventoryIterator currentPick = inventory.end();
 
   // select one small non-coin non-equipped item  with best (price - weight * 25 ) value
-  for (InventoryElementIterator iterEquip = inventory.begin();
+  for (InventoryIterator iterEquip = inventory.begin();
                     iterEquip != inventory.end(); iterEquip++)
     {
 //      cout << "==PP==> Iterating through inventory. Current item is "<< *(*iterEquip)<<endl;
-      if((*iterEquip)->getItemNumber() <= (*iterEquip)->getEquipedNumber())
+      if((*iterEquip).getItemNumber() <= (*iterEquip).getEquipedNumber())
         {
           continue;
         }
-      if( (*iterEquip)->getItemType() == cash)
+      if( (*iterEquip).getItemType() == cash)
         {
           continue;
         }
@@ -83,13 +84,13 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
 
         if(
             (
-              (*iterEquip)->getItemType()->getFormalPrice() -
-              (*iterEquip)->getItemType()->getWeight() * 25
+              (*iterEquip).getItemType()->getFormalPrice() -
+              (*iterEquip).getItemType()->getWeight() * 25
             )
               >
             (
-              (*currentPick)->getItemType() ->getFormalPrice() -
-              (*currentPick)->getItemType()->getWeight() * 25
+              (*currentPick).getItemType() ->getFormalPrice() -
+              (*currentPick).getItemType()->getWeight() * 25
             )
           )
        currentPick = iterEquip;
@@ -102,7 +103,7 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
         /*, 0, observation condition*/);
     return ACTION_FAILURE;
   }
-    ItemRule * currentItem = (*currentPick)->getItemType();
+    ItemRule * currentItem = (*currentPick).getItemType();
 //      cout << "==PP==> Selected Item is "<< *(currentItem)<<endl;
   //calculate chances
   int chance = 5 * thief->getStealth();
@@ -123,10 +124,10 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
 
 //  cout << "==PP==> Chance after weight correction"<<chance <<endl;
 
-   int random = rand() % 100;
+   int random = Roll_1Dx(100);
 //   cout << "==PP==> Chance "<<chance <<" vs. "<<random<<endl;
   if( chance <= 0 || chance < random)
-//  if( chance <= 0 || chance < rand() % 100)
+//  if( chance <= 0 || chance < Roll_1Dx(100))
   {
 //      cout << "==PP==> Failed to steal" <<endl;
       thief->addReport(new UnaryMessage(pickPocketStealingFailureReporter, target)

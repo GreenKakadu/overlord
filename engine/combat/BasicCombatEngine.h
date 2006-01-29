@@ -25,15 +25,19 @@ enum battle_result {
 typedef enum battle_result BATTLE_RESULT;
 
 class TokenEntity;
+class CombatReport;
+
 class  BasicCombatEngine{
   public:
-  BasicCombatEngine(){}
+  BasicCombatEngine();
   virtual ~BasicCombatEngine(){}
   virtual void initialize(){}
   virtual BATTLE_RESULT processBattle(vector<TokenEntity *> &attackers,
                     vector<TokenEntity *> &defenders);
-
+	inline  CombatReport * getCombatReport()const {return report_;}
+	static int battleId;
   protected:
+		CombatReport * report_;
   private:
   };
 extern BasicCombatEngine combatEngine;

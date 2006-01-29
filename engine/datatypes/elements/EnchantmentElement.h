@@ -12,16 +12,13 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
-
 #ifndef ENCHANTMENT_ELEMENT_H
 #define ENCHANTMENT_ELEMENT_H
-
 #include "Element.h"
 #include "EnchantmentRule.h"
-#include "RulesCollection.h"
-//#include "BasicEnchantmentElement.h"
+
 using namespace std;
-extern RulesCollection <EnchantmentRule>     enchantments;
+
 
 /**
   *@author Alex Dribin

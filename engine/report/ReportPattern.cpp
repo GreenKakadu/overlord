@@ -8,20 +8,33 @@
 #include "ReportPattern.h"
 #include "AbstractData.h"
 #include "FileParser.h"
-
-vector<ReportPattern *> ReportPattern::reportPatternsRegistry;
+vector<ReportPattern *> * reportPatternsRegistry = 0;
+//vector<ReportPattern *> ReportPattern::reportPatternsRegistry;
 const string ReportPattern::keyword = "TEXT_PATTERN";
 
 ReportPattern::ReportPattern(const string & keytag)
 {
+// cout << "ReportPattern "<< keytag << " created.\n";
+
   keytag_ = keytag;
-  ReportPattern::reportPatternsRegistry.push_back(this);
+  if(reportPatternsRegistry == 0)
+  {
+    reportPatternsRegistry = new vector<ReportPattern *>;
+  }
+  reportPatternsRegistry->push_back(this);
+//  for (vector<ReportPattern *>::iterator iter = reportPatternsRegistry->begin();
+//             iter != reportPatternsRegistry->end(); ++iter)
+//             {
+//               cout << "         Current report pattern |"<<(*iter)->getKeytag()<<"|\n";
+//             }
+
 }
 
 
 
 STATUS ReportPattern::initialize(const string & fileName)
 {
+//  cout << "Initialization of ReportPatterns started from file "<< fileName << " .\n";
   STATUS status = OK;
   FileParser * parser = new FileParser(fileName);
 	if (parser->status != OK)
@@ -37,13 +50,14 @@ STATUS ReportPattern::initialize(const string & fileName)
       	parser->getLine();
     	  if (parser->matchKeyword (keyword.c_str()) )
        	{
-	  			tag = parser->getWord();
+          tag = parser->getWord();
           if(tag.empty())
             continue;
           currentPattern = 0;
-          for (vector<ReportPattern *>::iterator iter = reportPatternsRegistry.begin();
-               iter != reportPatternsRegistry.end(); ++iter)
+          for (vector<ReportPattern *>::iterator iter = reportPatternsRegistry->begin();
+               iter != reportPatternsRegistry->end(); ++iter)
                {
+//                 cout << "         Checking report pattern |"<<(*iter)->getKeytag()<<"|\n";
                  if ((*iter)->getKeytag() == tag)
                    currentPattern = *iter;
                }
@@ -59,7 +73,7 @@ STATUS ReportPattern::initialize(const string & fileName)
           else
           {
             cout << "Can't find report pattern with keytag ["<<tag<<"].\n";
-          }    
+          }
         }
     } while (!  parser->eof() );
   delete parser;
@@ -68,34 +82,34 @@ STATUS ReportPattern::initialize(const string & fileName)
 
 
 
-void ReportPattern::printReport (ostream &out)
+void ReportPattern::printReport (ReportPrinter &out)
 {
 	out << rep1_ << endl;
 }
 
-void ReportPattern::printReport (ostream &out, AbstractData * param1)
+void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1)
 {
 	out << rep1_ << param1->print() << rep2_ << endl;
 }
 
 
-void ReportPattern::printReport (ostream &out, AbstractData * param1, AbstractData * param2)
+void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, AbstractData * param2)
 {
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << endl;
 }
 
 
-void ReportPattern::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3)
+void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, AbstractData * param2, AbstractData * param3)
 {
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << endl;
 }
 
-void ReportPattern::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4)
+void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4)
 {
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << param4->print() << rep5_  << endl;
 }
 
-void ReportPattern::printReport (ostream &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5)
+void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5)
 {
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << param4->print() << rep5_    << param5->print() << rep6_  << endl;
 }

@@ -29,6 +29,7 @@ extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern RulesCollection <ConstructionRule>      constructions;
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
+BuildUsingStrategy        sampleBuildUsing        ("USING_BUILD",        &sampleUsing);
 
 GameData * BuildUsingStrategy::createInstanceOfSelf()
 {
@@ -101,13 +102,10 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
 
 // Production modifiers:
 
-// Tools accelerate production
-  vector <ToolUseElement *>::iterator iter;
-  int effectiveProductionRate = unit->getFiguresNumber();
-  for(iter = tools_.begin(); iter != tools_.end();iter++)
-  {
-    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-  }
+
+  int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
+
+
 
 
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);

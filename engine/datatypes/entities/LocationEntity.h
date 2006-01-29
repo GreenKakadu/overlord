@@ -14,6 +14,10 @@
 //#include "BonusElement.h"
 #include "RationalNumber.h"
 #include "ItemElement.h"
+#include "OwnershipPolicy.h"
+#include "SkillBonusAttribute.h"
+#include "MovementBonusAttribute.h"
+#include "TitlesAttribute.h"
 
 class  UnitEntity;
 class  FactionEntity;
@@ -31,6 +35,9 @@ class  ConstructionEntity;
 //class  ItemElement;
 class  TitleElement;
 class  BonusElement;
+class  BasicCombatManager;
+class WeatherRule;
+class SeasonRule;
 
 class LocationEntity : public Entity  {
     public:
@@ -42,6 +49,7 @@ class LocationEntity : public Entity  {
       GameData * createInstanceOfSelf();
       void    preprocessData();
       void    postProcessData();
+      void    dailyUpdate();
   inline void setTerrain(TerrainRule * terrain) {terrain_ = terrain;}
 
   /** Adds Unit to location */
@@ -81,6 +89,7 @@ class LocationEntity : public Entity  {
   inline vector <ConstructionEntity *> & constructionsPresent() {return constructions_;}
   inline TerrainRule * getTerrain() const {return terrain_;}
   inline int getWages()      const {return wages_;}
+  inline int getTaxes()      const {return taxes_;}
   inline int getPopulation() const {return population_;}
   inline int getOptima()     const {return optima_;}
          BasicExit *  findExit(LocationEntity * dest);
@@ -88,9 +97,19 @@ class LocationEntity : public Entity  {
          void harvestResource(ItemRule * item, RationalNumber& num);
   RationalNumber  takeAvailableResource(ItemRule * item, RationalNumber amount);
   //         BasicExit *  findExit(TerrainRule * dest);
-         void setOwner(FactionEntity * owner);
-  inline FactionEntity *  getOwner() const {return owner_;}
+         void setLegalOwner(FactionEntity * owner, LocationEntity * titleLocation);
+         void setGuard(TokenEntity * guard);
+         bool tokenAllowedToEnter(TokenEntity * traveler, MovementVariety *    movingMode, TokenEntity * patrol = 0);
+				 bool unitMayPillage(UnitEntity * unit, bool enableReport);
+         TokenEntity * getGuard() const;
+         TokenEntity * getBlockingPatrol(TokenEntity * traveler, MovementVariety *    movingMode, StanceVariety * stance);
+         TokenEntity *  selectNewGuard();
+         void checkNewOwnerConflicts(TokenEntity * newOwner);
+  inline FactionEntity *  getLegalOwner() const {return owner_;}
+         FactionEntity *  getRealOwner() const;
   inline int getTotalLand() const {return landTotal_;}
+  inline bool isPillaged() const {return isPillaged_;}
+  inline void setPillaged(bool status)  { isPillaged_ = status;}
   inline int getFreeLand() const {return landFree_;}
           bool useLand(int landSize);
           void freeLand(int landSize);
@@ -99,7 +118,17 @@ class LocationEntity : public Entity  {
   void addLocalItem(ItemRule * item, int number);
   void removeLocalItem(ItemRule * item, int number);
   int hasLocalItem(ItemRule * item);
+  OwnershipPolicy & getOwnershipPolicy(){return ownershipPolicy_;}
+   BasicCombatManager * getCombatManager() const {return combatManager_;}
+// Weather and seasons ========================================================
+	 WeatherRule * getWeather() const;
+	 void setWeather(WeatherRule * weather);
+	 SeasonRule * getSeason() const;
+	 SeasonRule * determineSeason();
+	 int getMovementBonus(MovementVariety * mode);
 // Titles ========================================================
+	 void setTitleLocation(LocationEntity * titleCenter){titleCenter_ = titleCenter;}
+	 LocationEntity * getTitleLocation() const {return titleCenter_;}
           void addTitle(TitleElement * title);
           void removeTitle(TitleElement * title);
           void deleteTitle(TitleRule * titleType);
@@ -107,9 +136,17 @@ class LocationEntity : public Entity  {
     protected:
     vector <UnitEntity *> units_;
     vector <ConstructionEntity *> constructions_;
-    vector < TitleElement *>      titles_;
+    BasicCombatManager * combatManager_;
+    TitlesAttribute      titles_;
+    OwnershipPolicy ownershipPolicy_;
     FactionEntity * owner_;
+    TokenEntity * guard_;
     TerrainRule * terrain_;
+		WeatherRule * weather_;
+		WeatherRule * nextWeather_;
+		SeasonRule * season_;
+		LocationEntity * titleCenter_;
+		bool isPillaged_;
     int optima_;
     int population_;
     RaceRule * race_;
@@ -122,12 +159,13 @@ class LocationEntity : public Entity  {
     int studentCounter_;
     int teacherCounter_;
 	vector <BasicExit *>     exits_;
-  vector <BonusElement *>      skillBonuses_;
+  SkillBonusAttribute  skillBonuses_;
   vector <SkillLevelElement *>  skillTeaching_;
   vector <ResourceElement *>   resources_;
   vector <ItemElement>   localItems_;
     int totalMarketValue_;
-      int climate_;
+	MovementBonusAttribute movementBonuses_;
+//      int climate_;
       int economy_;
       int landPrice_;
       int landTotal_;

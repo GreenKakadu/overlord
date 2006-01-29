@@ -1,5 +1,5 @@
 /***************************************************************************
-                          RuleIndex.cpp 
+                          RuleIndex.cpp
                              -------------------
     begin                : Tue Aug 5 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -48,7 +48,7 @@ BasicRulesCollection  * RuleIndex::findRuleCollection(const string& keyword)
           return (*ruleIter);
         }
      }
-     cout << "Unknown collection "<< keyword<<endl;
+     cerr << "Unknown collection "<< keyword<<endl;
    return 0;
 }
 

@@ -23,7 +23,7 @@ void  UnaryMessage::operator delete(void * deadObject, size_t size)
 
 
 
-void UnaryMessage::printReport(ostream &out) const
+void UnaryMessage::printReport(ReportPrinter &out) const
 {
   reporter_->printReport(out, param1_);
 }

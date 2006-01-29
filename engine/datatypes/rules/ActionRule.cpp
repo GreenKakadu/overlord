@@ -15,6 +15,8 @@
 #include "ActionRule.h"
 #include "PrototypeManager.h"
 
+RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions.rules"));
+ActionRule    sampleAction    ("FX_ACTION",&sampleGameData);
 
 ActionRule::ActionRule ( const ActionRule * prototype ) : Rule(prototype)
 {

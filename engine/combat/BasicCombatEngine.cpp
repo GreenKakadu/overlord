@@ -1,5 +1,5 @@
 /***************************************************************************
-                      BasicCombatEngine.h
+                      BasicCombatEngine.cpp
             Provides generic interface to all combat engines
                           ------------------
     begin                : Mon May 24 2004
@@ -10,23 +10,56 @@
 #include <functional>
 #include "BasicCombatEngine.h"
 #include "TokenEntity.h"
+#include "FactionEntity.h"
+#include "LocationEntity.h"
+#include "CombatReport.h"
+#include "reporting.h"
+
 BasicCombatEngine combatEngine;
+int BasicCombatEngine::battleId = 1;
+extern int currentDay;
+extern ReportPattern * combatStartReporter;
+extern ReportPattern * combatStart2Reporter;
+extern ReportPattern * combatEndReporter;
+extern ReportPattern * combatAttackersReporter;
+extern ReportPattern * combatDefendersReporter;
+extern ReportPattern * listReporter;
+
+
+
+BasicCombatEngine::BasicCombatEngine()
+{
+	report_ = new CombatReport();
+}
+
 BATTLE_RESULT BasicCombatEngine::processBattle(vector<TokenEntity *> &attackers,
                     vector<TokenEntity *> &defenders)
 {
-  cout << "Processing Battle \n";
-  cout << "Attacker side: \n";
-  vector<TokenEntity *>::iterator iter; 
+ new UnaryMessage(combatStartReporter,new IntegerData(BasicCombatEngine::battleId)) >>*report_ ;
+ new BinaryMessage(combatStart2Reporter,new IntegerData(currentDay),(*(attackers.begin()))->getLocation()) >>*report_ ;
+
+ new SimpleMessage(combatAttackersReporter) >>*report_ ;
+  vector<TokenEntity *>::iterator iter;
   for(iter = attackers.begin(); iter != attackers.end(); ++iter )
   {
-    cout << (*iter)->print();
-  }
-  cout<<endl;
-  cout << "Defender side: \n";
+    new UnaryMessage(listReporter, (*iter)) >>*report_ ;
+		(*iter)->setFullDayOrderFlag();// If combat happened
+		                               // no more full day orders possible
+		(*iter)->getFaction()->addCombatReport(report_);
+		}
+ endLineMessage >>*report_ ;
+
+ new SimpleMessage(combatDefendersReporter) >>*report_ ;
   for(iter = defenders.begin(); iter != defenders.end(); ++iter )
   {
-    cout << (*iter)->print();
+    new UnaryMessage(listReporter, (*iter)) >>*report_ ;
+		(*iter)->setFullDayOrderFlag();// If combat happened
+		                               // no more full day orders possible
+		(*iter)->getFaction()->addCombatReport(report_);
   }
-  cout<<endl;
+
+ new SimpleMessage(combatEndReporter) >>*report_ ;
+ endLineMessage >>*report_ ;
+	BasicCombatEngine::battleId++;
   return BATTLE_UNDEFINED;
 }

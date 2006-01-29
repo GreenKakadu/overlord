@@ -5,8 +5,8 @@
     copyright            : (C) 2001 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
-
 #include "PrototypeManager.h"
+PrototypeManager * prototypeManager = 0; // will be created on first call
 
 PrototypeManager::PrototypeManager()
 {

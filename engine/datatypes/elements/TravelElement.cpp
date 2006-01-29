@@ -17,13 +17,14 @@ extern VarietiesCollection <MovementVariety> movementModes;
 TravelElement::TravelElement(MovementVariety *    movingMode,
                   LocationEntity * origin,
                   LocationEntity * destination,
-                  int time, int totalTravelTime)
+                  int time, int totalTravelTime,bool marching)
 {
    movingMode_ = movingMode;
    origin_  =    origin;
    destination_ = destination;
    time_ =   time;
    totalTravelTime_ = totalTravelTime;
+   marching_ = marching;
 }
 
 
@@ -51,8 +52,9 @@ TravelElement *    TravelElement::readElement( Parser *parser)
   int totalTravelTime = parser->getInteger();
   if(totalTravelTime == 0)
       return 0;
+  bool marching = parser->getInteger();    
   return (new TravelElement(movingMode,origin,destination,
-  time, totalTravelTime));
+  time, totalTravelTime,marching));
 }
 
 
@@ -61,7 +63,10 @@ void TravelElement::save(ostream & out)
 {
   out << "MOVING "<<movingMode_->getTag() << " " << origin_->getTag();
   out << " "<< destination_->getTag() << " " <<time_ << " ";
-  out << totalTravelTime_ << ".\n";
+  out << totalTravelTime_;
+  if(marching_)
+    out <<" "<< 1 ;
+  out  << ".\n";
 
 }
 
@@ -69,6 +74,7 @@ void TravelElement::save(ostream & out)
 
 void TravelElement::reportTravel(ostream & out)
 {
+  if(marching_) out << " on march ";
   out << movingMode_->getName() << " " << origin_->print();
   out << " to "<< destination_->print() << " " <<time_ << " days from ";
   out << totalTravelTime_ << ".\n";
@@ -82,6 +88,7 @@ void TravelElement::retreat()
   origin_ = destination_;
   destination_ = temp;
   time_ = totalTravelTime_ - time_;
+  marching_ = false;
 }
 
 

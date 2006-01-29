@@ -31,7 +31,7 @@ WaitOrder::WaitOrder(){
 }
 
 STATUS WaitOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -48,7 +48,7 @@ STATUS WaitOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS WaitOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS WaitOrder::process (Entity * entity, ParameterList &parameters)
 {
 
    IntegerData *par       =  dynamic_cast<IntegerData *>(parameters[0]);

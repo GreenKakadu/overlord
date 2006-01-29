@@ -22,7 +22,7 @@ void  BinaryMessage::operator delete(void * deadObject, size_t size)
 }
 
 
-void BinaryMessage::printReport(ostream &out) const
+void BinaryMessage::printReport(ReportPrinter &out) const
 {
   reporter_->printReport(out, param1_, param2_);
 }

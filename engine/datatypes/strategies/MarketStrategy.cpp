@@ -23,9 +23,7 @@
 #include "EntitiesCollection.h"
 #include "UnitEntity.h"
 
-extern RulesCollection    <ItemRule>     items;
-extern RulesCollection    <RaceRule>     races;
-extern EntitiesCollection    <UnitEntity>     units;
+MarketStrategy            sampleMarket            ("MARKET",             &sampleGameData);
 
 MarketStrategy::MarketStrategy( const  MarketStrategy* prototype ) : Strategy(prototype)
 {

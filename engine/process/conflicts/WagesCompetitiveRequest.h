@@ -31,7 +31,6 @@ public:
 	WagesCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, RationalNumber& amount);
 	~WagesCompetitiveRequest();
 //   bool operator ==  (WagesCompetitiveRequest request);
-    bool isEqualTo (BasicCompetitiveRequest * request);
 //   inline int getSalaryRequest() const {return requestedSalary_;}
    RationalNumber getValue() const;
    void setValue(const RationalNumber& value);

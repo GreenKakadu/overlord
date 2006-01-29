@@ -27,7 +27,7 @@ UnstackOrder::UnstackOrder(){
 
 
 
-ORDER_STATUS UnstackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS UnstackOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

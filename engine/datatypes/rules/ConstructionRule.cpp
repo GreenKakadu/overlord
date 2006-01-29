@@ -31,8 +31,8 @@
 #include "TitleElement.h"
 
 extern EntitiesCollection <ConstructionEntity>   buildingsAndShips;
-//ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);
-extern RulesCollection <TitleRule>   titles;
+ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);
+RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions.rules"));
 
 ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(prototype)
 {
@@ -45,6 +45,7 @@ ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(
  skill_ = 0;
  buildCondition_ = 0;
  staffCondition_ = 0;
+ isBattle_ = false;
 }
 
 ConstructionRule::~ConstructionRule(){}
@@ -87,22 +88,12 @@ ConstructionRule::initialize        ( Parser *parser )
       generateTitle_ = titles[parser->getWord()];
 	    return OK;
 	  }
-    
-   
-  if (parser->matchKeyword("LEARNING_BONUS"))
-	{
-    BonusElement * newBonus = BonusElement::readElement(parser);
-    if(newBonus)
-          skillBonuses_.push_back(newBonus);
-	  return OK;
-	}
-  if (parser->matchKeyword("USE_BONUS"))
-	{
-    BonusElement * newBonus = BonusElement::readElement(parser);
-    if(newBonus)
-          useBonuses_.push_back(newBonus);
-	  return OK;
-	}
+  if (parser->matchKeyword("BATTLE"))
+	  {
+      isBattle_ = true;;
+	    return OK;
+	  }
+
   if (parser->matchKeyword("STAFF_MEN"))
     {
       maxStaff_ = parser->getInteger();
@@ -130,7 +121,7 @@ ConstructionRule::initialize        ( Parser *parser )
 					int index =  parser->getInteger();
 					capacity_[index]  = parser->getInteger();
           if(capacity_[index] )
-                  mobile_ = true;         
+                  mobile_ = true;
 				}
 			else
 					{
@@ -144,7 +135,7 @@ ConstructionRule::initialize        ( Parser *parser )
 					}
       return OK;
     }
-  
+
   if (parser->matchKeyword("LAND"))
 	{
 	  landUse_ = parser->getInteger();
@@ -168,6 +159,8 @@ ConstructionRule::initialize        ( Parser *parser )
     }
 
      stats_.initialize(parser);
+		skillBonuses_.initialize(parser);
+		movementBonuses_.initialize(parser);
 
       return OK;
 }
@@ -222,34 +215,23 @@ int ConstructionRule::getResourceRequirement(ConstructionWorksVariety * resource
 
 
 
-int ConstructionRule::getProductionBonusValue(SkillRule * skill,int level)
+int ConstructionRule::getProductionBonusValue(SkillRule * skill)
 {
-  int bonus = 0;
-  int currentBonus;
-  for( vector <BonusElement *>::iterator iter = useBonuses_.begin();
-       iter != useBonuses_.end(); ++iter)
-       {
-          if(skill->isDescendFrom((*iter)->getSkill(),1))
-          {
-            currentBonus = (*iter)->getBonusPoints();
-            if   (bonus < currentBonus)
-                  bonus = currentBonus;
-          }
-       }   
-return bonus;
-
+  return skillBonuses_.getProductionBonus(skill);
 }
 
 
 
-int ConstructionRule::getBonus(SkillRule * skill)
+int ConstructionRule::getLearningBonus(SkillRule * skill)
 {
-  for(BonusIterator iter = skillBonuses_.begin(); iter != skillBonuses_.end(); iter++)
-    {
-        if ((*iter)->getSkill() == skill)
-          return (*iter)->getBonusPoints();
-    }
-  return 0;
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int ConstructionRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
 }
 
 
@@ -270,27 +252,11 @@ void    ConstructionRule::extractKnowledge (Entity * recipient, int parameter)
   }
 
 
-  for(vector <BonusElement *>::iterator iter = skillBonuses_.begin();
-                                 iter != skillBonuses_.end(); ++iter)
-    {
-      if((*iter)->getSkill())
-      {
-        if(recipient->addSkillKnowledge((*iter)->getSkill(),1))
-          (*iter)->getSkill()->extractKnowledge(recipient, 1);
+	skillBonuses_.extractKnowledge(recipient, 1);
 
-      }
-  }
 
-  for(vector <BonusElement *>::iterator iter = useBonuses_.begin();
-                                 iter != useBonuses_.end(); ++iter)
-    {
-      if((*iter)->getSkill())
-      {
-        if(recipient->addSkillKnowledge((*iter)->getSkill(),1))
-          (*iter)->getSkill()->extractKnowledge(recipient, 1);
 
-      }
-  }
+
 
 
   if(buildCondition_)
@@ -328,9 +294,15 @@ void ConstructionRule::printDescription(ReportPrinter & out)
         out << "Generates "<< generateTitle_->print()
                                     << " title. ";
       }
-   
+   if(isBattle_)
+   {
+     out << "May fight in battles.";
+   }
+
    if(!stats_.empty())
    {
      out << "Adds "<< stats_ << " to units inside.";
    }
+
+	 skillBonuses_.report(out);
 }

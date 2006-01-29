@@ -23,14 +23,14 @@
   */
 
 class TeachOrder : public OrderPrototype  {
-public: 
+public:
 	TeachOrder();
 	~TeachOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
-   void preProcess_(Entity * entity, vector <AbstractData *>  &parameters);
-   void doProcess_(Entity * entity, vector <AbstractData *>  &parameters);
+   void preProcess_(Entity * entity, ParameterList &parameters);
+   void doProcess_(Entity * entity, ParameterList &parameters);
 };
 
 #endif

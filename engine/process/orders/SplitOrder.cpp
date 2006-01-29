@@ -107,13 +107,13 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
             newUnit->addSkill(*iter);
           }
        // items  - equipped only
-        vector < InventoryElement *> transferedItems =  unit->updateEquipement();
-        InventoryElementIterator iterEquip;
+        vector < InventoryElement> transferedItems =  unit->updateEquipement();
+        InventoryIterator iterEquip;
 
         for (iterEquip = transferedItems.begin(); iterEquip != transferedItems.end(); ++iterEquip)
 		      {
-            ItemRule * item = (*iterEquip)->getItemType();
-            int num = (*iterEquip)->getItemNumber();
+            ItemRule * item = (*iterEquip).getItemType();
+            int num = (*iterEquip).getItemNumber();
             newUnit->addToInventory(item,num);
             unit->takeFromInventory(item,num);
             newUnit->equipItem(item,num);

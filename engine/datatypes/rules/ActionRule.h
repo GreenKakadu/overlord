@@ -36,6 +36,7 @@ public:
 	protected:
        GameData * targetType_; // pointer to prototype
 };
-#include "RulesCollection.h"
 extern RulesCollection <ActionRule>    fx_actions  ;
+extern  ActionRule      sampleAction;
+
 #endif

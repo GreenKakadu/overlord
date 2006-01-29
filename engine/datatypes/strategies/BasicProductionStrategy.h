@@ -18,7 +18,7 @@
 
 #include <vector>
 #include "BasicUsingStrategy.h"
-
+#include "RationalNumber.h"
 /**
   *@author Alex Dribin
   */
@@ -44,6 +44,7 @@ public:
       virtual bool consumeResources(TokenEntity * unit, int numCycles);
               void printSkillDescription(ostream & out);
       USING_RESULT  checkTarget(UnitEntity * unit, GameData * targetType);
+			RationalNumber getEffectiveProductionRate(UnitEntity * unit, SkillRule * skill);
 	protected:
       vector <ItemElement *> resources_;
       int productNumber_ ;

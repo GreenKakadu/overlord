@@ -25,5 +25,5 @@ public:
  virtual STATUS     initialize      ( Parser *);
   GameData * createInstanceOfSelf();
 };
-
+extern Strategy sampleStrategy;
 #endif

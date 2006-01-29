@@ -1,11 +1,13 @@
 /***************************************************************************
-                          EquipmentSlotVariety.cpp 
+                          EquipmentSlotVariety.cpp
                              -------------------
     begin                : Mon Jan 6 2003
     copyright            : (C) 2003 by Alex Dribin
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "EquipmentSlotVariety.h"
+EquipmentSlotVariety sampleEquipmentSlot     ("EQUIPMENT_SLOT", &sampleGameData);
+VarietiesCollection <EquipmentSlotVariety>      equipments(new DataStorageHandler("equipments.var"));
 
 GameData * EquipmentSlotVariety::createInstanceOfSelf()
 {
@@ -17,7 +19,7 @@ STATUS
 EquipmentSlotVariety::initialize        ( Parser *parser )
 {
 
-	
+
   if (parser->matchKeyword ("NAME") )
     {
       setName(parser->getText());

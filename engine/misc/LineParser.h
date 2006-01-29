@@ -32,6 +32,7 @@ public:
   string getWord();
   string matchWord();
   int getInteger();
+  long int getLongInteger();
   RationalNumber getRationalNumber();
   string getText();
   virtual void getLine();
@@ -39,7 +40,8 @@ public:
   virtual void setPosition( long int position );
   virtual long int getPosition();
   void rewind( int shift );
-  static const int INTEGER_LENGTH = 6;
+  static const int INTEGER_LENGTH = 7;
+  static const int LONG_INTEGER_LENGTH = 11;
   STATUS status;
 
 protected:

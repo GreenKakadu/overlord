@@ -20,8 +20,8 @@ class WaitOrder : public OrderPrototype  {
 public:
 	WaitOrder();
 	~WaitOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
 };
 

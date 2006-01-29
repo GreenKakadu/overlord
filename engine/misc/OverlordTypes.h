@@ -17,7 +17,8 @@ enum order_status {
   FAILURE      = 1,
   IN_PROGRESS  = 2,
   SUSPENDED    = 3,
-  INVALID      = 4
+  INVALID      = 4,
+  WAITING      = 5
 };
 typedef enum order_status ORDER_STATUS;
 
@@ -53,6 +54,7 @@ enum using_result {
   USING_IN_PROGRESS  = 7,
   USING_COMPLETED    = 8,
   NO_TARGET          = 9,
+  USING_NOT_ALLOWED  = 10,
   USING_RESULT_END   = 99
                    };
 typedef using_result  USING_RESULT;
@@ -76,5 +78,16 @@ enum action_result {
   ACTION_RESULT_END   = 99
                    };
 typedef action_result  ACTION_RESULT;
+
+enum damage_type {
+  PHYSICAL     = 0,
+  AIR          = 1,
+  EARTH        = 2,
+  FIRE         = 3,
+  VOID         = 4,
+  WATER        = 5,
+  DAMAGE_TYPE_END      = 99
+};
+typedef enum damage_type DAMAGE_TYPE;
 #endif
 

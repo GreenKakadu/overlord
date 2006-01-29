@@ -33,7 +33,7 @@ AtOrder::AtOrder(){
 }
 
 STATUS AtOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -46,7 +46,7 @@ STATUS AtOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS AtOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS AtOrder::process (Entity * entity, ParameterList &parameters)
 {
  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);

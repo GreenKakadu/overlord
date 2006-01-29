@@ -19,6 +19,7 @@
 #include "Rule.h"
 #include "EntityStatistics.h"
 #include "MovementMode.h"
+#include "SkillBonusComboAttribute.h"
 /**Enchantment types
   *@author Alex Dribin
   */
@@ -37,7 +38,11 @@ public:
       EffectEntity * createEffect(Entity * target) ;
       inline  EntityStatistics * getStats()  {return &stats_;}
       inline int getCapacity(int modeIndex)  {return capacity_[modeIndex];}
+	    inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
       inline GameData *  getTargetType() {return targetType_;}
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
 
 	protected:
 	    string pluralName_;
@@ -45,8 +50,10 @@ public:
       EntityStatistics stats_;
       string effectKeyword_;
       GameData * targetType_; // pointer to prototype
+			SkillBonusComboAttribute skillBonuses_;
 };
-#include "RulesCollection.h"
+
 extern RulesCollection <EnchantmentRule>   enchantments;
+extern  EnchantmentRule      sampleEnchantment;
 
 #endif

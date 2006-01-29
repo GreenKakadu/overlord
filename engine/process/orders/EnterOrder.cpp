@@ -46,7 +46,7 @@ EnterOrder::EnterOrder(){
 
 
 STATUS EnterOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
      if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -59,7 +59,7 @@ STATUS EnterOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS EnterOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS EnterOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -82,7 +82,7 @@ ORDER_STATUS EnterOrder::process (Entity * entity, vector <AbstractData *>  &par
 
    if(buildingOrShip->getFaction())
    {
-    if(!(*(buildingOrShip->getFaction()->getStance(unit)) >= *alliedStance) ||(buildingOrShip->isAccepting(unit)))
+    if(!(buildingOrShip->getFaction()->stanceAtLeast(unit, alliedStance)) ||(buildingOrShip->isAccepting(unit)))
       {
         // stealth unit may enter
         if( buildingOrShip->getLocation()->getFactionalObservation (buildingOrShip->getFaction())

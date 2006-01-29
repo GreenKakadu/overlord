@@ -24,15 +24,24 @@
 #include "TertiaryMessage.h"
 #include "IntegerData.h"
 #include "TerrainRule.h"
+#include "WeatherRule.h"
+#include "SeasonRule.h"
 #include "SkillUseElement.h"
 #include "TravelElement.h"
 #include "OrderPrototype.h"
 #include "StanceVariety.h"
 #include "BasicOrderSynchronizationRequest.h"
+#include "BasicLearningStrategy.h"
 #include "ObservationCondition.h"
 #include "DataManipulator.h"
 #include "TargetOrder.h"
-
+#include "BasicCombatManager.h"
+#include "CombatStanceVariety.h"
+#include "BattleInstance.h"
+#include "CombatOrderLine.h"
+#include "BattleField.h"
+#include "CombatOrder.h"
+#include "CombatMoveVariety.h"
 extern DataManipulator * dataManipulatorPtr;
 extern ReportPattern * newLevelReporter;
 extern ReportPattern * maxLevelReporter;
@@ -43,6 +52,10 @@ extern ReportPattern * enterPrivateReporter;
 extern ReportPattern * enterPublicReporter;
 extern ReportPattern * leavePrivateReporter;
 extern ReportPattern * leavePublicReporter;
+ReportPattern * lootReporter = new ReportPattern("lootReporter");
+extern SkillRule * combatSkill;
+ReportPattern *	 movementBlockedReporter      = new ReportPattern("movementBlockedReporter");
+TokenEntity sampleTokenEntity  ("PHYSICAL_ENTITY",  &sampleEntity);
 
 
 
@@ -58,9 +71,14 @@ TokenEntity::TokenEntity(const TokenEntity * prototype): Entity(prototype)
       passenger_ = false;
       advertising_ = false;
       announcing_ = false;
+			fanatic_ = false;
       sharing_ = true;
+      alive_ = true;
       withdrawingSupport_ = true;
       target_ = 0;
+			battleInstance_ = 0;
+      defaultCombatMovement_ = 0;
+			inventory_ = InventoryAttribute(this);
 }
 
 
@@ -104,22 +122,6 @@ STATUS TokenEntity::initialize        ( Parser *parser )
       return OK;
     }
 
-    if (parser->matchKeyword("SKILL"))
-	{
-    SkillElement * skill = SkillElement::readElement(parser);
-    if(skill != 0)
-        this->addSkill(*skill);
-		return OK;
-	}
-
- if (parser->matchKeyword("ITEM"))
- 	{
-    InventoryElement * newInventory = InventoryElement::readElement(parser);
-		if(newInventory != 0)
-		  {
-	  	  inventory_.push_back(newInventory);
-		  }
- 	}
 
  if (parser->matchKeyword("MOVING"))
 	{
@@ -161,7 +163,18 @@ STATUS TokenEntity::initialize        ( Parser *parser )
     withdrawingSupport_ = false;
 		return OK;
 	}
+       if (parser->matchKeyword("COMBAT_ORDER"))
+ 	{
+	  combatOrders_.push_back(new CombatOrderLine(parser->getText(),this));
+ 	}
+       if (parser->matchKeyword("COMBAT"))
+ 	{
+		addCombatSetting(parser->getText());
+ 	}
 
+	skills_.initialize(parser);
+	inventory_.initialize(parser);
+  combatTactics_.initialize(parser);
   return Entity::initialize(parser);
 
 }
@@ -181,23 +194,24 @@ void TokenEntity::save(ostream &out)
   if(advertising_) out << "ADVERTISE"<<endl;
   if(!withdrawingSupport_) out << "NO_SUPPORT"<<endl;
   if(!sharing_) out << "NO_SHARING"<<endl;
+//  TokenEntity * temp = this;
+  combatTactics_.save(out);
 
-//  for (vector<OrderLine *>::iterator  iter = orders_.begin(); iter != orders_.end(); iter++)
-//    {
-//           (*iter)->save(out);
-//    }
-
-  for (InventoryElementIterator iter = inventory_.begin(); iter != inventory_.end(); iter++)
+  for (vector <string>::iterator iter = combatSettings_.begin();
+	        iter != combatSettings_.end(); iter++)
     {
-           out << "ITEM ";
-										(*iter)->save(out);
+           out << "COMBAT " <<(*iter)<<endl;
     }
 
-  for (SkillIterator iter = skills_.begin(); iter != skills_.end(); iter++)
+
+  for (CombatOrderIterator iter = combatOrders_.begin();
+	        iter != combatOrders_.end(); iter++)
     {
-           out << "SKILL ";
-										(*iter).save(out);
+           (*iter)->save(out);
     }
+
+		inventory_.save(out);
+		skills_.save(out);
 
   for (SkillUseIterator iter= skillUse_.begin(); iter != skillUse_.end(); iter++)
     {
@@ -218,16 +232,10 @@ void TokenEntity::dailyUpdate()
 {
    moveAdvance();
 //   cout << "... Updating TokenEntity " << print()<<endl;
-   TerrainRule * terrain = getLocation()->getTerrain();
-   if(terrain == terrains.findByTag("lake",false) || terrain == terrains.findByTag("ocea",false))
-   {
-     if (getCapacity(3) < getWeight())   // provide function  getCapacity(MovementMode *)
-//     if (getStackCapacity(3) < getStackWeight())
-      {
-       cout << "SOS! " << print()<< " is drowning\n";
-       // unstack all
-      }
-   }
+   LocationEntity * location = getLocation();
+   if(!location) // Disbanded
+	 	return;
+
 // if terrain is ocean or lake check swimming capacity
 // ifnot enough - drowning
 // smart drowning
@@ -235,10 +243,46 @@ void TokenEntity::dailyUpdate()
 // sortout  items that have positive capacity/weight ratio
 // sort all items according to weight/price ratio
 // throw away items
+
+   if(location->getTerrain()->isAquatic())
+   {
+     if (getCapacity(swimingMode) < getWeight())
+//     if (getStackCapacity(3) < getStackWeight())
+      {
+       cout << "SOS! " << print()<< " is drowning\n";
+       // unstack all
+      }
+   }
+
+	 if(isGuarding())
+	 	addSkill(combatSkill,BasicLearningStrategy::getPointsPerDay()/2);
 }
 
 
 
+
+void TokenEntity::postProcessData()
+{
+
+}
+
+void TokenEntity::postPostProcessData()
+{
+}
+void TokenEntity::recalculateTravelTime()
+{
+	// Update movement times with new weather
+	if(moving_)
+	{
+  	int oldTime = moving_->getRemainingTime();
+		MovementVariety * currentMode =moving_->getMode();
+		int totalTime  = calculateTravelTime(moving_->getTravelTime(), currentMode);
+		int time  = calculateTravelTime( moving_->getRemainingTime(),currentMode);
+  	moving_->resetRemainingTime(time);
+  	moving_->resetTravelTime(totalTime - (oldTime - time));
+	}
+
+}
 // Reporting ==============================================
 /** Retern reference to Entity which keeps reports from this  */
 Entity * TokenEntity::getReportDestination()
@@ -256,6 +300,8 @@ void TokenEntity::privateReport(ReportPrinter &out)
 
 void  TokenEntity::printOrderTemplate(ReportPrinter &out)
 {
+ if(isDisbanded())
+ 	return; // no templates for dead units
  out.setPrefix("#");
  privateReport(out);
  out.setPrefix(0);
@@ -281,33 +327,28 @@ void    TokenEntity::reportFlags(ReportPrinter &out)
   if(announcing_) out << " Announcing.";
   if(!withdrawingSupport_) out << " Not withdrawing support.";
   if(!sharing_) out << " Not sharing.";
+	combatTactics_.report(out);
+	if(!combatSettings_.empty())
+		{
+			out << " Combat settings:";
+  		for (vector <string>::iterator iter = combatSettings_.begin();
+	        iter != combatSettings_.end(); iter++)
+    		{
+           out << " "<<(*iter);
+    		}
+			out << ".";
+		}
 }
 
 
 
 void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 {
-  bool isFirst = true;
-  if(skills_.empty())
-         return;
-  SkillIterator iter;
-  out << "Skills: ";
-  isFirst = true;
-
-  for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-      if( iter != skills_.begin())
-        {
-          out << ", ";
-        }
-       out << (*iter);
-    }
-  out <<". ";
-
+	skills_.report(out);
 //  out << "May learn: ";
 
   RulesIterator skillIter;
-  isFirst = true;
+  bool isFirst = true;
  	for (skillIter = skills.begin(); skillIter != skills.end(); skillIter++)
 		{
        SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
@@ -387,33 +428,28 @@ LocationEntity * TokenEntity::getGlobalLocation() const
 // Inventory methods ==============================================
 InventoryElement * TokenEntity::findInInventory(ItemRule * item)
 {
-  InventoryElementIterator iter;
-  for( iter = inventory_.begin(); iter != inventory_.end(); ++iter)
-  {
-    if( (*iter)->getItemType() == item)
-       return *iter;
-  }
-  return 0;
+	return inventory_.findItem(item);
+}
+
+
+// returns list of all items equipped at given slot
+vector < InventoryElement > TokenEntity::getSlotContent(EquipmentSlotVariety * slot)
+{
+	return inventory_.getSlotContent(slot);
 }
 
 
 
-vector < InventoryElement *> & TokenEntity::getAllInventory()
+vector < InventoryElement> & TokenEntity::getAllInventory()
 {
-  return inventory_;
+  return inventory_.getAll();
 }
 
 
 
 void TokenEntity::giveAllInventory(TokenEntity * unit)
 {
-  InventoryElementIterator iter;
-  for (iter = inventory_.begin(); iter != inventory_.end(); ++iter)
-  {
-    unit->addToInventory((*iter)->getItemType(), (*iter)->getItemNumber() );
-    delete (*iter);
-  }
-  inventory_.clear();
+	inventory_.giveAll(unit);
 }
 
 
@@ -423,37 +459,7 @@ void TokenEntity::giveAllInventory(TokenEntity * unit)
 // */
 //int TokenEntity::takeFromInventory(ItemRule * item, int num)
 //{
-//  InventoryElement * itemFound = findInInventory(item);
-//  if(!itemFound)
-//				return 0;
-//
-//  int numItems = itemFound->getItemNumber();
-//  int numToGive = num;
-//
-//  if(numItems > numToGive)
-//		{
-//							numItems -= numToGive;
-//							itemFound->setItemNumber(numItems);
-//              if(itemFound->getEquipedNumber() > numItems )
-//                  {
-//									  itemFound->setEquipedNumber(numItems);
-//							//		        item->applyEquipementEffects(this,numItems);
-//                    recalculateStats();
-//                  }
-//							return numToGive;
-//		}
-//  else
-//		{
-//							int taken = numItems;
-//              int wasEquiped = itemFound->getEquipedNumber();
-//              deleteFromInventory(itemFound);
-//              if(wasEquiped >0)
-//              {
-//							//		        item->applyEquipementEffects(this,0);
-//              recalculateStats();
-//              }
-//							return taken;
-//		}
+//  return inventory_.takeFromInventory(item, num);
 //}
 
 
@@ -465,54 +471,14 @@ void TokenEntity::giveAllInventory(TokenEntity * unit)
 
 int TokenEntity::takeFromInventory(ItemRule * item, int num)
 {
-  InventoryElement * itemFound = findInInventory(item);
-  if(!itemFound)
-				return 0;
-
-  int numItems = itemFound->getItemNumber();
-  int numToGive = num;
-
-  if(numItems > numToGive)
-		{
-							numItems -= numToGive;
-							itemFound->setItemNumber(numItems);
-              if(itemFound->getEquipedNumber() > numItems )
-                  {
-									  itemFound->setEquipedNumber(numItems);
-//									        item->applyEquipementEffects(this,numItems);
-                    recalculateStats();
-                  }
-							return num;
-		}
-  else if (numItems == numToGive)
-    {
-              int wasEquiped = itemFound->getEquipedNumber();
-              deleteFromInventory(itemFound);
-              if(wasEquiped >0)
-                {
-//									        item->applyEquipementEffects(this,0);
-                  recalculateStats();
-                }
-							return num;
-    }
-      else
-				{
-				  return numItems;
-				}
-
-
+  return inventory_.take(item, num);
 }
 
 
 
 void TokenEntity::deleteFromInventory(InventoryElement * element)
 {
-  InventoryElementIterator iter = find(inventory_.begin(),inventory_.end(),element);
-  if(iter != inventory_.end())
-    {
-      delete element;
-		  inventory_.erase(iter);
-    }
+	inventory_.deleteElement(element);
 }
 
 /*
@@ -520,31 +486,7 @@ void TokenEntity::deleteFromInventory(InventoryElement * element)
  */
 int TokenEntity::equipItem(ItemRule * item, int num)
 {
-  InventoryElement * itemFound = findInInventory(item);
-  if(!itemFound)
-				return 0;
-
-  int currentlyEquipedItems = itemFound->getEquipedNumber(); 																				;
-	if (num <= currentlyEquipedItems) // unequip
-			{
-				itemFound->setEquipedNumber(num);
-				return ( num - currentlyEquipedItems);
-			}
-// Item may demand skills for being equiped.
-  BasicCondition * equipCondition = item->demandsEquipCondition();
-  if(equipCondition )
-  {
-    if(!equipCondition->isSatisfied(this))
-      return 0;
-    }
-// Can't equip more than have
-	if (num > itemFound->getItemNumber())
-			num = itemFound->getItemNumber();
-
-
-	itemFound->setEquipedNumber(num);
-							//		        item->applyEquipementEffects(this,num)
-	return (num - currentlyEquipedItems);
+	return inventory_.equipItem(item, num);
 }
 
 
@@ -553,17 +495,9 @@ int TokenEntity::equipItem(ItemRule * item, int num)
  * Add I tem to inventory if it was not there
  * Increase it's amount otherwise
  */
-void TokenEntity::addToInventory(ItemRule * item, RationalNumber& num)  // should be done better
+void TokenEntity::addToInventory(ItemRule * item, RationalNumber& num)
 {
-//cout << print()<< " adding " <<item->print() <<endl;
-  InventoryElement * itemFound = findInInventory(item);
-  if(itemFound)
-      {
-        RationalNumber old(itemFound->getRationalItemNumber());
-        itemFound->setRationalItemNumber(old + num);
-          return;
-      }
-  inventory_.push_back(new InventoryElement(item,num));
+	inventory_.add(item, num);
 }
 
 
@@ -571,51 +505,35 @@ void TokenEntity::addToInventory(ItemRule * item, RationalNumber& num)  // shoul
 /** No descriptions */
 int TokenEntity::hasItem(ItemRule * item)
 {
-  InventoryElement * itemFound = findInInventory(item);
-  if(itemFound)
-		return itemFound->getItemNumber();
-	else
-     return 0;
+	return inventory_.hasItem(item);
 }
 
 
 
 int TokenEntity::hasEquiped(ItemRule * item)
 {
-  InventoryElement * itemFound = findInInventory(item);
-  if(itemFound)
-		return itemFound ->getEquipedNumber();
-	else
-     return 0;
+	return inventory_.hasEquiped(item);
 }
 
 bool TokenEntity::isEquiped(InventoryElement * item)
 {
-  InventoryElement * itemFound = findInInventory(item->getItemType());
-  if(itemFound)
-		return (itemFound->getEquipedNumber() >= item->getEquipedNumber());
-	else
-     return false;
+	return inventory_.isEquiped(item);
 }
 
 
 
 RationalNumber     TokenEntity::getItemAmount(ItemRule * item)
 {
-  InventoryElement * itemFound = findInInventory(item);
-  if(itemFound)
-		return itemFound->getRationalItemNumber();
-	else
-     return 0;
+	return inventory_.getItemAmount(item);
 }
 
 
 
-void TokenEntity::addToInventory(ItemRule * item, int num)  // should be done better
+void TokenEntity::addToInventory(ItemRule * item, int num)
 {
-  RationalNumber number(num);
-  addToInventory(item, number);
+	inventory_.add(item, num);
 }
+
 
 
 
@@ -648,7 +566,7 @@ void TokenEntity::accept(UnitEntity * unit)
 // Skills ========================================================
 vector < SkillElement>& TokenEntity::getAllSkills()
 {
-  return skills_;
+  return skills_.getAll();
 }
 
 
@@ -677,16 +595,7 @@ int TokenEntity::addSkill(SkillElement  skill)
 
 int TokenEntity::getSkillLevel(SkillRule  * const skill)
 {
-	SkillIterator iter;
-	for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-			if (skill == (*iter).getSkill())
-				{
-          return skill->getLevel((*iter).getExpPoints() );
-          }
-		}
-  return 0;
-
+  return skills_.getSkillLevel(skill);
 }
 
 
@@ -694,24 +603,8 @@ int TokenEntity::getSkillLevel(SkillRule  * const skill)
 /** Adding skill experience, checking for new level reached */
 int TokenEntity::addSkill(SkillRule  * skill, int expPoints)
 {
-	SkillIterator iter;
-   int oldLevel = 0;
-   int newLevel = 0;
-
-  for ( iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-					if( (*iter).getSkill() == skill)
-								{
-                   oldLevel = skill->getLevel((*iter).getExpPoints());
-									 (*iter).setExpPoints((*iter).getExpPoints() + expPoints);
-                   newLevel = skill->getLevel((*iter).getExpPoints());
-//    cout <<skill->printTag()<< " Exp " << (*iter).getExpPoints()<<endl;
-								  break;
-								}
-		}
-    if (iter == skills_.end())
-	      skills_.push_back(SkillElement(skill,expPoints));
-//    cout <<skill->printTag()<< " Old level " << oldLevel <<" new " << newLevel<<endl;
+   int oldLevel = this->getSkillLevel(skill);
+   int newLevel = skills_.addSkill(skill, expPoints);
 
    if (oldLevel != newLevel)    // Check for a new level being reached
      gainNewLevel(skill,newLevel);
@@ -744,31 +637,14 @@ void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
 
 int TokenEntity::getSkillPoints(SkillRule  * const skill)
 {
-	SkillIterator iter;
-	for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-			if (skill == (*iter).getSkill())
-				{
-          return (*iter).getExpPoints();
-          }
-		}
-  return 0;
-
+  return skills_.getSkillPoints(skill);
 }
 
 
 
 SkillElement *  TokenEntity::getSkillElement(SkillRule  * const skill)
 {
-  SkillIterator iter;
-	for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-			if (skill == (*iter).getSkill())
-				{
-          return &(*iter);
-        }
-		}
-  return 0;
+  return skills_.getSkillElement(skill);
 }
 
 
@@ -796,17 +672,7 @@ void TokenEntity::cancelTeachingOffer()
  */
 bool TokenEntity::hasSkill(SkillRule  * skill, int experience)
 {
-  if(( skill == 0) || ( experience == 0) )
-    return true;
-  SkillIterator iter;
-	for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-			if ((skill == (*iter).getSkill()) && (experience <= (*iter).getExpPoints()))
-				return true;
-		}
-
-	return false;
-
+	return skills_.hasSkill(skill, experience);
 }
 
 
@@ -963,6 +829,11 @@ LEARNING_RESULT TokenEntity::mayLearn(SkillRule * skill)
 
 void TokenEntity::setEntityMoving(TravelElement * moving)
 {
+  if(isGuarding())
+  {
+    guarding_ = false;
+    getLocation()->selectNewGuard();
+  }
   moving_ = moving;
 }
 
@@ -978,8 +849,7 @@ bool TokenEntity::moveAdvance()
 
    if(moving_->isCrossingBorder())
    {
-     // check if stack or vessel can enter location (it may be guarded or other reasons)
-     moveGroupToLocation();
+     tryEnterLocation();
    }
 
 
@@ -994,11 +864,78 @@ bool TokenEntity::moveAdvance()
 
 }
 
+void TokenEntity::tryEnterLocation()
+{
+     TokenEntity * patrol= 0;
+// check if stack or vessel can enter location
+//(it may be guarded or other reasons)
+     LocationEntity * destination = moving_->getDestination();
+		 if(!destination->tokenAllowedToEnter(this,moving_->getMode(),patrol))
+      {
+        if  (moving_->isMarching())
+        {
+           destination->getCombatManager()->attackAttempt( this,
+					  patrol, 0, TokenEntity::marchAttackPostprocessing );
+        }
+        else
+				{
+          moving_->retreat();
+          moving_->advance();// Unit immediately moves back
+          addReport(new UnaryMessage( movementBlockedReporter, destination),0, 0);
+				  TokenEntity * enemyPatrol = destination->getBlockingPatrol( this,
+																		moving_->getMode() , hostileStance);
+					if(patrol)
+					{
+						destination->getCombatManager()->attackAttempt(enemyPatrol,this,0,0);
+					}
+				}
+
+      }
+      else
+        moveGroupToLocation();
+}
+
+
+void TokenEntity::marchAttackPostprocessing(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT  result)
+{
+ if( result == ATTACKER_VICTORY)
+ {
+   attacker->moveGroupToLocation();
+  if(!attacker->isAlive())
+    {
+      // attacker is dead
+      // should reform group and find new group leader
+      return;
+    }
+  TravelElement * travelStatus = attacker->getTravelStatus();
+  if(travelStatus == 0)
+  {
+    return;
+  }
+   if(travelStatus->isArrived())
+   {
+     attacker->movingGroupArrived();
+     delete travelStatus;
+     attacker->setTravelStatus(0);
+     return ;
+   }
+
+  if(defender->isAlive())
+   defender->setPatrolling(false);
+ }
+ else 
+ {
+    attacker->retreat();
+ }
+     return ;
+}
+
+
 
 void TokenEntity::moveToLocation()
 {
   getLocation()->addReport(new UnaryMessage(leavePublicReporter, this), 0 ,
-                            ObservationCondition::createObservationCondition(getStealth() ));
+			ObservationCondition::createObservationCondition(getStealth() ));
   addReport(new UnaryMessage(leavePrivateReporter, getLocation()));
   LocationEntity * newLocation = moving_->getDestination();
   getFaction()->addVisitedLocation(newLocation);
@@ -1032,6 +969,32 @@ bool TokenEntity::retreat()
   }
   else
     return false;
+}
+
+
+// Sometimes Entity wants to retain ability of movement with some mode
+MovementVariety * TokenEntity::getReservedMode()
+{
+		// if moving - current mode
+		// if flying mode = flying
+		// if at water mode = swimming/sailing
+		// if the only way out 'mode'
+		// else mode = walking
+	if(getCapacity(flyingMode) >= getWeight()) // may fly
+		return flyingMode;
+
+  if(location_->getTerrain()->isAquatic()) // should swim othewise drawn
+		return swimingMode;
+
+	if(moving_) // current mode
+	{
+		if(moving_->getMode())
+		{
+	    return moving_->getMode();
+		}
+	}
+
+	return walkingMode; //default
 }
 
 
@@ -1074,12 +1037,50 @@ int  TokenEntity::calculateTotalWeight (int & weight)
 
 void TokenEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 {
+
 }
 
 
 
-/** Climate and overloading effects */
-int TokenEntity::calculateTravelTime(int time, int weight, int capacity)
+void TokenEntity::calculateTotalCapacityMode(int & capacity, MovementVariety * mode)
+{
+  calculateTotalCapacity(capacity, movementModes.getIndex(mode->getTag()));
+}
+
+
+
+/** Climate and other bonuses */
+int TokenEntity::calculateTravelTime(int time, MovementVariety * mode)
+{
+	 time = time * (calculateMovementBonus(mode) + 100) / 100;
+   return time;
+}
+
+int TokenEntity::calculateMovementBonus(MovementVariety * mode)
+{
+	int bonus = 0;
+// Item
+	bonus += inventory_.getMovementBonus(mode);
+
+// weather
+	LocationEntity * currentLocation = getLocation();
+	bonus += currentLocation->getWeather()->getMovementBonus(mode);
+	bonus += currentLocation->getMovementBonus(mode);
+// Enchantment
+	bonus += enchantments_.getMovementBonus(mode);
+
+// Skills
+	bonus += skills_.getMovementBonus(mode);
+	return bonus;
+}
+
+
+
+
+
+
+/** Overloading effects */
+int TokenEntity::calculateOverloading(int time, int weight, int capacity)
 {
     int overloadFactor;
    if(capacity == 0)
@@ -1092,10 +1093,28 @@ int TokenEntity::calculateTravelTime(int time, int weight, int capacity)
    if(time == 0)
           return 0;
 
-//  apply climate
+// Overload
     if(overloadFactor > 100)
     time = time + time *  3 * (overloadFactor - 100)  / 100;   //  overloading
     return time;
+}
+
+
+
+// For tokens at the same location
+bool TokenEntity::mayObserveTokenEntity(TokenEntity * tokenEntity)
+{
+   if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
+        return true;
+  if(tokenEntity->isExposed())
+        return true;
+   if (this->getObservation() >= tokenEntity->getStealth() )
+        return true;
+   if (this->getLocation()->getFactionalObservation(getFaction()) >= tokenEntity->getStealth() )
+        return true;
+   else
+        return false;
+
 }
 
 
@@ -1107,16 +1126,8 @@ bool TokenEntity::mayInterractTokenEntity(TokenEntity * tokenEntity)
 
    if(tokenEntity->getGlobalLocation() != this->getGlobalLocation() )  // take into account buildings
         return false;
-   if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
-        return true;
-  if(tokenEntity->isExposed())
-        return true;
-   if (this->getObservation() >= tokenEntity->getStealth() )
-        return true;
-   if (this->getLocation()->getFactionalObservation(getFaction()) >= tokenEntity->getStealth() )
-        return true;
    else
-        return false;
+        return mayObserveTokenEntity(tokenEntity);
 }
 
 
@@ -1161,7 +1172,7 @@ ORDER_STATUS TokenEntity::oath(FactionEntity * faction)
    if (!mayInterractFaction(faction)) // Not In the same place or can't see
 	     return FAILURE;
 
- 	  if(*(faction->getStance(getFaction())) < *friendlyStance)
+ 	  if(faction->stanceAtLeast(getFaction(), friendlyStance))
       {
         // not accepting. Reports to both sides
       UnaryMessage * oathRejectedMessage = new UnaryMessage(oathRejectedReporter, faction);
@@ -1251,4 +1262,251 @@ void TokenEntity::setTarget(AbstractData * target)
 //  if(target_)
 //    target_->clean();
   target_ = target;
+}
+
+
+
+bool TokenEntity::combatStanceAtLeast(CombatStanceVariety * combatStance) const
+{
+//  cout<< "Combat stance of "<<tag_<<" : "<<combatTactics_.getCombatStance()->print()<<" and "<<combatStance->print()<<endl;
+  return (*(combatTactics_.getCombatStance()) >=  *combatStance);
+}
+
+
+
+int  TokenEntity::getAttackRating() const
+{
+  return 0;
+}
+
+
+
+int  TokenEntity::getDefenceRating() const
+{
+  return 0;
+}
+
+
+void TokenEntity::preprocessData()
+{
+	guarding_ = false;
+	// Convert combat setting strings to combat orders.
+	if(combatTactics_.getCombatMove())
+	defaultCombatMovement_ =
+	 			new CombatOrderLine( combatTactics_.getCombatMove()->getTag(), this);
+	else
+	defaultCombatMovement_ =
+				new CombatOrderLine( defaultCombatMove->getTag(), this);
+}
+
+
+
+void TokenEntity::addCombatSetting(string combatOrderText)
+{
+	combatSettings_.push_back(combatOrderText);
+	if(CombatOrder::checkCombatAction(combatOrderText,this))
+	{
+		CombatOrderLine * currentOrder = new CombatOrderLine(combatOrderText,this);
+//		currentOrder->parse(combatOrderText,this);
+  	defaultCombatOrders_.push_back(currentOrder);
+	}
+}
+
+
+
+void TokenEntity::battleInstantiation(BattleField * battleField)
+{
+  if(battleInstance_)
+		delete battleInstance_;
+  // copy all combat orders to BattleInstance
+	// transform combat and tactic settings into orders
+	// for each order line set executed on turn flag on 0 (reset)
+	battleInstance_ = new BattleInstance(this, battleField->getCombatReport());
+  battleInstance_->initialize(battleField);
+}
+
+
+
+void TokenEntity::addOrder(string newOrder)
+{
+  Parser parser = Parser(newOrder);
+	if(parser.matchKeyword("COMBAT_ORDER"))
+	{
+		combatOrders_.push_back(new CombatOrderLine(parser.getText(),this));
+	}
+	else
+	{
+		orders_.push_back(new OrderLine(newOrder,this));
+	}
+
+}
+
+
+
+void TokenEntity::setCombatMove(CombatMoveVariety * value)
+{
+	combatTactics_.setCombatMove(value);
+	if (defaultCombatMovement_)
+		delete defaultCombatMovement_;
+	defaultCombatMovement_ = new CombatOrderLine(
+	 									value->getKeyword(), this);
+}
+
+
+
+/*
+ * delete all entity's orders
+ */
+void TokenEntity::clearOrders()
+{
+  CombatOrderIterator iter;
+  for ( iter = combatOrders_.begin(); iter != combatOrders_.end(); iter++)
+    {
+           delete (*iter);
+    }
+  combatOrders_.clear();
+  Entity::clearOrders();
+}
+
+
+
+
+
+
+
+
+
+
+int TokenEntity::getProductionBonus(SkillRule * skill)
+{
+	int bonus = 0;
+// Item
+	bonus += inventory_.getProductionBonus(skill);
+
+
+	LocationEntity * currentLocation = getLocation();
+// weather
+	 bonus += currentLocation->getWeather()->getProductionBonusValue(skill);
+
+// Season
+	currentLocation->getSeason()->getProductionBonusValue(skill);
+// terrain
+	 bonus += currentLocation->getTerrain()->getProductionBonusValue(skill);
+
+
+// Enchantment
+	 bonus += enchantments_.getProductionBonus(skill);
+
+// Skills
+	 bonus += skills_.getProductionBonus(skill);
+
+
+
+	return bonus;
+}
+
+
+
+// overloaded unit looks for items adding capacity
+bool TokenEntity::takeTransport(vector <ItemElement> & items, MovementVariety *mode)
+{
+	if(items.empty())
+		return false;
+	int missingCapacity = getWeight() - getCapacity(mode);
+		if(missingCapacity <= 0)
+			return false;
+
+//		cout << "== "<<this->print();
+	int transportCapacity;
+	int num;
+	int numberTaken;
+
+		for (ItemElementIterator iter = items.begin(); iter != items.end();)
+	{
+		ItemRule * item = (*iter).getItemType();
+		num =(*iter).getItemNumber();
+//		cout << " looking for transport in the loot: ==> " <<item->print()<<endl;
+
+		// First try equip capacity if able to equip
+		transportCapacity = item->getCapacity(mode) - item->getWeight();
+		if (transportCapacity <= 0)
+		{
+			++iter;
+			continue;
+		}
+		if(transportCapacity * num < missingCapacity) // take all
+		{
+			items.erase(iter);
+			addToInventory(item,num);
+			addReport(new UnaryMessage(lootReporter, new ItemElement(item,num)));
+			continue;
+		}
+		else // take enougth and exit
+		{
+			numberTaken = missingCapacity/transportCapacity;
+			if(numberTaken * transportCapacity != missingCapacity)
+			{
+				numberTaken++;
+			}
+			addToInventory(item,numberTaken);
+			addReport(new UnaryMessage(lootReporter,
+																	new ItemElement(item, numberTaken)));
+			(*iter).setItemNumber(num - numberTaken);
+			if(num == numberTaken)
+				items.erase(iter);
+			return true;
+
+		}
+	}
+			return false;
+}
+
+
+
+// tries to take as much loot of one sort as possible  from the beginning of the loot list
+bool TokenEntity::takeLoot(vector <ItemElement> & items)
+{
+	if(items.empty())
+		return false;
+	int num;
+	int max;
+	MovementVariety * mode = getReservedMode();//-- determine -- mode
+	int freeCapacity = getCapacity(mode) - getWeight();
+	for (ItemElementIterator iter = items.begin(); iter != items.end();)
+	{
+
+		ItemRule * item = (*iter).getItemType();
+		num =(*iter).getItemNumber();
+
+		if(item->getWeight() == 0) // take all
+		{
+			items.erase(iter);
+			addReport(new UnaryMessage(lootReporter, new ItemElement(item,num)));
+			addToInventory(item,num);
+			return true;
+		}
+
+		max = freeCapacity/item->getWeight();
+		if (max ==0) // can't take anything let's try next item
+		{
+			++iter;
+			continue;
+		}
+		if (num > max) // take but not all
+			{
+				(*iter).setItemNumber(num - max);
+				num = max;
+			  addReport(new UnaryMessage(lootReporter, new ItemElement(item,num)));
+				addToInventory(item,num);
+				return true;
+			}
+		else // take all
+		{
+			items.erase(iter);
+			addReport(new UnaryMessage(lootReporter, new ItemElement(item,num)));
+			addToInventory(item,num);
+			return true;
+		}
+	}
+		return false;
 }

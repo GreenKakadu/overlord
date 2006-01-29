@@ -20,9 +20,9 @@ class SettingOrder : public OrderPrototype  {
 public:
 	SettingOrder();
 	~SettingOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  bool parseSetting(Parser * parser, vector <AbstractData *>  &parameters,
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
+  bool parseSetting(Parser * parser, ParameterList &parameters,
 							const char *setting,   const char *defaultSetting);
 
     protected:

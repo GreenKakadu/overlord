@@ -8,11 +8,11 @@
 #ifndef BONUS_ELEMENT_H
 #define BONUS_ELEMENT_H
 #include "Element.h"
-#include "SkillElement.h"
+//#include "SkillElement.h"
 #include "SkillRule.h"
-#include "RulesCollection.h"
+
 using namespace std;
-extern RulesCollection <SkillRule>     skills;
+
 
 /**
   *@author Alex Dribin
@@ -51,5 +51,7 @@ public:
 	protected:
 
 };
+typedef  vector <BonusElement *>::iterator BonusIterator;
+typedef  vector <BonusElement>::iterator BonusIterator2;
 
 #endif

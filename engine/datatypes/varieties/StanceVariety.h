@@ -38,6 +38,7 @@ extern StanceVariety     sampleStance;
 extern StanceVariety *  alliedStance;
 extern StanceVariety *  friendlyStance;
 extern StanceVariety *  neutralStance;
-#include "VarietiesCollection.h"
+extern StanceVariety *  hostileStance;
 extern VarietiesCollection <StanceVariety>    stances;
+extern StanceVariety    sampleStance;
 #endif

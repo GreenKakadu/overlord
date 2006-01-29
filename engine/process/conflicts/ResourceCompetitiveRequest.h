@@ -22,9 +22,9 @@ class ResourceCompetitiveRequest : public BasicCompetitiveRequest  {
 public: 
 	ResourceCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, ItemRule * resource,  RationalNumber& amount);
 	~ResourceCompetitiveRequest();
-//  virtual bool isEqualTo (BasicCompetitiveRequest * request);
    RationalNumber getValue() const;
    AbstractData * getType() const;
+   bool isValid();
   RationalNumber getTotalAvailableValue() const;
   void answerRequest(RationalNumber& answer);
 protected:

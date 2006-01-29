@@ -19,6 +19,7 @@ operations on all objects stored in the collection.
 #include <ctype.h>
 #include <algorithm>
 #include "LineParser.h"
+extern int Roll_1Dx(int n);
 
 template <class T>
 EntitiesCollection<T>::EntitiesCollection (DataStorageHandler * handler,
@@ -55,7 +56,7 @@ STATUS   EntitiesCollection <T>::addNew  ( T * const newEntity)
   long int randomIndex;
   for (i=0; i <1000; i++)
     {
-      randomIndex = rand() % dimensions_;
+      randomIndex = Roll_1Dx(dimensions_);
       if(data_[randomIndex] == 0)
 		  {
 	     if (binary_search(RIP_.begin(),RIP_.end(),randomIndex) )

@@ -11,9 +11,13 @@
 #include "Global.h"
 #include "DataManipulator.h"
 #include "BasicCombatManager.h"
-
+#include "WeatherRule.h"
+#include "SeasonRule.h"
 #include "DataStorageHandler.h"
 #include "MovementVariety.h"
+#include "BattleField.h"// temporary
+#include "CombatTargetVariety.h"
+#include "CombatManager.h"
 
 DataManipulator::DataManipulator()
 {
@@ -21,8 +25,13 @@ DataManipulator::DataManipulator()
    addVarieties  (&movementModes);
    addVarieties  (&directions);
    addVarieties  (&stances);
+   addVarieties  (&combatStances);
+   addVarieties  (&combatMoves);
+   addVarieties  (&combatRanks);
+   addVarieties  (&combatFiles);
    addVarieties  (&equipments);
    addVarieties  (&construction_works);
+   addVarieties  (&combatTargets);
 
    ruleIndex.addRules (&terrains);
    ruleIndex.addRules (&titles);
@@ -32,6 +41,8 @@ DataManipulator::DataManipulator()
    ruleIndex.addRules (&fx_actions);
    ruleIndex.addRules (&enchantments);
    ruleIndex.addRules (&constructions);
+   ruleIndex.addRules (&weathers);
+   ruleIndex.addRules (&seasons);
 
 
 //... add more collections
@@ -125,7 +136,45 @@ STATUS DataManipulator::load()
    assert(friendlyStance);
   neutralStance =   stances["neutral"];
    assert(neutralStance);
-//  combatSkill = skills[""];
+  hostileStance =   stances["hostile"];
+   assert(hostileStance);
+  avoidStance = combatStances["avoid"];
+   assert(avoidStance);
+  defenceStance = combatStances["defend"];
+   assert(defenceStance);
+  attackStance = combatStances["attack"];
+   assert(defenceStance);
+  defaultCombatStance = avoidStance;
+  defaultCombatMove = combatMoves["flee"];
+  assert(defaultCombatMove);
+  defaultCombatRank = combatRanks["rear"];
+  assert(defaultCombatRank);
+  defaultCombatFile = combatFiles["center"];
+  assert(defaultCombatFile);
+
+  strategySkill = skills["stra"];
+  assert(strategySkill);
+  tacticSkill = skills["tact"];
+  assert(tacticSkill);
+  combatSkill = skills["cmbt"];
+  assert(combatSkill);
+  ambushSkill = skills["ambu"];
+  assert(ambushSkill);
+ parrySkill= skills["parr"];
+  assert(parrySkill);
+ meleeSkill= skills["mele"];
+  assert(meleeSkill);
+ missileSkill= skills["arch"];
+  assert(missileSkill);
+  weaponSlot = equipments["equip_weapon"];
+  assert(weaponSlot);
+
+	frontCombatRank = combatRanks["front"];
+  middleCombatRank = combatRanks["middle"];
+  rearCombatRank = combatRanks["rear"];
+  leftCombatFile = combatFiles["left"];
+  centerCombatFile = combatFiles["center"];
+  rightCombatFile = combatFiles["right"];
  return status;
 }
 
@@ -174,7 +223,7 @@ for (iter = entities_.begin(); iter != entities_.end(); iter++)
 			status = IO_ERROR;
    }
 
-  combatManager->initialize();
+//  combatManager->initialize();
  return status;
 }
 
@@ -244,6 +293,9 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
               continue;
 
           if((*localIter)->isHidden())
+              continue;
+
+					if((*localIter)->isDisobeying())
               continue;
 
           if( (*localIter) ->process(processingMode))
@@ -487,8 +539,21 @@ void DataManipulator::processCompetitiveRequests(ProcessingMode * )
           continue;
     locations[i]->processMarket();
     locations[i]->processDailyConflict();
-    if(currentDay ==game.daysInMonth )
+    if(currentDay ==gameConfig.daysInMonth )
           locations[i]->processMonthlyConflict();
+  }
+}
+
+
+
+void DataManipulator::processCombat()
+{
+  long int i;
+   for ( i=0; i < locations.size();i++)
+   {
+    if(locations[i] ==0)
+          continue;
+    locations[i]->getCombatManager()->process();
   }
 }
 
@@ -523,6 +588,14 @@ void DataManipulator::turnPostProcessing()
                (*iter) ->postProcessData();
         }
 		}
+/*  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+	   {
+      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+        {
+            if(*iter )
+               (*iter) ->postPostProcessData();
+        }
+		}*/
 // add Reports events from post-processing stage
   for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {

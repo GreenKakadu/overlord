@@ -12,8 +12,8 @@
  name="GENERATOR">
   <title>Overlord Design</title>
 </head>
-<body alink="#ff0000" vlink="#551a8b" link="#0000ee" bgcolor="#ffffff"
- text="#000000">
+<body style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);"
+ alink="#ff0000" link="#0000ee" vlink="#551a8b">
 <div align="center">
 <h3> 1.0 General Concepts.</h3>
 </div>
@@ -102,8 +102,11 @@ claiming and rules for challenging <br>
 forest... ) <br>
 &nbsp; - ConstructionRules - defines&nbsp; properties of Ships and
 Buildings <br>
-&nbsp; - InfoRules - defines specific in-game information that may be
-obtained by units. <br>
+&nbsp; - fx_actions.rules<br>
+&nbsp; - enchantments.rules<br>
+&nbsp; - seasons.rules<br>
+&nbsp; - weathers.rules<br>
+&nbsp; <br>
 &nbsp; <br>
 &nbsp;
 <div align="center">
@@ -112,14 +115,12 @@ obtained by units. <br>
 Entities are most important game objects. Entities are refered by ID,
 which is prefix + id number. <br>
 For Overlord they are: <br>
-&nbsp; - GameEntity - Instance of the Game World <br>
+&nbsp; - GameEntity (aka GameInfo)- Instance of the Game World <br>
 &nbsp; - FactionEntity&nbsp; - Factions <br>
 &nbsp; - LocationEntity - Locations <br>
 &nbsp; - UnitEntity&nbsp;&nbsp;&nbsp;&nbsp; - Units <br>
 &nbsp; - SingularityEntity - Global Effects like Tornado, flood or
-plague. <br>
-&nbsp; - ExitEntity&nbsp;&nbsp;&nbsp;&nbsp; - representing transition
-from one location to another <br>
+plague. (TBD) &nbsp;<br>
 &nbsp; - ConstructionEntity - Ships and Buildings. <br>
 &nbsp; <br>
 &nbsp;
@@ -128,7 +129,7 @@ from one location to another <br>
 </div>
 &nbsp; Elements are minor game objects. Element contains reference to
 some Rule&nbsp; (or Entity) and typically one or two Parameters.
-Element allways belongs to some entity&nbsp; and can't exist by
+Element always belongs to some entity&nbsp; and can't exist by
 themselves. There are enormous number of elements and they are the
 biggest part of a&nbsp; game data. On the disk Elements are stored
 inside&nbsp; records of Entity which owns them. Elements may be created
@@ -175,7 +176,22 @@ to target Entity) <br>
 resource) <br>
 &nbsp;&nbsp; ReportElements&nbsp; (contains ReportPattern pointer,
 pointer to Entity, producing this report and time, when report was
-created) &nbsp;&nbsp; </p>
+created)&nbsp;&nbsp;&nbsp; <br>
+</p>
+<p>&nbsp;&nbsp;&nbsp; TravelElement<br>
+&nbsp;&nbsp;&nbsp; PermissionElement<br>
+</p>
+&nbsp;&nbsp;&nbsp; WeatherElement<br>
+&nbsp;&nbsp;&nbsp; ConstructionWorksElement<br>
+&nbsp;&nbsp;&nbsp; EnchantmentElement<br>
+&nbsp;&nbsp;&nbsp; FactionPermissionElement<br>
+&nbsp;&nbsp;&nbsp; InventoryElement<br>
+&nbsp;&nbsp;&nbsp; MovementElement<br>
+&nbsp;&nbsp;&nbsp; SkillLevelElement<br>
+&nbsp;&nbsp;&nbsp; SkillUseElement<br>
+&nbsp;&nbsp;&nbsp; ToolUseElement<br>
+&nbsp;&nbsp;&nbsp; MovementBonusElement<br>
+&nbsp;&nbsp;&nbsp; BonusElement<br>
 <br>
 <p><br>
 </p>
@@ -223,7 +239,8 @@ and calls their handlers.&nbsp; Note that skill conditions&nbsp; for
 item equipment and title holding are different type of objects because
 they define differenr handling procedures.<br>
 </p>
-<p>&nbsp;<br>
+<p>SkillCondition<br>
+ObservationCondition <br>
 </p>
 <h3><a name="2.7_Varieties."></a>2.7 <a name="varieties"></a>Varieties.</h3>
 <p>Let's consider geographical directions on the map (East, West,
@@ -246,6 +263,14 @@ fly, climb etc) <br>
 SE, SW, IN, OUT etc)<br>
 &nbsp;&nbsp;&nbsp; EquipementSlotVariety - possible equipement slots on
 the body (weapon, shield, helm etc.)<br>
+&nbsp;&nbsp;&nbsp; ConstructionWorksVariety<br>
+&nbsp;&nbsp;&nbsp; CombatFileVariety<br>
+&nbsp;&nbsp;&nbsp; CombatMoveVariety<br>
+&nbsp;&nbsp;&nbsp; CombatRankVariety<br>
+&nbsp;&nbsp;&nbsp; CombatStanceVariety<br>
+&nbsp;&nbsp;&nbsp; CombatTargetVariety<br>
+&nbsp;&nbsp;&nbsp; DamageTypeVariety<br>
+<br>
 </p>
 <h3><a name="2.8_Strategies."></a>2.8 <a name="policies"></a>Strategies.</h3>
 <p>&nbsp;&nbsp;&nbsp; Strategy is one of &nbsp;standard <a
@@ -272,53 +297,87 @@ they shouls be also loaded and saved. So it is reasonable to group all
 these operations into one type of&nbsp; objects that have similar
 interface.<br>
 <br>
+PermissionAttribute<br>
+OwnershipPolicyAttribute<br>
+EnchantmentAttribute<br>
+MovementBonusAttribute<br>
+SkillBonusAttribute<br>
+<br>
+<br>
 <p> </p>
 <h2 style="text-align: center;">3.0 Turn processing <br>
 </h2>
-Orders<br>
-Requests<br>
-conflicts<br>
-reports<br>
+Turn processing include the following stages:<br>
 <br>
-<h3>3.1 Data pre-processing<br>
-</h3>
+<a href="#3.1_Data_pre-processing_"><span style="font-style: italic;">Pre-processing</span>.</a><br>
+<a style="font-style: italic;" href="#3.2_Day_processing">Day processing</a>
+(repeated for every day in month)<br>
+<a style="font-style: italic;" href="#3.3_Post-processing">Post-processing</a><br>
 <br>
-<h3>3.1 Order processing <br>
+<br>
+<br>
+<h3><a name="3.1_Data_pre-processing_"></a>3.1 <a
+ name="Data_pre-processing"></a>Turn pre-processing<br>
 </h3>
-<h2 style="text-align: center;"></h2>
+<span style="font-weight: bold; font-style: italic;">Loading</span> -
+creates all game objects, that are mentioned in rules or data files<br>
+<span style="font-weight: bold; font-style: italic;">Initialization</span>
+- inititializes&nbsp; all created objects with data from rules or data
+files. (This is done in two stages because otherwise objects may be
+refered before they created) <br>
+<span style="font-weight: bold; font-style: italic;">Consistency check</span>
+- performs some checks of data correctness (for instance that every
+unit is assigned to some location)<br>
+<span style="font-weight: bold; font-style: italic;">Loading orders</span>
+- loads orders from order files<br>
+<span style="font-weight: bold; font-style: italic;">Data preparation</span>
+- performs some initial calculation<br>
+<h3><a name="3.2_Day_processing"></a>3.2 <a name="Day_processing"></a>Day
+processing</h3>
+Turn processing include the following stages:<br>
+Daily preprocessing <br>
+Orders processing<br>
+Conflict Resolution<br>
+Daily postprocessing<br>
+<h3>3.2.1 Daily pre-processing</h3>
+Some operations&lt; performed before day processing.&nbsp; Mainly&nbsp;
+clearing flags. <br>
+<h3>3.2.2 Order processing <br>
+</h3>
 Orders are processed daily. There are several <span
  style="font-style: italic;">phases</span> of order processing <br>
 &nbsp;&nbsp;&nbsp; immediate orders<br>
 &nbsp;&nbsp;&nbsp; stack orders<br>
+&nbsp;&nbsp;&nbsp; combat resolution<br>
 &nbsp;&nbsp;&nbsp; full-day orders<br>
+&nbsp;&nbsp;&nbsp; competitive requests resolution<br>
 On each phase order processing engine tries to process all orders but
 only some of them may be proceesed.&nbsp; Immediate orders may be
 processed on any stage&nbsp; but stack orders and full-day orders may
 be processed only on their respective phase. <br>
 <br>
 <br>
-<h3>3.2 Conflicts</h3>
+<h3>3.2.2.1 Conflicts</h3>
 <p> <br>
 Conflict happens when two (or more) entities are trying to perform
 actions that are contradicting each other or just can't be done at the
 same time. Examples:</p>
 <p>&nbsp;&nbsp;&nbsp; Unit trying to enter guarded territory.<br>
-&nbsp;&nbsp;&nbsp; Unit trying to tax on guarded territory<br>
+&nbsp;&nbsp;&nbsp; Unit trying to pillage on guarded territory<br>
 &nbsp;&nbsp;&nbsp; Several units are harvesting limited resource.<br>
 &nbsp;&nbsp;&nbsp; Several units are buying/selling the same product on
 the
-market.</p>
-<p> In some cases such conflicts may be resolved immediatelly. For
-instance taxing on guarded territory depends on guarding faction
-stances, these stances can't be changed while taxing occurs so conflict
-may be resolved
-instantly. The different situation happens when conflict is determined
-by
-Entities actions performed at the same stage of turn processing. If we
+market.<br>
+</p>
+<p>The first two cases cause combat. Combat is a special case of
+conflict caused by processing of immediate or stack orders.<br>
+</p>
+&lt;&gt;Example:<br>
+If we
 have
 Location with 5 wood/day resource and 2 units each being able to
 harvest 4 wood/day then the amount of wood each unit will be able to
-harvest will depend on actions of the other unit. </p>
+harvest will depend on actions of the other unit. This is a conflict.
 <p>Currently all conflicts are hosted by Locations but they may be
 assigned to other kinds of entities too. There are different types of
 conflicts. For instanse:<br>
@@ -331,7 +390,7 @@ solved only on some days(Market Conflict on Market days) or at the end
 of month (wages
 payed)<br>
 </p>
-<h4>3.2.1 Requests<br>
+<h4>3.2.2.2 Requests<br>
 </h4>
 <p>
 When order processing may depend on orders given to the other <span
@@ -347,7 +406,7 @@ are submitted, they will be
 sorted,
 conflicts detected and resolved. <br>
 </p>
-<h4><span style="font-weight: bold;">3.2.2 Conflict
+<h4><span style="font-weight: bold;">3.2.2.3 Conflict
 Resolution.</span><br>
 </h4>
 <p>When it's time comes each conflict is <span
@@ -387,9 +446,29 @@ be updated for that unit (request inside answering method calls <span
 </b><span style="text-decoration: underline;">updateOrderResults</span></i>&nbsp;
 )<br>
 </p>
+<h3>3.2.3 Daily post-processing</h3>
+<h3><a name="3.3_Post-processing"></a>3.3 <a name="Post-processing"></a>Post-processing</h3>
+<span style="font-weight: bold;">postprocess data</span> <br>
+<span style="font-weight: bold;">post-postprocess data</span> -&nbsp;
+Example: The weather on the next turn is calculated for each location
+duiring post-processing stage. After that weather effects should be
+applied to unfinished movements: new expected movement times should be
+calculted. This is done on post-postprocessing stage<br>
+<span style="font-weight: bold;">finalize reports</span><br>
+<span style="font-weight: bold;">create turn reports</span><br>
+<span style="font-weight: bold;">save data</span><br>
+<br>
 <p><br>
+<br>
 </p>
-<h3>3.3 Report Processing</h3>
+<h2>4. Combat Processing<br>
+</h2>
+Two players of combat processing are CombatManager and CombatEngine<br>
+Combat processing is done by CombatEngine and&nbsp; CombatManager
+determines combat participants<br>
+<br>
+<p>&nbsp; </p>
+<h2>5. Report Processing</h2>
 <p><br>
 <br>
 =======<br>
@@ -482,17 +561,6 @@ location units&nbsp; sorted ReportElementCollections&nbsp; <br>
 <br>
 <br>
 </p>
-<h3>3.4 Data post-processing<br>
-</h3>
-<p><br>
-<br>
-</p>
-<h2>4. Combat Processing<br>
-</h2>
-Two players of combat processing are CombatManager and CombatEngine<br>
-Combat processing is done by CombatEngine and&nbsp; CombatManager<br>
-<br>
-<p>&nbsp; </p>
 <br>
 <br>
 <br>

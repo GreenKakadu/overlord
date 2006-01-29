@@ -42,13 +42,14 @@ UseOrder::UseOrder(){
   "specified number of products are obtained, for a production skill.  For a\n" +
   "spell casting, products specifies how many castings are done.\n";
 
+    fullDayOrder_= true;
   orderType_   = DAY_LONG_ORDER;
 }
 
 
 
 STATUS UseOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -71,7 +72,7 @@ STATUS UseOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
 {
   int useCounter = 0;
   unsigned int parameterOffset = 0;
@@ -156,6 +157,12 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
  		  return INVALID;
       break;
     }
+    case USING_NOT_ALLOWED:
+    {
+//      unit->addReport(new BinaryMessage (harvestingNotPermittedReporter, //resourceType_, unit->getLocation()),0,0);
+ 		  return FAILURE;
+      break;
+    }
     case TARGET_NOT_EXIST:
     {
 //       unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
@@ -202,6 +209,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
     case WRONG_TARGET:
     case NO_TARGET:
     case TARGET_NOT_EXIST:
+    case USING_NOT_ALLOWED:
     default:
       cout << "ILLEGAL USING_RESULT (" << result<<") for use of "<<skill->print()<<"\n";
       return FAILURE;
@@ -211,7 +219,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, vector <AbstractData *>  &param
 
 
 ORDER_STATUS
-UseOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+UseOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

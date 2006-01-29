@@ -22,7 +22,7 @@ void  TertiaryMessage::operator delete(void * deadObject, size_t size)
 }
 
 
-void TertiaryMessage::printReport(ostream &out) const
+void TertiaryMessage::printReport(ReportPrinter &out) const
 {
   reporter_->printReport(out, param1_, param2_, param3_ );
 }

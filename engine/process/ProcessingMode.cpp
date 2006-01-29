@@ -7,11 +7,24 @@
  ***************************************************************************/
 
 #include "ProcessingMode.h"
+const int ProcessingMode::MAX_INITIATIVE = 0;
+const int ProcessingMode::MIN_INITIATIVE = 0;
 
 ProcessingMode::ProcessingMode(const ORDER_TYPE type)
 {
    orderType_ =   type;
+	 initiative_ = MAX_INITIATIVE;
 }
+
+
+
+ProcessingMode::ProcessingMode()
+{
+   orderType_ =   DEFAULT;
+	 initiative_ = MAX_INITIATIVE;
+}
+
+
 ProcessingMode::~ProcessingMode(){
 }
 /** Checks for order of specified type may be executed  */

@@ -12,7 +12,7 @@
 #include "Rule.h"
 #include "MovementMode.h"
 #include "RulesCollection.h"
-#include "DataStorageHandler.h"
+#include "SkillBonusComboAttribute.h"
 //class UnitEntity;
 class SkillRule;
 
@@ -29,11 +29,16 @@ class  TerrainRule : public Rule
 //    virtual  bool mayMove(MovementVariety * mode, UnitEntity * unit); // For special terrains
       SkillRule * getLandWalk() const {return landWalk_;}
       inline bool mayBuild() const {return buildEnabled_;}
+			bool isAquatic();
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
     protected:
       int optimalPopulation_;
       MovementMode<int> _movementTime;
       SkillRule * landWalk_;
       bool buildEnabled_;
+			SkillBonusComboAttribute skillBonuses_;
     private:
 };
 

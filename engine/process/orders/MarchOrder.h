@@ -9,19 +9,18 @@
 #define MARCH_ORDER_H
 
 #include "OrderPrototype.h"
-
+#include "MoveOrder.h"
 /**
   *@author Alex Dribin
   */
 class ReportPattern;
 class AbstractData;
 
-class MarchOrder : public OrderPrototype  {
+class MarchOrder : public MoveOrder  {
 public:
 	MarchOrder();
 	~MarchOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
 };
 

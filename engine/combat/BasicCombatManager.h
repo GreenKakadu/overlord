@@ -10,27 +10,33 @@
 #if !defined(BASIC_COMBAT_MANAGER_H)
   #define BASIC_COMBAT_MANAGER_H
 
+#include "BasicCombatEngine.h"
 class OrderLine;
 class TokenEntity;
 class FactionEntity;
 class BasicCombatEngine;
+class GuardingRequest;
+class PillageRequest;
 
 class BasicCombatManager  {
 public:
     BasicCombatManager();
     virtual ~BasicCombatManager(){}
     virtual void attackAttempt(TokenEntity * attacker,
-                    TokenEntity * defender,OrderLine * orderId = 0);
-    virtual void attackAttempt(FactionEntity * attacker,
-                    TokenEntity * defender,OrderLine * orderId = 0);
-//    virtual void attackAttempt(TokenEntity  * attacker,
-//                    FactionEntity * defender,OrderLine * orderId = 0);
+                    TokenEntity * defender,OrderLine * orderId = 0,
+                    void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT result) = 0);
+     void attackAttempt(FactionEntity * attacker,
+                    TokenEntity * defender,OrderLine * orderId = 0,
+                    void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT result) = 0);
     virtual void process() {}
     virtual void initialize(){}
+    virtual void addGuardingRequest(GuardingRequest *){}
+    virtual void addPatrolingRequest(GuardingRequest *){}
+    virtual void addPillageRequest(PillageRequest *){}
 
 protected:
-private:
     BasicCombatEngine  * combatEngine_;
+private:
 
 };
 extern BasicCombatManager * combatManager;

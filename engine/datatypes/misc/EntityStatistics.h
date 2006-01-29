@@ -26,6 +26,7 @@ public:
   inline int getMelee() const {return melee_;}
   inline int getDefence() const {return defence_;}
   inline int getDamage() const {return damage_;}
+  inline DAMAGE_TYPE getDamageType() const {return damageType_;}
   inline int getHits() const {return numOfHits_;}
   inline int getMissile() const {return missile_;}
   inline int getLife() const {return life_;}
@@ -39,6 +40,7 @@ public:
   inline void modifyMelee(int melee) {melee_ += melee;}
   inline void modifyDefence(int defence) {defence_ += defence;}
   inline void modifyDamage(int damage) {damage_ += damage;}
+         void modifyDamageType(DAMAGE_TYPE damageType);
   inline void modifyHits(int numOfHits) {numOfHits_ += numOfHits;}
   inline void modifyMissile(int missile) {missile_ += missile;}
   inline void modifyLife(int life) {life_ += life;}
@@ -47,9 +49,11 @@ public:
   inline void modifyControlPoints(int controlPoints) {controlPoints_ += controlPoints;}
   inline void modifyStealth(int stealth) {stealth_ += stealth;}
   inline void modifyObservation(int observation) {observation_ += observation;}
-
+	inline void setInitiative(int initiative) {initiative_ = initiative;}
         void reportStatistics(ostream &out);
         void addStats(EntityStatistics * stats);
+        void setStats(EntityStatistics * stats);
+        void replaceStats(EntityStatistics * stats);
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
         void clearStats();
         bool empty();
@@ -58,6 +62,7 @@ protected:
 	int melee_;
 	int defence_;
 	int damage_;
+	DAMAGE_TYPE damageType_;
 	int numOfHits_;
 	int missile_;
 	int life_;

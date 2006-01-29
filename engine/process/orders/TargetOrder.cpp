@@ -1,5 +1,5 @@
 /***************************************************************************
-                          TargetOrder.cpp 
+                          TargetOrder.cpp
                              -------------------
     begin                : Tue Sep 23 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -16,7 +16,7 @@
 #include "StringData.h"
 #include "ConstructionRule.h"
 #include "ConstructionEntity.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "RulesCollection.h"
 #include "EntitiesCollection.h"
 #include "UnitEntity.h"
@@ -29,7 +29,6 @@ extern RulesCollection <ConstructionRule>      constructions;
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <LocationEntity>      locations;
-extern GameInfo game;
 extern DataManipulator * dataManipulatorPtr;
 //TargetOrder instantiateTargetOrder;
 TargetOrder * instantiateTargetOrder = new TargetOrder();
@@ -49,7 +48,7 @@ TargetOrder::TargetOrder(){
 
 
 
-STATUS TargetOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
+STATUS TargetOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -65,7 +64,7 @@ STATUS TargetOrder::loadParameters(Parser * parser, vector <AbstractData *>  &pa
 
 
 
-ORDER_STATUS TargetOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS TargetOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
@@ -84,7 +83,7 @@ bool TargetOrder::isUnit(const string & target)
 {
    if (!units.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!game.isNewEntityName(target))
+           if(!gameConfig.isNewEntityName(target))
  				  {
             return false;
 				  }
@@ -109,7 +108,7 @@ bool TargetOrder::isBuildingOrShip(const string & target)
 {
    if (!buildingsAndShips.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!game.isNewEntityName(target))
+           if(!gameConfig.isNewEntityName(target))
  				  {
             return false;
 				  }
@@ -121,7 +120,7 @@ bool TargetOrder::isBuildingOrShip(const string & target)
 
 bool TargetOrder::isLocation(const string & target)
 {
-   if (!locations.checkDataType(target)) 
+   if (!locations.checkDataType(target))
        {
             return false;
        }
@@ -145,14 +144,14 @@ AbstractData * TargetOrder::findTarget(const string & tag)
 {
   AbstractData * target;
   assert(dataManipulatorPtr);
-  
+
   target =  dataManipulatorPtr->findGameData(tag);
   if(target)
 		{
       return target;
 		}
 
-  if(game.isNewEntityName(tag))
+  if(gameConfig.isNewEntityName(tag))
     {
       NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(tag);
       if(placeholder != 0)  // this is  placeholder.
@@ -187,7 +186,7 @@ AbstractData * TargetOrder::findTarget(const string & tag)
 //      if (target)
 //        return target;
 //
-//  if(game.isNewEntityName(tag))
+//  if(gameConfig.isNewEntityName(tag))
 // 	  {
 //      return (new StringData(tag));
 //		}

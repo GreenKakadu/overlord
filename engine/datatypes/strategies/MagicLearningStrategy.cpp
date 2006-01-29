@@ -6,6 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "MagicLearningStrategy.h"
+MagicLearningStrategy     sampleMagicLearning     ("LEARNING_MAGIC",     &sampleLearning);
 
 MagicLearningStrategy::MagicLearningStrategy( const MagicLearningStrategy * prototype ):
            BasicLearningStrategy(prototype)

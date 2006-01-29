@@ -35,7 +35,7 @@ EjectOrder::EjectOrder(){
 }
 
 STATUS EjectOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -48,7 +48,7 @@ STATUS EjectOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS EjectOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS EjectOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -71,7 +71,7 @@ ORDER_STATUS EjectOrder::process (Entity * entity, vector <AbstractData *>  &par
  	if(!follower->mayInterract(leader))
    		  return SUCCESS;
 
-   if((*(leader->getFaction()->getStance(follower)) >= *alliedStance) ||(leader->isAccepting(follower)))
+   if((leader->getFaction()->stanceAtLeast(follower, alliedStance)) ||(leader->isAccepting(follower)))
       {
     		stack(follower,leader );
            BinaryMessage * stackMessage = new BinaryMessage(stackReporter, follower, leader);

@@ -35,7 +35,7 @@ ResignOrder::ResignOrder(){
 }
 
 STATUS ResignOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
     if(!parseGameDataParameter(entity,  parser, factions, "npc faction id", parameters))
             return IO_ERROR;
@@ -44,7 +44,7 @@ STATUS ResignOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ResignOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ResignOrder::process (Entity * entity, ParameterList &parameters)
 {
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(parameters.size() == 0)

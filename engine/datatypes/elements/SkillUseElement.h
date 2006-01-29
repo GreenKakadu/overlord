@@ -24,8 +24,7 @@
 #include <string>
 #include "Element.h"
 #include "SkillRule.h"
-#include "RulesCollection.h"
-extern RulesCollection <SkillRule>      skills;
+
 using namespace std;
 typedef Element3<SkillRule, RationalNumber , int> BasicSkillUseElement;
 class SkillUseElement : public  Element3< class SkillRule,  RationalNumber , int> {

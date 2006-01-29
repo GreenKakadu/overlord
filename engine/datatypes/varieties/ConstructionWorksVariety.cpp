@@ -12,9 +12,10 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
- 
-
 #include "ConstructionWorksVariety.h"
+ConstructionWorksVariety   sampleConstructionWork  ("CONSTRUCTION_WORK", &sampleGameData);
+VarietiesCollection <ConstructionWorksVariety>  construction_works(new DataStorageHandler("construction_works.var"));
+
 
 ConstructionWorksVariety::ConstructionWorksVariety( const ConstructionWorksVariety * prototype ) : Variety(prototype)
 {

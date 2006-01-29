@@ -31,12 +31,13 @@ RetreatOrder::RetreatOrder(){
   "moving unit.  The stack will\n" +
   "spend as much time it had spent moving going back to its starting point.\n";
 
+    fullDayOrder_= true;
   orderType_   = STACK_ORDER;
   mayInterrupt_ = true;
 }
 
 STATUS RetreatOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -45,7 +46,7 @@ STATUS RetreatOrder::loadParameters(Parser * parser,
 
 }
 
-ORDER_STATUS RetreatOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS RetreatOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);

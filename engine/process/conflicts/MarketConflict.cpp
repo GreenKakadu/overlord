@@ -14,6 +14,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include "LineParser.h"
+#include "BuyOrder.h"
 #include "MarketConflict.h"
 #include "MarketRequest.h"
 #include "LocationEntity.h"
@@ -181,6 +182,8 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
 
 }
 
+
+
 int MarketConflict::maySellByPrice(vector  <MarketRequest *> & sellOffers, int currentPrice)
 {
   vector  <MarketRequest *>::iterator marketIter;
@@ -195,14 +198,26 @@ int MarketConflict::maySellByPrice(vector  <MarketRequest *> & sellOffers, int c
     return sellAmount;
 }
 
+
+
 int MarketConflict::mayBuyByPrice(vector  <MarketRequest *> & buyOffers, int currentPrice)
 {
   vector  <MarketRequest *>::iterator marketIter;
   int buyAmount = 0;
   for(marketIter = buyOffers.end(); marketIter != buyOffers.begin(); )
   {
-    marketIter--;
-    if( (*marketIter)->getPrice() >= currentPrice)
+
+		marketIter--;
+		if ((*marketIter)->getPrice() == BuyOrder::ANY_PRICE)
+		{
+
+		 int amount = (*marketIter)->getRequestingUnit()->hasMoney() / currentPrice;
+		 if(amount <= (*marketIter)->getAmount())
+				buyAmount += amount;
+		 else
+		 buyAmount += (*marketIter)->getAmount();
+		}
+    else if( (*marketIter)->getPrice() >= currentPrice)
       buyAmount += (*marketIter)->getAmount();
     else
        break;
@@ -210,7 +225,9 @@ int MarketConflict::mayBuyByPrice(vector  <MarketRequest *> & buyOffers, int cur
     return buyAmount;
 }
 
-
+//
+// Find price that provides maximum items traded
+//
 
 int MarketConflict::calculateFinalPrice(vector  <MarketRequest *> & buyOffers,
                            vector  <MarketRequest *> & sellOffers)
@@ -224,19 +241,21 @@ int sellAmount;
   if(testMode)
   {
     cout << "========Buy offers ========\n";
-    for(marketIter = buyOffers.begin(); marketIter != buyOffers.end(); ++marketIter)
+    for(marketIter = buyOffers.begin(); marketIter != buyOffers.end();
+		 ++marketIter)
     {
        cout << (*marketIter)->print();
     }
     cout << "========Sell offers ========\n";
-    for(marketIter = sellOffers.begin(); marketIter != sellOffers.end(); ++marketIter)
+    for(marketIter = sellOffers.begin(); marketIter != sellOffers.end();
+		 ++marketIter)
     {
        cout << (*marketIter)->print();
     }
   }
 #endif
 
-vector  <MarketRequest *>::iterator currentBuyIter = buyOffers.begin();
+  vector  <MarketRequest *>::iterator currentBuyIter = buyOffers.begin();
 
   if(currentBuyIter == buyOffers.end())
   {
@@ -245,6 +264,11 @@ vector  <MarketRequest *>::iterator currentBuyIter = buyOffers.begin();
   }
 
    currentPrice = buyOffers.front()->getPrice();
+	 // special case if this is ANY_PRICE
+	 if(currentPrice == BuyOrder::ANY_PRICE)
+	 {
+	  currentPrice = sellOffers.front()->getPrice();
+	 }
 // Find equilibrium price
     for(;;)
   {
@@ -262,11 +286,11 @@ vector  <MarketRequest *>::iterator currentBuyIter = buyOffers.begin();
   if(buyAmount <= sellAmount)
         {
           return currentPrice; // not currentPrice + 1 !
-                 // Prices are integers so +1 stands here for any small grid step.
-                 //  Idea is that if currentPrice is a maximal buyPrice of some offer
-                 // rising price by any small number will set this offer out of game
-                 // so we can assume that everything was sold by this price but higher
-                 // price offers got an advantage
+              // Prices are integers so +1 stands here for any small grid step.
+              //  Idea is that if currentPrice is a maximal buyPrice of some offer
+              // rising price by any small number will set this offer out of game
+              // so we can assume that everything was sold by this price but higher
+              // price offers got an advantage
         }
   //  if still Buy > Sell   Price = next Buy price
   else
@@ -286,9 +310,14 @@ vector  <MarketRequest *>::iterator currentBuyIter = buyOffers.begin();
   return 0;
 }
 
+
+
+
 bool offerNotLessThan(const MarketRequest* request1,
                   const MarketRequest* request2)
 {
-     return request2->getPrice() >= request1->getPrice();
-//   return request1.isGreaterThan(request2);
+		if(request2->getPrice() == BuyOrder::ANY_PRICE)
+			return true;
+		return request2->getPrice() >= request1->getPrice();
+
 }

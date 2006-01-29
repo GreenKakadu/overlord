@@ -6,3 +6,4 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "SummonUsingStrategy.h"
+SummonUsingStrategy       sampleSummonUsing       ("USING_SUMMON",       &sampleUsing);

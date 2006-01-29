@@ -17,7 +17,7 @@
 #include "FactionEntity.h"
 #include "ItemElement.h"
 
-extern string longtostr(unsigned long u);
+extern string longtostr(long u);
 
 LocalMarketRequest::LocalMarketRequest(int amount,ItemRule * item,
   int price, MARKET_OFFER type): MarketRequest(0,0,amount,item,price,type)
@@ -44,7 +44,7 @@ string LocalMarketRequest::print()
     operationName = " sell ";
 
   return  string("Local request to ") + operationName + longtostr(amount_) +
-          " of " + item_->print() + " for " + longtostr(price_)  + "coins\n";
+          " of " + item_->print() + " for " + longtostr(price_)  + " coins\n";
 }
 
 

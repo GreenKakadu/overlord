@@ -12,11 +12,11 @@
 #include "Element.h"
 #include "SkillLevelElement.h"
 #include "MovementVariety.h"
-#include "VarietiesCollection.h"
+
 class Parser;
 using namespace std;
 class MovementVariety;
-extern VarietiesCollection <MovementVariety> movementModes;
+
                     
 typedef Element3<  MovementVariety,  int ,  SkillLevelElement *> BasicMovementElement;
 

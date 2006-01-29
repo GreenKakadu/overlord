@@ -14,9 +14,9 @@
 #include "NewEntityPlaceholder.h"
 #include "assert.h"
 #include "EnchantmentAttribute.h"
-//#include "SkillElement.h"
 #include "ReportPrinter.h"
 #include "ReportRecord.h"
+#include "GameConfig.h"
 //#include "InternalPropertiesCollection.h"
 using namespace std;
 
@@ -30,10 +30,7 @@ class FactionEntity;
 class Rule;
 class TokenEntity;
 class EnchantmentElement;
-//class BasicAttribute;
-typedef vector<OrderLine *>::iterator OrderIterator;
-//class InventoryElement;
-//class ItemRule;
+
 extern int currentDay;
 
 class Entity : public GameData
@@ -42,28 +39,31 @@ class Entity : public GameData
       Entity (const string & keyword, GameData * parent ) : GameData(keyword, parent){}
       Entity ( const Entity * prototype );
    virtual    ~Entity ();
-   virtual     STATUS  initialize      ( Parser *parser ); // temporary: may be virtual?
+   virtual     STATUS  initialize      ( Parser *parser );
    virtual     void      save (ostream &out);
    virtual     void      loadOrders ();
            GameData *    createInstanceOfSelf();
 //               void registerAttribute(BasicAttribute * attribute);
    virtual     bool      process(ProcessingMode * processingMode);
-   virtual     bool      processOrderResults(ORDER_STATUS result,
-                                    OrderIterator & currentIterator);
    virtual     bool      updateOrderResults(ORDER_STATUS result);
+//   virtual     bool      processOrderResults(ORDER_STATUS result,
+//                                    OrderIterator & currentIterator);
+//   virtual  void postProcessOrder(ORDER_STATUS result, OrderIterator  iter);
    virtual STATUS        prepareData();
    virtual     void      postProcessData();
+   virtual     void      postPostProcessData();
    virtual     void      preprocessData();
    virtual     void      dailyPreProcess();
    virtual     void      dailyUpdate();
    virtual     void      payUpkeep(){}
 
-   virtual     void 	   postProcessOrder(ORDER_STATUS result, OrderIterator  iter);
   /** prints  report for Entity (stats, posessions, private events) */
   virtual      void      produceFactionReport(FactionEntity * faction, ReportPrinter &out);
   virtual      bool      defaultAction();
-  virtual void addOrder(OrderLine * newOrder);
+  virtual void addOrder(string newOrder);
   virtual void clearOrders();
+  virtual inline vector < OrderLine*> & getOrderList(){return orders_;}
+
 //  virtual void prepareOrders();
   virtual void addReport(ReportRecord report);
   virtual void addReport(ReportMessage * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
@@ -99,11 +99,14 @@ class Entity : public GameData
   virtual  bool teacherRequired(SkillRule * skill);
    void addEnchantment(EnchantmentElement *enchantment) {enchantments_.add(enchantment); }
    void removeEnchantment(EnchantmentElement *enchantment) {enchantments_.remove(enchantment); }
+    EnchantmentAttribute getAllEnchantments() const {return enchantments_; }
 
+  virtual bool isHidden() {return false;}// hidden as staff inside construction
+  virtual bool isDisobeying() {return false;}// refuses to follow orders
+  virtual void setDisobeying(bool value) {disobeying_ = value;}// refuses to follow orders
 //===============================  Knowledge ============
   virtual bool addKnowledge(Rule * info);
   virtual bool addSkillKnowledge(SkillRule * knowledge, int level);
-  virtual bool isHidden() {return false;}
 friend  ostream &operator << ( ostream &out, Entity * entity);
     protected:
 //     static vector <BasicAttribute *> attributes;
@@ -116,8 +119,9 @@ friend  ostream &operator << ( ostream &out, Entity * entity);
     vector <ReportElement *> collectedReports_;
     vector <TeachingOffer  *> teachingOffers_;
 //    InternalPropertiesCollection<EffectElement *> effects_;
-    EnchantmentsAttribute  enchantments_;
+    EnchantmentAttribute  enchantments_;
     bool silent_;
+		bool disobeying_;
     private:
 };
 // This operation is used for processing order parameters that may be Entity

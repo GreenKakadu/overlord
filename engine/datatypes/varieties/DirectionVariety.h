@@ -23,7 +23,7 @@ public:
     protected:
     private:
 };
-#include "VarietiesCollection.h"
-extern VarietiesCollection <DirectionVariety>     directions;
 
+extern VarietiesCollection <DirectionVariety>     directions;
+extern DirectionVariety sampleDirection;
 #endif

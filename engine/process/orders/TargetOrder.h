@@ -23,11 +23,11 @@
   */
 
 class TargetOrder : public OrderPrototype  {
-public: 
+public:
 	TargetOrder();
 	~TargetOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
   static bool isUnit(const string & target);
   static bool isBuildingOrShip(const string & target);
   static bool isConstruction(const string & target);

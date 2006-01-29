@@ -25,16 +25,17 @@
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
 #include "EntitiesCollection.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "StringData.h"
 
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern RulesCollection <ConstructionRule>      constructions;
 extern RulesCollection    <ItemRule>     items;
-extern GameInfo game;
+
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
 extern ReportPattern * constructionStartedReporter;
+ConstructionUsingStrategy sampleConstructionUsing ("USING_CONSTRUCTION", &sampleUsing);
 
 
 ConstructionUsingStrategy::ConstructionUsingStrategy ( const ConstructionUsingStrategy * prototype ): BasicUsingStrategy(prototype)
@@ -100,7 +101,9 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
 
 USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
 {
-  SkillUseElement * dailyUse = new SkillUseElement(skill,unit->getFiguresNumber(),productionDays_);
+	// add production bonus
+	int bonus = calculateProductionBonus(unit,skill);
+	SkillUseElement * dailyUse = new SkillUseElement(skill,unit->getFiguresNumber() * (100 + bonus)/100, productionDays_);
   ConstructionEntity * newBuilding;
   if(unit->addSkillUse(dailyUse) >= 1)
   {

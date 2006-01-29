@@ -10,9 +10,9 @@
 #include <iostream>
 #include "Element.h"
 #include "SkillRule.h"
-#include "RulesCollection.h"
+
 using namespace std;
-extern RulesCollection <SkillRule>     skills;
+
 
 typedef  Element2<SkillRule,int> BasicSkillLevelElement;
 class SkillLevelElement : public BasicSkillLevelElement {

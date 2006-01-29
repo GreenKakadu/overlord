@@ -76,9 +76,6 @@ void BasicConflict::process()
   {
     if(!(*iter)->isValid())
     {
-#ifdef TEST_MODE
-  if(testMode) cout<< " Invalid request deleted ----"<<endl;
-#endif
        iter = requests_.erase(iter);
        continue;
     }

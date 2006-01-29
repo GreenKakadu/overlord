@@ -30,7 +30,6 @@
 #include "ObservationCondition.h"
 #include "SkillCondition.h"
 
-
 extern ReportPattern * buildingDestroyedReporter;
 
 extern ReportPattern * cantMoveReporter;
@@ -39,6 +38,8 @@ extern ReportPattern * departFollowerReporter;
 extern ReportPattern * departPublicReporter;
 extern ReportPattern * arrivePrivateReporter;
 extern ReportPattern * arrivePublicReporter;
+EntitiesCollection <ConstructionEntity>   buildingsAndShips(new DataStorageHandler(gameConfig.getBuildingsFile() ));
+ConstructionEntity   sampleConstructionEntity =   ConstructionEntity("BUILDING", &sampleTokenEntity);
 
 
 ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) : TokenEntity(prototype)
@@ -92,6 +93,7 @@ void    ConstructionEntity::preprocessData()
 	faction_-> addConstruction(this);
    if(construction_ == 0)
     cout << "ERROR: "<< print() << " has undefined construction type"<<endl;
+  TokenEntity::preprocessData();
 }
 
 
@@ -101,6 +103,7 @@ void    ConstructionEntity::preprocessData()
  */
 void ConstructionEntity::postProcessData()
 {
+	TokenEntity::postProcessData();
 }
 
 
@@ -262,26 +265,10 @@ void      ConstructionEntity::publicReport (int observation, ReportPrinter &out)
 
 void ConstructionEntity::reportInventory(FactionEntity * faction, ReportPrinter &out)
 {
-    bool isFirst = true;
   if(!inventory_.empty())
     {
       out << " have: ";
-      isFirst = true;
-	    for (InventoryElementIterator iter = inventory_.begin();
-                                iter != inventory_.end(); ++iter)
-        {
-          faction->addKnowledge((*iter)->getItemType());
-          if( isFirst)
-            {
-              isFirst = false;
-            }
-          else
-            {
-              out << ", ";
-            }
-          (*iter)->reportEquipment(out);
-        }
-    out <<". ";
+			inventory_.reportInventory(faction, out);
     }
   // capacities
   if(mayMove())
@@ -330,7 +317,7 @@ void    ConstructionEntity::reportAppearence(FactionEntity * faction, ReportPrin
 //    if(!isCompleted())
 //        out << " unfinished.";
 
-  for(vector <UnitEntity *>::iterator iter = staff_.begin();
+  for(UnitIterator iter = staff_.begin();
                                 iter != staff_.end(); ++iter)
       {
         if(iter == staff_.begin())
@@ -382,7 +369,7 @@ bool ConstructionEntity::recalculateSkills()
 // clear skills
 // pass through all staff
 // pass through all staff's skills
-// if derived from condition - add weifghed value to skills_
+// if derived from condition - add weighed value to skills_
 // pass throudh all skills_ and normalize
 
  //clear all skills experience
@@ -393,11 +380,12 @@ bool ConstructionEntity::recalculateSkills()
 
   int currentSkillPoints;
 //  SkillElement * currentSkillElement;
- for(SkillIterator iter = skills_.begin(); iter != skills_.end(); ++iter)
+
+ for(SkillIterator iter = skills_.getAll().begin(); iter != skills_.getAll().end(); ++iter)
       {
         (*iter).setExpPoints(0);
        }
- for(vector <UnitEntity *>::iterator staffIter = staff_.begin();
+ for(UnitIterator staffIter = staff_.begin();
                                 staffIter != staff_.end(); ++staffIter)
       {
         for(SkillIterator skillIter = ((*staffIter)->getAllSkills()).begin();
@@ -412,13 +400,13 @@ bool ConstructionEntity::recalculateSkills()
       }
 
 // normalize
- for(SkillIterator skillIter = skills_.begin(); skillIter != skills_.end(); ++skillIter)
+ for(SkillIterator skillIter = skills_.getAll().begin(); skillIter != skills_.getAll().end(); ++skillIter)
       {
         currentSkillPoints =   (*skillIter).getExpPoints ();
          if (currentSkillPoints== 0)
          {
            //delete (*skillIter);
-           skills_.erase(skillIter);
+           skills_.getAll().erase(skillIter);
          }
          else
          {
@@ -441,7 +429,7 @@ int ConstructionEntity::calculateSkill(SkillRule *  skill)
   return 0;
 
   int totalSkillPoints = 0;
- for(vector <UnitEntity *>::iterator iter = staff_.begin();
+ for(UnitIterator iter = staff_.begin();
                                 iter != staff_.end(); ++iter)
       {
         totalSkillPoints += (*iter)->getSkillPoints(skill) *
@@ -454,7 +442,7 @@ int ConstructionEntity::calculateSkill(SkillRule *  skill)
 
 int ConstructionEntity::addSkill(SkillElement  skill)
 {
-  for(vector <UnitEntity *>::iterator iter = staff_.begin();
+  for(UnitIterator iter = staff_.begin();
                                 iter != staff_.end(); ++iter)
       {
         (*iter)->addSkill(skill.getSkill(), skill.getExpPoints());
@@ -491,9 +479,22 @@ int ConstructionEntity::getCapacity(int modeIndex)
 
 
 
+int ConstructionEntity::getCapacity(MovementVariety * mode)
+{
+  if(!construction_->getStaffCondition())
+  return 0;
+  if(construction_->getMaxStaff())
+    return  getEffectiveStaff() * construction_->getCapacity(mode) / construction_->getMaxStaff();
+  else
+    return  construction_->getCapacity(mode);
+
+}
+
+
+
 bool ConstructionEntity::isOnBoard(UnitEntity * unit)
 {
-  vector <UnitEntity *>::iterator iter = find(units_.begin(),units_.end(),unit);
+  UnitIterator iter = find(units_.begin(),units_.end(),unit);
   if(iter != units_.end())
   {
    return true;
@@ -511,7 +512,7 @@ void ConstructionEntity::addUnit(UnitEntity * unit)
 
 void ConstructionEntity::removeUnit(UnitEntity * unit)
 {
-  vector <UnitEntity *>::iterator iter = find(units_.begin(),units_.end(),unit);
+  UnitIterator iter = find(units_.begin(),units_.end(),unit);
   if(iter != units_.end())
   {
     units_.erase(iter);
@@ -534,7 +535,7 @@ void ConstructionEntity::addStaff(UnitEntity * unit)
 
 void ConstructionEntity::removeStaff(UnitEntity * unit)
 {
-  vector <UnitEntity *>::iterator iter = find(staff_.begin(),staff_.end(),unit);
+  UnitIterator iter = find(staff_.begin(),staff_.end(),unit);
   if(iter != staff_.end())
   {
     staff_.erase(iter);
@@ -555,7 +556,7 @@ void ConstructionEntity::destroy()
   // remove title
   location_->deleteTitle(construction_->getTitle());
   // move all units otside
-  for(vector <UnitEntity *>::iterator iter = units_.begin();
+  for(UnitIterator iter = units_.begin();
                                 iter != units_.end(); ++iter)
       {
         (*iter)->setContainingConstruction(0);
@@ -580,7 +581,7 @@ int ConstructionEntity::getLandUse()
 
 int ConstructionEntity::getProductionBonus(ItemRule * product, SkillRule * skill,int level)
 {
-  int value = construction_->getProductionBonusValue(skill, level);
+  int value = construction_->getProductionBonusValue(skill);
   if(value == 0)
     return 0;
 // If land use implemented
@@ -606,7 +607,7 @@ int ConstructionEntity::getProductionBonus(ItemRule * product, SkillRule * skill
 
 void ConstructionEntity::setProductionBonus(ItemRule * product, SkillRule * skill,int level)
 {
-  int value = construction_->getProductionBonusValue(skill, level);
+  int value = construction_->getProductionBonusValue(skill);
   if(value == 0)
     return ;
 // If land use implemented
@@ -664,7 +665,7 @@ bool ConstructionEntity::mayMove()
 bool ConstructionEntity::leaveStaying()
 {
   vector <UnitEntity *> units = units_;
-  for(vector <UnitEntity *>::iterator iter = units.begin(); iter != units.end(); ++iter)
+  for(UnitIterator iter = units.begin(); iter != units.end(); ++iter)
   {
     if( (*iter)->isStaying() )
        (*iter)->exitConstruction();
@@ -726,8 +727,14 @@ void ConstructionEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 void ConstructionEntity::moveToLocation()
 {
   TokenEntity::moveToLocation();
-  getLocation()->removeConstruction(this);
+ // It may also happen that leader allowed to enter but
+// one of followers is not.
+// check that without this follower stack may move
+// if not - retreat all stack
+// if yes - unstack and retreat this follower
+ getLocation()->removeConstruction(this);
   moving_->getDestination()->addConstruction(this);
+	recalculateTravelTime();
 }
 
 
@@ -844,6 +851,9 @@ bool ConstructionEntity::isObservableBy(FactionEntity * faction)
 LEARNING_RESULT ConstructionEntity::mayLearn(SkillRule * skill)
 {
   // may learn only skills derived from condition
+	 if(construction_->getStaffCondition() == 0)
+      return CANNOT_STUDY_FAILURE;
+
    if(!skill->isDescendFrom(construction_->getStaffCondition()->getSkill(),1))
       return CANNOT_STUDY_FAILURE;
 
@@ -856,5 +866,56 @@ LEARNING_RESULT ConstructionEntity::mayLearn(SkillRule * skill)
     return LEARNING_OK;
   }
     return CANNOT_STUDY_FAILURE;
+}
+
+/** Climate and other bonuses */
+int ConstructionEntity::calculateMovementBonus(MovementVariety * mode)
+{
+	int bonus = 0;
+	bonus = TokenEntity::calculateMovementBonus(mode);
+
+// Construction
+	bonus += getConstructionType()->getMovementBonus(mode);
+   return bonus;
+}
+
+
+// Currently nothing
+void ConstructionEntity::sufferDamage(int value)
+{
+}
+
+
+
+string ConstructionEntity::printComposition()
+{
+	return construction_->print();
+}
+
+
+Rule * ConstructionEntity::getComposition()
+{
+	return construction_;
+}
+
+
+
+EntityStatistics  ConstructionEntity::getBasicStats()
+{
+
+  EntityStatistics basicStats;
+ // construction type
+  basicStats.addStats(construction_->getStats());
+ // Effects
+     enchantments_.addStats(&basicStats,getFiguresNumber());
+
+return basicStats;
+}
+
+
+// Destroy construction
+void ConstructionEntity::disband()
+{
+	destroy();
 }
 

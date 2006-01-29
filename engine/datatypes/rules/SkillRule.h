@@ -20,7 +20,8 @@ class BasicLearningStrategy;
 class InventoryElement;
 class ReportPattern;
 class TeachingOffer;
-
+class CombatActionStrategy;
+class SkillBonusComboAttribute;
 class SkillRule : public Rule  {
 public:
 
@@ -59,7 +60,10 @@ public:
           string printLevel(int level);
    inline bool isCombatSkill(){return isCombat_;}
    inline bool isMagicSkill(){return isMagic_;}
-   inline int  getCapacity(int modeIndex, int level){return (capacity_[level])[modeIndex];}
+   inline int  getCapacity(int modeIndex, int level)
+	 			{return (capacity_[level])[modeIndex];}
+	 inline int getCapacity(MovementVariety * mode, int level)
+				{return (capacity_[level])[mode];}
           USING_RESULT use(TokenEntity * unit, int & useCounter);
           void reportUse(USING_RESULT result, TokenEntity * unit);
    SkillRule * getBasicSkill();
@@ -67,7 +71,14 @@ public:
           int getUseDuration(TokenEntity * unit);
           InventoryElement * getItemRequired(TokenEntity * tokenEntity);
     inline static int getMaxSkillLevel()  {return maxSkillLevel;}
+		CombatActionStrategy * getCombatAction(int level)
+														{return combatAction_[level];}
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
     protected:
+		SkillBonusComboAttribute  * skillBonuses_;// implemented as pointer
+		                                          // to avoid type definition loop
 	  static const int maxSkillLevel;
     int currentLevel_;
     vector <SkillLevelElement *> requirement_;
@@ -80,6 +91,7 @@ public:
 	  vector <int> expPoints_;
 	  vector <int> studyCost_;
     void initLevel_(int level);
+		vector <CombatActionStrategy *> combatAction_;
     SkillElement * max_;
     bool isCombat_;
     bool isMagic_;
@@ -88,7 +100,6 @@ public:
     private:
 };
 extern SkillRule      sampleSkill;
-#include "RulesCollection.h"
 extern RulesCollection <SkillRule>     skills;
 
 #endif

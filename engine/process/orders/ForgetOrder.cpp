@@ -32,7 +32,7 @@ ForgetOrder::ForgetOrder(){
 }
 
 STATUS ForgetOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -45,7 +45,7 @@ STATUS ForgetOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ForgetOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ForgetOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

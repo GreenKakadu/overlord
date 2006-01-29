@@ -13,6 +13,7 @@
 #include "UnitEntity.h"
 #include "EntityStatistics.h"
 #include "BonusElement.h"
+#include "SkillBonusComboAttribute.h"
 
 class EquipmentSlotVariety;
 
@@ -41,9 +42,9 @@ public:
   virtual LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
   virtual bool teacherRequired(SkillRule * skill, UnitEntity * unit);
   virtual bool mayMove(UnitEntity * unit);
-  int getBonus(SkillRule * skill);
   inline  EntityStatistics * getStats()  {return &stats;}
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
+	inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
   virtual bool mayWork();
   virtual bool mayRectuit();
   virtual bool mayTrade();
@@ -53,10 +54,12 @@ public:
   /** Amounts of efforts teacher should spend in order to teach this student. */
   virtual int getLearningCapacity();
   virtual void extractKnowledge (Entity * recipient, int parameter = 0);
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
 	protected:
     vector< EquipSlot *> equipmentSlots_;
     vector< SkillElement> intristicSkills_;
-    vector< BonusElement> intristicSkillBonuses_;
 		MovementMode<int> capacity_;
 	  string pluralName_;
     int controlPointsFraction_;
@@ -66,7 +69,8 @@ public:
     int hiringMax_;
     EntityStatistics stats;
     private:
-	
+		SkillBonusComboAttribute skillBonuses_;
+
 };
 extern RaceRule       sampleRace;
 extern RulesCollection <RaceRule>      races;

@@ -28,19 +28,19 @@ class OrderLine
 {
     public:
         OrderLine(const string & order, Entity * entity);
-        ~OrderLine();
+        virtual ~OrderLine();
 
-	ORDER_STATUS process( ProcessingMode * processingMode, Entity * entity, ostream &out);
+	ORDER_STATUS process( ProcessingMode * processingMode, Entity * entity);
 // some orders can't be processed immediatelly. Instead of that they are submiting
 // requests that are resolved later. completeProcessing  is a second part of
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
 	ORDER_STATUS completeProcessing(Entity * entity, int result);
-	void save(ostream &out);
-	void printOrderLine(ostream &out);
-	void parseModifiers(Parser * parser );
-	bool parse(Parser * parser, Entity * entity );
-//	bool isParsed;
+	virtual void save(ostream &out);
+	virtual void printOrderLine(ostream &out);
+	virtual void parseModifiers(Parser * parser );
+	static void stripModifiers(Parser * parser );
+	virtual bool parse(Parser * parser, Entity * entity );
 	int ifConditionLevel;
 	inline int repetitionCounter() const {return repetitionCounter_;}
 	UINT reportFlags;
@@ -51,14 +51,17 @@ class OrderLine
   bool isFullDayOrder();
   PROCESSING_STATE getProcessingState() const;
   void setProcessingState(PROCESSING_STATE state);
-  inline bool isNormalReportEnabled() const { return !(reportFlags & NO_NORMAL_REPORT_FLAG);}
-  inline bool isErrorReportEnabled() const { return !(reportFlags &  NO_ERROR_REPORT_FLAG);}
+  inline bool isNormalReportEnabled() const
+		{ return !(reportFlags & NO_NORMAL_REPORT_FLAG);}
+  inline bool isErrorReportEnabled() const
+		{ return !(reportFlags &  NO_ERROR_REPORT_FLAG);}
   inline void setCompletionFlag(bool flag) { isCompleted_ = flag;}
 /*  inline*/ bool getCompletionFlag() const;// {return  isCompleted_;}
          void setReportingFlag(UINT flag);
          void clearReportingFlag(UINT flag);
          bool getReportingFlag(UINT flag);
-    protected:
+
+		protected:
 static const  UINT NO_NORMAL_REPORT_FLAG;
 static const  UINT NO_ERROR_REPORT_FLAG;
 	bool isPermanent_;
@@ -70,10 +73,21 @@ static const  UINT NO_ERROR_REPORT_FLAG;
 	int repetitionCounter_;
   string comment_ ;
 	OrderPrototype * orderPrototype_;
-	vector <AbstractData *> parameters_;
-//	Parser * parser_;
+	ParameterList parameters_;
   UINT translate_(UINT flag);
      private:
+
+// New features: IF-ELSE-ENDIF
+    public:
+	inline bool isIfStatement()const{return ifStatement_;}
+	inline bool isElseStatement()const{return elseStatement_;}
+	inline bool isEndifStatement()const{return endifStatement_;}
+	int ifStatementLevel;
+	int elseStatementLevel;
+		protected:
+	bool ifStatement_;
+	bool elseStatement_;
+	bool endifStatement_;
 
 };
 

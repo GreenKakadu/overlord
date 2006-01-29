@@ -11,6 +11,8 @@
 
 #include "GameData.h"
 #include "OverlordTypes.h"
+#include "VarietiesCollection.h"
+
 
 
 /**
@@ -24,5 +26,6 @@ public:
 	virtual ~Variety(){}
 protected:
 };
+extern Variety  sampleVariety;
 
 #endif

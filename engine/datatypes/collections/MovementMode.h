@@ -22,11 +22,13 @@ public:
   T& operator []       (const string &tag);
   T& operator []       (const int index);
   T& operator []       (const MovementVariety * mode);
-
+	int getModeIndex     (const MovementVariety * mode);
 protected:
 
 };
 //typedef template <class T> MovementMode<T>::iterator MovementModeIterator;
+
+
 
 template <class T> T&  MovementMode<T>::operator [] (const string &tag)
 {
@@ -34,13 +36,16 @@ template <class T> T&  MovementMode<T>::operator [] (const string &tag)
  for (i = 0; i < movementModes.size(); i++)
    {
       if ( movementModes[i] ->getTag() == tag)
-       return  *(MovementMode<T>::begin()+ i);
+       return  *(begin()+ i);
 
    }
  cerr << "Error: Tag (" << tag  << ") was not found in Movement Rules \n";
  return *(MovementMode<T>::begin()) ;
 
 }
+
+
+
 template <class T> T&  MovementMode<T>::operator [] (const int index)
 {
     if (index < movementModes.size())
@@ -51,6 +56,8 @@ template <class T> T&  MovementMode<T>::operator [] (const int index)
  return *(MovementMode<T>::begin()) ;
 
 }
+
+
 
 template <class T> T&  MovementMode<T>::operator [] (const MovementVariety * mode)
 {
@@ -65,5 +72,7 @@ template <class T> T&  MovementMode<T>::operator [] (const MovementVariety * mod
  return *(MovementMode<T>::begin()) ;
 
 }
+
+
 
 #endif

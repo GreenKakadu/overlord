@@ -11,12 +11,10 @@
 #include <iostream>
 #include "Element.h"
 #include "ItemRule.h"
-#include "RulesCollection.h"
 #include "RationalNumber.h"
 class Parser;
-extern RulesCollection <ItemRule>      items;
 using namespace std;
-//class ItemRule;
+
 typedef Element3<  ItemRule,  int ,  RationalNumber> BasicResourceElement;
 
 class ResourceElement : public BasicResourceElement  {

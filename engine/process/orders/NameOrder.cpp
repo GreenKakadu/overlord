@@ -27,7 +27,7 @@ NameOrder::NameOrder(){
 }
 
 STATUS NameOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
@@ -37,7 +37,7 @@ STATUS NameOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS NameOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS NameOrder::process (Entity * entity, ParameterList &parameters)
 {
 
 //  StringData * h1 = new StringData("zaraza");

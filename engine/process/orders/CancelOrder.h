@@ -20,8 +20,8 @@ class CancelOrder : public OrderPrototype  {
 public:
 	CancelOrder();
 	~CancelOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
    static const  unsigned CANNOT_CANCEL_OWN_REPORT_FLAG;
    static const  unsigned CANNOT_CANCEL_REPORT_FLAG;

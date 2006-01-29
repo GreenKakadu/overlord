@@ -34,7 +34,7 @@ SynchroOrder::SynchroOrder(){
 }
 
 STATUS SynchroOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -47,7 +47,7 @@ STATUS SynchroOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SynchroOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS SynchroOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);

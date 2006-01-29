@@ -28,7 +28,7 @@ void  QuintenaryMessage::operator delete(void * deadObject, size_t size)
 }
 
 
-void QuintenaryMessage::printReport(ostream &out) const
+void QuintenaryMessage::printReport(ReportPrinter &out) const
 {
   reporter_->printReport(out, param1_, param2_, param3_ , param4_ , param5_ );
 }

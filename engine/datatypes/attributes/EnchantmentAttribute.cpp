@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EnchantmentsAttribute.cpp 
+                          EnchantmentAttribute.cpp 
                              -------------------
     begin                : Thu Mar 11 2004
     copyright            : (C) 2004 by Alex Dribin
@@ -20,15 +20,16 @@
 
 extern RulesCollection <EnchantmentRule>    enchantments;
 
-EnchantmentsAttribute::EnchantmentsAttribute(){
+EnchantmentAttribute::EnchantmentAttribute(){
+dataCollection_.clear();
 }
-EnchantmentsAttribute::~EnchantmentsAttribute(){
+EnchantmentAttribute::~EnchantmentAttribute(){
 }
 
 
 
 STATUS
-EnchantmentsAttribute::initialize        ( Parser *parser )
+EnchantmentAttribute::initialize        ( Parser *parser )
 {
 
 
@@ -40,7 +41,7 @@ EnchantmentsAttribute::initialize        ( Parser *parser )
           return OK;
       else
       {
-         dataCollection_.push_back(new EnchantmentElement(enchantment, number));
+         dataCollection_.push_back(EnchantmentElement(enchantment, number));
 //      cout <<"----- Created Enchantment "<< enchantment << " " << number << endl;
        }
 //      EnchantmentElement * enchantment = EnchantmentElement::readElement(parser);
@@ -58,55 +59,54 @@ EnchantmentsAttribute::initialize        ( Parser *parser )
 
 
 
-void EnchantmentsAttribute::save(ostream &out)
+void EnchantmentAttribute::save(ostream &out)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      out << "FX_EFFECT " <<  ((*iter)->getRule())->getTag() << " " << (*iter)->getParameter1()<<endl; 
+      out << "FX_EFFECT " <<  ((*iter).getRule())->getTag() << " " << (*iter).getParameter1()<<endl;
     }
 }
 
 
 
-ostream&  EnchantmentsAttribute::report(ostream &out)
+ostream&  EnchantmentAttribute::report(ostream &out)
 {
   return out;
 }
 
 
 
-void EnchantmentsAttribute::add(EnchantmentElement * data)
+void EnchantmentAttribute::add(EnchantmentElement * data)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
 //      cout <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
-      if ( (*iter)->getRule() == data->getRule() )
+      if ( (*iter).getRule() == data->getRule() )
         {
 
-            (*iter)->setParameter1((*iter)->getParameter1() + data->getParameter1()) ;
+           (*iter).setParameter1((*iter).getParameter1() + data->getParameter1()) ;
 //            delete data;
             return;
-        }    
+        }
     }
-    dataCollection_.push_back(data);
+    dataCollection_.push_back(*data);
 
 }
 
 
 
-void EnchantmentsAttribute::remove(EnchantmentElement * data)
+void EnchantmentAttribute::remove(EnchantmentElement * data)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      if ( (*iter)->getRule() == data->getRule() )
+      if ( (*iter).getRule() == data->getRule() )
         {
-          if( (*iter)->getParameter1() > data->getParameter1())
+          if( (*iter).getParameter1() > data->getParameter1())
           {
-            (*iter)->setParameter1((*iter)->getParameter1() - data->getParameter1()) ;
-//            delete data;
+           (*iter).setParameter1((*iter).getParameter1() - data->getParameter1()) ;
             return;
           }
           else
@@ -123,25 +123,25 @@ void EnchantmentsAttribute::remove(EnchantmentElement * data)
 
 
 
-EnchantmentElement * EnchantmentsAttribute::has( EnchantmentElement * data)
+EnchantmentElement * EnchantmentAttribute::has( EnchantmentElement * data)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      if ( (*iter)->getRule() == data->getRule() )
-      return (*iter);
+      if ( (*iter).getRule() == data->getRule() )
+      return (&(*iter));
     }
   return 0;
 }
 
 
 
-EnchantmentElement * EnchantmentsAttribute::findAndDo(EnchantmentElement * data, EnchantmentElement * (*toDo) ())
+EnchantmentElement * EnchantmentAttribute::findAndDo(EnchantmentElement * data, EnchantmentElement * (*toDo) ())
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      if ( (*iter)->getRule() == data->getRule() )
+      if ( (*iter).getRule() == data->getRule() )
       {
       return(*toDo) ();
       }
@@ -150,60 +150,145 @@ EnchantmentElement * EnchantmentsAttribute::findAndDo(EnchantmentElement * data,
 }
 
 
-
-void EnchantmentsAttribute::addStats(EntityStatistics * stats, int figuresNumber = 1 )
+// Get stats attribute as parameter and modifies it
+void EnchantmentAttribute::addStats(EntityStatistics * stats, int figuresNumber = 1 )
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      if( (*iter)->getParameter1() <= figuresNumber)
-      // Enchantment is not strong enough to cover all fugures
+      if( (*iter).getParameter1() <= figuresNumber)
+      // Enchantment is not strong enough to cover all figures
       {
-        stats->addPartialStats((*iter)->getRule()->getStats(),(*iter)->getParameter1(), figuresNumber);
+        stats->addPartialStats((*iter).getRule()->getStats(),(*iter).getParameter1(), figuresNumber);
       }
       else
-        stats->addStats((*iter)->getRule()->getStats());
+        stats->addStats((*iter).getRule()->getStats());
     }
 }
 
 
 
-int EnchantmentsAttribute::getCapacity(int modeIndex, int figuresNumber = 1)
+int EnchantmentAttribute::getCapacity(int modeIndex, int figuresNumber = 1)
 {
   int capacity = 0;
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-      if( (*iter)->getParameter1() <= figuresNumber)
+      if( (*iter).getParameter1() <= figuresNumber)
       // Enchantment is not strong enough to cover all fugures
       {
-        capacity +=  ((*iter)->getRule()->getCapacity(modeIndex)) *  (*iter)->getParameter1() ;
+        capacity +=  ((*iter).getRule()->getCapacity(modeIndex)) *  (*iter).getParameter1() ;
       }
       else
       {
-        capacity +=  ((*iter)->getRule()->getCapacity(modeIndex)) *  figuresNumber ;
-      } 
+        capacity +=  ((*iter).getRule()->getCapacity(modeIndex)) *  figuresNumber ;
+      }
     }
     return capacity;
 }
 
 
 
-void EnchantmentsAttribute::processExpiration(int figuresNumber = 1)
+int EnchantmentAttribute::getCapacity(MovementVariety * mode, int figuresNumber = 1)
+{
+  int capacity = 0;
+  for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();  ++iter)
+    {
+      if( (*iter).getParameter1() <= figuresNumber)
+      // Enchantment is not strong enough to cover all fugures
+      {
+        capacity +=  ((*iter).getRule()->getCapacity(mode)) *  (*iter).getParameter1() ;
+      }
+      else
+      {
+        capacity +=  ((*iter).getRule()->getCapacity(mode)) *  figuresNumber ;
+      }
+    }
+    return capacity;
+}
+
+
+
+void EnchantmentAttribute::processExpiration(int figuresNumber)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();)
     {
 //      cout <<"----- Expiration of Enchantment "<< *((*iter)->getRule()) << " " << (*iter)->getParameter1() << endl;
-      if( (*iter)->getParameter1() <= figuresNumber) // Enchantment expired and deleted
+      if( (*iter).getParameter1() <= figuresNumber) // Enchantment expired and deleted
       {
             //delete *iter ;
             dataCollection_.erase(iter);
       } 
       else
       {
-         (*iter)->setParameter1((*iter)->getParameter1() - figuresNumber);
+         (*iter).setParameter1((*iter).getParameter1() - figuresNumber);
            ++iter;
       }
     }
+}
+
+
+
+
+int EnchantmentAttribute::getProductionBonus(SkillRule * skill)
+{
+	int bonus = 0;
+	for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();++iter)
+    {
+			bonus += (*iter).getRule()->getProductionBonusValue(skill);
+		}
+	return bonus;
+}
+
+
+int EnchantmentAttribute::getStudyBonus(SkillRule * skill)
+{
+	int bonus = 0;
+	for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();++iter)
+    {
+			bonus += (*iter).getRule()->getStudyBonus(skill);
+		}
+	return bonus;
+}
+
+
+int EnchantmentAttribute::getLearningBonus(SkillRule * skill)
+{
+	int bonus = 0;
+	int current= 0;
+	for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();++iter)
+    {
+			current = (*iter).getRule()->getLearningBonus(skill);
+			if (current > bonus)
+			bonus = current;
+		}
+
+	return bonus;
+}
+
+
+
+int EnchantmentAttribute::getMovementBonus(MovementVariety *    mode)
+{
+	int bonus = 0;
+	int current= 0;
+	for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();++iter)
+    {
+			current = (*iter).getRule()->getMovementBonus(mode);
+		}
+
+	return bonus;
+}
+
+
+
+void EnchantmentAttribute::removeAll()
+{
+ dataCollection_.clear();
 }

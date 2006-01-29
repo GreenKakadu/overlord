@@ -13,10 +13,13 @@
 #include "PrototypeManager.h"
 #include "ReportPattern.h"
 #include "UnaryMessage.h"
-extern string longtostr(unsigned long u);
+#include "CombatActionStrategy.h"
+#include "SkillBonusComboAttribute.h"
+extern string longtostr(long u);
 extern ReportPattern * unusableSkillReporter;
 const int SkillRule::maxSkillLevel = 7;
-//SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
+SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
+RulesCollection <SkillRule>      skills(new DataStorageHandler("skills.rules"));
 
 SkillRule::SkillRule ( const SkillRule * prototype ) : Rule(prototype)
 {
@@ -35,9 +38,12 @@ SkillRule::SkillRule ( const SkillRule * prototype ) : Rule(prototype)
 	 expPoints_.resize(maxSkillLevel+1);
    requirement_.resize(maxSkillLevel+1);
    derivatives_.resize(maxSkillLevel+1);
+	 combatAction_.resize(maxSkillLevel+1);
+	 combatAction_[0] = 0;
      isCombat_ = false;
      isMagic_ = false;
      targetType_ = 0;
+		 skillBonuses_ = new SkillBonusComboAttribute();
 }
 
 
@@ -59,6 +65,7 @@ void SkillRule::initLevel_ (int level)
    description_[level] = description_[level - 1];
 //  if(capacity_[level].size() == 0)
    capacity_[level] = capacity_[level - 1];
+	 combatAction_[level] = combatAction_[level - 1];
 
 }
 
@@ -177,7 +184,8 @@ SkillRule::initialize        ( Parser *parser )
       studyCost_[currentLevel_] = parser->getInteger();
       return OK;
     }
-  if (parser->matchKeyword ("LEARNING_PARADIGM") )
+
+	if (parser->matchKeyword ("LEARNING_PARADIGM") )
     {
         string keyword = parser->getWord();
        	GameData * temp =  prototypeManager->findInRegistry(keyword);
@@ -216,18 +224,61 @@ SkillRule::initialize        ( Parser *parser )
       return OK;
     }
 
+  if (parser->matchKeyword ("COMBAT_ACTION") )
+    {
+        string keyword = parser->getWord();
+       	GameData * temp =  prototypeManager->findInRegistry(keyword);
+			if(temp == 0)
+				{
+					cout << "Unknown combat action " << keyword  << " for skill "
+						<< print()<< endl;
+				}
+			else
+				{
+  				combatAction_[currentLevel_] =
+          	dynamic_cast<CombatActionStrategy *>(temp ->createInstanceOfSelf ());
+
+        }
+      return OK;
+    }
+	if (parser->matchKeyword("COMBAT"))
+    {
+			if(combatAction_[currentLevel_] == 0)
+			{
+					cout << "combat parameter COMBAT "<< parser->getText()<< " defined before combat action  for skill " << print()<< endl;
+
+      return OK;
+			}
+
+			combatAction_[currentLevel_]->initialize(parser);
+
+      return OK;
+    }
 //  if (parser->matchKeyword ("") )
 //    {
 //       = parser->getInteger();
 //      return OK;
 //    }
      if(stats_[currentLevel_].initialize(parser)!= OK)
-        cout << "Error on initialization of stats modifiers for "<<print()<<" ("<< currentLevel_<<")"<<endl;
+        cout << "Error on initialization of stats modifiers for "<<print()
+						 <<" ("<< currentLevel_<<")"<<endl;
      if(learningParadigm_[currentLevel_]->initialize(parser) != OK)
-        cout << "Error on initialization of learning Paradigm for "<<print()<<" ("<< currentLevel_<<")"<<endl;
+        cout << "Error on initialization of learning Paradigm for "<<print()
+						 <<" ("<< currentLevel_<<")"<<endl;
      if(usingParadigm_[currentLevel_]->initialize(parser)!= OK)
-        cout << "Error on initialization of using Paradigm for "<<print()<<" ("<< currentLevel_<<")"<<endl;
-      return OK;
+        cout << "Error on initialization of using Paradigm for "<<print()
+						 <<" ("<< currentLevel_<<")"<<endl;
+		 if(combatAction_[currentLevel_])
+		 {
+		 	if(combatAction_[currentLevel_]->initialize(parser)!= OK)
+        cout << "Error on initialization of combat action for "<<print()
+						 <<" ("<< currentLevel_<<")"<<endl;
+		 }
+
+		skillBonuses_->initialize(parser);
+		movementBonuses_.initialize(parser);
+
+			return OK;
 
 }
 
@@ -327,13 +378,21 @@ int SkillRule::getLevel(int expPoints)
  */
 bool SkillRule::isDescendFrom(SkillRule * root, int level)
 {
-  SkillRule * current;
+	if(root == 0)
+    return false;
+
+	SkillRule * current;
+	SkillLevelElement * requirement = 0;
   int tryLevel;
   for (tryLevel = 0; tryLevel< level; tryLevel++)
   {
-    for(current = this; current != 0; current = current ->getRequirement(tryLevel)->getSkill())
+    for(current = this; current != 0;  )
       {
-        if (current == root )
+				requirement = current ->getRequirement(tryLevel);
+				if(requirement == 0)
+					break;
+				current = requirement->getSkill();
+				if (current == root )
           return true;
       }
   }
@@ -616,4 +675,25 @@ InventoryElement * SkillRule::getItemRequired(TokenEntity * tokenEntity)
 {
    int level =  tokenEntity->getSkillLevel(this);
    return learningParadigm_[level]->getItemRequired();
+}
+
+
+
+int SkillRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_->getProductionBonus(skill);
+}
+
+
+
+int SkillRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_->getLearningBonus(skill);
+}
+
+
+
+int SkillRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_->getStudyBonus(skill);
 }

@@ -24,7 +24,6 @@ extern EntitiesCollection <LocationEntity>      locations;
 extern VarietiesCollection  <DirectionVariety>      directions;
 const UINT MoveOrder::OVERLOADING_REPORT_FLAG = 0x01;
 const UINT MoveOrder::NO_MOVEMENT_ABILITY_REPORT_FLAG = 0x02;
-extern ReportPattern *	invalidOrderReporter;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern * cantMoveReporter;
@@ -50,13 +49,14 @@ MoveOrder::MoveOrder(){
   "If the movement is prefixed by the infinite repeat request symbol ('@'), it\n" +
   "is retained after execution. Specific duration is ignored.\n";
 
+    fullDayOrder_= true;
   orderType_   = STACK_ORDER;
 }
 
 
 
 STATUS MoveOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -65,7 +65,7 @@ STATUS MoveOrder::loadParameters(Parser * parser,
 
    if (tag.size() == 0)  // Missing parameter
         {
-        entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("destination ")));
+        entity->addReport(new BinaryMessage( missingParameterReporter, new StringData( keyword_), new StringData("destination ")));
          return IO_ERROR;
         }
 
@@ -97,16 +97,18 @@ STATUS MoveOrder::loadParameters(Parser * parser,
 // take parsing from Caravan, execute one-by one, delete executed locations
 // from parameters list. return IN-PROGRESS and SUCCESS only if the end of
 // parameters list reached
-ORDER_STATUS MoveOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS MoveOrder::process (Entity * entity, ParameterList &parameters)
 {
 
   TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
-  return move(tokenEntity,parameters[0]);
+  return move(tokenEntity,parameters[0], false);
 }
 
 
-ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
+
+
+ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter, 																bool marchMode)
 {
   OrderLine * orderId = tokenEntity->getCurrentOrder();
 
@@ -162,23 +164,26 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
  int i;
  int bestCapacity = 0;
  MovementVariety * bestMode = 0;
+ MovementVariety * currentMode = 0;
 
  for(i = 0; i < movementModes.size(); i++)
   {
+	 currentMode = movementModes[i];
    tokenEntity->calculateTotalCapacity(capacity[i], i);
-   time = exit->getTravelTime(movementModes[i]);
-// cout <<"++++++++ MOVING: "<< tokenEntity->print() <<" "<< movementModes[i]->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+	 time = tokenEntity->calculateTravelTime(exit->getTravelTime(currentMode),
+	  currentMode);
+// cout <<"++++++++ MOVING: "<< tokenEntity->print() <<" "<< currentMode->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
    if(time == 0)
-    continue;
-    if(capacity[i] > bestCapacity)
+    	continue;
+   if(capacity[i] > bestCapacity)
     {
         bestCapacity = capacity[i];
-        bestMode = movementModes[i];
+        bestMode = currentMode;
     }
-    if(weight > capacity[i])
+   if(weight > capacity[i])
     {
-      if(movementModes[i] == walkingMode) // only walking entity may be Overloaded
-        time = tokenEntity->calculateTravelTime(time , weight, capacity[i]);
+      if(currentMode == walkingMode) // only walking entity may be Overloaded
+        time = tokenEntity->calculateOverloading(time , weight, capacity[i]);
       else
         time = 0;
     }
@@ -189,7 +194,7 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
     if (time < totalTravelTime)
         {
          totalTravelTime = time;
-         movingMode = movementModes[i];
+         movingMode = currentMode;
          }
   }
 
@@ -222,8 +227,8 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter)
         }
     }
     orderId->clearReportingFlag(OVERLOADING_REPORT_FLAG);
-   TravelElement * moving = new TravelElement(movingMode,tokenEntity->getLocation(),exit->getDestination(),
-                                totalTravelTime, totalTravelTime);
+   TravelElement * moving = new TravelElement( movingMode, tokenEntity->getLocation(), exit->getDestination(),
+                                totalTravelTime, totalTravelTime,marchMode);
    tokenEntity->setEntityMoving(moving);
 	    return SUCCESS;
 

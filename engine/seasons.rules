@@ -1,0 +1,59 @@
+# Overlord seasons data
+# Ver 0.3.4 24.01.2005
+
+KEYWORD SEASON 20
+
+SEASON winter
+NAME Winter
+WEATHER fair 1
+WEATHER sun  1
+WEATHER wind 30
+WEATHER rain 60
+WEATHER storm 10
+
+STUDY_BONUS airs 10
+USE_BONUS airs 10
+
+SEASON spring
+NAME Spring
+WEATHER fair 40
+WEATHER sun 30
+WEATHER wind 20
+WEATHER rain 10
+WEATHER storm 1
+STUDY_BONUS eart 10
+USE_BONUS eart 10
+
+SEASON summer
+NAME Summer
+WEATHER fair 40
+WEATHER sun 60
+WEATHER wind 1
+WEATHER rain 1
+WEATHER storm 1
+STUDY_BONUS fire 10
+USE_BONUS fire 10
+USE_BONUS agri 30
+USE_BONUS beas 30
+USE_BONUS fore 30
+
+
+SEASON autumn
+NAME Autumn
+WEATHER fair 30
+WEATHER sun 20
+WEATHER wind 40
+WEATHER rain 15
+WEATHER storm 5
+STUDY_BONUS wate 10
+USE_BONUS wate 10
+
+
+
+
+
+
+
+
+
+

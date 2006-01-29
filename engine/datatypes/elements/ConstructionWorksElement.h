@@ -16,11 +16,9 @@
 #define CONSTRUCTION_WORKS_ELEMENT_H
 #include "Element.h"
 #include "ConstructionWorksVariety.h"
-#include "VarietiesCollection.h"
 #include "RationalNumber.h"
 
 using namespace std;
-extern VarietiesCollection <ConstructionWorksVariety>     construction_works;
 
 
 /**

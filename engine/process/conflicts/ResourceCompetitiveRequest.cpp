@@ -9,10 +9,12 @@
 #include "ItemElement.h"
 #include "AbstractData.h"
 #include "UnitEntity.h"
+#include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "BinaryMessage.h"
 #include "ConstructionEntity.h"
 extern ReportPattern * harvestReporter;
+// ReportPattern *	 harvestingNotPermittedReporter  = new ReportPattern("harvestingNotPermittedReporter");
 
 ResourceCompetitiveRequest::ResourceCompetitiveRequest(UnitEntity * unit,
         OrderLine * orderId, ItemRule * resource,  RationalNumber& amount)
@@ -45,6 +47,30 @@ AbstractData * ResourceCompetitiveRequest::getType() const
     return resourceType_;
 }
 
+
+
+bool ResourceCompetitiveRequest::isValid()
+{
+  if(unit_ == 0)
+    return false;
+  LocationEntity * location = unit_->getLocation();
+  if(location== 0)  // Dead
+    return false;
+//  FactionEntity * owner = location->getRealOwner();
+
+//     if(owner)
+//     {
+//       if(!owner->stanceAtLeast(unit_,
+//               location->getOwnershipPolicy().getHarvestPermission(resourceType_)))
+//       {
+//         unit_->addReport(new BinaryMessage(harvestingNotPermittedReporter,resourceType_, location),0,0);
+//         return false;
+//       }
+//     }
+
+    return true;
+
+}
 
 
 RationalNumber ResourceCompetitiveRequest::getTotalAvailableValue() const

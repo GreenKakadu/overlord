@@ -20,8 +20,8 @@ class BestowOrder : public OrderPrototype  {
 public:
 	BestowOrder();
 	~BestowOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
    static const  unsigned CANNOT_BESTOW_SELF_REPORT_FLAG;
    static const  unsigned BESTOW_CONDITION_REPORT_FLAG;

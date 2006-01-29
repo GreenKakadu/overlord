@@ -6,6 +6,8 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "StanceVariety.h"
+StanceVariety    sampleStance    ("STANCE",   &sampleGameData);
+VarietiesCollection <StanceVariety>    stances(new DataStorageHandler("stances.var"));
 
 //StanceVariety * findStanceByTag(const string &tag)
 //{
@@ -16,7 +18,7 @@
 StanceVariety *  alliedStance;
 StanceVariety *  friendlyStance;
 StanceVariety *  neutralStance;
-
+StanceVariety *  hostileStance;
 
 
 GameData * StanceVariety::createInstanceOfSelf()

@@ -53,13 +53,14 @@ ClaimOrder::ClaimOrder(){
   "Trying to CLAIM the title of Overlord if the title is held results in failure\n" +
   "and the Imperial faction [npc1] declaring you ENNEMY.\n";
 
-    orderType_   = DAY_LONG_ORDER;
+    fullDayOrder_= true;
+    orderType_   = IMMEDIATE_ORDER;
 }
 
 
 
 STATUS ClaimOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -76,7 +77,7 @@ STATUS ClaimOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ClaimOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ClaimOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

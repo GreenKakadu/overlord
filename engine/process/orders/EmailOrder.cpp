@@ -28,7 +28,7 @@ EmailOrder::EmailOrder(){
 }
 
 STATUS EmailOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
@@ -42,7 +42,7 @@ STATUS EmailOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS EmailOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS EmailOrder::process (Entity * entity, ParameterList &parameters)
 {
   string  newEmail = (parameters[0])->print();
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);

@@ -8,10 +8,28 @@
 #include "Rule.h"
 #include "Entity.h"
 #include "BasicCondition.h"
+
+
+Rule::Rule ( const Rule * prototype ): GameData(prototype)
+{
+}
+
+
+STATUS
+Rule::initialize        ( Parser *parser )
+{
+      return OK;
+}
+
+
+
 void Rule::bindCondition(BasicCondition * condition)
 {
   conditions_.push_back(condition);
 }
+
+
+
 void Rule::checkConditions(Entity * entity)
 {
   vector <BasicCondition *>::iterator iter;
@@ -32,3 +50,13 @@ void Rule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";
 }
+
+
+
+
+
+int Rule::getMovementBonus(MovementVariety * mode)
+{
+  return movementBonuses_.getMovementBonus(mode);
+}
+

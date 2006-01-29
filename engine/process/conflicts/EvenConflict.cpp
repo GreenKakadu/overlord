@@ -16,6 +16,7 @@
 #include "BasicCompetitiveRequest.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
+extern int Roll_1Dx(int n);
 void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
 {
  vector  <BasicCompetitiveRequest *>::iterator iter;
@@ -57,10 +58,10 @@ void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
         cout << "   ... and the residue is "<< totalAvailableValue<<endl;
 //    while(totalAvailableValue)
 //    {
-//      i = rand() % currentList.size();
+//      i = Roll_1Dx(currentList.size());
 //      currentAnswer = currentList[i]->getValue() ;
 //      currentList[i]->setValue(currentAnswer +1);
-////       currentList[rand() % currentList.size()]->answerRequest(1);
+////       currentList[Roll_1Dx(currentList.size())]->answerRequest(1);
 //       totalAvailableValue --;
 //    }  
   }

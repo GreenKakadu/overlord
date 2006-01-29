@@ -39,9 +39,9 @@ public:
   inline  STATUS getStatus() const {return status;}
   inline  string getCollectionKeyword() const {return collectionKeyword_;}
   inline  string print() const {return collectionKeyword_;}
-  virtual void addRIPindex(long intindex){}
+  virtual void addRIPindex(long ){}
   virtual long int getRIPsize() const{return 0;}
-  virtual long int getRIPbyIndex(long int i) const {return 0;}
+  virtual long int getRIPbyIndex(long int ) const {return 0;}
   
  protected:
 		string collectionKeyword_;

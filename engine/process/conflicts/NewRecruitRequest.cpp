@@ -26,6 +26,7 @@
 extern EntitiesCollection <UnitEntity>      units;
 extern ReportPattern * recruiterReporter;
 extern ReportPattern * newRecruitReporter;
+extern ReportPattern *	 recruitingNotPermittedReporter;
 
 NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
@@ -56,16 +57,30 @@ bool NewRecruitRequest::isValid()
   if(unit_ == 0)
     return false;
 
-  if(unit_->getLocation()== 0)  // Dead
-    return false;
-
   if(targetUnit_ == 0)
     return false;
+
+  LocationEntity * location = unit_->getLocation();
+  if(location== 0)  // Dead
+    return false;
+
+
+  FactionEntity * owner = location->getRealOwner();
+    if(owner)
+    {
+      if(!owner->stanceAtLeast(unit_,
+              location->getOwnershipPolicy().getRecruitPermission(race_)))
+              {
+              unit_->addReport(new BinaryMessage(recruitingNotPermittedReporter,race_, location),0,0);
+              return false;
+              }
+    }
 
     if (unit_->hasMoney() >= price_ * amount_)
       return true;
     else
       return false;
+
 
 }
 

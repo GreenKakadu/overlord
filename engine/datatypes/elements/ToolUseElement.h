@@ -11,8 +11,7 @@
 #include <iostream>
 #include "Element.h"
 #include "ItemRule.h"
-#include "RulesCollection.h"
-extern RulesCollection <ItemRule>      items;
+
 using namespace std;
 typedef Element2<ItemRule, int > BasicToolUseElement;
 class ToolUseElement : public BasicToolUseElement  {

@@ -199,7 +199,7 @@ char    *scan;
 // It extracts first word from the input
 // Input string pointer shifted to the right
 // so that resulting string  it points to starts from the next  symbol after
-//  word. Returns 0 if failed.
+//  word. Returns empty string if failed.
 //
 // NOTE: it uses isspace  macro which are locale-dependent
 //============================================================================
@@ -294,7 +294,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
   for (i=0; i<INTEGER_LENGTH; i++)
     {
-      if (!isdigit (*input_) )  // Non-digit was found
+      if (!(isdigit (*input_) || (*input_ == '-')))  // Non-digit was found
 	break;
       if (!*input_)  // End of string
 	break;
@@ -315,6 +315,49 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 
 
+//============================================================================
+//
+//      long int  getLongInteger ()
+//
+// This function is intended for input parsing.
+//
+// It extracts first token from the input and interprets it as long integer
+// Input string pointer shifted to the right
+// so that resulting string  it points to starts from the next  symbol after
+//  integer. Returns integer, prints error message if failed.
+//
+// NOTE: it uses isspace and isdigit macro which are locale-dependent
+//============================================================================
+long int Parser::getLongInteger()
+{
+int i;
+char buffer[LONG_INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
+
+
+
+  while (isspace (*input_) ) // Skip spacing
+    input_++;
+
+  for (i=0; i<LONG_INTEGER_LENGTH; i++)
+    {
+      if (!(isdigit (*input_) || (*input_ == '-')))  // Non-digit was found
+	break;
+      if (!*input_)  // End of string
+	break;
+      buffer[i] = *input_;
+      *input_++;
+    }
+  if ( (i <  1) || (i >  LONG_INTEGER_LENGTH ) ) // At least one
+    // but less than 6 digits were found.
+    {
+      status = IO_ERROR;
+      return 0;
+    }
+    buffer[i] = '\0';// Terminate string.
+    status = OK;
+  return atol (buffer);
+
+}
 //============================================================================
 //
 //      Rational  getRationalNumber ()
@@ -379,7 +422,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
   scan = input_;
   for (i=0; ; i++)
     {
-      if (!isdigit (*scan) )  // Non-digit was found
+      if (!(isdigit (*scan) || (*scan == '-')))  // Non-digit was found
 	break;
       if (!*scan)  // End of string
 	break;
@@ -431,7 +474,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
   for (i=0; ; i++)
     {
-      if (!isdigit (*scan) )  // Non-digit was found
+      if (!(isdigit (*scan) || (*scan == '-')))  // Non-digit was found
 	break;
       if (!*scan)  // End of string
 	break;

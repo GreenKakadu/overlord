@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ExitOrder.cpp 
+                          ExitOrder.cpp
                              -------------------
     begin                : Mon Sep 29 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -28,14 +28,14 @@ ExitOrder::ExitOrder(){
 
   "Note that followers may issue ENTER/LEAVE orders.  These orders will cause\n" +
   "the unit to leave its stack if the order is succesful.\n";
-  
+
     orderType_   = IMMEDIATE_ORDER;
 }
 
 
 
 STATUS ExitOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
      if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -45,13 +45,13 @@ STATUS ExitOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ExitOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ExitOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
   ConstructionEntity * buildingOrShip   =  unit->getContainingConstruction();
-  if ( buildingOrShip == 0) 
+  if ( buildingOrShip == 0)
      {
  		  return FAILURE;
       }

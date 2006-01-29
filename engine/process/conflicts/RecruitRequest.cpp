@@ -12,6 +12,8 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include "LocationEntity.h"
+#include "FactionEntity.h"
 #include "RecruitRequest.h"
 #include "RaceRule.h"
 #include "IntegerData.h"
@@ -21,6 +23,7 @@
 
 extern ReportPattern * recruiterReporter;
 extern ReportPattern * recruitedReporter;
+ReportPattern *	 recruitingNotPermittedReporter  = new ReportPattern("recruitingNotPermittedReporter");
 
 RecruitRequest::RecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
@@ -48,12 +51,23 @@ bool RecruitRequest::isValid()
   if(targetUnit_ == 0)
     return false;
 
-  if(unit_->getLocation()== 0)  // Dead
+  LocationEntity * location = unit_->getLocation();
+  if(location== 0)  // Dead
     return false;
 
   if(targetUnit_->getLocation()== 0)  // Dead
     return false;
 
+  FactionEntity * owner = location->getRealOwner();
+    if(owner)
+    {
+      if(!owner->stanceAtLeast(unit_,
+              location->getOwnershipPolicy().getRecruitPermission(race_)))
+              {
+              unit_->addReport(new BinaryMessage(recruitingNotPermittedReporter,race_, location),0,0);
+              return false;
+              }
+    }
 
     if (unit_->hasMoney() >= price_ * amount_)
       return true;

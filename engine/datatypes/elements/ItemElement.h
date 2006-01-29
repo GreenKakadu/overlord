@@ -12,10 +12,11 @@
 #include <string>
 #include "Element.h"
 #include "ItemRule.h"
-#include "RulesCollection.h"
-extern RulesCollection <ItemRule>      items;
+
+
 using namespace std;
 typedef Element2<ItemRule, int > BasicItemElement;
+
 class ItemElement : public  Element2< class ItemRule,  int > {
 public: 
 	ItemElement(ItemRule * rule, int num)  : BasicItemElement (rule,num){}
@@ -39,6 +40,16 @@ public:
  * returns string with textual representation for reports and debuggers
  * Examples: "5 swords" or "1 horse"
  */
+string print() const
+{
+    if (rule_ == 0) return "";
+     if( parameter1_ > 1)
+      return longtostr(parameter1_) + " " + rule_->getPluralName()  + rule_->printTag();
+    else
+      return longtostr(parameter1_) + " " + rule_->print();
+}
+
+//should provide non-const print too (or redefine all prints as const)
 string print()
 {
     if (rule_ == 0) return "";

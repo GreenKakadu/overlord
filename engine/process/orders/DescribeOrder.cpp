@@ -29,7 +29,7 @@ DescribeOrder::DescribeOrder(){
 }
 
 STATUS DescribeOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
@@ -39,7 +39,7 @@ STATUS DescribeOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS DescribeOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS DescribeOrder::process (Entity * entity, ParameterList &parameters)
 {
   string  newName = (parameters[0])->print();
   entity->setDescription(newName);

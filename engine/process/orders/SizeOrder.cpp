@@ -29,7 +29,7 @@ SizeOrder::SizeOrder(){
 }
 
 STATUS SizeOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -46,7 +46,7 @@ STATUS SizeOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SizeOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS SizeOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

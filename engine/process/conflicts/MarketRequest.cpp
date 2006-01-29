@@ -13,11 +13,20 @@
  *                                                                                            *
  ***************************************************************************/
 #include "UnitEntity.h"
+#include "LocationEntity.h"
+#include "FactionEntity.h"
 #include "ItemRule.h"
 #include "ItemElement.h"
 #include "IntegerData.h"
+#include "BuyOrder.h"
 #include "MarketRequest.h"
+#include "BinaryMessage.h"
 #include "QuartenaryMessage.h"
+
+
+ReportPattern *	 sellingNotPermittedReporter   = new ReportPattern("sellingNotPermittedReporter");
+ReportPattern *	 buyingNotPermittedReporter     = new ReportPattern("buyingNotPermittedReporter");
+
 extern ReportPattern * buyReporter;
 extern ReportPattern * sellReporter;
 extern ItemRule * cash;
@@ -56,7 +65,7 @@ AbstractData * MarketRequest::getType() const
 {
   return item_;
 }
-bool MarketRequest::isEqualTo(BasicCompetitiveRequest * request)
+bool MarketRequest::isEqualTo(BasicRequest * request)
 {
 
 //  cout << "Comparing "<< this->getType()->print() << " and " <<request->getType()->print()<<endl;
@@ -87,11 +96,24 @@ bool MarketRequest::isValid()
 {
   if(unit_ == 0)
     return false;
-  if(unit_->getLocation()== 0)  // Dead
+  LocationEntity * location = unit_->getLocation();  
+  if(location== 0)  // Dead
     return false;
+  FactionEntity * owner = location->getRealOwner();  
   if (type_ == BUY)
-  {
+  { 
+    if(owner)
+    {
+      if(!owner->stanceAtLeast(unit_,
+              location->getOwnershipPolicy().getBuyPermission(item_)))
+              {
+              unit_->addReport(new BinaryMessage(buyingNotPermittedReporter,item_, location),0,0); 
+              return false;
+              }    
+    }
     if (unit_->hasMoney() >= price_ * amount_)
+      return true;
+		if (price_ == BuyOrder::ANY_PRICE)
       return true;
     else
       return false;
@@ -100,6 +122,16 @@ bool MarketRequest::isValid()
   {
     if(item_ == 0)
       return false;
+    if(owner)
+    {
+      if(!owner->stanceAtLeast(unit_,
+              location->getOwnershipPolicy().getSellPermission(item_)))
+              {
+              unit_->addReport(new BinaryMessage (sellingNotPermittedReporter,
+							 item_, location),0,0);
+              return false;
+              }
+    }
     if ( unit_->hasItem(item_) >= amount_)
       return true;
     else

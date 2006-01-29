@@ -6,6 +6,5 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "InventoryElement.h"
-//BasicInventoryElement  explicitInventoryElement(0,0,0); // Template Instantiation
 
 

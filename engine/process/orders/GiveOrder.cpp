@@ -47,7 +47,7 @@ GiveOrder::GiveOrder()
 
 
 STATUS
-GiveOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
+GiveOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -99,7 +99,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
  if (!unit->mayInterract(recipient)) // Not In the same place or can't see
 	  return FAILURE;
 
- if(*(recipient->getFaction()->getStance(unit)) < *friendlyStance)
+ if(recipient->getFaction()->stanceAtLeast(unit,friendlyStance))
       {
         // not accepting. Reports to both sides
       UnaryMessage * giveRejectedMessage = new UnaryMessage(giveRejectedReporter, recipient);

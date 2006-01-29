@@ -22,7 +22,7 @@ public:
 	virtual ~AbstractData(){}
   virtual string print(){return "";}
 	AbstractData(){}
-   virtual void saveAsParameter (ostream &out){}
+   virtual void saveAsParameter (ostream &){}
    virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.
                          // For  non-persistent objects derived from AbstractData
                          // it  destructs object.

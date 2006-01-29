@@ -6,5 +6,6 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "Variety.h"
+Variety          sampleVariety  ("VARIETY",  &sampleGameData);
 
 

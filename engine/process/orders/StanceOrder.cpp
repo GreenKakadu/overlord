@@ -42,7 +42,7 @@ StanceOrder::StanceOrder(){
 }
 
 STATUS StanceOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 //   if(!entityIsUnit(entity))
 //            return IO_ERROR;
@@ -70,7 +70,7 @@ STATUS StanceOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS StanceOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS StanceOrder::process (Entity * entity, ParameterList &parameters)
 {
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction == 0)

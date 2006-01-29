@@ -33,7 +33,7 @@ PromoteOrder::PromoteOrder(){
 }
 
 STATUS PromoteOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -46,7 +46,7 @@ STATUS PromoteOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS PromoteOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS PromoteOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

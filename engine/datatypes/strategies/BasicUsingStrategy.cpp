@@ -9,6 +9,7 @@
 #include "TokenEntity.h"
 #include "UnitEntity.h"
 
+BasicUsingStrategy        sampleUsing             ("USING",              &sampleGameData);
 BasicUsingStrategy::BasicUsingStrategy ( const BasicUsingStrategy * prototype ) : Strategy(prototype)
 {
 
@@ -157,6 +158,10 @@ USING_RESULT BasicUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
   return UNUSABLE;
 }
 
+int BasicUsingStrategy::calculateProductionBonus(TokenEntity * tokenEntity, SkillRule * skill)
+{
+	return tokenEntity->getProductionBonus(skill);
+}
 
 
 

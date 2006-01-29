@@ -29,7 +29,7 @@ PasswordOrder::PasswordOrder(){
 }
 
 STATUS PasswordOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
@@ -43,7 +43,7 @@ STATUS PasswordOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS PasswordOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS PasswordOrder::process (Entity * entity, ParameterList &parameters)
 {
   string  newPassword = (parameters[0])->print();
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);

@@ -22,12 +22,12 @@
   */
 
 class SellOrder : public OrderPrototype  {
-public: 
+public:
 	SellOrder();
 	~SellOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
+  ORDER_STATUS completeOrderProcessing (Entity * entity, ParameterList &parameters, int result);
 };
 
 #endif

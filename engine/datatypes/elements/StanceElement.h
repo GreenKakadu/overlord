@@ -11,7 +11,6 @@
 
 #include   <vector>
 #include "Element.h"
-//class StanceVariety;
 #include "StanceVariety.h"
 
 typedef  Element2<StanceVariety,Entity *> StanceElement;

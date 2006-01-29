@@ -50,7 +50,7 @@ SellOrder::SellOrder(){
 
 
 STATUS SellOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -70,7 +70,7 @@ STATUS SellOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS SellOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -103,7 +103,7 @@ ORDER_STATUS SellOrder::process (Entity * entity, vector <AbstractData *>  &para
 
 
 ORDER_STATUS
-SellOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+SellOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

@@ -53,13 +53,19 @@
 #include "ConstructionEntity.h"
 #include "EffectEntity.h"
 // #include "GameEntity.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
+
 // Varieties
 #include "VarietiesCollection.h"
 #include "MovementVariety.h"
 #include "DirectionVariety.h"
 #include "StanceVariety.h"
+#include "CombatStanceVariety.h"
+#include "CombatMoveVariety.h"
+#include "CombatRankVariety.h"
+#include "CombatFileVariety.h"
 #include "ConstructionWorksVariety.h"
+
 // Order processing
 
 #include "OrderPrototype.h"
@@ -67,7 +73,7 @@
 #include "ProcessingMode.h"
 #include "TravelElement.h"
 
-#include "IntegerData.h" 
+#include "IntegerData.h"
 #include "ItemElement.h"
 #include "RationalNumber.h"
 #include "BasicExit.h"

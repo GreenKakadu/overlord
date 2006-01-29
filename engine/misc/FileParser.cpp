@@ -1,5 +1,5 @@
 /***************************************************************************
-                          FileParser.cpp  
+                          FileParser.cpp
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
@@ -24,7 +24,7 @@ FileParser::FileParser()
 //=====================================================================
 FileParser::FileParser (ifstream &input)
 {
- streamInput_ = &input;	
+ streamInput_ = &input;
  useAllocatedMemory_ = false;
  status = OK;
 }
@@ -42,7 +42,7 @@ FileParser::FileParser (const char * filename)
 	else
 		{
  			status = IO_ERROR;
-			cout << "Can't open file " << filename << endl;
+			cerr << "Can't open file " << filename << endl;
 		}
 }
 
@@ -59,7 +59,7 @@ if(*streamInput_)
 	else
 		{
  			status = IO_ERROR;
-			cout << "Can't open file " << filename << endl;
+			cerr << "Can't open file " << filename << endl;
 		}
 }
 
@@ -94,7 +94,7 @@ int i;
     return;
 	if ( buffer_[i-2] == '\r')
 		{
-        	buffer_[i-2]  = '\0';		
+        	buffer_[i-2]  = '\0';
 		}
 
 }
@@ -106,8 +106,8 @@ bool FileParser::eof()
 
 void FileParser::setPosition ( long int  position )
 {
-  if(streamInput_->eof()) // clear error flags if EOF was reached 
-    streamInput_->clear(); 
+  if(streamInput_->eof()) // clear error flags if EOF was reached
+    streamInput_->clear();
   streamInput_->seekg ( position );
 
 }

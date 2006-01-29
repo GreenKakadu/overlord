@@ -43,7 +43,7 @@ public:
  virtual void answerMarketRequest(int price, int amount);
  inline int getPrice() const {return price_;}
  inline int getAmount() const {return amount_;}
-  virtual       bool isEqualTo (BasicCompetitiveRequest * request);
+  virtual       bool isEqualTo (BasicRequest * request);
 protected:
   int amount_;
   ItemRule * item_;

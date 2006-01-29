@@ -12,22 +12,25 @@
 #include "FactionEntity.h"
 #include "StringData.h"
 #include "IntegerData.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "OrderPrototypesCollection.h"
-extern ReportPattern *	invalidOrderReporter;
+ReportPattern *	invalidOrderReporter = new ReportPattern ("invalidOrderReporter");
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	unknownParameterReporter;
 extern OrderPrototypesCollection  * orderPrototypesCollection;
-extern GameInfo game;
+
 
 OrderPrototype::OrderPrototype()
 {
  orderType_ =DEFAULT;
  mayInterrupt_ = false;
+ fullDayOrder_= false;
+ initiative_ = 0;//
+ isSequentive_ = false;//
 }
 
 
@@ -70,7 +73,7 @@ OrderPrototype::save(ostream &out)
  */
 
 STATUS
-OrderPrototype::loadParameters(Parser * , vector <AbstractData *>  &, Entity * )
+OrderPrototype::loadParameters(Parser * , ParameterList &, Entity * )
 {
   return OK;
 }
@@ -96,7 +99,7 @@ OrderPrototype::process(Entity * , vector < AbstractData*>  & )
 
 ORDER_STATUS
 OrderPrototype::completeOrderProcessing (Entity * entity,
-							vector <AbstractData *>  &parameters, int result)
+							ParameterList &parameters, int result)
 {
   return FAILURE;
 }
@@ -109,10 +112,11 @@ OrderPrototype::completeOrderProcessing (Entity * entity,
  */
 bool OrderPrototype::isFullDayOrder()
 {
-  if((orderType_ == STACK_ORDER) ||(orderType_ == DAY_LONG_ORDER))
-    return true;
-    else
-    return false;
+  return fullDayOrder_;
+//  if((orderType_ == STACK_ORDER) ||(orderType_ == DAY_LONG_ORDER))
+//    return true;
+//    else
+//    return false;
 }
 
 
@@ -203,7 +207,7 @@ bool OrderPrototype::entityIsFaction(Entity *entity, PARSING_MODE mode )
  */
 bool OrderPrototype::parseGameDataParameter(Entity *entity, Parser * parser,
 				BasicCollection & collection, const string & parameterTypeName,
-				vector <AbstractData *>  &parameters)
+				ParameterList &parameters)
 {
    return parseGameDataParameter(entity, parser->getWord(),collection,parameterTypeName,parameters);
 }
@@ -216,7 +220,7 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity, Parser * parser,
  * Take into account that tag parameter may be also new unit placeholder.
  * This procedure performs also check of parameter validity.
  */
-bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, BasicCollection & collection, const string & parameterTypeName, vector <AbstractData *>  &parameters)
+bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, BasicCollection & collection, const string & parameterTypeName, ParameterList &parameters)
 {
    if (tag.size() == 0)  // Missing parameter
         {
@@ -226,7 +230,7 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, B
 
    if (!collection.checkDataType(tag)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!game.isNewEntityName(tag))
+           if(!gameConfig.isNewEntityName(tag))
  				  {
             entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData(parameterTypeName)));
             return false;
@@ -247,37 +251,34 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, B
  * warning when he uses unknown tag
  */
 bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
-			BasicCollection & collection, vector <AbstractData *>  &parameters)
+			BasicCollection & collection, ParameterList &parameters)
 {
 //   cout << "[][]== checking tag "<<tag << endl;
    GameData* item = collection.findByTag(tag,false);
   if( item == 0) // Data doesn't exist but it may be new entity placeholder
 		{
-//      UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-//      if(unit!=0)
-//        {
-          if(game.isNewEntityName(tag/*,unit->getFaction()*/))
-            {
-              NewEntityPlaceholder * placeholder = collection.findOrAddPlaceholder(tag);
- //              cout <<"placeholder=  "<< (int) placeholder <<endl;
-              if(placeholder != 0)  // this is  placeholder.
-              {
-                GameData* realEntity = placeholder->getRealEntity();
- //              cout <<"realEntity=  "<< (int) entity <<endl;
-                if(realEntity) // We can get real entity id from placeholder
-   		            parameters.push_back(realEntity);
-                 else   // placeholder is still empty
-   		              parameters.push_back(placeholder);
-                return true;
-              }
-//             }
-				}
-    // this is not placeholder. Entity doesn't exist but we don't want to let player to know that
+     if(gameConfig.isNewEntityName(tag))
+      {
+       NewEntityPlaceholder * placeholder = collection.findOrAddPlaceholder(tag);
+       //    cout <<"placeholder=  "<< (int) placeholder <<endl;
+       if(placeholder != 0)  // this is  placeholder.
+         {
+           GameData* realEntity = placeholder->getRealEntity();
+           //   cout <<"realEntity=  "<< (int) entity <<endl;
+           if(realEntity) // We can get real entity id from placeholder
+   		          parameters.push_back(realEntity);
+           else   // placeholder is still empty
+   		          parameters.push_back(placeholder);
+           return true;
+          }
+       }
+     // this is not placeholder.
+		 //Entity doesn't exist but we don't want to let player to know that
 
-    // Give warning if this is unknown rule
+     // Give warning if this is unknown rule
 
-    Rule * rule = dynamic_cast<Rule*>(item);
-    if(rule)
+   	 Rule * rule = dynamic_cast<Rule*>(item);
+   	 if(rule)
           {
             UnitEntity * unit = dynamic_cast<UnitEntity*>(entity);
             if(unit)
@@ -289,9 +290,9 @@ bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
                 }
                }
             }
-    StringData * dummy = new StringData(tag);
-   	parameters.push_back(dummy);
-    return true;
+    	StringData * dummy = new StringData(tag);
+   		parameters.push_back(dummy);
+    	return true;
     }
    else
 				{
@@ -306,7 +307,7 @@ bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
  * Tries to get a word from the parser and to interpret it as an integer
  */
 bool OrderPrototype::parseIntegerParameter(Parser * parser,
-										vector <AbstractData *>  &parameters)
+										ParameterList &parameters)
 {
   if(parser -> matchInteger())
 		{
@@ -323,7 +324,7 @@ bool OrderPrototype::parseIntegerParameter(Parser * parser,
  */
 bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity,
 					Parser * parser, BasicCollection & collection,
-					vector <AbstractData *>  &parameters)
+					ParameterList &parameters)
 {
    string tag = parser->matchWord();
    if (tag.size() == 0)
@@ -348,7 +349,7 @@ bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity,
  * Tries to interpret parIndex'th parameter in order parameters as integer
  * returns value or 0 on error.
  */
-int OrderPrototype::getIntegerParameter(vector <AbstractData *>  &parameters,
+int OrderPrototype::getIntegerParameter(ParameterList &parameters,
 										unsigned int parIndex)
 {
   IntegerData * par;
@@ -364,7 +365,7 @@ int OrderPrototype::getIntegerParameter(vector <AbstractData *>  &parameters,
 
 
 bool OrderPrototype::parseStringParameter(Entity *entity, Parser * parser,
-						vector <AbstractData *>  &parameters)
+						ParameterList &parameters)
 {
  	string stringParameter = parser->getParameter();
  	if(stringParameter.empty())
@@ -380,7 +381,7 @@ bool OrderPrototype::parseStringParameter(Entity *entity, Parser * parser,
 
 
 bool OrderPrototype::parseOptionalStringParameter(Entity *entity, Parser * parser,
-						vector <AbstractData *>  &parameters, const char * stringParameter)
+						ParameterList &parameters, const char * stringParameter)
 {
 		if(parser ->matchKeyword(stringParameter))
 		{

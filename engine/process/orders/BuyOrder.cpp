@@ -21,6 +21,7 @@
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "MarketRequest.h"
+const int BuyOrder::ANY_PRICE = 9999;
 extern ReportPattern * cantTradeReporter;
 
 //BuyOrder instantiateBuyOrder;
@@ -32,10 +33,10 @@ BuyOrder::BuyOrder(){
   description = string("BUY number item-tag [price] \n") +
   "Immediate, leader-only.  This order executes when a unit has at least the\n" +
   "amount of cash required, and the local market offers at least the specified\n" +
-  "number of items.  The unit will attempt to buy the items at the specified price\n" +
-  "or lower.  This happens only at the end of market days.  The report shows market\n" +
-  "days.  If the item is not for sale, the unit must have the marketing skill to\n" +
-  "attempt the purchase.\n" +
+  "number of items. The unit will attempt to buy the items at the specified \n" +
+  "price or lower. This happens only at the end of market days. The report \n" +
+  "shows market days. If the item is not for sale, the unit must have the \n" +
+  "marketing skill to attempt the purchase.\n" +
   "\n" +
   "The number of items may be 0, in which case as many items as possible will\n" +
   "be bought, and the order rescheduled if prefixed by a '@'.\n" +
@@ -49,27 +50,27 @@ BuyOrder::BuyOrder(){
 
 
 STATUS BuyOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
     if (!parseIntegerParameter(parser, parameters))
-      parameters.push_back( new IntegerData (9999)); // means very big number
+      parameters.push_back( new IntegerData (ANY_PRICE)); // means very big number
 
     if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
             return IO_ERROR;
 
 
     if (!parseIntegerParameter(parser, parameters))
-      parameters.push_back( new IntegerData (9999)); // means very big number
+      parameters.push_back( new IntegerData (ANY_PRICE)); // means very big number
 
   return OK;
 }
 
 
 
-ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS BuyOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -104,7 +105,7 @@ ORDER_STATUS BuyOrder::process (Entity * entity, vector <AbstractData *>  &param
 
 
 ORDER_STATUS
-BuyOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+BuyOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

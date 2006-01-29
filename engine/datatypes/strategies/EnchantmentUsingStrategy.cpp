@@ -21,8 +21,9 @@ extern ReportPattern * privateEnchanterReporter;
 extern ReportPattern * privateEnchantmentReporter;
 //extern ReportPattern * publicEnchantmentReporter;
 extern GameData  targetTypeSelf;
+EnchantmentUsingStrategy  sampleEnchantmentUsing  ("USING_ENCHANT",      &sampleUsing);
 
-extern RulesCollection    <EnchantmentRule>     enchantments;
+//extern RulesCollection    <EnchantmentRule>     enchantments;
 
 EnchantmentUsingStrategy::EnchantmentUsingStrategy ( const EnchantmentUsingStrategy * prototype ): BasicProductionStrategy(prototype)
 {
@@ -85,15 +86,7 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
 {
    USING_RESULT result;
 // Production modifiers:
-
-// Tools accelerate production
-  vector <ToolUseElement *>::iterator iter;
-  int effectiveProductionRate = unit->getFiguresNumber();
-  for(iter = tools_.begin(); iter != tools_.end();iter++)
-  {
-    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-  }
-
+ int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
 
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
 

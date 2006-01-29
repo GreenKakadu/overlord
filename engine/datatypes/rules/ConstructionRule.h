@@ -19,13 +19,13 @@
 #include "Rule.h"
 #include "EntityStatistics.h"
 #include "MovementMode.h"
+#include "SkillBonusComboAttribute.h"
 
 /**
   *@author Alex Dribin
   */
 class ConstructionWorksElement;
 class SkillElement;
-class BonusElement;
 class BasicCondition;
 class SkillCondition;
 class ConstructionEntity;
@@ -51,16 +51,17 @@ public:
   inline int getLandUse() const {return landUse_;}
          int getResourceRequirement(ConstructionWorksVariety * resource);
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
-         int getProductionBonusValue(SkillRule * skill,int level);
-         int getBonus(SkillRule * skill);
+	inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
   inline int getWeight() const {return weight_;}
   inline int getMaxStaff() const {return maxStaff_;}
+	inline bool isBattle()const {return isBattle_;}
         bool mayMove();
   inline TitleRule * getTitle() const {return generateTitle_;}
 	protected:
       vector<ConstructionWorksElement *>    resources_;
-      vector <BonusElement *>      skillBonuses_;
-      vector <BonusElement *>      useBonuses_;
 	    MovementMode<int> capacity_;
       TitleRule * generateTitle_;
       SkillElement * skill_ ;
@@ -72,12 +73,17 @@ public:
       EntityStatistics stats_;
       /*const*/ string entityKeyword_ ;
       bool mobile_;
+			bool isBattle_;
+			// Attributes
+			SkillBonusComboAttribute skillBonuses_;
+//		  SkillBonusAttribute useBonuses_;
+//		  SkillBonusAttribute studyBonuses_;
+//		  SkillBonusAttribute learningBonuses_;
     private:
 };
 typedef vector <BonusElement *>::iterator BonusIterator;
 typedef vector<ConstructionWorksElement *>::iterator ConstructionWorksIterator;
 extern ConstructionRule   sampleConstructionRule;
-#include "RulesCollection.h"
 extern RulesCollection <ConstructionRule>      constructions;
 
 #endif

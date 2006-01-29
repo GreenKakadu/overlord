@@ -1,24 +1,24 @@
 Overlord Engine ToDo list:
 
-Last updated 14.05.2004
+Last updated 16.07.2005
 ==================================================================================
 	Alpha version features:
--Combat.
--Actions implementation
--combat-related Orders
--Guarding/Patrolling/Stances
-  -- Start/Stop Guarding
-	-- Attacks due to stances
-	-- Restrict actions on guarded territory
+	
+
 -faction statistics
 -Location developement
--Weather and season effects
--CP
- -- calculation
- -- CP limitation
 
+
+Special Rules:
+	Magic Skills
+	Combat/Shaman skills?
+	Overlord Title
+	Merchant Prince Title
+	Market days?
+    ==============================================================================
    Post-Alpha features:
 
+ -Special combat and non-combat skills implementation
 - Alias names for units
 - Checker.
 =================================================================================
@@ -29,48 +29,78 @@ Things to do:
 - eating raw products like grain or cattle for upkeep is not implemented
 - unit that borrows money or food for upkeep to other units doesn't keeps 
 		money or food for it's own upkeep
-- Conditional order reporting ('!'  '?')
-- Define static type of reporter (ERROR, NORMAL...) for use in conditional order reporting.
+- Rewrite guard-tax-pilage RULES
+- write in rules that working is private and allowed for any unit
 
-- unit defeated in battle loses GUARD flag
 
-Things to check:
+- Deal with situation when leader of stack marching into location was slain. - (select new    leader and reform stack? - stack should continue movement)
+- Non-stealth follower of stealth unit/ unaceptable passenger of acceptable ship
+	( current implementation based on leader/ship owner only)
+- recalculate movement bonuses when:
+	- effect added/removed to unit or location
 
-- check all orders that have unit parameters for using 	DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
-- forget removes skill bonuses
-Features to change/improve:
+Combat ToDo:
+	- multyday loot
+	- equip capacity
+	- for loot mode selection: location may be only entered with some mode
+	- figure-based loot
+	- if flying/running unit overloaded and can't find flying/running  mount it may want
+			 to take walking mount
+- In case of draw each side claims it own titles
 
 - when disbanding unit allow restacking of followers (like in eject order)
-- Smart Drowning
 - item bonuses to level limit : applyEquipementEffects()
 - skill bonuses to level limit
 - controlled monsters of oathing units should oath too.
-- faster movement (i.e. mode remains the same but movement is faster)
 - let SEE order accept [faction] parameter
 - let GET order interpret missing unit/location parameter as current location.
 - Conditions (Skill) may be demanded to enter location/Building
 - add/remove Unit/Entity to locations
-- create SkillEquipCondition and SkillTitleCondition <- not urgent as no leader supposed to use forget
-- Make keyword and parent in GameData static and reconsider to replace second constructor with clone method
+
+
 
 Solutions  to change/improve:
 
+- create SkillEquipCondition and SkillTitleCondition <- not urgent as no leader supposed to   use forget
+- Make keyword and parent in GameData static and reconsider to replace second constructor     with clone method
 - Provide order-id whenever possible, use it to filter !-like report modificators
-  for that provide static field defining report type (sucess, fail, invalid) in Reporter and ability in ReportPattern to read it
+  for that provide static field defining report type (sucess, fail, invalid) in Reporter      and ability in ReportPattern to read it
+
+- Incorporate possibility of placeholders into tokens so that it becomes invisible from       outside  (make all placeholders/alias completely internal)
+
+- Observation condition for reports: 0 - means can't be observed
+
+- hierachy of reporting: routines that will be used for reporting both in Units and           Constructions
+
+- Use of elements in reports should be avoided because they may report not their current      state  but the state at the time of report printing.
+
+- Introduce attributes as seen by local units
 
 
-- Incorporate possibility of placeholders into tokens so that it becomes invisible from outside
-  (make all placeholders/alias completely internal)
+- move all combat orders to  CombatOrderPrototype()
 
 
 
 
 
-hierachy of reporting: routines that will be used for reporting both in Units and Constructions
 
-- elements may be as parameters (they may be saved, parsed) ???
- But use of elements in reports should be avoided because they may report not their current state
-  but the state at the time of report printing.
+Things to check:
+
+- check all orders that have unit parameters for using  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+- forget removes skill bonuses
+- check Title overlaping
+- what happens if player provides valid but unknown tag?
+- some warnings should be used only while checking orders. 
+
+==========================================================================================
+Future todo:
+- Conditional order reporting ('!'  '?')
+- Define static type of reporter (ERROR, NORMAL...) for use in conditional order reporting.
+- Smart Drowning
+
+
+
+
 ==========================================================================================
 Known Bugs/features:
 
@@ -79,34 +109,32 @@ Known Bugs/features:
 	 are transformed into unit they should copy that orders.
 
 7. STANCE FRIEND as order to set default stance is not supported
- ( it is also not requered and not documented)
+ ( it is also not required and not documented)
  Problem is in distinguishing correct and incorrect varieties values
+
 8. OATH transfers unit to a new faction but old faction doesn't
  receive report of unit actions duiring turn.
 9.	As reports generated at the end of turn, changing entity name have backward effect.
 10.	Unit enters location in post-turn phase. so AT commands works only on the next day.
-22.
-23.
+
+30. Comments in faction orders
+31.
 
 Portability:
 
 In Compillation with Borland C++BuilderX data structures use much more memory than with GCC (try to play with data allignment)
-Big scale code(200 factios x 100 units 10000 locations)  BCC-compiled with debugging  first time runs ok but on second time hangs computer.(but my computer regulary hangs anyway)
+
 
 
 Orders implementation status:
 																	( * - means known bugs)
 
+
 * CANCEL   ---- implemented ---- *
-* COMBAT
-* GUARD	--pars--
-* MARCH	 --pars--
 * NAME     ---- implemented ---- tested *
 * OATH     ---- implemented ---- tested *
-* PATROL  --pars--
-* PILLAGE --pars--
 * STANCE   ---- implemented ---- tested *
-* TACTIC  --pars--
+
 
 Actions:
 
@@ -189,4 +217,122 @@ FX_SINGLE_SUMMONING <--- Summoning
 33 FX_ONDINS
 
 
+Combat ToDo::
 
+
+* CHARGE:
+* FLEE:
+* STAND
+* RETREAT
+* SWEEP:
+* FLANK:
+* FIRE:
+* SUPPORT  -
+
+
+* USE (item)
+* APPLY (skill)
+* RANGED     
+* RELOAD:    -- Not implementing now
+
+
+
+
+
+1   FX_BATTLE_QUAGMIRE		14   	battle quagmire
+2   FX_BATTLE_DRAINLIFE		15   	battle drain life
+3   FX_TIDAL_WAVE					30    battle tidal wave
+4   FX_STONE_HAND					31    battle stone hand
+5   FX_BATTLE_FIRE_CLOAK	32 		battle fire cloak
+6   FX_CATCH_SOUL					33    battle catch souls
+7   FX_WRAITH_CALL				34    battle wraith call
+8   FX_FIREWALL						35    battle fire wall
+9   FX_EARTH_CLEAVING			36    battle cleave earth
+10  FX_MIND_CONFUSION			38    battle confuse minds
+11  FX_INSTANT_FORTRESS		58  	battle instant fortress
+12  FX_BATTLE_DROWN				59    battle drowning
+13  FX_INSTANT_MOVEMENT		61  	battle instant moves
+14  FX_BLACK_AURA					65   	battle aura of blackness
+15  FX_HEAVINESS					66    battle
+16  FX_COUNTER_WINDS			67   	battle counter winds
+17  FX_CAPTURE_BEAST			71    battle tame beasts
+18  FX_CAPTURE_CREATURE		72  	battle subdue creatures
+19  FX_CAPTURE_MONSTER		73  	battle control monsters
+20  FX_SWIRLINGVORTEX			74    battle swirling vortex
+21  FX_STONE_HEADS				82    battle stone heads
+22  FX_RESHAPE_EQUIPMENT	83    battle reshape weapon/armor/shield
+23  FX_CALL_HELP					84    battle call for help
+24  FX_ANGEL_OF_DEATH			87	  battle angel of death
+25  FX_BATTLE_FLOW				88    battle flow
+26  FX_HEALING						89    battle healing
+27  FX_BATTLE_PRESSURE		90    battle mind pressure
+28  FX_BATTLE_MISHAP			91    battle mishap
+29  FX_LAVA_FLOW					93    battle lava flow
+30  FX_BATTLE_CONFUSED		95    battle confuse enemy
+31  FX_BATTLE_INVISIBLE		96    battle
+32  FX_BATTLE_GUST_WIND		98    battle gust of wind
+33  FX_STINKING_CLOUD		 100    battle stinking cloud
+34  FX_PUPPET_MASTER		 101    battle puppetry
+35  FX_TERRIFY					 102    battle terrify
+36  FX_RESHAPE_SELF			 103    battle reshape self
+37  FX_MELT_GROUND			 104    battle melt ground
+38  FX_FIRE_PILLAR			 105    battle pillar of fire
+39  ----- UNIMPLEMENTED ------- battle hailstones
+40  ----- UNIMPLEMENTED ------- battle dissolve
+41  ----- UNIMPLEMENTED ------- battle fog cover
+42  ----- UNIMPLEMENTED ------- battle heavy rain
+43  ----- UNIMPLEMENTED ------- battle instant bog
+44  ----- UNIMPLEMENTED ------- battle stone scales
+45  ----- UNIMPLEMENTED ------- battle burrow
+46  ----- UNIMPLEMENTED ------- battle hiccup
+47  ----- UNIMPLEMENTED ------- battle rift
+48  ----- UNIMPLEMENTED ------- battle lift spirits
+49  ----- UNIMPLEMENTED ------- battle storm
+
+
+
+
+ check that sufferDamage uses totalDamage correctly (not as single figure damage)
+
+
+
+Further To Do:
+		morale (especially for constructions)
+    smart reequipment ( unequip combat useless items and equip combat useful items)
+		dying from wounds
+		per-figure loot distribution
+		crossbow RELOAD
+    combat attack and combat participant messages should read text from report_patterns too
+
+
+move sweepDirection out from battleField. add getMin/Max Rank/File , getUnits methods
+
+
+//==============================================================
+	Check: 17. Check wounding calculation.
+	Check: 18. Statistic check on hit outcome.
+	Optimization 5. merge attackers and defenders into one list.
+	Optimization 6. If only one target may not use loop for hits
+	Optimization 7. Consolidate mayActOnTurn and mayBeProcessed in CombatOrderLine
+- Check moving out of the field.
+
+
+
+
+
+modify CombatActionStrategy. getPotentialTargets should take into account target type.
+modify target types - friendly/opposing leader,  friendly/opposing side
+instead of addEnemies use addTarget
+
+apply temporary modification from modifyingStats for spells like strength of the boar
+
+instead of call of MeleeCombatAction::attack may call special attack function with attack parameters derived from CombatActionStrategy data.
+
+Check use of items that not all have equipped
+
+Build example with firewands and firesteeds
+
+mana!
+	check mana requirements for spells
+	mana regeneration
+	mana consumption

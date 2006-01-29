@@ -27,9 +27,9 @@ class UseOrder : public OrderPrototype  {
 public:
 	UseOrder();
 	~UseOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
+  ORDER_STATUS completeOrderProcessing (Entity * entity, ParameterList &parameters, int result);
     protected:
 static const  UINT NO_RESOURCE_REPORT_FLAG;
 };

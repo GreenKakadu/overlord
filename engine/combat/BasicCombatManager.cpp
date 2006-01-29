@@ -12,7 +12,6 @@
 #include "ConstructionEntity.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
-#include "BasicCombatEngine.h"
 #include "BinaryMessage.h"
 extern ReportPattern *	AttackReporter;
 
@@ -29,8 +28,9 @@ BasicCombatManager::BasicCombatManager()
 /*
  * Attack Attempt immediate combat resolution
  */
-void BasicCombatManager::attackAttempt(TokenEntity * attacker,
-                TokenEntity * defender,OrderLine * orderId)
+
+void BasicCombatManager::attackAttempt(TokenEntity * attacker, TokenEntity * defender, OrderLine * orderId,
+                    void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT  result))
 {
   vector<TokenEntity *> attackers;
   vector<TokenEntity *> defenders;
@@ -53,12 +53,13 @@ void BasicCombatManager::attackAttempt(TokenEntity * attacker,
 
 //   attackers.clear();
 //   defenders.clear();
+  
 }
 
 
 
-void BasicCombatManager::attackAttempt(FactionEntity * attacker,
-                    TokenEntity * defender,OrderLine * orderId)
+void BasicCombatManager::attackAttempt(FactionEntity * attacker, TokenEntity * defender, OrderLine * orderId,
+                    void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT  result))
 {
   LocationEntity * location = defender->getLocation();
     for (UnitIterator unitIter  = location->unitsPresent().begin(); unitIter != location->unitsPresent().end(); unitIter++)
@@ -67,21 +68,21 @@ void BasicCombatManager::attackAttempt(FactionEntity * attacker,
         {
 
           if( (*unitIter)->isGuarding() /* || DEFENSIVE or better */ )
-          attackAttempt(*unitIter,defender,orderId);
+          attackAttempt(*unitIter,defender,orderId,funPtr);
           return;
-        }  
+        }
     }
   for (ConstructionIterator iter  = location->constructionsPresent().begin(); iter != location->constructionsPresent().end(); iter++)
     {
         if((*iter)->getFaction() == attacker)
         {
           if( (*iter)->isGuarding() /* || DEFENSIVE or better */ )
-          attackAttempt(*iter,defender,orderId);
+          attackAttempt(*iter,defender,orderId,funPtr);
           return;
         }
     }
 
+  
 }
-
 
 

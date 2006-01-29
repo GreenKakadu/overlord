@@ -15,7 +15,9 @@
 #include "EffectEntity.h"
 #include "LocationEntity.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <LocationEntity>     locations;
+
+EffectEntity         sampleEffectEntity  ("EFFECT",  &sampleTokenEntity);
+EntitiesCollection <EffectEntity>   effects(new DataStorageHandler(gameConfig.getEffectsFile()));
 
 EffectEntity::EffectEntity( const  EffectEntity* prototype ) : TokenEntity(prototype)
 {

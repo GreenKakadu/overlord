@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CreatureRaceRule.h"
-//CreatureRaceRule   sampleCreatureRaceRule =   CreatureRaceRule("CREATURE", &sampleRace);
+CreatureRaceRule sampleCreatureRaceRule=CreatureRaceRule("CREATURE", &sampleRace);
 CreatureRaceRule::CreatureRaceRule ( const CreatureRaceRule * prototype ) : RaceRule(prototype)
 {
   hiringCost_ = 500;

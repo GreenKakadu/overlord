@@ -22,8 +22,8 @@ class StudyOrder : public OrderPrototype  {
 public:
 	StudyOrder();
 	~StudyOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
     protected:
    ORDER_STATUS preProcess_(UnitEntity * unit, SkillRule * skill, int level);
    ORDER_STATUS doProcess_(UnitEntity * unit, SkillRule * skill, int level, TeachingOffer *teacher);

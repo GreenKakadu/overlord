@@ -37,7 +37,7 @@ ReshowOrder::ReshowOrder(){
 }
 
 STATUS ReshowOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity,NO_PARSING_REPORT) && !entityIsFaction(entity,NO_PARSING_REPORT))
             return IO_ERROR;
@@ -74,7 +74,7 @@ STATUS ReshowOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ReshowOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ReshowOrder::process (Entity * entity, ParameterList &parameters)
 {
   FactionEntity * faction = dynamic_cast<FactionEntity *>(entity);
   if(faction == 0)

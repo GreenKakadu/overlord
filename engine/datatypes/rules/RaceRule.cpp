@@ -11,7 +11,8 @@
 #include "PrototypeManager.h"
 extern RulesCollection <SkillRule>     skills;
 extern VarietiesCollection <EquipmentSlotVariety>      equipments;
-//RaceRule      sampleRace      ("RACE",     &sampleGameData);
+RulesCollection <RaceRule>      races(new DataStorageHandler("races.rules"));
+RaceRule      sampleRace      ("RACE",     &sampleGameData);
 
 equip_slot::equip_slot(EquipmentSlotVariety * slotRule, int  cap)
 {
@@ -124,18 +125,7 @@ RaceRule::initialize        ( Parser *parser )
 				}
       return OK;
     }
-  if (parser->matchKeyword("FAMILIAR"))
-    {
-			SkillRule *skill = skills[parser->getWord()];
-			if (skill == 0)
-					return OK;
-			else
-				{
-					BonusElement newBonus(skill,parser->getInteger());
-					intristicSkillBonuses_.push_back(newBonus);
-				}
-      return OK;
-    }
+
   if (parser->matchKeyword("EQUIPMENT_SLOT"))
     {
       string slotId = parser->getWord();
@@ -156,6 +146,8 @@ RaceRule::initialize        ( Parser *parser )
        return OK;
     }
      stats.initialize(parser);
+		skillBonuses_.initialize(parser);
+		movementBonuses_.initialize(parser);
       return OK;
 
  }
@@ -177,18 +169,7 @@ int RaceRule::getEquipCapacity(EquipmentSlotVariety *  type)
 		}
 	return 0;
 }
-/** No descriptions */
-int RaceRule::getBonus(SkillRule * skill){
-  vector <BonusElement >::iterator iter;
-  for(iter = intristicSkillBonuses_.begin();
-    iter != intristicSkillBonuses_.end();
-      iter++)
-    {
-        if ((*iter).getSkill() == skill)
-          return (*iter).getBonusPoints();
-    }
-  return 0;
-}
+
 
 
 /*
@@ -201,6 +182,9 @@ LEARNING_RESULT RaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
    return CANNOT_STUDY_FAILURE;
 //  return   learningAbilities_->mayLearn(skill, unit);
 }
+
+
+
 bool RaceRule::teacherRequired(SkillRule * skill, UnitEntity * unit)
 {
   return false;
@@ -272,16 +256,7 @@ void    RaceRule::extractKnowledge (Entity * recipient, int parameter)
       }
   }
 
-  for(vector <BonusElement >::iterator iter = intristicSkillBonuses_.begin();
-                                 iter != intristicSkillBonuses_.end(); ++iter)
-    {
-      if((*iter).getSkill())
-      {
-        if(recipient->addSkillKnowledge((*iter).getSkill(),1))
-          (*iter).getSkill()->extractKnowledge(recipient, 1);
-
-      }
-  }
+	skillBonuses_.extractKnowledge(recipient, 1);
 }
 
 
@@ -350,18 +325,26 @@ void RaceRule::printDescription(ReportPrinter & out)
       out <<". ";
     }
 
-   if(!intristicSkillBonuses_.empty())
-    {
-      out << " Skill bonuses: ";
-      for ( vector< BonusElement>::iterator iter = intristicSkillBonuses_.begin();
-            iter != intristicSkillBonuses_.end(); iter++)
-		    {
-          if( iter != intristicSkillBonuses_.begin())
-            {
-              out << ", ";
-            }
-          out << (*iter);
-        }
-      out <<". ";
-    }
+		skillBonuses_.report(out);
+}
+
+
+
+int RaceRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_.getProductionBonus(skill);
+}
+
+
+
+int RaceRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int RaceRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
 }

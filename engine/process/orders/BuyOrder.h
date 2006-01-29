@@ -15,18 +15,19 @@
 #ifndef BUY_ORDER_H
 #define BUY_ORDER_H
 #include "OrderPrototype.h"
-
+extern const int ANY_PRICE;
 /**
   *@author Alex Dribin
   */
 
 class BuyOrder : public OrderPrototype  {
-public: 
+public:
 	BuyOrder();
 	~BuyOrder(){}
-  STATUS loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity );
-  ORDER_STATUS process (Entity * entity, vector <AbstractData *>  &parameters);
-  ORDER_STATUS completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result);
+  STATUS loadParameters(Parser * parser, ParameterList &parameters, Entity * entity );
+  ORDER_STATUS process (Entity * entity, ParameterList &parameters);
+  ORDER_STATUS completeOrderProcessing (Entity * entity, ParameterList &parameters, int result);
+  static const int ANY_PRICE;
 };
 
 #endif

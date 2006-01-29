@@ -20,7 +20,7 @@ extern const int BLOCK_SIZE;
 using namespace std;
 class ReportMessage {
 public:
-  virtual void printReport(ostream &) const{}
+  virtual void printReport(ReportPrinter &) const{}
   virtual void clean() {}
   virtual int getTag(){return 0;} // dummy method which is never used
                             // defined in order to provide  reportElements
@@ -66,7 +66,7 @@ template <class T>  static void  DELETE_PATTERN (void * deadObject, size_t size)
 	p->next = T::headOfFreeList;
 	T::headOfFreeList = p;
 }
-   inline ostream& operator << (ostream& out,  ReportMessage & data)
+   inline ReportPrinter& operator << (ReportPrinter& out,  ReportMessage & data)
                                 { data.printReport(out); return out;}
 
 #endif

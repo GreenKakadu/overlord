@@ -25,7 +25,7 @@ public:
   static void * operator new(size_t size);
   static void   operator delete(void * deadObject, size_t size);
 
-  void printReport(ostream &out) const;
+  void printReport(ReportPrinter &out) const;
   void clean();
 	static  QuartenaryMessage * headOfFreeList;
 	union

@@ -43,7 +43,7 @@ StackOrder::StackOrder(){
 
 
 
-STATUS StackOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
+STATUS StackOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -80,7 +80,7 @@ STATUS StackOrder::loadParameters(Parser * parser, vector <AbstractData *>  &par
 
 
 
-ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS StackOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -116,7 +116,7 @@ ORDER_STATUS StackOrder::process (Entity * entity, vector <AbstractData *>  &par
 //    cout << " accepting " <<endl;
 //    else
 //    cout << " not accepting " <<endl;
-   if((*(leader->getFaction()->getStance(unit)) >= *alliedStance) ||(leader->isAccepting(unit)))
+   if( (!leader->getFaction()->stanceAtLeast(unit,alliedStance)) ||(leader->isAccepting(unit)))
       {
         if(unit->unstack())
         {

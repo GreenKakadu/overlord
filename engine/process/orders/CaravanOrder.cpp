@@ -40,7 +40,7 @@ CaravanOrder::CaravanOrder(){
 }
 
 STATUS CaravanOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -78,7 +78,7 @@ STATUS CaravanOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS CaravanOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
@@ -106,10 +106,10 @@ ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &p
               parameters[j]= parameters[routeLength - 1 - j];
               parameters[routeLength - 1 - j] = temp;
              }
-            result = MoveOrder::move(unit,parameters[1]);
+            result = MoveOrder::move(unit,parameters[1],false);
            }
           else
-            result = MoveOrder::move(unit,parameters[i+1]);
+            result = MoveOrder::move(unit,parameters[i+1],false);
 
         if (result == SUCCESS)
 	          return IN_PROGRESS;
@@ -119,7 +119,7 @@ ORDER_STATUS CaravanOrder::process (Entity * entity, vector <AbstractData *>  &p
   }
   parameters.insert(parameters.begin(),location);
   unit->addReport(new UnaryMessage(caravanLocationAddedReporter, location));
-  result = MoveOrder::move(unit,parameters[1]);
+  result = MoveOrder::move(unit,parameters[1],false);
 
   if (result == SUCCESS)
 	  return IN_PROGRESS;

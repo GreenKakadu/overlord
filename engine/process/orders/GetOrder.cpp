@@ -49,7 +49,7 @@ GetOrder::GetOrder(){
 }
 
 STATUS GetOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -77,7 +77,7 @@ STATUS GetOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -122,7 +122,7 @@ ORDER_STATUS GetOrder::process (Entity * entity, vector <AbstractData *>  &param
   else
   {
    assert(location);
-   if(location->getOwner() != 0 && *(location->getOwner()->getStance(unit)) < *alliedStance)
+   if(location->getRealOwner() != 0 && !(location->getRealOwner()->stanceAtLeast(unit,alliedStance)))
    {
    // can't get items from not-allied owned locations
  	  return INVALID;

@@ -11,7 +11,10 @@
 #include "BasicCondition.h"
 #include "Entity.h"
 #include "UnitEntity.h"
-//ItemRule      sampleItem      ("ITEM",     &sampleGameData);
+#include "CombatActionStrategy.h"
+#include "PrototypeManager.h"
+ItemRule      sampleItem      ("ITEM",     &sampleGameData);
+RulesCollection <ItemRule>      items(new DataStorageHandler("items.rules"));
 
 extern VarietiesCollection <EquipmentSlotVariety>      equipments;
 
@@ -23,12 +26,12 @@ ItemRule::ItemRule ( const ItemRule * prototype ) : Rule(prototype)
 		 equipSlot_ = 0;
 		 equipCondition_ = 0;
 		 useSkill_ = 0;
-     learningLevelBonus_ = 0;
 		 unique_ = false;
 		 special_ = false;
 		 magic_ = false;
 		 live_ = false;
     numEquipSlotsRequired_  = 1;
+		combatAction_ = 0;
 }
 
 
@@ -144,26 +147,51 @@ if (parser->matchKeyword("USE_SKILL"))
 					useSkill_ = new SkillLevelElement(skill,parser->getInteger());
       return OK;
     }
-if (parser->matchKeyword("LEVEL_BONUS"))
-    {
-			SkillRule *skill = skills[parser->getWord()];
-			if (skill == 0)
-					return OK;
-			else
-					learningLevelBonus_ = new SkillLevelElement(skill,parser->getInteger());
-      return OK;
-    }
+
 if (parser->matchKeyword("SPECIAL"))
     {
 			special_ = true;
       return OK;
     }
+
+	if (parser->matchKeyword ("COMBAT_USE") )
+    {
+        string keyword = parser->getWord();
+       	GameData * temp =  prototypeManager->findInRegistry(keyword);
+			if(temp == 0)
+				{
+					cout << "Unknown combat action " << keyword  << " for item " << print()<< endl;
+				}
+			else
+				{
+  				combatAction_ =
+           dynamic_cast<CombatActionStrategy *>(temp ->createInstanceOfSelf ());
+
+        }
+      return OK;
+    }
+
+	if (parser->matchKeyword("COMBAT"))
+    {
+			if(combatAction_ == 0)
+			{
+					cout << "combat parameter "<< parser->getText()<< " defined before combat action  for item " << print()<< endl;
+
+      return OK;
+			}
+			combatAction_->initialize(parser);
+      return OK;
+    }
+
+
 if (parser->matchKeyword("MAGIC"))
     {
 			magic_ = true;
       return OK;
     }
      stats.initialize(parser);
+		 skillBonuses_.initialize(parser);
+
       return OK;
 
  }
@@ -241,7 +269,7 @@ void ItemRule::printDescription(ReportPrinter & out)
 
 void ItemRule::applyEquipementEffects(UnitEntity * unit, int number)
 {
-  if(learningLevelBonus_)
+/*  if(learningLevelBonus_)
   {
     if(unit->getFiguresNumber() <= number)
     {
@@ -251,5 +279,26 @@ void ItemRule::applyEquipementEffects(UnitEntity * unit, int number)
     {
       unit->removeLearningLevelBonus(learningLevelBonus_);
     }
-  }
+  }*/
+}
+
+
+
+int ItemRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_.getProductionBonus(skill);
+}
+
+
+
+int ItemRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int ItemRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
 }

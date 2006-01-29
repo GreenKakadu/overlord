@@ -14,9 +14,10 @@
 #include "SkillLevelElement.h"
 #include "BonusElement.h"
 #include "QuintenaryMessage.h"
-//TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
-//MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("MINOR", &sampleTitle);
-//OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
+TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
+MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("PRINCE", &sampleTitle);
+OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
+RulesCollection <TitleRule>     titles(new DataStorageHandler("titles.rules"));
 extern ReportPattern * failedContestTitleReporter;
 extern ReportPattern * successContestTitleReporter;
 
@@ -27,8 +28,6 @@ TitleRule::TitleRule(const TitleRule * prototype) : Rule(prototype)
     type_    = 0;
     range_   = 0;
     condition_ = 0;
-    learningLevelBonus_ = 0;
-    studyBonus_ = 0;
 }
 
 
@@ -76,21 +75,13 @@ TitleRule::initialize        ( Parser *parser)
       setType( parser->getInteger() );
       return OK;
     }
-  if ( parser->matchKeyword ("LEARNING_LEVEL_BONUS") )
-    {
-      learningLevelBonus_ = SkillLevelElement::readElement(parser);
-      return OK;
-    }
-  if ( parser->matchKeyword ("STUDY_BONUS") )
-    {
-      studyBonus_ = BonusElement::readElement(parser);
-      return OK;
-    }
   if ( parser->matchKeyword ("RANGE") )
     {
       setRange( parser->getInteger() );
       return OK;
     }
+
+		skillBonuses_.initialize(parser);
 
   return OK;
 }
@@ -104,7 +95,7 @@ void TitleRule::printDescription(ReportPrinter & out)
    if(range_)   out << "Range "<< range_ <<" days of walking. ";
    if(cost_)    out << "Costs $"<< cost_ <<". ";
 
-   if(learningLevelBonus_)
+/*   if(learningLevelBonus_)
         out << "Allows owner to learn " << learningLevelBonus_->getLevel()
             <<" additional levels of all skills derived from "
             << learningLevelBonus_->getSkill() << " without a teacher. ";
@@ -112,7 +103,7 @@ void TitleRule::printDescription(ReportPrinter & out)
     if(studyBonus_)
         out << "Allows owner to learn all skills derived from "
             << studyBonus_->getSkill() << " "<< studyBonus_->getBonusPoints()
-            << "% faster.";
+            << "% faster.";*/
 }
 
 
@@ -202,7 +193,7 @@ int TitleRule::markTerritoryOwned(LocationEntity * start, UnitEntity * titleHold
 
   while(current->getDistance() <= distance)
   {
-    current->setOwner(owner);
+    current->setLegalOwner(owner,start);
     counter++;
     current->examineNeighboringLocations(currentDistance, openList,
                                 examinedLocations);
@@ -243,17 +234,28 @@ void    TitleRule::extractKnowledge (Entity * recipient, int parameter)
   if(condition_)
     condition_->extractKnowledge(recipient);
 
-  if(learningLevelBonus_)
-  {
-    if(recipient->addSkillKnowledge(learningLevelBonus_->getSkill(), 1))
-      learningLevelBonus_->getSkill()->extractKnowledge(recipient,1);
-  }
+	skillBonuses_.extractKnowledge(recipient,1);
+}
 
-  if(studyBonus_)
-  {
-    if(recipient->addSkillKnowledge(studyBonus_->getSkill() , 1))
-      studyBonus_->getSkill()->extractKnowledge(recipient,1);
-  }
+
+
+int TitleRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_.getProductionBonus(skill);
+}
+
+
+
+int TitleRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int TitleRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
 }
 //============================================================
 //============================================================

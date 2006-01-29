@@ -14,7 +14,6 @@
  ***************************************************************************/
 #include "ReportPattern.h"
 // Generic
-ReportPattern *	invalidOrderReporter  = new ReportPattern("invalidOrderReporter");
 ReportPattern *	invalidParameterReporter  = new ReportPattern("invalidParameterReporter");
 ReportPattern *	unknownParameterReporter  = new ReportPattern("unknownParameterReporter");
 ReportPattern *	missingParameterReporter  = new ReportPattern("missingParameterReporter");
@@ -85,6 +84,7 @@ ReportPattern * contestTitleReporter    = new ReportPattern("contestTitleReporte
 ReportPattern * failedContestTitleReporter    = new ReportPattern("failedContestTitleReporter");
 ReportPattern * successContestTitleReporter    = new ReportPattern("successContestTitleReporter");
 ReportPattern * claimTitleReporter    = new ReportPattern("claimTitleReporter");
+ReportPattern * reclaimTitleReporter    = new ReportPattern("reclaimTitleReporter");
 // Christen
 ReportPattern * cannotChristenReporter   = new ReportPattern("cannotChristenReporter");
 ReportPattern * publicChristenReporter   = new ReportPattern("publicChristenReporter");
@@ -166,6 +166,8 @@ ReportPattern * paymentErrorReporter       = new ReportPattern("paymentErrorRepo
 ReportPattern * learningStartedReporter    = new ReportPattern("learningStartedReporter");
 ReportPattern * followerSkillLimitReporter = new ReportPattern("followerSkillLimitReporter");
 // Teach
+ReportPattern * unknownTactics  = new ReportPattern("unknownTactics");
+// Teach
 ReportPattern * teachingReporter    = new ReportPattern("teachingReporter");
 // Unstack
 ReportPattern *	unstackReporter           = new ReportPattern("unstackReporter");
@@ -188,9 +190,18 @@ ReportPattern * noYieldTitleReporter    = new ReportPattern("noYieldTitleReporte
 ReportPattern * publicYieldTitleReporter = new ReportPattern("publicYieldTitleReporter");
 ReportPattern * privateYieldTitleReporter = new ReportPattern("privateYieldTitleReporter");
 ReportPattern * cannotOathYourselfReporter = new ReportPattern("cannotOathYourselfReporter");
-//
+//==========================================================================
 
+ReportPattern * taxCollectedReporter = new ReportPattern("taxCollectedReporter");
+//================================= COMBAT ===============================
+ReportPattern * combatStartReporter = new ReportPattern("combatStartReporter");
+ReportPattern * combatStart2Reporter = new ReportPattern("combatStart2Reporter");
+ReportPattern * combatEndReporter = new ReportPattern("combatEndReporter");
+ReportPattern * combatAttackersReporter = new ReportPattern("combatAttackersReporter");
+ReportPattern * combatDefendersReporter = new ReportPattern("combatDefendersReporter");
+ReportPattern * listReporter= new ReportPattern("listReporter");
 
+//==========================================================================
 ReportPattern * privateEnchantmentReporter = new ReportPattern("privateEnchantmentReporter");
 ReportPattern * privateEnchanterReporter = new ReportPattern("privateEnchanterReporter");
 ReportPattern * publicEnchantmentReporter = new ReportPattern("publicEnchantmentReporter");

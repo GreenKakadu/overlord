@@ -17,11 +17,11 @@
 #define CONSTRUCTION_ENTITY_H
 
 #include "TokenEntity.h"
-
+#include "ConstructionRule.h"
 /**Ships and buildings entities
   *@author Alex Dribin
   */
-class ConstructionRule;
+
 class FactionEntity;
 class LocationEntity;
 class ConstructionWorksElement;
@@ -60,17 +60,21 @@ public:
       int addSkill(SkillRule  * skill, int expPoints);
       void buildingCompleted();
       int getStealth() const;
+	    void sufferDamage(int value);
       void addUnit(UnitEntity * unit);
       void removeUnit(UnitEntity * unit);
       void destroy();
       bool mayMove();
+			bool mayParticipateInCombat() const {return construction_->isBattle();}
       bool mayInterract(UnitEntity * unit);
       int getLandUse();
       int getProductionBonus(ItemRule * item, SkillRule * skill,int level);
       void setProductionBonus(ItemRule * product, SkillRule * skill,int level);
       RationalNumber useProductionBonus(ItemRule * product, RationalNumber number);
 //      void recalculateCapacity();
+		 int calculateMovementBonus(MovementVariety * mode);
      int getCapacity(int modeIndex);
+	   int getCapacity(MovementVariety * mode);
      bool leaveStaying();
      bool isOfType(Rule * type);
      int  calculateTotalWeight (int & weight);
@@ -90,6 +94,10 @@ public:
      LEARNING_RESULT mayLearn(SkillRule * skill);
      bool isOnBoard(UnitEntity * unit);
      inline bool isAccepted(UnitEntity * unit) {return isOnBoard(unit);}
+	   string printComposition();
+	   Rule * getComposition();
+     EntityStatistics  getBasicStats();
+     void disband();
 
     protected:
     vector <UnitEntity *> units_;

@@ -11,11 +11,10 @@
 #include <iostream>
 #include "Element.h"
 #include "ItemRule.h"
-#include "RulesCollection.h"
 #include "RationalNumber.h"
 class Parser;
-extern RulesCollection <ItemRule>      items;
 using namespace std;
+
 typedef Element3<  ItemRule,  RationalNumber ,  int> BasicInventoryElement;
 
 class InventoryElement : public BasicInventoryElement  {
@@ -43,6 +42,11 @@ public:
           return rule_->getCapacity(modeIndex) * (parameter1_.getValue() -
             parameter2_) + rule_->getEquipCapacity(modeIndex) * parameter2_;
     }
+   inline int getCapacity(MovementVariety * mode)
+	{
+          return rule_->getCapacity(mode) * (parameter1_.getValue() -
+            parameter2_) + rule_->getEquipCapacity(mode) * parameter2_;
+	}
 //   void save(ostream & out)
 //   {
 //      out << rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
@@ -79,7 +83,6 @@ public:
         return new InventoryElement(item, number,equiped);
       }
 
-  protected:
   InventoryElement read(Parser * parser)
 {
 	return InventoryElement (items[parser->getWord()],
@@ -87,6 +90,7 @@ public:
 														parser->getInteger()
 														);
 }
+  protected:
 };
 typedef vector <InventoryElement *>::iterator InventoryElementIterator;
 //#ifndef INVENTORY_ELEMENT_EXPLICIT_H

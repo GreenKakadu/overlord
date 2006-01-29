@@ -26,7 +26,6 @@
 #include "TokenEntity.h"
 #include "TeachingOffer.h"
 extern ReportPattern * teachingReporter;
-extern ReportPattern * teachingReporter2; //debug
 extern EntitiesCollection <UnitEntity>      units;
 
 //TeachOrder instantiateTeachOrder;
@@ -42,13 +41,15 @@ TeachOrder::TeachOrder()
   "teaching another unit.  Teaching is successful only when the teacher has a\n" +
   "greater level in the particular skill than the target unit.  Teaching enables\n" +
   "a unit to study a particular skill, get to an higher level and learn faster.\n";
+
+    fullDayOrder_= true;
     orderType_   = DAY_LONG_ORDER;
 }
 
 
 
 STATUS TeachOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
 //   if(!entityIsUnit(entity))
 //            return IO_ERROR;
@@ -66,7 +67,7 @@ STATUS TeachOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS TeachOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * teacher = dynamic_cast<TokenEntity *>(entity);
   assert(teacher);
@@ -145,14 +146,14 @@ ORDER_STATUS TeachOrder::process (Entity * entity, vector <AbstractData *>  &par
 
 
 
-void TeachOrder::preProcess_(Entity * entity, vector <AbstractData *>  &parameters)
+void TeachOrder::preProcess_(Entity * entity, ParameterList &parameters)
 {
 
 }
 
 
 
-void TeachOrder::doProcess_(Entity * entity, vector <AbstractData *>  &parameters)
+void TeachOrder::doProcess_(Entity * entity, ParameterList &parameters)
 {
 
 }

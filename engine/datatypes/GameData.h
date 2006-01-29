@@ -12,6 +12,7 @@
 #include "OverlordTypes.h"
 #include "BasicData.h"
 #include "LineParser.h"
+#include "DataStorageHandler.h"
 using namespace std;
 
 class ProcessingMode;
@@ -32,6 +33,7 @@ class GameData : public BasicData
      bool isDescendantFrom  (GameData * object);
    virtual STATUS     initialize ( Parser *parser );
    virtual void       save (ostream &out);
+   static  void       staticInitialization (){}
 
    inline  string     getKeyword() const{ return keyword_;}
    inline  GameData * getParent() const { return parent_;}

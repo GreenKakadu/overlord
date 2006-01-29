@@ -1,30 +1,70 @@
 These are files containing preliminary code  of Overlord turn
 processing engine.
-Version 0.32
-Date 16.05.2004
+Version 0.3.4
+Date 25.02.2005
 
                  1. Functionality.
 
 This version supports main functionality exept of combat.
+Combat is partially supported (see TODO for details)
 
-			2. Use
+			2. Compillation and building
+
+			make -f OverlordMakefile
+
+			executable file is "Overlord"
+
+			3. Use
 
 Before running engine (Overlord) you should set game directories and configuration.
 
-File "game" contains configuration parameters.
+File "overlord.config" contains configuration parameters.
 The most important of them are: GAMEDIR and PLAYERSDIR - these should be set 
 according to your's directories containing rulefiles, entities data and players subdirectories.
 
-GAMEDIR is a directory where engine will look for game rulefiles as skills, items etc.
-( items, races, skills, terrains, titles, buildings, directions, stats, 
- stances, movements are  rulefiles)
+GAMEDIR is a directory where engine will look for game rulefiles (*.rules and *.var)
+	Rules are:
+			titles.rules
+			terrains.rules
+			races.rules
+			constructions.rules
+			fx_actions.rules
+			enchantments.rules
+			items.rules
+			skills.rules
+			seasons.rules
+			weathers.rules
+  Varieties are:
+		stances.var
+		movements.var
+		directions.var
+		equipments.var
+		construction_works.var
+		combat_stances.var
+		combat_moves.var
+		combat_ranks.var
+		combat_files.var
+		damage_type.var
+		combat_target.var
+
 PLAYERSDIR is a directory where engine will look for orders and where it will place reports.
 	For each faction there should be subdirectory in PLAYERSDIR, containing orders file.
 	Orders file should be named orders.n, where n is number of turn.
 
-UNITSFILE FACTIONSFILE LOCATIONSFILE BUILDINGSFILE  are names of files containing entities data
-(units, buildings, factions and locations data).
+UNITSFILE FACTIONSFILE LOCATIONSFILE BUILDINGSFILE  are names of configuration variables keeping names of files containing entities data
+(units.dat, buildings.dat, effects.dat, factions.dat and locations.dat data).
+combat.dat is used for combat simulations.
+
+GAME is a name of game. File "name of the game".dat will keep some game data. (For instance "T1.dat")
 
 TURN  is current turn. It should be identical to extention of order files.
 	so if TURN is 5 you should name order file order.5
 
+  4. Documentation
+
+	RulesNew.txt contain current overlord rules that may be not relevant in some cases.
+
+	DesignDoc.html - contain explanation of overlord engine design.
+	                 Parts 1 and 2 are OK
+									 Part 3 is outdated
+									 Part 4 is not written yet

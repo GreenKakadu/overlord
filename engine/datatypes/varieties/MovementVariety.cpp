@@ -6,6 +6,11 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "MovementVariety.h"
+
+MovementVariety  sampleMode  ("MOVEMENT",  &sampleVariety);
+VarietiesCollection <MovementVariety> movementModes(new DataStorageHandler("movements.var"));
+
+
 GameData * MovementVariety::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<MovementVariety> (this);

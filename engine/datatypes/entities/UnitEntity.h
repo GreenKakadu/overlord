@@ -11,8 +11,9 @@
 #include "TokenEntity.h"
 #include "SkillElement.h"
 #include "SkillLevelElement.h"
-#include "EntityStatistics.h"
 #include "ReportPrinter.h"
+#include "TitlesAttribute.h"
+
 class FactionEntity;
 class LocationEntity;
 class RaceRule;
@@ -38,12 +39,14 @@ class UnitEntity : public TokenEntity
                   int number, LocationEntity * location);
   STATUS  initialize      ( Parser *parser );
   void    preprocessData();
+	void    dailyPreProcess();
   STATUS  dataConsistencyCheck();
   void    save (ostream &out);
   void    dailyUpdate();
   bool    defaultAction();
   void      postProcessData();
   void      payUpkeep();
+//  BattleInstance * battleInstantiation();
 // Reporting ==============================================
   void    produceFactionReport(FactionEntity * faction, ReportPrinter &out);
   void    publicReport(int observation, ReportPrinter &out);
@@ -58,6 +61,7 @@ class UnitEntity : public TokenEntity
          int              getStealth() const;
          int              getWeight();
          int              getCapacity(int modeIndex);
+				 int              getCapacity(MovementVariety * mode);
          RaceRule *       getRace() const;
          void setRace(RaceRule * race, int number);
   inline UnitEntity *     getLeader() const {return stackFollowingTo_;}
@@ -66,31 +70,44 @@ class UnitEntity : public TokenEntity
    inline void setContainingConstruction(ConstructionEntity * containingConstruction)  { containingConstruction_ = containingConstruction;}
           void enterConstruction(ConstructionEntity * containingConstruction) ;
           void exitConstruction() ;
-     int              getControlPoints();
-// Inventory methods ==============================================
+          int getControlPoints() const;
+	 inline int getDamage() const {return stats.getDamage();}
+	 inline DAMAGE_TYPE getDamageType() const { return stats.getDamageType();}
+//	 DAMAGE_TYPE modifyDamageType(DAMAGE_TYPE value){}
+	 inline int getLife() const {return stats.getLife();}
+   inline int getInitiative() const {return stats.getInitiative();}
+	 inline int getMelee() const {return stats.getMelee();}
+	 inline int getMissile() const {return stats.getMissile();}
+	 inline int getDefence() const {return stats.getDefence();}
+	 inline int getHits() const {return stats.getHits();}
+	 string printComposition();
+	      Rule * getComposition();
 
-        /** Updates number of equiped items after decreasing of number of figures in unit */
-         vector < InventoryElement *>    updateEquipement();
-         int     hasMoney();                                  // These two items play special
-  inline int     hasMana()  {return hasItem(items["mana"]);} // role. Demand special care?
+	 // Inventory methods ==============================================
+
+/** Updates number of equiped items after decreasing of number of figures in unit */
+         vector < InventoryElement>    updateEquipement();
+         int     hasMoney();                    // These two items play special
+  inline int     hasMana()  {return hasItem(items["mana"]);} // role.
+	                                                     //Demand special care?
          int     equipItem(ItemRule * item, int num);
          int     mayBorrow(ItemRule * item, int amount);
          int     borrow(ItemRule * item, int amount);
 
 // Stacking ========================================================
 
-                          /** Stacks under new leader */
+                       /** Stacks under new leader */
   friend  void            stack(UnitEntity * unit, UnitEntity * newLeader);
-                          /** Returns the leader of current unit if any or 0 */
+                       /** Returns the leader of current unit if any or 0 */
   inline  UnitEntity *    getPrevStack() const {return stackFollowingTo_;} //for traversing up
           bool            unstack();
-                          /** returns list of all units following current unit */
-  vector< UnitEntity *> & createStackMembersList(vector< UnitEntity *> & followers) ;
-                          /** Applies all movement effects to all units in stack */
+                       /** returns list of all units following current unit */
+ vector< UnitEntity *> &createStackMembersList(vector< UnitEntity *> &followers);
+                       /** Applies all movement effects to all units in stack */
           void            setStackMoving(TravelElement * moving) ;
-                          /** recursively calculates weight of all units in stack */
+                       /** recursively calculates weight of all units in stack */
           int             calculateTotalWeight (int & weight);
-                          /** recursively calculates total capacity of all units in stack */
+               /** recursively calculates total capacity of all units in stack */
           void            calculateTotalCapacity(int & capacity, int modeIndex);
           bool            isLeading(UnitEntity * unit);
           bool            isFollowingInStackTo(UnitEntity * unit);
@@ -99,13 +116,12 @@ class UnitEntity : public TokenEntity
           void            movingGroupReport(ReportRecord report);
           bool            addStackLandwalkExperience(bool newLevel);
           bool            leaveStaying();
-          void            enterStack(ConstructionEntity * containingConstruction);
+          void           enterStack(ConstructionEntity * containingConstruction);
           void            exitStack();
           bool            promoteUnit(UnitEntity * unit1,UnitEntity * unit2);
 // Skills ========================================================
 
 
-         void addSkillExperience(SkillRule  * skill, int expPoints);
 //         bool hasTeacher(SkillRule  * skill);
          void mergeUnits(int number, UnitEntity * unit);
               /** Add new unskilled figures */
@@ -122,10 +138,22 @@ class UnitEntity : public TokenEntity
           void addTitle(TitleElement * title);
           void removeTitle(TitleElement * title);
           bool claimTitle(TitleElement * title);
-void addLearningLevelBonus(SkillLevelElement * bonus);
-void removeLearningLevelBonus(SkillLevelElement * bonus);
-int getTitleBonus(SkillRule * skill);
-bool mayCancelTitle(TitleElement * title);
+					bool mayCancelTitle(TitleElement * title);
+	 inline TitlesAttribute * getTitlesAttribute()  {return &titles_;}
+// Bonuces ========================================================
+  			int getProductionBonus(SkillRule * skill);
+//				int getSkillLearningBonus(SkillRule * skill);
+//				int getItemLearningBonus(SkillRule * skill);
+//				int getTitleLearningBonus(SkillRule * skill);
+//				int getEnchantmentLearningBonus(SkillRule * skill);
+				int getSkillStudyBonus(SkillRule * skill);
+				int getItemStudyBonus(SkillRule * skill);
+				int getTitleStudyBonus(SkillRule * skill);
+				int getEnchantmentStudyBonus(SkillRule * skill);
+//				int getSkillProductionBonus(SkillRule * skill);
+//				int getItemProductionBonus(SkillRule * skill);
+//  				int getTitleProductionBonus(SkillRule * skill);
+  int calculateMovementBonus(MovementVariety * mode);
 // Flags ========================================================
   void setConsuming(bool value) {consuming_ = value;}
   bool getConsuming() {return consuming_;}
@@ -133,6 +161,7 @@ bool mayCancelTitle(TitleElement * title);
   bool getDiscontenting() {return discontenting_;}
 
 // Other ========================================================
+	void sufferDamage(int value);
   void  doOath();
   void  setEntityMoving(TravelElement * moving);
   Rule * getType();
@@ -166,6 +195,10 @@ bool mayCancelTitle(TitleElement * title);
 		// Removes all experience in given skill and all it's derivatives
 		void forgetSkill(SkillRule * skill);
    inline bool isAccepted(UnitEntity * unit) {return isLeading(unit);}
+   bool             mayGuard(bool enableReport)  ;
+   int getAttackRating() const;
+   int getDefenceRating() const;
+	 EntityStatistics  getBasicStats();
 // ReportPatterns ========================================================
 
 
@@ -173,7 +206,6 @@ bool mayCancelTitle(TitleElement * title);
          ConstructionEntity  * containingConstruction_;
          UnitEntity     * stackFollowingTo_;
          RaceElement    * raceComposition_;
-         EntityStatistics stats;
          bool             staying_;
          bool             patroling_;
          bool             exposeFlag_;
@@ -181,8 +213,7 @@ bool mayCancelTitle(TitleElement * title);
          bool 	          discontenting_;
          bool             isAssignedToStaff_;
   vector < UnitEntity *>      stackFollowers_;
-  vector < TitleElement *>      titles_;
-  vector < SkillLevelElement *>      learningLimitBonus_;
+  TitlesAttribute      titles_;
     private:
 
 };

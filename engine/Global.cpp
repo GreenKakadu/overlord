@@ -4,7 +4,7 @@
     begin                : Wed Nov 27 2002
     copyright            : (C) 2002 by Alex Dribin
     email                : alexliza@netvision.net.il
- This file contains Overlord Engine definitions   
+ This file contains Overlord Engine definitions
  ***************************************************************************/
 #include "Global.h"
 #include "DataStorageHandler.h"
@@ -14,104 +14,20 @@ int currentDay = 1;
 const int BLOCK_SIZE = 1024;
 //const unsigned SCALE_FACTOR = 100;
 
-template class EntitiesCollection<UnitEntity>;
-template class RulesCollection<TerrainRule>;
-template class VarietiesCollection<MovementVariety>;
-//PrototypeManager * GameData::prototypeManager= new PrototypeManager;
-
-PrototypeManager * prototypeManager = 0; // will be created on first call
-BasicCondition  sampleBasicCondition ("CONDITION",      &sampleGameData);
-ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
-SkillCondition  sampleSkillCondition ("SKILL_CONDITION", &sampleGameData);
-GameData  targetTypeSelf("SELF", &sampleGameData);
-GameInfo game;
-// Varieties
-Variety          sampleVariety  ("VARIETY",  &sampleGameData);
-MovementVariety  sampleMode  ("MOVEMENT",  &sampleVariety);
-DirectionVariety sampleDirection ("DIR",      &sampleGameData);
-StanceVariety    sampleStance    ("STANCE",   &sampleGameData);
-EquipmentSlotVariety sampleEquipmentSlot     ("EQUIPMENT_SLOT", &sampleGameData);
-ConstructionWorksVariety   sampleConstructionWork  ("CONSTRUCTION_WORK", &sampleGameData);
-
-TerrainRule   sampleTerrain   ("TERRAIN",  &sampleGameData);
-TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
-ItemRule      sampleItem      ("ITEM",     &sampleGameData);
-SkillRule     sampleSkill     ("SKILL",    &sampleGameData);
-RaceRule      sampleRace      ("RACE",     &sampleGameData);
-ActionRule    sampleAction    ("FX_ACTION",&sampleGameData);
-EnchantmentRule    sampleEnchantment    ("FX_EFFECT",&sampleGameData);
-ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);// Derived Rules
-
-// Derived Rules
-MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("PRINCE", &sampleTitle);
-OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
-LeaderRaceRule     sampleLeaderRaceRule =     LeaderRaceRule("LEADER", &sampleRace);
-FollowerRaceRule   sampleFollowerRaceRule =   FollowerRaceRule("FOLLOWER", &sampleRace);
-CreatureRaceRule   sampleCreatureRaceRule =   CreatureRaceRule("CREATURE", &sampleRace);// Entities
-
-// Entities
-Entity         sampleEntity  ("ENTITY",  &sampleGameData);
-TokenEntity sampleTokenEntity  ("PHYSICAL_ENTITY",  &sampleEntity);
-UnitEntity     sampleUnit    ("UNIT",    &sampleTokenEntity);
-FactionEntity  sampleFaction ("FACTION", &sampleEntity);
-LocationEntity sampleLocation("LOCATION",&sampleTokenEntity);
-EffectEntity         sampleEffectEntity  ("EFFECT",  &sampleTokenEntity);
-ConstructionEntity   sampleConstructionEntity =   ConstructionEntity("BUILDING", &sampleTokenEntity);
-//Entity * RIPplaceholder = new  Entity(sampleEntity);
-// Strategys
-BasicLearningStrategy     sampleLearning          ("LEARNING",           &sampleGameData);
-MagicLearningStrategy     sampleMagicLearning     ("LEARNING_MAGIC",     &sampleLearning);
-NormalLearningStrategy    sampleNormalLearning    ("LEARNING_NORMAL",    &sampleLearning);
-CreatureLearningStrategy  sampleCreatureLearning  ("LEARNING_CREATURE",  &sampleLearning);
-BasicUsingStrategy        sampleUsing             ("USING",              &sampleGameData);
-HarvestUsingStrategy      sampleHarvestUsing      ("USING_HARVEST",      &sampleUsing);
-CraftUsingStrategy        sampleCraftUsing        ("USING_CRAFT",        &sampleUsing);
-EnchantmentUsingStrategy  sampleEnchantmentUsing  ("USING_ENCHANT",      &sampleUsing);
-SummonUsingStrategy       sampleSummonUsing       ("USING_SUMMON",       &sampleUsing);
-ActionUsingStrategy       sampleActionUsing       ("USING_ACTION",       &sampleUsing);
-//EffectUsingStrategy       sampleEffectUsing       ("USING_EFFECT",       &sampleUsing);
-CombatUsingStrategy       sampleCombatUsing       ("USING_COMBAT",       &sampleUsing);
-BuildUsingStrategy        sampleBuildUsing        ("USING_BUILD",        &sampleUsing);
-ConstructionUsingStrategy sampleConstructionUsing ("USING_CONSTRUCTION", &sampleUsing);
-MarketStrategy            sampleMarket            ("MARKET",             &sampleGameData);
-
-// Varieties Collections
-VarietiesCollection <MovementVariety> movementModes(new DataStorageHandler("movements"));
-VarietiesCollection <DirectionVariety>     directions(new DataStorageHandler("directions"));
-VarietiesCollection <StanceVariety>    stances(new DataStorageHandler("stances"));
-VarietiesCollection <EquipmentSlotVariety>      equipments(new DataStorageHandler("equipments"));
-VarietiesCollection <ConstructionWorksVariety>  construction_works(new DataStorageHandler("construction_works"));
-
-// Rules Collections
-
-//RulesCollection <TerrainRule>   terrains(new DataStorageHandler("terrains"));
-RulesCollection <TitleRule>     titles(new DataStorageHandler("titles"));
-RulesCollection <ItemRule>      items(new DataStorageHandler("items"));
-RulesCollection <SkillRule>     skills(new DataStorageHandler("skills"));
-RulesCollection <RaceRule>      races(new DataStorageHandler("races"));
-RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions"));
-RulesCollection <EnchantmentRule>    enchantments(new DataStorageHandler("enchantments"));
-RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions"));
+GameConfig gameConfig;
 RuleIndex ruleIndex;
-
-EntitiesCollection <UnitEntity>   units(new DataStorageHandler(game.getUnitsFile()));
-EntitiesCollection <FactionEntity>   factions(new DataStorageHandler(game.getFactionsFile() ));
-EntitiesCollection <LocationEntity>   locations(new DataStorageHandler(game.getLocationsFile() ));
-EntitiesCollection <ConstructionEntity>   buildingsAndShips(new DataStorageHandler(game.getBuildingsFile() ));
-EntitiesCollection <EffectEntity>   effects(new DataStorageHandler(game.getEffectsFile()));
-
-
 bool testMode = false;
+
+// special values
+GameData  targetTypeSelf("SELF", &sampleGameData);
+
 ProcessingMode   immediateOrders  (IMMEDIATE_ORDER);
 ProcessingMode  stackOrders  (STACK_ORDER);
 ProcessingMode 	 dayOrders  (DAY_LONG_ORDER);
 
-// Samples: All these are here temporary to provide
-// symbol loading from libraries.
-#include "libraryWorkaround.h"
-// special values
 ItemRule * cash;
 ItemRule * food;
+
 MovementVariety * walkingMode;
 MovementVariety * swimingMode;
 MovementVariety * flyingMode;
@@ -142,7 +58,7 @@ bool ciStringCompareN(const std::string& s1,const std::string& s2, const int N)
   {
     if (ciCharCompare(s1[i], s2[i]))
     return true;
-  }  	
+  }
 	return false ;
 }
 /* Converts a long int to a string.
@@ -171,10 +87,19 @@ void longtostr(unsigned long u, char *out)
 
 
 
-string longtostr(unsigned long u)
+string longtostr(long in)
 {
         char buffer[12];
         char *p=buffer, *r;
+				unsigned long u;
+	/* Deal with the sign */
+        if (in < 0) {
+                *p = '-'; p++;
+                u = (unsigned) in * -1;
+        } else
+                u = (unsigned) in;
+
+
 	/* Process the number, output to the string in reverse */
         r = p;
         do {
@@ -193,6 +118,42 @@ string longtostr(unsigned long u)
         }
         return string(buffer);
 }
+// Simple random roll in the interval from 0 to n-1
+
+int Roll_1Dx(int n)
+{
+ return (int) ((double)n * rand()/(RAND_MAX+1.0));
+}
+
+/**
+ ** ROLL_1DX
+ **	Roll the very large dice.
+ ** Correct for any disparities in lrand's distribution.
+ ** The "dice" rolled is 0 to n-1.
+ ** Code of Vincent Archer
+ **/
+int roll_1Dx(int n)
+{
+static int	old_n = 0;
+static long	max;
+long		rnd;
+/*
+ * Go
+ */
+	if (old_n != n) {
+		old_n = n;
+		max = n;
+		while ((max & 0xFF000000) == 0)
+			max <<= 1;
+	}
+	while (1) {
+		rnd = lrand48() >> 6;
+		if (rnd < max)
+			break;
+	}
+	return rnd % n;
+}
+
 #include "Element.h"
 #include "ItemElement.h"
 #include "RaceElement.h"
@@ -201,21 +162,14 @@ string longtostr(unsigned long u)
 #include "MovementElement.h"
 #include "ConstructionWorksElement.h"
 #include "EnchantmentElement.h"
+#include "SkillUseElement.h"
+#include "WeatherElement.h"
 
 // Template instantiation
-#ifdef BCC
-template  <> BasicSkillElement * BasicSkillElement::headOfFreeList;
-template  <> BasicItemElement * BasicItemElement::headOfFreeList;
-template  <> BasicRaceElement * BasicRaceElement::headOfFreeList;
-template  <> BasicInventoryElement * BasicInventoryElement::headOfFreeList;
-template  <> BasicReportElement  * BasicReportElement::headOfFreeList;
-template  <> StanceElement * StanceElement::headOfFreeList;
-template  <> BasicResourceElement * BasicResourceElement::headOfFreeList;
-template  <> BasicMovementElement * BasicMovementElement::headOfFreeList;
-template  <> BasicSkillUseElement * BasicSkillUseElement::headOfFreeList;
-template  <> BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList;
-template  <> BSwapRequestElement * SwapRequestElement::headOfFreeList;
-#else
+//BonusElement Should not be instantiated because it is alreary instantiated as SkillElement (they have identical types)
+
+// GCC versions earlier than 3.4 use template static member declaration syntax incompartible with later varsions
+#ifdef GCC_OLD
              BasicSkillElement * BasicSkillElement::headOfFreeList;
              BasicEnchantmentElement * BasicEnchantmentElement::headOfFreeList;
              BasicItemElement * BasicItemElement::headOfFreeList;
@@ -228,6 +182,19 @@ template  <> BSwapRequestElement * SwapRequestElement::headOfFreeList;
              BasicSkillUseElement * BasicSkillUseElement::headOfFreeList;
              BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList;
              SwapRequestElement * SwapRequestElement::headOfFreeList;
+             BasicWeatherElement * BasicWeatherElement::headOfFreeList;
+#else
+template  <> BasicSkillElement * BasicSkillElement::headOfFreeList;
+template  <> BasicItemElement * BasicItemElement::headOfFreeList;
+template  <> BasicRaceElement * BasicRaceElement::headOfFreeList;
+template  <> BasicInventoryElement * BasicInventoryElement::headOfFreeList;
+template  <> BasicReportElement  * BasicReportElement::headOfFreeList;
+template  <> StanceElement * StanceElement::headOfFreeList;
+template  <> BasicResourceElement * BasicResourceElement::headOfFreeList;
+template  <> BasicMovementElement * BasicMovementElement::headOfFreeList;
+template  <> BasicSkillUseElement * BasicSkillUseElement::headOfFreeList;
+template  <> BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList;
+template  <> SwapRequestElement * SwapRequestElement::headOfFreeList;
+template  <> BasicWeatherElement * BasicWeatherElement::headOfFreeList;
 #endif
-// Temporary: Implementation Definitions
-//PickpocketActionRule     samplePickpocketActionRule =     PickpocketActionRule("PICKPOCKET_ACTION", &sampleAction);
+

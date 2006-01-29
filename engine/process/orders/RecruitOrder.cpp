@@ -65,7 +65,7 @@ RecruitOrder::RecruitOrder()
 
 
 STATUS
-RecruitOrder::loadParameters(Parser * parser, vector <AbstractData *>  &parameters, Entity * entity )
+RecruitOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -185,7 +185,7 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 
 
 ORDER_STATUS
-RecruitOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+RecruitOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);

@@ -16,12 +16,13 @@
 #include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
+#include "WeatherRule.h"
 #include "SkillRule.h"
 #include "TitleRule.h"
 #include "IntegerData.h"
 #include "BasicExit.h"
 #include "ItemElement.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "SkillUseElement.h"
 #include "PrototypeManager.h"
 
@@ -41,7 +42,10 @@
 #include "ConstructionRule.h"
 #include "WagesCompetitiveRequest.h"
 #include "ObservationCondition.h"
+#include "BattleUnit.h"
 // reporters
+UnitEntity     sampleUnit    ("UNIT",    &sampleTokenEntity);
+EntitiesCollection <UnitEntity>   units(new DataStorageHandler(gameConfig.getUnitsFile()));
 extern ReportPattern * withdrawReporter;
 extern ReportPattern * borrowReporter;
 extern ReportPattern * lendReporter;
@@ -57,11 +61,17 @@ extern ReportPattern * followerExitReporter;
 extern ReportPattern * leaderExitReporter;
 extern ReportPattern * followerEnterReporter;
 extern ReportPattern * leaderEnterReporter;
-extern ReportPattern * forgetReport;
 extern ReportPattern * consumeFoodReporter;
 extern ReportPattern * upkeepReporter;
 extern ReportPattern * cannotPayUpkeepReporter;
 extern ReportPattern * disbandReporter;
+ReportPattern  *	guardMovesReporter = new ReportPattern("guardMovesReporter");
+ReportPattern  *	guardInsideReporter = new ReportPattern("guardInsideReporter");
+ReportPattern  *	guard20FiguresReporter = new
+                   ReportPattern("guard20FiguresReporter");
+ReportPattern  *	guardWeaponsReporter = new ReportPattern("guardWeaponsReporter");
+ReportPattern  *	guardNotEnoughReporter = new
+                    ReportPattern("guardNotEnoughReporter");
 
 UnitEntity::UnitEntity(const string & keyword, GameData * parent)  : TokenEntity(keyword, parent)
 {
@@ -198,8 +208,8 @@ void UnitEntity::save(ostream &out)
  */
 void UnitEntity::dailyUpdate()
 {
-   moveAdvance();
    enchantments_.processExpiration(getFiguresNumber());
+   TokenEntity::dailyUpdate();
 }
 
 
@@ -251,10 +261,11 @@ void      UnitEntity::payUpkeep()
 
 void UnitEntity::postProcessData()
 {
-  if(toOath_)
+	if(toOath_)
   {
     doOath();
   }
+	TokenEntity::postProcessData();
 }
 
 
@@ -263,7 +274,8 @@ void UnitEntity::doOath()
 {
     FactionEntity * oldFaction = getFaction();
     oldFaction->removeUnit(this);
-  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+  for(TitleIterator iter = titles_.getAll()->begin();
+					iter != titles_.getAll()->end(); ++iter)
   {
    oldFaction->removeMaxControlPoints((*iter)->getTitle()->getControl());
    (*iter)->desactivateClaimingEffects(); // will clean ownership info
@@ -272,7 +284,8 @@ void UnitEntity::doOath()
     toOath_->addUnit(this);
     toOath_->addVisitedLocation(getLocation());
     // Transfer titles and land ownership
-  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+  for(TitleIterator iter = titles_.getAll()->begin();
+	iter != titles_.getAll()->end(); ++iter)
   {
    toOath_->addMaxControlPoints((*iter)->getTitle()->getControl());
    (*iter)->activateClaimingEffects(); // will renew ownership info
@@ -296,7 +309,7 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
 
   if(isDisbanded())
     {
-      out << " (disbanded) "<<endl;
+      out << " [disbanded] "<<endl;
       reportEvents(out);
       out <<endl;
       return;
@@ -304,15 +317,8 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
 
     else
 
-  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
-  {
-    if(iter != titles_.begin())
-      out << ", " << *(*iter);
-    else
-      out << " " << *(*iter);
-
-  }
-      out  << " at "<<getLocation()->print();
+   titles_.printAll(out);
+   out  << " at "<<getLocation()->print();
 
  if(moving_)
     out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
@@ -366,21 +372,24 @@ void UnitEntity::privateReport(ReportPrinter &out)
  reportInventory(getFaction(), out);
  reportSkills(getFaction(), out);
  recalculateStats();  // Do we really need that?
-   out << "Stats: "<< stats<<endl;
+   out << "Stats: "<< stats;
  reportFlags(out);
+ out<<endl;
  out.decr_indent();
 }
 
 
 
 /*
- * Report unit's specific states
+ * Report unit's specific states and settings
  */
 void    UnitEntity::reportFlags(ReportPrinter &out)
 {
   TokenEntity::reportFlags(out);
   if(!consuming_) out << " Will not use food for upkeep.";
   if(discontenting_) out << " Discontent.";
+
+
 }
 
 
@@ -419,27 +428,12 @@ void    UnitEntity::publicReport(int observation, ReportPrinter &out)
  */
 void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 {
-  bool isFirst = true;
-  if(skills_.empty())
-         return;
-  SkillIterator iter;
-  out << "Skills: ";
-  isFirst = true;
-
-  for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-      if( iter != skills_.begin())
-        {
-          out << ", ";
-        }
-      (*iter).reportExperience(out);
-    }
-  out <<". ";
+  skills_.reportAllShort(out);
 
 //  out << "May learn: ";
 
   RulesIterator skillIter;
-  isFirst = true;
+  bool isFirst = true;
  	for (skillIter = skills.begin(); skillIter != skills.end(); skillIter++)
 		{
        SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
@@ -478,29 +472,13 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
  */
 void UnitEntity::reportInventory(FactionEntity * faction, ReportPrinter &out)
 {
-    bool isFirst = true;
   if(!inventory_.empty())
     {
       if(raceComposition_->getFigures() > 1)
             out << " have: ";
       else
             out << " has: ";
-      isFirst = true;
-	    for (InventoryElementIterator iter = inventory_.begin();
-                iter != inventory_.end(); ++iter)
-        {
-          faction->addKnowledge((*iter)->getItemType());
-          if( isFirst)
-            {
-              isFirst = false;
-            }
-          else
-            {
-              out << ", ";
-            }
-          (*iter)->reportEquipment(out);
-        }
-    out <<". ";
+			inventory_.reportInventory(faction, out);
     }
 
     int StackWeight=0;
@@ -532,13 +510,7 @@ out<<". ";
  */
 void    UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out)
 {
-  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
-  {
-    if(iter != titles_.begin())
-      out << ", "<< *(*iter);
-    else
-      out << " "<< *(*iter);
-  }
+   titles_.printAll(out);
 
  if(moving_)
     out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
@@ -558,6 +530,10 @@ void    UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out
 //===============================================================================
 //===============================================================================
 //===============================================================================
+void UnitEntity::dailyPreProcess()
+{
+	expose(false);
+}
 
 
 /*
@@ -582,6 +558,7 @@ void UnitEntity::preprocessData()
   if((moving_ !=0) && (stackFollowingTo_ == 0))  setStackMoving(moving_);
 
  recalculateStats();
+  TokenEntity::preprocessData();
 }
 
 
@@ -684,11 +661,7 @@ return stats.getStealth();
 int UnitEntity::getWeight()
 {
 	int sum = raceComposition_ ->getWeight();
-	for (InventoryElementIterator iter = inventory_.begin();
-        iter != inventory_.end(); iter++)
-		{
-			sum += (*iter)->getWeight();
-		}
+	sum += inventory_.getWeight();
 	return sum;
 }
 
@@ -701,22 +674,34 @@ int UnitEntity::getCapacity(int modeIndex)
 {
     int capacity = raceComposition_->getCapacity(modeIndex);
 
-    for(InventoryElementIterator invIter = inventory_.begin();
-            invIter != inventory_.end(); ++invIter)
-    {
-        capacity += (*invIter)->getCapacity(modeIndex);
-      }
 
-    for(SkillIterator skillIter = skills_.begin();
-                    skillIter != skills_.end(); ++skillIter)
-    {
-        capacity += (*skillIter).getCapacity(modeIndex);
-      }
+		capacity += inventory_.getCapacity(modeIndex);
+
+
+    capacity += skills_.getCapacity(modeIndex);
+
   //  capacity += location_->getCapacity(modeIndex) * figures_;
   // effects
     capacity += enchantments_.getCapacity(modeIndex, getFiguresNumber());
     return capacity;
 }
+
+
+
+int UnitEntity::getCapacity(MovementVariety * mode)
+{
+    int capacity = raceComposition_->getCapacity(mode);
+		capacity += inventory_.getCapacity(mode);
+
+    capacity += skills_.getCapacity(mode);
+
+	//  capacity += location_->getCapacity(mode) * figures_;
+  // effects
+    capacity += enchantments_.getCapacity(mode, getFiguresNumber());
+    return capacity;
+}
+
+
 
 
 
@@ -728,51 +713,19 @@ int UnitEntity::getCapacity(int modeIndex)
 /*
  * Updates number of equiped items after decreasing of number of figures in unit
  */
-vector < InventoryElement *> UnitEntity::updateEquipement()
+vector < InventoryElement> UnitEntity::updateEquipement()
 {
 	int equipMax;
-	int currentEquip;
-  vector < InventoryElement *> unequiped;
+  vector < InventoryElement> unequiped;
   RaceRule * race = raceComposition_->getRace();
   int figures = raceComposition_->getFigures();
-  int unequippedNum;
+
   for (EquipSlotIterator iter = race->getAllEquipmentSlots().begin();
                     iter != race-> getAllEquipmentSlots().end(); ++iter)
     {
 	 		equipMax = figures * race-> getEquipCapacity((*iter)->type);
+			inventory_.updateSlotEquipement((*iter)->type, unequiped,  equipMax);
 //     cout << "checking equipment for "<< (*iter)->type->print()<< " max = " << equipMax<<endl;
-  		for (InventoryElementIterator iterEquip = inventory_.begin();
-                          iterEquip != inventory_.end(); ++iterEquip)
-    		{
-				  currentEquip = (*iterEquip)->getEquipedNumber() * (*iterEquip)->getItemType()-> getNumEquipSlotsRequired();
-	     		if( (*iterEquip)->getItemType()-> getEquipSlot() == (*iter)->type)
-						{
-//     cout << "------- "<< (*iterEquip).getItemType()->print()<< " slots left "<< equipMax<<endl;
-							if(equipMax == 0)  // no more slots
-              {
-                unequippedNum = currentEquip / ((*iterEquip)->getItemType()-> getNumEquipSlotsRequired());
-                 (*iterEquip)->setEquipedNumber(0);
-                 if(unequippedNum)
-                 {
-//     cout << "------- unequips "<< unequippedNum << "  ."<<endl;
-                  unequiped.push_back(new InventoryElement( (*iterEquip)->getItemType() , unequippedNum ) ) ;
-                  }
-              }
-//     cout << "------- may use "<< currentEquip<< "  slots."<<endl;
-							if(currentEquip <= equipMax) // enough space
-								{
-									equipMax -= currentEquip;
-								}
-							else // not enough space for all. only part will be equiped
-								{
-									(*iterEquip)->setEquipedNumber (equipMax/ (*iterEquip)->getItemType()-> getNumEquipSlotsRequired());
-                  unequippedNum = (currentEquip - equipMax) / ((*iterEquip)->getItemType()-> getNumEquipSlotsRequired());
-									equipMax = 0 ;
-//     cout << "------- unequips "<< unequippedNum << "  ."<<endl;
-                  unequiped.push_back(new InventoryElement( (*iterEquip)->getItemType() , unequippedNum ) ) ;
-								}
-						}
-				}
 		}
    return  unequiped;
 }
@@ -795,20 +748,16 @@ int UnitEntity::hasMoney()
  */
 int UnitEntity::equipItem(ItemRule * item, int num)
 {
-  InventoryElementIterator iter;
-  for( iter = inventory_.begin(); iter != inventory_.end(); ++iter)
-  {
-    if( (*iter)->getItemType() == item)
-       break;
-  }
-
-  if ( iter == inventory_.end())
+	InventoryElement * current =  inventory_.findItem(item);
+  if ( current == 0)
 				return 0;
 
-int currentlyEquipedItems = (*iter)->getEquipedNumber(); 																				;
+
+int currentlyEquipedItems = current->getEquipedNumber(); 																				;
 	if (num <= currentlyEquipedItems) // unequip
 			{
-				(*iter)->setEquipedNumber(num);
+				current->setEquipedNumber(num);
+                    recalculateStats();
 				return ( num - currentlyEquipedItems);
 			}
 // Item may demand skills for being equiped.
@@ -819,31 +768,24 @@ int currentlyEquipedItems = (*iter)->getEquipedNumber(); 																				;
       return 0;
     }
 // Can't equip more than have
-	if (num > (*iter)->getItemNumber())
-			num = (*iter)->getItemNumber();
+	if (num > current->getItemNumber())
+			num = current->getItemNumber();
 
 // determine Equipement Max:
-	int equipCapacity = raceComposition_->getFigures() * raceComposition_->getRace()-> getEquipCapacity(item->getEquipSlot());
-  for (InventoryElementIterator iterEquip = inventory_.begin();
-                    iterEquip != inventory_.end(); iterEquip++)
-    {
-	     if( (*iterEquip)->getItemType()-> getEquipSlot() == item->getEquipSlot())
-				{
-//          cout<< "======================" << (*iterEquip).getItemType()->print()<< " "<< (*iterEquip).getEquipedNumber()<< " "<< (*iterEquip).getItemType()-> getNumEquipSlotsRequired()<<endl;
-          equipCapacity -= (*iterEquip)->getEquipedNumber() * (*iterEquip)->getItemType()-> getNumEquipSlotsRequired();
-				}
-		}
+	 int equipCapacity = raceComposition_->getFigures() *
+	 raceComposition_->getRace()-> getEquipCapacity(item->getEquipSlot());
+	 equipCapacity -= inventory_.equipedInSlot(item->getEquipSlot());
 
     if(equipCapacity >= num)
 					{
-						(*iter)->setEquipedNumber(num);
+					  current->setEquipedNumber(num);
 						item->applyEquipementEffects(this,num);
                     recalculateStats();
 						return (num - currentlyEquipedItems);
 						}
 			else
 						{
-						(*iter)->setEquipedNumber(equipCapacity);
+						 current->setEquipedNumber(equipCapacity);
 						 		        item->applyEquipementEffects(this,equipCapacity);
                     recalculateStats();
 						return (equipCapacity - currentlyEquipedItems);
@@ -905,7 +847,8 @@ bool UnitEntity::unstack()
 		return false;
 
 	if (isTraced() || stackFollowingTo_->isTraced() )
-    cout <<"== TRACING " <<printTag()<< " ==>  unstacks from "<< stackFollowingTo_->print() <<"\n";
+    cout <<"== TRACING " <<printTag()<< " ==>  unstacks from ";
+		cout<< stackFollowingTo_->print() <<"\n";
 
   this->stackFollowingTo_->stackFollowers_.erase (
 				find( stackFollowingTo_->stackFollowers_.begin(),
@@ -1060,8 +1003,8 @@ void UnitEntity::movingGroupArrived()
  */
 void UnitEntity::setEntityMoving(TravelElement * moving)
 {
+   TokenEntity::setEntityMoving(moving);
    unstack();
-   moving_ = moving;
    setStackMoving(moving);
 }
 
@@ -1080,7 +1023,7 @@ void UnitEntity::setStackMoving(TravelElement * moving)
 				return ;
 			}
 
-      moving_ = moving;
+      TokenEntity::setEntityMoving(moving);
       stats.modifyStealth( -1 * raceComposition_->getFigures()/10);
 
       if(moving_->getMode()== flyingMode)
@@ -1194,10 +1137,10 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
   int oldFigures = raceComposition_->getFigures();
   int oldLevel;
   raceComposition_->setFigures(oldFigures + number);
-  vector < SkillElement>      oldSkills(skills_);
+  vector < SkillElement>      oldSkills(skills_.getAll());
   // recalculate skills
   // 1-st step of normalization: multiply experience by old numOfFigures
-  for (iter = skills_.begin(); iter != skills_.end(); iter++)
+  for (iter = skills_.getAll().begin(); iter != skills_.getAll().end(); iter++)
 		{
      (*iter).setExpPoints( ( (*iter).getExpPoints() *  oldFigures ));
     }
@@ -1210,7 +1153,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 		  {
        if ( (*iter).getSkill()->mayBeStudied(this) !=
                           FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE)
-            addSkillExperience((*iter).getSkill(),(*iter).getExpPoints() *  number);
+            skills_.addSkillExperience((*iter).getSkill(),(*iter).getExpPoints() *  number);
         else
           {
   	        addReport( new BinaryMessage(mergeSkillReporter, unit, (*iter).getSkill()));
@@ -1219,7 +1162,7 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
    }
 
   // last step of normalization:  multiply experience by new numOfFigures
-  for (iter = skills_.begin(); iter != skills_.end(); iter++)
+  for (iter = skills_.getAll().begin(); iter != skills_.getAll().end(); iter++)
 		{
 // Find old level
      oldLevel = 0;
@@ -1255,42 +1198,14 @@ void UnitEntity::mergeUnits( int number, UnitEntity * unit = 0)
 void UnitEntity::addNewFigures(int number)
 {
   int oldFigures = raceComposition_->getFigures();
-  int oldLevel;
   raceComposition_->setFigures(oldFigures + number);
   // recalculate skills
-  SkillIterator iter;
-	for (iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-      oldLevel = (*iter).getLevel();
-      (*iter).setExpPoints( ( (*iter).getExpPoints() *  oldFigures ) / (oldFigures + number));
-      if( (*iter).getLevel() < oldLevel)
-        {
-  	        addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
-           (*iter).getSkill()->checkConditions(this);
-        }
-		}
+	skills_.proportionallyDiluteAll(oldFigures,oldFigures + number,this);
   recalculateStats();
 }
 
 
 
-/*
- * Adding skill experience without checking
- */
-void  UnitEntity::addSkillExperience(SkillRule  * skill, int expPoints)
-{
-	SkillIterator iter;
-  for ( iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-					if( (*iter).getSkill() == skill)
-								{
-									 (*iter).setExpPoints((*iter).getExpPoints() + expPoints);
-								  break;
-								}
-		}
-    if (iter == skills_.end())
-	      skills_.push_back(SkillElement(skill,expPoints));
-}
 
 
 //bool UnitEntity::hasTeacher(SkillRule  * )
@@ -1332,7 +1247,7 @@ LEARNING_RESULT UnitEntity::mayLearn(SkillRule * skill)
   return getRace()->mayLearn(skill, this);
 }
 
-
+//===========   Bonuses ================================
 
 /*
  * Calculate ability of unit to study skill above normal
@@ -1340,24 +1255,105 @@ LEARNING_RESULT UnitEntity::mayLearn(SkillRule * skill)
  */
 int UnitEntity::getLearningLevelBonus(SkillRule * skill)
 {
-  if(learningLimitBonus_.empty())
-      return 0;
+	int bonus = 0;
+	int currentBonus = 0;
+// construction
+  ConstructionEntity * construction=getContainingConstruction();
+	if(construction)
+	bonus = construction->getConstructionType()->getLearningBonus(skill);
+// Title
+	currentBonus = titles_.getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
+// Item
+	currentBonus = inventory_.getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
 
-  for( SkillLevelIterator iter = learningLimitBonus_.begin();
-                iter != learningLimitBonus_.end(); ++iter)
-      {
-        if((*iter)->getSkill() == skill)
-           return (*iter)->getLevel();
-      }
+// weather
+	LocationEntity * currentLocation = getLocation();
+	currentBonus = currentLocation->getWeather()->getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
+// terrain
+	currentBonus = currentLocation->getTerrain()->getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
+// Race
+	currentBonus = getRace()->getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
+// Enchantment
+	currentBonus = enchantments_.getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
+// Skills
+	currentBonus = skills_.getLearningBonus(skill);
+	if(currentBonus >bonus)
+		bonus = currentBonus;
 
+// Season (?)
 
-  // bonus may be obtained from title, item, skill
-  // bonus SkillLevelElements added each time when title
-  // gained, item equipped etc.
-  // as well it may be removed.
-  // here search for bonus and return result
   return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+int UnitEntity::getSkillStudyBonus(SkillRule * skill)
+{
+	return skills_.getStudyBonus(skill);
+}
+
+
+
+
+
+int UnitEntity::getItemStudyBonus(SkillRule * skill)
+{
+	return inventory_.getStudyBonus(skill);
+}
+
+
+int UnitEntity::getTitleStudyBonus(SkillRule * skill)
+{
+ return titles_.getStudyBonus(skill);
+}
+
+
+
+int UnitEntity::getEnchantmentStudyBonus(SkillRule * skill)
+{
+	return enchantments_.getStudyBonus(skill);
+}
+
+
+
+
+int UnitEntity::getProductionBonus(SkillRule * skill)
+{
+	int bonus = TokenEntity::getProductionBonus(skill);
+// Title
+	bonus += titles_.getProductionBonus(skill);
+// Race
+	 bonus += getRace()->getProductionBonusValue(skill);
+// construction
+  ConstructionEntity * construction=getContainingConstruction();
+	if(construction)
+	bonus += construction->getConstructionType()->getProductionBonusValue(skill);
+	return bonus;
+}
+
+
 
 
 
@@ -1365,31 +1361,14 @@ int UnitEntity::getLearningLevelBonus(SkillRule * skill)
 
 
 
-/*
- * Get title-generated bonus to study speed
- */
-int UnitEntity::getTitleBonus(SkillRule * skill)
-{
-  for (TitleIterator iter = titles_.begin();
-        iter != titles_.end(); ++iter)
-        {
-         BonusElement * bonus = (*iter)->getTitle()->getStudyBonus();
-         if(bonus->getSkill() == skill)
-          return bonus->getBonusPoints();
-        }
-  return 0;
-}
-
-
-
 
 /*
  * Calculate control points unit costs
  */
-int UnitEntity::getControlPoints()
+int UnitEntity::getControlPoints() const
 {
-  // + equipment, title and skill modifiers
-  return stats.getControlPoints();
+
+  return  stats.getControlPoints();
 }
 
 
@@ -1399,42 +1378,11 @@ int UnitEntity::getControlPoints()
  */
 void UnitEntity::addTitle(TitleElement * title)
 {
-  titles_.push_back(title);
-   SkillLevelElement * bonus = title->getTitle()->getLearningLevelBonus();
-  if(bonus)
-    addLearningLevelBonus(bonus);
+  titles_.addTitle(title);
   getFaction()->addMaxControlPoints(title->getTitle()->getControl());
 }
 
 
-
-/*
- *
- */
-void UnitEntity::addLearningLevelBonus(SkillLevelElement * bonus)
-{
-  SkillLevelIterator iter = find(learningLimitBonus_.begin(),
-                              learningLimitBonus_.end(), bonus);
-  if(iter != learningLimitBonus_.end())
-      (*iter)->setLevel( (*iter)->getLevel() + bonus->getLevel() );
-   else
-      learningLimitBonus_.push_back(bonus);
-}
-
-
-
-void UnitEntity::removeLearningLevelBonus(SkillLevelElement * bonus)
-{
-  SkillLevelIterator iter = find(learningLimitBonus_.begin(),
-                              learningLimitBonus_.end(), bonus);
-  assert(iter != learningLimitBonus_.end());
-  int newLevel = (*iter)->getLevel() - bonus->getLevel() ;
-  if(newLevel == 0)
-    learningLimitBonus_.erase(iter);
-  else
-    (*iter)->setLevel( newLevel );
-
-}
 
 
 void UnitEntity::removeTitle(TitleElement * title)
@@ -1442,16 +1390,8 @@ void UnitEntity::removeTitle(TitleElement * title)
   title->setTitleHolder(0);
   title->desactivateClaimingEffects(); // will clean ownership info
 
-   SkillLevelElement * bonus = title->getTitle()->getLearningLevelBonus();
-  if(bonus)
-    removeLearningLevelBonus(bonus);
+  titles_.removeTitle(title);
 
-  TitleIterator iter = find(titles_.begin(), titles_.end(), title);
-  if(iter == titles_.end())
-			return;
-
-
-   titles_.erase( iter);
   getFaction()->removeMaxControlPoints(title->getTitle()->getControl());
 
 }
@@ -1474,14 +1414,11 @@ bool UnitEntity::mayHoldTitles()
   return getRace()->mayHoldTitles();
 }
 
+
+
 bool UnitEntity::mayCancelTitle(TitleElement * title)
 {
- for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
- {
- 	if((*iter)->mayCancelTitle(title))
- 		return true;
- }
- return false;
+ return titles_.mayCancelTitle(title);
 }
 //  ==============================================================
 //  ==============================================================
@@ -1629,8 +1566,9 @@ bool UnitEntity::pay(int price)
   if(getWithdrawingSupport())
   {
   cashAmount = faction_->withdraw(cash,price);
-//QQQ
-  addReport(new BinaryMessage(withdrawReporter, this,new ItemElement(cash,cashAmount)));
+	if(cashAmount)
+  	addReport(new BinaryMessage(withdrawReporter, this,
+										new ItemElement(cash,cashAmount)));
 	if (isTraced() && cashAmount )
     cout <<"== TRACING " <<print()<< " ==> withdraws "<<cashAmount<< "\n";
   if (cashAmount >= price)
@@ -1646,19 +1584,14 @@ bool UnitEntity::pay(int price)
 void UnitEntity::recalculateStats()
 {
   stats.clearStats();
+ // Race
   stats.addStats(raceComposition_->getRace()->getStats());
-	for (SkillIterator iter = skills_.begin();
-                  iter != skills_.end(); ++iter)
-		{
-      stats.addStats((*iter).getStats());
-    }
+ // skills
+	skills_.addStats(&stats);
  // items
-  int figures = raceComposition_->getFigures();
-	for (InventoryElementIterator iter = inventory_.begin();
-                      iter != inventory_.end(); ++iter)
-		{
-      stats.addPartialStats( (*iter)->getStats(), (*iter)->getEquipedNumber(), figures);
-    }
+//  int figures = raceComposition_->getFigures();
+
+		inventory_.addStats(&stats,getFiguresNumber());
  // Effects // may be partial stats?
      enchantments_.addStats(&stats,getFiguresNumber());
 
@@ -1668,6 +1601,9 @@ void UnitEntity::recalculateStats()
 //      cout << containingConstruction_->print()<<endl;
       stats.addStats(getContainingConstruction()->getConstructionType()->getStats());
    }
+	 // Titles
+	 int controlPoints  = titles_.getControlPointsBonus();
+	 stats.modifyControlPoints(-1 * controlPoints);// Title adds CP to faction
 }
 
 
@@ -1850,6 +1786,7 @@ void UnitEntity::moveToLocation()
   TokenEntity::moveToLocation();
   getLocation()->removeUnit(this);
   moving_->getDestination()->addUnit(this);
+	recalculateTravelTime();
 }
 
 
@@ -1868,8 +1805,12 @@ bool UnitEntity::moveAdvance()
 
    if(moving_->isCrossingBorder())
    {
-     // check if stack can enter location (it may be guarded or other reasons)
-     moveGroupToLocation();
+     tryEnterLocation();
+// It may also happen that leader allowed to enter but
+// one of followers is not.
+// check that without this follower stack may move
+// if not - retreat all stack
+// if yes - unstack and retreat this follower
    }
 
    if(addStackLandwalkExperience(false))
@@ -1882,8 +1823,8 @@ bool UnitEntity::moveAdvance()
             calculateTotalWeight(weight);
             calculateTotalCapacity(capacity, modeIndex);
             int oldTime = moving_->getRemainingTime();
-            int totalTime = calculateTravelTime(moving_->getTravelTime(), weight, capacity);
-            int time = calculateTravelTime(moving_->getRemainingTime(), weight, capacity);
+            int totalTime = calculateOverloading(moving_->getTravelTime(), weight, capacity);
+            int time = calculateOverloading(moving_->getRemainingTime(), weight, capacity);
             moving_->resetRemainingTime(time);
             moving_->resetTravelTime(totalTime - (oldTime - time));
           }
@@ -1973,7 +1914,7 @@ bool UnitEntity::work()
         // report race can't work
         return false;
         }
-    RationalNumber amount(location_->getWages() *  getFiguresNumber(), game.daysInMonth);
+    RationalNumber amount(location_->getWages() *  getFiguresNumber(), gameConfig.daysInMonth);
     if(amount.getValue())
     {
       location_->addMonthlyConflictRequest(new WagesCompetitiveRequest(this,0,amount));
@@ -1995,29 +1936,26 @@ void UnitEntity::disband()
 {
 
   location_->removeUnit(this);
+	alive_ = false;
   // remove from faction?
   //faction_->removeUnit(this);
   // remove from stack
   // release title!
-
-  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
-  {
-   (*iter)->setTitleHolder(0);
-   getFaction()->removeMaxControlPoints((*iter)->getTitle()->getControl());
-   (*iter)->desactivateClaimingEffects(); // will clean ownership info
-  }
+   titles_.releaseAll(this);
 
     StackIterator iter;
+  vector < UnitEntity *>      currentFollowers = stackFollowers_;
   if (unstack())
   {
-	  for (iter = stackFollowers_.begin(); iter !=  stackFollowers_.end(); iter++)
+
+	  for (iter = currentFollowers.begin(); iter !=  currentFollowers.end(); iter++)
 	  {
 	    stack((*iter),stackFollowingTo_);
 	  }
   }
   else
   {
-	  for (iter = stackFollowers_.begin(); iter !=  stackFollowers_.end(); iter++)
+	  for (iter = currentFollowers.begin(); iter !=  currentFollowers.end(); iter++)
 	  {
 	    (*iter)->unstack();
     }
@@ -2036,6 +1974,8 @@ void UnitEntity::enterConstruction(ConstructionEntity * containingConstruction)
    }
    if(containingConstruction_)
       exitConstruction();
+
+
 
    enterStack(containingConstruction);
 
@@ -2068,6 +2008,11 @@ void UnitEntity::enterStack(ConstructionEntity * containingConstruction)
       	cout << "Recursion overflow \n";
 				return ;
 			}
+  if(isGuarding())
+  {
+    guarding_ = false;
+    getLocation()->selectNewGuard();
+  }
 
   containingConstruction_ = containingConstruction;
   containingConstruction_->addUnit(this);
@@ -2134,7 +2079,7 @@ bool UnitEntity::mayBuild (ConstructionRule * construction)
       {
           // TBD
           cout << " WARNING: this feature (pay for building land) is not implemented yet\n";
-        if( mayInterractFaction( getLocation()->getOwner())) // may interract with owner
+        if( mayInterractFaction( getLocation()->getLegalOwner())) // may interract with owner
            {
             if (! mayPay( getLocation()->getLandPrice()
                                       * construction->getLandUse()))
@@ -2175,20 +2120,136 @@ bool UnitEntity::isHidden()
 // Removes all experience in given skill and all it's derivatives
 void UnitEntity::forgetSkill(SkillRule * skill)
 {
-	for(SkillIterator iter = skills_.begin(); iter != skills_.end();)
-		{
-			if ((skill == (*iter).getSkill()) || ((*iter).getSkill()->isDescendFrom(skill,1)))
-			{
-			   addReport(new UnaryMessage(forgetReport,(*iter).getSkill()));
-			   // Skill loss may cause some items to be unequiped
-			   // or titles lost
-            (*iter).getSkill()->checkConditions(this);
-			    skills_.erase(iter);
-			}
-			else
-			   ++iter;
-
-		}
+		skills_.forgetSkill(skill,this);
 		recalculateStats();
 }
 
+
+// Checks that unit may guard
+bool UnitEntity::mayGuard(bool enableReport = true)
+{
+ if(moving_) // Moving unit can't guard
+ {
+		if(enableReport) addReport(new SimpleMessage(guardMovesReporter),0,0);
+  	return false;
+ }
+ if(getContainingConstruction()) // unit inside construction can't guard
+ {
+	if(enableReport) addReport(new SimpleMessage(guardInsideReporter),0,0);
+  return false;
+	}
+ if(getFiguresNumber() < 20 )  // Unit should have at least 20 figures in order to guard
+ {
+	if(enableReport) addReport(new SimpleMessage(guard20FiguresReporter),0,0);
+  return false;
+	}
+ if(stats.getDamage()  == 0) //unarned unit can't guard
+ {
+	if(enableReport) addReport(new SimpleMessage(guardWeaponsReporter),0,0);
+  return false;
+	}
+
+ if(getLocation()->getPopulation()/ 100 > getFiguresNumber()) // Need 1 soldier for 100 population to guard
+ {
+	if(enableReport) addReport(new BinaryMessage( guardNotEnoughReporter,
+	   new IntegerData(getLocation()->getPopulation()), getLocation()),0,0);
+  return false;
+	}
+
+ return true;
+}
+
+
+
+// Damage that unit may do against defenceless opponent (x100)
+int UnitEntity::getAttackRating() const
+{
+  if(stats.getDamage() == 0)
+    return 0;
+  int att = stats.getMelee();
+  if( stats.getMissile() > att)
+    att =  stats.getMissile();
+  return (40 + att * 4) * (stats.getHits()  + 1) * stats.getDamage() * getFiguresNumber();
+}
+
+
+
+// How long unit may stand against melee 5 dmg 2 opponent  (x100)
+// (i.e. comb 1, blde 1, sword)
+int UnitEntity::getDefenceRating() const
+{
+  int att =5;
+  int def = stats.getDefence();
+  if(def)
+  {
+   if(att>def)
+   {
+    att = att + 1 -def;
+    def = 1;
+    }
+   else
+   {
+    def = def + 1 -att;
+    att = 1;
+   }
+  }
+  return 1000 * stats.getLife() * getFiguresNumber()* (att + def)/(12 * att);
+}
+
+//BattleInstance * UnitEntity::battleInstantiation()
+//{
+//	cout << print() << " creates battle instatiation"<<endl;
+//	BattleUnit * battleInstance = new BattleUnit(this);
+//	return battleInstance;
+//}
+
+/** Climate and other bonuses */
+int UnitEntity::calculateMovementBonus(MovementVariety * mode)
+{
+	int bonus = 0;
+	bonus = TokenEntity::calculateMovementBonus(mode);
+
+// Race
+	bonus += getRace()->getMovementBonus(mode);
+   return bonus;
+}
+
+
+void UnitEntity::sufferDamage(int value)
+{
+ setFigures(getFiguresNumber() - value);
+ updateEquipement();
+}
+
+
+
+string UnitEntity::printComposition()
+{
+	return raceComposition_->print();
+}
+
+
+Rule * UnitEntity::getComposition()
+{
+	return getRace();
+}
+
+// "permanent" part of stats
+EntityStatistics  UnitEntity::getBasicStats()
+{
+
+  EntityStatistics basicStats;
+ // Race
+  basicStats.addStats(raceComposition_->getRace()->getStats());
+ // Effects
+     enchantments_.addStats(&basicStats,getFiguresNumber());
+
+ // Building
+  if(containingConstruction_ != 0)
+  {
+//      cout << containingConstruction_->print()<<endl;
+      basicStats.addStats(getContainingConstruction()->getConstructionType()->getStats());
+   }
+
+return basicStats;
+}

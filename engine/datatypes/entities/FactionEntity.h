@@ -12,18 +12,19 @@
 #include "Element.h"
 #include "StanceElement.h"
 #include "SkillLevelElement.h"
+#include "ItemElement.h"
 
 class LocationEntity;
 class UnitEntity;
 class StanceVariety;
 class SkillRule;
-class ItemElement;
 class ItemRule;
 class Rule;
 class BasicRulesCollection;
 class BasicEntitiesCollection;
 class TokenEntity;
 class ConstructionEntity;
+class CombatReport;
 
 class FactionEntity : public Entity  {
     public:
@@ -40,7 +41,8 @@ class FactionEntity : public Entity  {
   void addVisitedLocation(LocationEntity * location);
   void clearVisitedLocations();
   void dailyReport();
-  /** Adds report to the list if it is different from those, that are already there */
+  void dailyPreProcess();
+  void reportFunds(ReportPrinter &out);  /** Adds report to the list if it is different from those, that are already there */
   void updateReports(ReportElement * report);
   void saveReport();
   void dailyUpdate();
@@ -52,13 +54,16 @@ class FactionEntity : public Entity  {
   TokenEntity * currentEntityOrders(BasicEntitiesCollection & collection,
                                   Parser * parser);
   virtual Entity * getReportDestination();
-  StanceVariety * getStance(UnitEntity * unit) ;
+  StanceVariety * getStance(TokenEntity * token) ;
   StanceVariety * getStance(FactionEntity * entity) ;
   void setStance(Entity * entity, StanceVariety * stance);
   void setDefaultStance(StanceVariety * stance) {defaultStance_ = stance;}
   StanceVariety * getDefaultStance() {return defaultStance_;}
   int  withdraw(ItemRule * item, int number);
+	void addToFunds(ItemRule * item, int number);
   bool mayWithdraw(ItemRule * item, int number);
+	bool mayObserveTokenEntity(TokenEntity * tokenEntity, LocationEntity * location);
+  void calculateControlPoints();
 //===============================  Knowledge ============
   bool addKnowledge(Rule * info);
 //  void addKnowledge(SkillLevelElement & info);
@@ -88,7 +93,14 @@ class FactionEntity : public Entity  {
   void markSkillToReshow(SkillRule * skill, int level);
   void resign(FactionEntity * faction = 0);
   bool isNPCFaction();
+  bool stanceAtLeast(FactionEntity * faction, StanceVariety * stance);
+  bool stanceAtLeast(TokenEntity * token, StanceVariety * stance);
+  void setTemporaryFlag(unsigned long value, unsigned long mask) { temporaryFlags_= ((temporaryFlags_ & ~mask) | (value & mask));}
+  inline unsigned long     getTemporaryFlag(unsigned long mask) const {return (temporaryFlags_ & mask);}
+	void addCombatReport(CombatReport * combatReport);
+
     protected:
+
 	vector<Rule *> knowledge_;
   int newKnowledge; // number of new knowledge learned this turn
 	vector<SkillLevelElement *> skillKnowledge_;
@@ -97,6 +109,7 @@ class FactionEntity : public Entity  {
   vector < Rule  *> knowledgeToReshow_;
   bool allSkillsToReshow_;
   vector<SkillLevelElement> skillsToReshow_;
+	vector<CombatReport *> combatReports_;
   string email_;
   string password_;
 	StanceVariety * defaultStance_;
@@ -104,14 +117,16 @@ class FactionEntity : public Entity  {
   vector<LocationEntity *> visitedLocations_;
   vector<UnitEntity *> loyalUnits_;
   vector<ConstructionEntity *> loyalConstructions_;
-  vector<ItemElement *> funds_;
+  vector<ItemElement> funds_;
   int maxControlPoints_;
   int controlPoints_;
   bool terseBattleReport_;
   bool isResigned_;
+  unsigned long temporaryFlags_;
     private:
  };
-typedef	vector<Rule *>::iterator KnowledgeIterator; 
+typedef	vector<Rule *>::iterator KnowledgeIterator;
+typedef	vector<FactionEntity *>::iterator FactionIterator; 
 extern FactionEntity    sampleFaction;
 #include "EntitiesCollection.h"
 extern EntitiesCollection <FactionEntity>   factions;

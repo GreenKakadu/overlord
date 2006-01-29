@@ -34,7 +34,6 @@ public:
 	  string pluralName_;
 };
 extern ConstructionWorksVariety   sampleConstructionWork;
-#include "VarietiesCollection.h"
 extern VarietiesCollection <ConstructionWorksVariety>      construction_works;
 
 

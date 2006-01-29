@@ -34,7 +34,7 @@ AcceptOrder::AcceptOrder(){
 }
 
 STATUS AcceptOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -48,7 +48,7 @@ STATUS AcceptOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS AcceptOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS AcceptOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
  assert(unit);

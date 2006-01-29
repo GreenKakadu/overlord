@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BasicLearningStrategy.cpp 
+                          BasicLearningStrategy.cpp
                              -------------------
     begin                : Mon Feb 10 2003
     copyright            : (C) 2003 by Alex Dribin
@@ -10,10 +10,13 @@
 #include "TokenEntity.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
+#include "SeasonRule.h"
+#include "WeatherRule.h"
 #include "BonusElement.h"
 #include "TeachingOffer.h"
 #include "ConstructionEntity.h"
 #include "ConstructionRule.h"
+BasicLearningStrategy     sampleLearning          ("LEARNING",           &sampleGameData);
 
 BasicLearningStrategy::BasicLearningStrategy ( const BasicLearningStrategy * prototype ) : Strategy(prototype)
 {
@@ -65,7 +68,7 @@ BasicLearningStrategy::initialize        ( Parser *parser )
 
 
 
-bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill) 
+bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill)
 {
   if( special_ )
     {
@@ -77,7 +80,7 @@ bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill)
 
 
 /*
- * Ability of entity to study skill  
+ * Ability of entity to study skill
  *  Level limitations also taken into considerations
  */
 LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, SkillRule * skill) const
@@ -92,29 +95,30 @@ LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, Skill
 // Some skills may be studied only by specific races or types of Entities
   if( (racialClass_ != 0) && !tokenEntity->isOfType(racialClass_))
       return RACE_FAILURE;
-      
+
 // Some skills may require item in order to be studied
    if(itemRequired_)
    {
       if(!tokenEntity->isEquiped(itemRequired_))
           return ITEM_REQUIRED_FAILURE;
-      
+
    }
 
-      SkillLevelElement * requirement = skill->getRequirement(tokenEntity->getSkillLevel(skill));
+  SkillLevelElement * requirement =
+			 skill->getRequirement(tokenEntity->getSkillLevel(skill));
   if(requirement)
     {
-      if ( ! tokenEntity->hasSkill(requirement)) 
+      if ( ! tokenEntity->hasSkill(requirement))
         return REQUIREMENT_FAILURE;
     }
   // Special case of magecraft skill limitations will be considered in
-  // special MagecraftLearningStrategy 
+  // special MagecraftLearningStrategy
 
   if(tokenEntity->hasSkill(skill->getMax()) )
-    return MAX_LEVEL_FAILURE;         
+    return MAX_LEVEL_FAILURE;
 return LEARNING_OK;
 }
-/** applies all bonuses and returns number of experience points gained by one day 
+/** applies all bonuses and returns number of experience points gained by one day
   * of learning
   */
 int BasicLearningStrategy::leaderBonus_ = 10;
@@ -128,7 +132,7 @@ int BasicLearningStrategy::calculateLearningExperience(TokenEntity * tokenEntity
   if(unit)
     return calculateUnitLearningExperience(unit,skill,teacher);
   else
-    return 0;  
+    return 0;
 }
 
 
@@ -141,14 +145,20 @@ int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, S
  if( needsTeacher)
   exp = 0; // slow study for skills above normal limit
    // apply study bonuses:
-   // 1. Location bonus
-   exp += unit -> getLocation()->getBonus(skill);
+   // 1. Location bonuses
+	 LocationEntity * location = unit -> getLocation();
+   exp += location->getBonus(skill);
+   // 2. Climate season and terran bonus
+   exp += location->getWeather()->getStudyBonus(skill);
+   exp += location->getSeason()->getStudyBonus(skill);
+   exp += location->getTerrain()->getStudyBonus(skill);
+   // 3. Building bonuses
    ConstructionEntity * building = unit ->getContainingConstruction();
    if(building)
    {
-    exp += building->getConstructionType()->getBonus(skill);
+    exp += building->getConstructionType()->getStudyBonus(skill);
    }
-   // 2. Stack leader bonus
+   // 4. Stack leader bonus
    for (leader = unit->getLeader(); leader != 0; leader = leader->getLeader() )
     {
       if (leader->hasSkillLevel(skill, unit->getSkillLevel(skill)))
@@ -157,18 +167,21 @@ int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, S
             break;
         }
     }
-   // 3. Climate bonus
-   // 4. Title Bonus
-   exp += unit->getTitleBonus(skill);
-   // 5. Race Bonus - may be negative
-   if(unit->getRace()->getBonus(skill))
-    exp += unit->getRace()->getBonus(skill) - 100;
-   // 6. Item Bonus
-   if(bonusItem_ != 0)
+   // 5. Title Bonus
+   exp += unit->getTitleStudyBonus(skill);
+   // 6. Race Bonus
+    exp += unit->getRace()->getStudyBonus(skill);
+   // 7. Item Bonus
+   if(bonusItem_ != 0) // This for the case when bonus defined in skill data
    exp += (20 * bonusItem_->getEquipedNumber())/(unit->getFiguresNumber());
-   // 6. Teacher Bonus
+	 exp += unit->getItemStudyBonus(skill);
+   // 8. Teacher Bonus
    if(teacher != 0)
    exp += teacher->getTeachingBonus();
+   // 9. Skill Bonus
+   exp += unit->getSkillStudyBonus(skill);
+   // 10. Enchantment Bonus
+   exp += unit->getEnchantmentStudyBonus(skill);
    // Guarding unit gets 1/2
    if(unit->isGuarding())
     exp /= 2;
@@ -206,7 +219,7 @@ void BasicLearningStrategy::addLearningExperience(TokenEntity * tokenEntity, Ski
           SkillElement recursive(requirement->getSkill(),exp);
           addRecursiveLearningExperience(tokenEntity,recursive);
         }
-     }  
+     }
       //  problem with teaching requests
 }
 void BasicLearningStrategy::addRecursiveLearningExperience(TokenEntity * tokenEntity, SkillElement  & skill)
@@ -216,7 +229,7 @@ void BasicLearningStrategy::addRecursiveLearningExperience(TokenEntity * tokenEn
     cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" recursive learning experience added to " << skill.getSkill()->printTag()<<endl;
    }
     tokenEntity->addSkill(skill);
-    
+
    int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
    for (tryLevel = 0; tryLevel< level ; tryLevel++)
@@ -227,7 +240,7 @@ void BasicLearningStrategy::addRecursiveLearningExperience(TokenEntity * tokenEn
           addRecursiveLearningExperience(tokenEntity,skill);
         }
      }
-  
+
 }
 void    BasicLearningStrategy::extractKnowledge (Entity * recipient, int parameter)
 {

@@ -9,6 +9,7 @@
 #include "LineParser.h"
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
+#include "WeatherRule.h"
 //extern MovementVariety * walkingMode;
 
 
@@ -92,8 +93,13 @@ void BasicExit::save(ostream & out)
  */
 int BasicExit::getTravelTime(MovementVariety * mode)
 {
+ int weatherFactor;
  int time1 = origin_->getTerrain()->getTravelTime(mode);
+     weatherFactor = origin_->getWeather()->getMovementBonus(mode);
+		 time1 = time1 * (100 + weatherFactor) / 100;
  int time2 = destination_->getTerrain()->getTravelTime(mode);
+     weatherFactor = destination_->getWeather()->getMovementBonus(mode);
+		 time2 = time2 * (100 + weatherFactor) / 100;
 
  if((!time1) && (!time2))
     return 0;

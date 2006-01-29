@@ -20,9 +20,9 @@ public:
   BasicCondition(const BasicCondition * prototype): GameData(prototype){}
   
 	virtual     ~BasicCondition(){}
-  virtual bool isSatisfied(TokenEntity * entity){return true;}
-  virtual void conditionHandler(Entity * entity){}
-  virtual void setSubject(Rule * subject){}
+  virtual bool isSatisfied(TokenEntity * ){return true;}
+  virtual void conditionHandler(Entity * ){}
+  virtual void setSubject(Rule * ){}
   virtual Rule * getSubject()const{return 0;}
   virtual void extractKnowledge (Entity * recipient, int parameter = 0);
 //  virtual ostream & reportCondition(ostream & out) {return out;}

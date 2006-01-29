@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "AttackOrder.h"
 #include "StringData.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "ConstructionEntity.h"
@@ -26,7 +26,7 @@ extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	ownUnitAttackReporter;
 extern ReportPattern *	ownFactionAttackReporter;
 extern ReportPattern *	ownConstructionAttackReporter;
-extern GameInfo game;
+
 AttackOrder * instantiateAttackOrder = new AttackOrder();
 
 AttackOrder::AttackOrder(){
@@ -34,16 +34,20 @@ AttackOrder::AttackOrder(){
   registerOrder_();
   description = string("ATTACK [ unit-id|faction-id|structure-id ] \n") +
   "Full-day.  This order executes and completes when the designated unit, any\n" +
-  "unit identifiable as belonging to the specified faction, or the owner of the\n" +
-  "specified structure is present at the same location, and results in a battle.\n" +
-  "\n" +
+  "unit identifiable as belonging to the specified faction, or the owner of\n" +
+  "the specified structure is present at the same location, and results in\n" +
+  "a battle.\n\n" +
   "The attack does not occur if you are the owner of the target structure.\n";
 
-  orderType_   = STACK_ORDER;
+   fullDayOrder_= false; //Really Attack IS full day order but there are
+	                       //possible more than one attack per day.
+												 //So full fay flag is set manually for all combat
+												 // partticopants.
+   orderType_   = STACK_ORDER;
 }
 
 STATUS AttackOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
@@ -56,7 +60,7 @@ STATUS AttackOrder::loadParameters(Parser * parser,
          return IO_ERROR;
         }
 
-  	if (units.checkDataType(tag) || game.isNewEntityName(tag))
+  	if (units.checkDataType(tag) || gameConfig.isNewEntityName(tag))
 	{
       if(checkParameterTag(entity, tag,  units, parameters))
       	return OK;
@@ -71,7 +75,7 @@ STATUS AttackOrder::loadParameters(Parser * parser,
       else
         return IO_ERROR;
    	}
-  	if (buildingsAndShips.checkDataType(tag) || game.isNewEntityName(tag))
+  	if (buildingsAndShips.checkDataType(tag) || gameConfig.isNewEntityName(tag))
 	{
       if(checkParameterTag(entity, tag,  buildingsAndShips, parameters))
       	return OK;
@@ -87,7 +91,7 @@ STATUS AttackOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS AttackOrder::process (Entity * entity, ParameterList &parameters)
 {
   TokenEntity * tokenEntity = dynamic_cast<TokenEntity *>(entity);
   assert(tokenEntity);
@@ -106,8 +110,8 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
         }
       else
       {
-        combatManager->attackAttempt(tokenEntity,unitTarget,orderId);
-        return SUCCESS;
+        unitTarget->getLocation()->getCombatManager()->attackAttempt(tokenEntity,unitTarget,orderId,0);
+        return IN_PROGRESS;
       }
     }
 
@@ -132,8 +136,8 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
         }
       else
       {
-        combatManager->attackAttempt(tokenEntity,constructionTarget,orderId);
-        return SUCCESS;
+        constructionTarget->getLocation()->getCombatManager()->attackAttempt(tokenEntity,constructionTarget,orderId,0);
+        return IN_PROGRESS;
       }
     }
   // If faction - find any unit of this faction and attack it (unless it is allied)
@@ -157,8 +161,8 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
           {
             if (tokenEntity->mayInterractTokenEntity(*iter))
             {
-              combatManager->attackAttempt(tokenEntity,(*iter),orderId);
-              return SUCCESS;
+              (*iter)->getLocation()->getCombatManager()->attackAttempt(tokenEntity,(*iter),orderId,0);
+              return IN_PROGRESS;
             }
 
           }
@@ -171,9 +175,26 @@ ORDER_STATUS AttackOrder::process (Entity * entity, vector <AbstractData *>  &pa
 
 
 ORDER_STATUS
-AttackOrder::completeOrderProcessing (Entity * entity, vector <AbstractData *>  &parameters, int result)
+AttackOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
 {
   assert(entity);
-  entity->updateOrderResults(SUCCESS);
-  return SUCCESS;
+  ORDER_STATUS orderResult;
+   switch(result)
+   {
+    case BATTLE_ERROR:
+    //case BATTLE_UNDEFINED: temporary
+    {
+     orderResult = INVALID;
+     break;
+    }
+    case ATTACKER_VICTORY:
+    case DEFENDER_VICTORY:
+    case DRAW:
+    default:
+     orderResult = SUCCESS;
+//		 entity->setFullDayOrderFlag();// If combat happened no more full day orders possible
+
+   }
+  entity->updateOrderResults(orderResult);
+  return orderResult;
 }

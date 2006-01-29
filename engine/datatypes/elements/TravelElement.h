@@ -25,7 +25,7 @@ public:
 	TravelElement(MovementVariety *    movingMode,
                 LocationEntity * origin,
                 LocationEntity * destination,
-                int time, int totalTravelTime);
+                int time, int totalTravelTime,bool marching = false);
 	virtual ~TravelElement();
   static TravelElement *    readElement      ( Parser *parser);
   virtual void save(ostream & out);
@@ -41,12 +41,14 @@ public:
   inline int               getTravelTime() const {return totalTravelTime_;}
   inline void              resetTravelTime(int time) { totalTravelTime_= time;}
   inline void              resetRemainingTime(int time) { totalTravelTime_= time;}
+  inline bool              isMarching(){return marching_;}
  protected:
   MovementVariety *    movingMode_;
   LocationEntity * origin_;
   LocationEntity * destination_;
   int time_;
   int totalTravelTime_;
+  bool marching_;
 };
 
 #endif

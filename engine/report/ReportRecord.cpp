@@ -14,7 +14,6 @@ ReportRecord::ReportRecord(ReportMessage * report, OrderLine *  order, BasicCond
  observationCriteria_ = condition;
  reportMessage = report;
  orderId =  order;
-//  cout<<"********* ReportRecord created: "; report->printReport(cout);
 }
 
 

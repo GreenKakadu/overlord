@@ -22,7 +22,7 @@ void  SimpleMessage::operator delete(void * deadObject, size_t size)
 }
 
 
-void SimpleMessage::printReport(ostream &out) const
+void SimpleMessage::printReport(ReportPrinter &out) const
 {
   reporter_->printReport(out);
 }

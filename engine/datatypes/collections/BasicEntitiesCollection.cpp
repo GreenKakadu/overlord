@@ -1,6 +1,6 @@
 /***************************************************************************
-                          BasicEntitiesCollection.cpp  
-              Generic layer of Entities Collection 
+                          BasicEntitiesCollection.cpp
+              Generic layer of Entities Collection
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
@@ -8,13 +8,13 @@
  ***************************************************************************/
 #include <time.h>
 #include <algorithm>
-#include "GameInfo.h"
+#include "GameConfig.h"
 #include "BasicEntitiesCollection.h"
 #include "Entity.h"
 #include "DataStorageHandler.h"
-extern string longtostr(unsigned long u);
+extern string longtostr(long u);
 extern bool ciCharCompare(char c1, char c2);
-extern GameInfo game;
+
 //extern Entity * RIPplaceholder;
 BasicEntitiesCollection::BasicEntitiesCollection (DataStorageHandler * handler,
                                           long int dimensions = 1000) : BasicCollection(handler)
@@ -70,7 +70,7 @@ void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity)
 		}
 	 if (data_[index]  != 0 )
    	{
-     	cout << "Duplicated tag " << newEntity->getTag() <<endl;
+     	cerr << "Duplicated tag " << newEntity->getTag() <<endl;
 		status = IO_ERROR;
 		return;
    }
@@ -147,7 +147,7 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
   		if (!isalpha (tag[0]) )
     		{
 
-     			cout << "Tag [" << tag << "] is invalid (non-alphabetical prefix)" <<endl;
+     			cerr << "Tag [" << tag << "] is invalid (non-alphabetical prefix)" <<endl;
 				status = IO_ERROR;
 				return 0;
     		}
@@ -161,12 +161,12 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
 		prefixLen=1;
 	}
 
-//  if ( ! ciStringCompareN(tag, game.getNewEntityPrefix(),game.getNewUnitPrefixSize() ) )
+//  if ( ! ciStringCompareN(tag, gameConfig.getNewEntityPrefix(),gameConfig.getNewUnitPrefixSize() ) )
 //   {
 //     // New Unit tag
 //
 //    }
-   
+
   for (i=0; i< Parser::INTEGER_LENGTH; i++)
    {
      if (!isdigit (tag[i+prefixLen]) )  // Non-digit was found
@@ -180,13 +180,13 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
 
  if ( i == 0 ) // No digits were found.
     {
-     cout << "Tag " << tag << " is invalid (no  digits)" <<endl;
+     cerr << "Tag " << tag << " is invalid (no  digits)" <<endl;
  				status = IO_ERROR;
 				return 0;
     }
  if ( i >=  Parser::INTEGER_LENGTH  ) // More than maximum of digits were found.
     {
-      cout << "Tag " << tag << " is invalid (too many digits)" <<endl;
+      cerr << "Tag " << tag << " is invalid (too many digits)" <<endl;
 				status = IO_ERROR;
 				return 0;
     }
@@ -195,7 +195,7 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
 
  if (index >= dimensions_)
 	{
-     	cout << "Tag " << tag << " is invalid (too big index)" <<endl;
+     	cerr << "Tag " << tag << " is invalid (too big index)" <<endl;
 				status = IO_ERROR;
 				return 0;
 	}
@@ -217,7 +217,7 @@ void BasicEntitiesCollection:: remove  (const string &tag)
 
  else
    delete  data_[index];
-    data_[index] = 0;//RIPplaceholder; // This slot shouldn't be used once more   
+    data_[index] = 0;//RIPplaceholder; // This slot shouldn't be used once more
     RIP_.push_back(index);
     sort(RIP_.begin(),RIP_.end());
 }
@@ -232,7 +232,7 @@ void BasicEntitiesCollection:: setEntityTagPrefix (char prefix)
 
 
 string BasicEntitiesCollection::tagFromIndex(long int index)
-{  
+{
 		if(prefix_ == 0)
     {
       return longtostr(index);

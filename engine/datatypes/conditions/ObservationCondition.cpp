@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "ObservationCondition.h"
 #include "UnitEntity.h"
-//ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
+ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
 ObservationCondition::ObservationCondition(const ObservationCondition * prototype)
   : BasicCondition(prototype)
 {

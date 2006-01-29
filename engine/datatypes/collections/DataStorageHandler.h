@@ -28,6 +28,7 @@ public:
   STATUS close();
   STATUS load();
   STATUS save();
+	void define();
   STATUS initializeData();
   void printCollection();
    STATUS status;

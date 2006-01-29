@@ -12,8 +12,8 @@ Template for implementation of small objects demanding efficient memory use.
 #include "AbstractData.h"
 class Entity;
 extern const int BLOCK_SIZE;
-extern void longtostr(unsigned long u, char *out);
-extern string longtostr(unsigned long u);
+//extern void longtostr(unsigned long u, char *out);
+extern string longtostr(long u);
 template <class R, class P> class Element2 : public AbstractData {
 public: 
 	  Element2(R * rule, P parameter) {	rule_ = rule;	parameter1_ = parameter;}

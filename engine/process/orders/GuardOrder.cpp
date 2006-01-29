@@ -6,14 +6,21 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "GuardOrder.h"
+//#include "StanceVariety.h"
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
+#include "FactionEntity.h"
+#include "LocationEntity.h"
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern ReportPattern *	AtReporter;
+#include "BasicCombatManager.h"
+#include "GuardingRequest.h"
+//ReportPattern *	guardingReporter = new ReportPattern("guardingReporter");
+ReportPattern *	guardingNotAllowedReporter = new
+                   ReportPattern("guardingNotAllowedReporter");
 
 GuardOrder * instantiateGuardOrder = new GuardOrder();
 
@@ -34,11 +41,12 @@ GuardOrder::GuardOrder(){
   "fact that a unit did guard somewhere is advertised in the report, even if\n" +
   "the unit guarded the location only one day during the turn.\n";
 
+    fullDayOrder_= true;
   orderType_   = IMMEDIATE_ORDER;// ?
 }
 
 STATUS GuardOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -49,10 +57,29 @@ STATUS GuardOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS GuardOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS GuardOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-	return FAILURE;
+  if(!unit->mayGuard(true))
+	  return INVALID;
+
+    unit->getLocation()->getCombatManager()->addGuardingRequest(
+               new GuardingRequest(unit,unit->getCurrentOrder(),0));
+    return IN_PROGRESS;
 }
 
+
+
+ORDER_STATUS
+GuardOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
+{
+   assert(entity);
+   ORDER_STATUS orderResult = static_cast<ORDER_STATUS>(result);
+/*	 if(result == SUCCESS)
+	 	cout <<"##         ##"<< *entity << " guards. " <<endl;
+	 else
+	 	cout <<"##         ##"<< *entity << " cant guard. " <<endl;*/
+  entity->updateOrderResults(orderResult);
+  return orderResult;
+}

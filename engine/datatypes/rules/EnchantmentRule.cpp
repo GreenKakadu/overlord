@@ -18,6 +18,8 @@
 #include "PrototypeManager.h"
 
 extern EntitiesCollection <EffectEntity>   effects;
+EnchantmentRule    sampleEnchantment    ("FX_EFFECT",&sampleGameData);
+RulesCollection <EnchantmentRule>    enchantments(new DataStorageHandler("enchantments.rules"));
 
 EnchantmentRule::EnchantmentRule ( const EnchantmentRule * prototype ) : Rule(prototype)
 {
@@ -76,6 +78,8 @@ EnchantmentRule::initialize        ( Parser *parser )
       return OK;
     }
 
+		movementBonuses_.initialize(parser);
+		skillBonuses_.initialize(parser);
       return OK;
 
 }
@@ -114,3 +118,24 @@ EffectEntity * EnchantmentRule::createEffect(Entity * target)
   return newEffect;
 }
 
+
+
+
+int EnchantmentRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_.getProductionBonus(skill);
+}
+
+
+
+int EnchantmentRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int EnchantmentRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
+}

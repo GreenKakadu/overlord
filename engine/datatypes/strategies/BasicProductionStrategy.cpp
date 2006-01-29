@@ -25,7 +25,6 @@ extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * productionReporter;
 extern GameData  targetTypeSelf;
 
-extern RulesCollection    <ItemRule>     items;
 
 BasicProductionStrategy::BasicProductionStrategy ( const BasicProductionStrategy * prototype ): BasicUsingStrategy(prototype)
 {
@@ -172,4 +171,19 @@ USING_RESULT  BasicProductionStrategy::checkTarget(UnitEntity * unit, GameData *
   else
     return WRONG_TARGET;
 
+}
+
+
+RationalNumber BasicProductionStrategy::getEffectiveProductionRate(UnitEntity * unit, SkillRule * skill)
+{
+  vector <ToolUseElement *>::iterator iter;
+	int bonus = calculateProductionBonus(unit,skill);
+  RationalNumber effectiveProductionRate = unit->getFiguresNumber() * (100 + bonus)/100;
+
+// Tools accelerate production
+  for(iter = tools_.begin(); iter != tools_.end();iter++)
+  {
+    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+  }
+	return effectiveProductionRate;
 }

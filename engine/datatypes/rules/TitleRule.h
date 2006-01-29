@@ -11,6 +11,7 @@
 #define TITLE_H
 #include "Rule.h"
 #include "GameData.h"
+#include "SkillBonusComboAttribute.h"
 class LocationEntity;
 class UnitEntity;
 class SkillCondition;
@@ -37,8 +38,6 @@ class TitleRule : public Rule
       inline SkillCondition *    getClaimingCondition()      const     {return condition_;}
 
       void extractKnowledge (Entity * recipient, int parameter = 0);
-      SkillLevelElement * getLearningLevelBonus() {return learningLevelBonus_;}
-      BonusElement *      getStudyBonus() {return studyBonus_;}
       virtual bool contest(UnitEntity *  titleHolder, UnitEntity * contender,
                                           LocationEntity * location);
       AbstractData * getContestCriteria(UnitEntity * unit);                                    
@@ -46,14 +45,16 @@ class TitleRule : public Rule
       virtual void desactivateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
       int markTerritoryOwned(LocationEntity * start,
                   UnitEntity * titleHolder, int distance );
-    protected:
+         int getProductionBonusValue(SkillRule * skill);
+         int getStudyBonus(SkillRule * skill);
+         int getLearningBonus(SkillRule * skill);
+   protected:
    int cost_;                  //cost to challenge for the title
    int control_;               //number of control points title added to faction
    int type_;                  //There are type 0 through type 3.
    int range_;                 //the number of hexes dominated by this title
    SkillCondition *  condition_;
-   SkillLevelElement *  learningLevelBonus_;
-   BonusElement * studyBonus_;
+	SkillBonusComboAttribute skillBonuses_;
    private:
 };
 extern TitleRule      sampleTitle;
@@ -83,7 +84,8 @@ public:
    void desactivateClaimingEffects(UnitEntity * titleHolder, LocationEntity * location);
 private:
 };
-#include "RulesCollection.h"
+
+extern TitleRule       sampleTitle;
 extern RulesCollection <TitleRule>     titles;
 
 #endif

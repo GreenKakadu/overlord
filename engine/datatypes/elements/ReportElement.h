@@ -32,7 +32,7 @@ public:
   inline ReportMessage * getRecord() const {return rule_;}
 	inline Entity *        getDestination() const {return parameter1_;}
 private:
-    void save(ostream & out){} // disabled
+    void save(ostream & ){} // disabled
 
 };
 typedef vector< ReportElement *>::iterator  ReportIterator;

@@ -35,7 +35,7 @@ LocalRecruitOffer::~LocalRecruitOffer(){
 string LocalRecruitOffer::print()
 {
   return  string("Local opportunity to recruit ") + longtostr(amount_) +
-          " of " + race_->print() + " for " + longtostr(price_)  + "coins\n";
+          " of " + race_->print() + " for " + longtostr(price_)  + " coins\n";
 }
 
 

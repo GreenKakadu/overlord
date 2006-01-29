@@ -19,6 +19,7 @@ extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * privateActionReporter;
 extern ReportPattern * publicActionReporter;
 extern RulesCollection    <ActionRule>     fx_actions;
+ActionUsingStrategy       sampleActionUsing       ("USING_ACTION",       &sampleUsing);
 
 
 GameData * ActionUsingStrategy::createInstanceOfSelf()
@@ -84,14 +85,7 @@ ActionUsingStrategy::initialize        ( Parser *parser )
 USING_RESULT ActionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int &useCounter)
 {
 // Production modifiers:
-
-// Tools accelerate production
-  vector <ToolUseElement *>::iterator iter;
-  int effectiveProductionRate = unit->getFiguresNumber();
-  for(iter = tools_.begin(); iter != tools_.end();iter++)
-  {
-    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
-  }
+int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
 
 
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);

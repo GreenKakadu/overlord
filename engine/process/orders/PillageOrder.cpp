@@ -7,12 +7,14 @@
  ***************************************************************************/
 #include "PillageOrder.h"
 #include "StringData.h"
-#include "Entity.h"
 #include "UnitEntity.h"
+#include "LocationEntity.h"
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
+#include "PillageRequest.h"
+#include "BasicCombatManager.h"
 extern ReportPattern *	AtReporter;
 
 PillageOrder * instantiatePillageOrder = new PillageOrder();
@@ -35,11 +37,12 @@ PillageOrder::PillageOrder(){
   "by one level equivalence for entertainment and tax for each level in combat.\n" +
   "PILLAGE is a use of the combat skill and yields 1/20th of day of experience.\n";
 
-  orderType_   = DAY_LONG_ORDER;
+    fullDayOrder_= true;
+  orderType_   = IMMEDIATE_ORDER;
 }
 
 STATUS PillageOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -50,10 +53,40 @@ STATUS PillageOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS PillageOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS PillageOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-	return FAILURE;
+	LocationEntity * location = unit->getLocation();
+	assert(location);
+  if(!location->unitMayPillage(unit,true))
+	  return INVALID;
+	// try to pillage
+	// guarding units will attack pilager unless allied
+	// submit pillaging request to Location
+	// Check all guarding requests and generate attack requests.
+	// if unit loses battle cancel pillaging request
+	// Answer Request in PillageRequest
+	// if survived attack still may pillage if land is unguarded or guard allied
+	// pillaging money will be divided between pillagers proportionally to number of figures
+    unit->getLocation()->getCombatManager()->addPillageRequest(
+               new PillageRequest(unit,unit->getCurrentOrder()));
+
+	return IN_PROGRESS;
 }
 
+ORDER_STATUS
+PillageOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, int result)
+{
+   assert(entity);
+	 if(result)
+	 {
+  	entity->updateOrderResults(SUCCESS);
+		return SUCCESS;
+	 }
+	 else
+	 {
+  	entity->updateOrderResults(FAILURE);
+		return FAILURE;
+	}
+}

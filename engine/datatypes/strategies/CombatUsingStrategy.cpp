@@ -7,6 +7,7 @@
  ***************************************************************************/
 #include "CombatUsingStrategy.h"
 #include "TokenEntity.h"
+CombatUsingStrategy       sampleCombatUsing       ("USING_COMBAT",       &sampleUsing);
 GameData * CombatUsingStrategy::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<CombatUsingStrategy> (this);

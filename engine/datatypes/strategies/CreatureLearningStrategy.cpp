@@ -6,6 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "CreatureLearningStrategy.h"
+CreatureLearningStrategy  sampleCreatureLearning  ("LEARNING_CREATURE",  &sampleLearning);
 CreatureLearningStrategy::CreatureLearningStrategy( const CreatureLearningStrategy * prototype ):
            BasicLearningStrategy(prototype)
 {

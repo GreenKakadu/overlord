@@ -6,7 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "LeaderRaceRule.h"
-//LeaderRaceRule     sampleLeaderRaceRule =     LeaderRaceRule("LEADER", &sampleRace);
+LeaderRaceRule sampleLeaderRaceRule = LeaderRaceRule("LEADER", &sampleRace);
 
 LeaderRaceRule::LeaderRaceRule ( const LeaderRaceRule * prototype ) : RaceRule(prototype)
 {
@@ -47,6 +47,8 @@ LEARNING_RESULT LeaderRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 {
   int  level = unit->getSkillLevel(skill);
   int learningLevelBonus = unit->getLearningLevelBonus(skill);
+
+
 // Leader may not study magic skills  above 1-st level
 // non-combat skill above 2-nd level
 // and combat skill above 3-rd level

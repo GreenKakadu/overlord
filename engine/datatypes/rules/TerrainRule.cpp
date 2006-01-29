@@ -8,8 +8,8 @@
 #include "TerrainRule.h"
 #include "SkillRule.h"
 
-//TerrainRule   sampleTerrain   ("TERRAIN",  &sampleGameData);
-BasicRulesCollection  terrains(new DataStorageHandler("terrains"));
+TerrainRule   sampleTerrain   ("TERRAIN",  &sampleGameData);
+BasicRulesCollection  terrains(new DataStorageHandler("terrains.rules"));
 extern RulesCollection <SkillRule>      skills;
 
 
@@ -60,6 +60,8 @@ TerrainRule::initialize        ( Parser *parser )
             _movementTime[movementMode] = parser->getInteger();
       return OK;
     }
+		skillBonuses_.initialize(parser);
+		movementBonuses_.initialize(parser);
       return OK;
 
  }
@@ -82,4 +84,35 @@ void TerrainRule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";    
     if(! buildEnabled_) out << " Construction of buildings  is not allowed here.";
+}
+
+
+
+int TerrainRule::getProductionBonusValue(SkillRule * skill)
+{
+  return skillBonuses_.getProductionBonus(skill);
+}
+
+
+
+int TerrainRule::getLearningBonus(SkillRule * skill)
+{
+  return skillBonuses_.getLearningBonus(skill);
+}
+
+
+
+int TerrainRule::getStudyBonus(SkillRule * skill)
+{
+  return skillBonuses_.getStudyBonus(skill);
+}
+
+
+
+// Implementation-specific routine for determining aquatic locations
+bool TerrainRule::isAquatic()
+{
+   return(this == terrains.findByTag("lake",false) ||
+	 			this == terrains.findByTag( "ocea",false));
+
 }

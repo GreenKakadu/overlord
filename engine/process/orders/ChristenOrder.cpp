@@ -35,7 +35,7 @@ ChristenOrder::ChristenOrder(){
 }
 
 STATUS ChristenOrder::loadParameters(Parser * parser,
-                            vector <AbstractData *>  &parameters, Entity * entity )
+                            ParameterList &parameters, Entity * entity )
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
@@ -48,7 +48,7 @@ STATUS ChristenOrder::loadParameters(Parser * parser,
 
 
 
-ORDER_STATUS ChristenOrder::process (Entity * entity, vector <AbstractData *>  &parameters)
+ORDER_STATUS ChristenOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
@@ -70,7 +70,7 @@ ORDER_STATUS ChristenOrder::process (Entity * entity, vector <AbstractData *>  &
   		return SUCCESS;
   	}
 
-  if(unit->getLocation()->getOwner() != unit->getFaction())
+  if(unit->getLocation()->getLegalOwner() != unit->getFaction())
   	{
         entity->addReport(new UnaryMessage(cannotChristenReporter,
         					new StringData("location")));

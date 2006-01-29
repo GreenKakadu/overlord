@@ -6,5 +6,4 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "BonusElement.h"
-//extern RulesCollection <SkillRule>     skills;
 

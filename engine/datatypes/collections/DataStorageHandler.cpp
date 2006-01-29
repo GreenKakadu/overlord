@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DataStorageHandler.cpp  
+                          DataStorageHandler.cpp
 
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
@@ -13,9 +13,11 @@
 #include "ProcessingMode.h"
 #include "GameData.h"
 #include "PrototypeManager.h"
-#include "GameInfo.h"
+#include "GameConfig.h"
+
 extern bool testMode;
-extern GameInfo game;
+
+
 
 
 DataStorageHandler::DataStorageHandler (string * filename)
@@ -51,7 +53,7 @@ void DataStorageHandler::setCollection(BasicCollection  *collection)
 DataStorageHandler::~DataStorageHandler()
 {
   if(parser_) delete parser_;
-//   collection_->clear(); 
+//   collection_->clear();
   if(!collectionKeyword_.empty())cout << "Data handler ["<<collectionKeyword_ <<"] Destroyed " << endl;
 }
 
@@ -59,8 +61,7 @@ DataStorageHandler::~DataStorageHandler()
 
 STATUS DataStorageHandler::open()
 {
-
- 	parser_ = new FileParser ( filename_->c_str() );
+ 	parser_ = new FileParser ( filename_->c_str());
 	if (parser_->status != OK)
 			{
 				status = IO_ERROR;
@@ -98,7 +99,7 @@ string optionalDerivativeKeyword;
    if(status == UNDEFINED ) // delayed initialization
       open();
    if(status == IO_ERROR)
-    return status;   
+    return status;
    parser_->setPosition ( beginning_ );
   do //Find class keyword  definition
     {
@@ -134,7 +135,7 @@ string optionalDerivativeKeyword;
 						{
 	    					collection_ -> add (newObject) ;
 //                cout << " After adding "<< newObject->print();
-                
+
 						}
 				 }
 		}
@@ -166,7 +167,7 @@ STATUS DataStorageHandler::save()
 //  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
   outfile << "# Overlord units data " <<endl;
   time ( &rawtime );
-  outfile << "# Ver " <<game.getVersion()<<" " <<ctime(&rawtime) <<endl;
+  outfile << "# Ver " <<  GameConfig::version <<" " <<ctime(&rawtime) <<endl;
   outfile << "KEYWORD " << collectionKeyword_ << " " <<collection_ -> size() <<endl;
 
 
@@ -184,7 +185,7 @@ STATUS DataStorageHandler::save()
     {
       outfile << "RIP "<<collection_->getRIPbyIndex(i)<<endl;
     }
-    
+
   outfile.close();
 
 return OK;
@@ -201,11 +202,11 @@ STATUS DataStorageHandler::initializeData()
    parser_->setPosition ( beginning_ );
   while (!  parser_->eof() )
     {
-      parser_->getLine(); 
+      parser_->getLine();
      if ( parser_->matchKeyword (collectionKeyword_.c_str()))
 	  {
 	    currentTag = parser_->getWord();
-	    currentObject = collection_->findByTag(currentTag); 
+	    currentObject = collection_->findByTag(currentTag);
 	    if (currentObject != 0)
 	      {
 		i++;
@@ -222,7 +223,7 @@ STATUS DataStorageHandler::initializeData()
        {
 	 if(currentObject != 0)
 	   {
-	     currentObject  ->initialize ( parser_ ); 
+	     currentObject  ->initialize ( parser_ );
 	   }
        }
     }
@@ -250,5 +251,8 @@ for (i=0; i < collection_ -> size() ; i++)
 	 }
 }
 
-
+// Provides possibility to add definition of specific objects in collection
+void DataStorageHandler::define()
+{
+}
 

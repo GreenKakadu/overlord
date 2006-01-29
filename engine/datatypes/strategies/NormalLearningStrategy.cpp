@@ -6,6 +6,7 @@
     email                : alexliza@netvision.net.il
  ***************************************************************************/
 #include "NormalLearningStrategy.h"
+NormalLearningStrategy    sampleNormalLearning    ("LEARNING_NORMAL",    &sampleLearning);
 
 NormalLearningStrategy::NormalLearningStrategy( const NormalLearningStrategy * prototype ):
            BasicLearningStrategy(prototype)

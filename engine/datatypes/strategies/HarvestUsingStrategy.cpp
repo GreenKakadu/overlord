@@ -8,6 +8,7 @@
 #include "HarvestUsingStrategy.h"
 #include "ItemRule.h"
 #include "LocationEntity.h"
+#include "FactionEntity.h"
 #include "UnitEntity.h"
 #include "ResourceCompetitiveRequest.h"
 #include "RulesCollection.h"
@@ -16,9 +17,10 @@
 #include "ConstructionEntity.h"
 
 extern ReportPattern * notAvailableReporter;
+HarvestUsingStrategy      sampleHarvestUsing      ("USING_HARVEST",      &sampleUsing);
 
 
-extern RulesCollection    <ItemRule>     items;
+ReportPattern *	 harvestingNotPermittedReporter  = new ReportPattern("harvestingNotPermittedReporter");
 
 
 
@@ -86,12 +88,19 @@ USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
 //    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
     return CANNOT_USE;
   }
-  vector <ToolUseElement *>::iterator iter;
+	int bonus = calculateProductionBonus(unit,skill);
+
+
+	vector <ToolUseElement *>::iterator iter;
   for(iter = tools_.begin(); iter != tools_.end();iter++)
   {
-    request = request + request * (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+    bonus += (((*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())) /
+		unit->getFiguresNumber()) /100;
   }
+   request = request * (100 + bonus)/100;
 
+
+	 
   ConstructionEntity * containingConstruction = unit->getContainingConstruction();
   if(containingConstruction)
   {
@@ -132,12 +141,30 @@ void    HarvestUsingStrategy::extractKnowledge (Entity * recipient, int paramete
 
 USING_RESULT HarvestUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {
+  LocationEntity * location = unit->getLocation();
+	if(location == 0)
+	{
+	 return USING_RESULT_END;
+	}
   RationalNumber request = getDailyProduction();
   if( !harvest_)
   {
-//    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
+     if(!location->getResource(resourceConsumed_))
+    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
     return NO_RESOURCES;
   }
+  FactionEntity * owner = location->getRealOwner();
+
+    if(owner)
+    {
+      if(!owner->stanceAtLeast(unit,
+				location->getOwnershipPolicy().getHarvestPermission(resourceConsumed_)))
+      {
+        unit->addReport(new BinaryMessage (harvestingNotPermittedReporter,
+				 resourceConsumed_, location),0,0);
+        return USING_NOT_ALLOWED;
+      }
+    }
   return  USING_OK;
 }
 

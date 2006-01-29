@@ -13,9 +13,8 @@
  *                                                                                            *
  ***************************************************************************/
 #include "EnchantmentElement.h"
-#include "RulesCollection.h"
 #include "EnchantmentRule.h"
-extern RulesCollection <EnchantmentRule>    enchantments;
+
 
 EnchantmentElement  * EnchantmentElement::readElement (Parser * parser)
 {
