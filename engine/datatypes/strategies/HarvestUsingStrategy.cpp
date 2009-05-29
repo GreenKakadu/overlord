@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "HarvestUsingStrategy.h"
 #include "ItemRule.h"
@@ -15,6 +15,8 @@
 #include "ToolUseElement.h"
 #include "BinaryMessage.h"
 #include "ConstructionEntity.h"
+#include "GameConfig.h"
+
 
 extern ReportPattern * notAvailableReporter;
 HarvestUsingStrategy      sampleHarvestUsing      ("USING_HARVEST",      &sampleUsing);
@@ -51,6 +53,7 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
     {
       resourceConsumed_ = items[parser->getWord()];
       harvest_  = parser->getInteger();
+
       return OK;
     }
   if (parser->matchKeyword ("PRODUCES") )
@@ -80,13 +83,20 @@ RationalNumber HarvestUsingStrategy::getDailyProduction()
 
 
 
-USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
+USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+					int & useCounter,OrderLine * order)
 {
-  RationalNumber request = getDailyProduction() * unit->getFiguresNumber();
+ // First check that there are at least some resource to harvest
+  RationalNumber availableResourceAtLocation = unit->getLocation()->getAvailableResource(resourceConsumed_);
+ if(availableResourceAtLocation == 0)
+ {
+    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
+    return CANNOT_USE;
+ }
+	RationalNumber request = getDailyProduction() * unit->getFiguresNumber();
+	// / gameConfig.daysInMonth;
   if( request.isEmpty())
   {
-//    unit->addReport(new BinaryMessage(notAvailableReporter,resourceConsumed_ ,unit->getLocation()));
-    return CANNOT_USE;
   }
 	int bonus = calculateProductionBonus(unit,skill);
 
@@ -100,14 +110,15 @@ USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
    request = request * (100 + bonus)/100;
 
 
-	 
+
   ConstructionEntity * containingConstruction = unit->getContainingConstruction();
   if(containingConstruction)
   {
     containingConstruction->setProductionBonus(getHarvestedResource(), skill,unit->getSkillLevel(skill));
   }
 
-  unit->getLocation()->addDailyConflictRequest(new ResourceCompetitiveRequest(unit,unit->getCurrentOrder(),getHarvestedResource(), request));
+  unit->getLocation()->addDailyConflictRequest(new ResourceCompetitiveRequest(unit, 
+					order, getHarvestedResource(), request));
   return USING_COMPLETED;
 }
 
@@ -192,4 +203,12 @@ void HarvestUsingStrategy::printSkillDescription(ostream & out)
   out << resourceHarvested_->print();
 
   out<<" in "<< days_ <<" days.";
+}
+
+
+BasicUsingStrategy * HarvestUsingStrategy::cloneSelf()
+{
+ HarvestUsingStrategy * copyOfSelf = new HarvestUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Jun 5 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -24,6 +24,7 @@
 #include "UnitEntity.h"
 #include "LocationEntity.h"
 #include "RaceRule.h"
+#include "LeaderRaceRule.h"
 #include "RecruitRequest.h"
 #include "NewRecruitRequest.h"
 const UINT RecruitOrder:: INVALID_RECRUIT_REPORT_FLAG = 0x01;
@@ -103,7 +104,7 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
   RaceRule * race = dynamic_cast<RaceRule *>(parameters[2]);
      if(race == 0)
    {
-      unit->addReport(new UnaryMessage(unrecruitableRaceReporter,race));
+     unit->addReport(new UnaryMessage(unrecruitableRaceReporter,parameters[2]));
 		  return INVALID;
     }
 
@@ -114,6 +115,15 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
    IntegerData * par3       =  dynamic_cast<IntegerData *>(parameters[3]);
       assert(par3);
   int price = par3->getValue();
+  if(price == 0)
+	{
+		price = unit->getLocation()->getLocalRecruitPrice(race);		
+	}
+  if(number ==0)
+	{	
+		if(price != 0)
+			number = unit->hasMoney()/price;
+	}
 
    // hostile guards
 		//  return INVALID;
@@ -166,11 +176,11 @@ RecruitOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 		  return INVALID;
     }
    // one leader per unit
-   if(race != newUnit ->getRace())
+
+   if(race->isDescendantFrom(&sampleLeaderRaceRule))
    {
-//QQQ
       unit->addReport(new BinaryMessage(recruitMaxUnitSizeReporter,newUnit,
-                      new RaceElement(race, number)));
+                      new RaceElement(race, 1)));
 		  return INVALID;
     }
 

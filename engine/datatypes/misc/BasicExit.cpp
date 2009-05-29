@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicExit.h"
 #include "LineParser.h"
@@ -51,7 +51,7 @@ string BasicExit::print()
 void BasicExit::produceReport(ReportPrinter & out)
 {
   out.incr_indent();
-  out << "Exit "; out.incr_indent(); out.incr_indent(); out<< dir_->print() << " to " << destination_->print();
+  out << "Exit "; out.incr_indent(); out.incr_indent(); out<< dir_->print() << " to " << destination_->print() <<" ("<<destination_->getTerrain()->print() <<")";
   int i;
   int days;
   bool firstMode= true;
@@ -100,6 +100,8 @@ int BasicExit::getTravelTime(MovementVariety * mode)
  int time2 = destination_->getTerrain()->getTravelTime(mode);
      weatherFactor = destination_->getWeather()->getMovementBonus(mode);
 		 time2 = time2 * (100 + weatherFactor) / 100;
+
+//cout << "---> DEBUG--> from "<< origin_->printTag()<<" to "<<destination_->printTag()<<":  "<<time1<<","<<time2<<endl;
 
  if((!time1) && (!time2))
     return 0;

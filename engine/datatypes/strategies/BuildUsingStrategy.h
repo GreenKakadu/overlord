@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef BUILD_USING_H
@@ -19,6 +19,7 @@ class ToolUseElement;
 class ConstructionWorksVariety;
 class ItemRule;
 class UnitEntity;
+class ConstructionEntity;
 
 class BuildUsingStrategy : public BasicProductionStrategy  {
 public: 
@@ -29,10 +30,13 @@ public:
       STATUS initialize        ( Parser *parser );
 //      USING_RESULT use(TokenEntity * tokenEntity, SkillRule *, int &useCounter);
 //      USING_RESULT mayUse(TokenEntity * tokenEntity, SkillRule * skill);
-      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
+      void reportUse(USING_RESULT result, TokenEntity * tokenEntity);      
+      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      USING_RESULT build(UnitEntity * unit, SkillRule * skill, ConstructionEntity * construction );
       void printSkillDescription(ostream & out);
       void extractKnowledge (Entity * recipient, int parameter);
+			BasicUsingStrategy * cloneSelf();
 	protected:
       ConstructionWorksVariety * constructionWorkProduced_;
 };

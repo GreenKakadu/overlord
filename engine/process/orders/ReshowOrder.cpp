@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ReshowOrder.h"
 #include "StringData.h"
@@ -41,12 +41,19 @@ STATUS ReshowOrder::loadParameters(Parser * parser,
 {
    if(!entityIsTokenEntity(entity,NO_PARSING_REPORT) && !entityIsFaction(entity,NO_PARSING_REPORT))
             return IO_ERROR;
-  // Implement [ALL]
+
+
 	string tag = parser->getWord();
    if (tag.size() == 0)  // Missing parameter
         {
         entity->addReport(new BinaryMessage(missingParameterReporter, new StringData(keyword_), new StringData("rule tag")));
          return IO_ERROR;
+        }
+   //  [ALL]
+        if(!ciStringCompare(tag.c_str(),string("ALL")))
+        {
+          parameters.push_back(new StringData(tag));
+          return OK;
         }
 // if this is a keyword?
   BasicRulesCollection  * collection = ruleIndex.findRuleCollection(tag);
@@ -83,15 +90,32 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, ParameterList &parameters)
     assert(unit);
     faction = unit->getFaction();
   }
-  // Implement [ALL]
 
   StringData * par = dynamic_cast<StringData *>(parameters[0]);
+
+
   if(par)
   {
     string tag = par->print();
+  //  [ALL]
+   if(!ciStringCompare(tag.c_str(),string("ALL")))
+    {
+      for(vector < BasicRulesCollection  *>::iterator collIter = ruleIndex.getAllRules().begin();
+          collIter != ruleIndex.getAllRules().end(); ++collIter)
+      {
+          faction->markCollectionToReshow(*collIter);
+      }
+    }
+    else
+    {
     BasicRulesCollection  * collection = ruleIndex.findRuleCollection(tag);
-    assert(collection);
+	if(collection==0)
+	{
+	    cerr << "Unknown collection "<< tag<<endl;
+		return FAILURE;
+	}
     faction->markCollectionToReshow(collection);
+    }
     return SUCCESS;
   }
   Rule * rule = dynamic_cast<Rule *>(parameters[0]);

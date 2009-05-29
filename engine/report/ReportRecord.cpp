@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Dec 8 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ReportRecord.h"
 #include "ReportMessage.h"

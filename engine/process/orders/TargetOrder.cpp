@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Sep 23 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,7 +29,7 @@ extern RulesCollection <ConstructionRule>      constructions;
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <LocationEntity>      locations;
-extern DataManipulator * dataManipulatorPtr;
+
 //TargetOrder instantiateTargetOrder;
 TargetOrder * instantiateTargetOrder = new TargetOrder();
 
@@ -54,12 +54,10 @@ STATUS TargetOrder::loadParameters(Parser * parser, ParameterList &parameters, E
             return IO_ERROR;
 // Player can't detect not-existing rules and enties by trying them as targets
 //
-   string tag = parser->getWord();
-   if (tag.size() != 0)
-        {
-          parameters.push_back(TargetOrder::findTarget(tag));
-        }
-  return IO_ERROR;
+	if(!parseStringParameter(entity, parser,parameters))
+        return IO_ERROR;
+    else
+  		return OK;
 }
 
 
@@ -72,7 +70,11 @@ ORDER_STATUS TargetOrder::process (Entity * entity, ParameterList &parameters)
 
  if(parameters.size() >0)
     {
-          tokenEntity->setTarget(parameters[0]);
+      string tag = (parameters[0])->print();
+      if (tag.size() != 0)
+        {
+          tokenEntity->setTarget(TargetOrder::findTarget(tag));
+        }
      }
       return SUCCESS;
 }
@@ -145,12 +147,7 @@ AbstractData * TargetOrder::findTarget(const string & tag)
   AbstractData * target;
   assert(dataManipulatorPtr);
 
-  target =  dataManipulatorPtr->findGameData(tag);
-  if(target)
-		{
-      return target;
-		}
-
+// Placeholder?
   if(gameConfig.isNewEntityName(tag))
     {
       NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(tag);
@@ -162,6 +159,13 @@ AbstractData * TargetOrder::findTarget(const string & tag)
           else   // placeholder is still empty
    		      return placeholder;
         }
+		}
+
+// Tag?
+	target =  dataManipulatorPtr->findGameData(tag);
+  if(target)
+		{
+      return target;
 		}
 //		parameter is not a tag and not a placeholder
       return (new StringData (tag));

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun May 11 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -155,7 +155,7 @@ RationalNumber operator -= ( RationalNumber& leftArgument, const RationalNumber&
 
 
 
-const     bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ == rightArgument.numenator_);
@@ -165,14 +165,14 @@ const     bool operator == (const RationalNumber& leftArgument, const RationalNu
 
 
 
-const     bool operator == (const RationalNumber& leftArgument, const int& rightArgument)
+     bool operator == (const RationalNumber& leftArgument, const int& rightArgument)
 {
   return ((leftArgument.denominator_ == 1) && (leftArgument.numenator_ == rightArgument));
 }
 
 
 
-const     bool operator != (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator != (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ != rightArgument.numenator_);
@@ -182,7 +182,7 @@ const     bool operator != (const RationalNumber& leftArgument, const RationalNu
 
 
 
-const     bool operator >= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator >= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ >= rightArgument.numenator_);
@@ -193,7 +193,7 @@ const     bool operator >= (const RationalNumber& leftArgument, const RationalNu
 
 
 
-const     bool operator <= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator <= (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ <= rightArgument.numenator_);
@@ -204,7 +204,7 @@ const     bool operator <= (const RationalNumber& leftArgument, const RationalNu
 
 
 
-const     bool operator  > (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator  > (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ > rightArgument.numenator_);
@@ -215,7 +215,7 @@ const     bool operator  > (const RationalNumber& leftArgument, const RationalNu
 
 
 
-const     bool operator  < (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
+     bool operator  < (const RationalNumber& leftArgument, const RationalNumber& rightArgument)
 {
   if(leftArgument.denominator_ == rightArgument.denominator_)
        return (leftArgument.numenator_ < rightArgument.numenator_);
@@ -279,7 +279,7 @@ bool RationalNumber::load(Parser * parser)
 
 
 /** Returns integer part */
-const int RationalNumber::getValue() const
+ int RationalNumber::getValue() const
 {
  return numenator_ / denominator_;
 }

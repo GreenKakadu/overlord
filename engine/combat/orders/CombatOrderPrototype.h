@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen Aug  7 13:28:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef COMBAT_ORDER_PROTOTYPE_H
 #define COMBAT_ORDER_PROTOTYPE_H

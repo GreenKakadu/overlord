@@ -6,7 +6,7 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ENTITIES_COLLECTION_H
 #define ENTITIES_COLLECTION_H

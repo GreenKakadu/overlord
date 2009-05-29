@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jun 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -155,8 +155,8 @@ void MarketRequest::answerMarketRequest(int price, int amount)
 {
   if (type_ == BUY)
   {
-    if (unit_->isTraced())
-      cout <<"== TRACING " << unit_->print()<< " buys " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
+/*    if (unit_->isTraced())
+      cout <<"== TRACING " << unit_->print()<< " buys " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";*/
     unit_->addToInventory(item_,amount);
     int taken = unit_->takeFromInventory(cash, price * amount);  // pay
     assert(taken == price * amount);
@@ -171,10 +171,10 @@ void MarketRequest::answerMarketRequest(int price, int amount)
   }
   if (type_ == SELL)
   {
-    if (unit_->isTraced())
+/*    if (unit_->isTraced())
         cout <<"== TRACING " << unit_->print()<< " sells " << amount << " of " <<  item_->getName() << " for " << price << " coins.\n";
-    int taken = unit_->takeFromInventory(item_,amount);
-    assert(taken == amount);
+ */   int taken = unit_->takeFromInventory(item_,amount);
+ //   assert(taken == amount);
     unit_->addToInventory(cash, price * amount);
 //QQQ
     unit_->addReport(new QuartenaryMessage(sellReporter, unit_,

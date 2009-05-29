@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Dec 10 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef SKILL_H
 #define SKILL_H
@@ -12,6 +12,7 @@
 #include "EntityStatistics.h"
 #include "MovementMode.h"
 #include "BasicUsingStrategy.h"
+#include "RulesCollection.h"
 class SkillElement;
 class SkillLevelElement;
 class Entity;
@@ -22,6 +23,8 @@ class ReportPattern;
 class TeachingOffer;
 class CombatActionStrategy;
 class SkillBonusComboAttribute;
+class ConstructionEntity;
+class RaceRule;
 class SkillRule : public Rule  {
 public:
 
@@ -60,11 +63,13 @@ public:
           string printLevel(int level);
    inline bool isCombatSkill(){return isCombat_;}
    inline bool isMagicSkill(){return isMagic_;}
+   inline bool isElementalMagicSkill(){return isElementalMagic_;}
    inline int  getCapacity(int modeIndex, int level)
 	 			{return (capacity_[level])[modeIndex];}
 	 inline int getCapacity(MovementVariety * mode, int level)
 				{return (capacity_[level])[mode];}
-          USING_RESULT use(TokenEntity * unit, int & useCounter);
+          USING_RESULT use(TokenEntity * unit, int & useCounter,OrderLine * order =0);
+          USING_RESULT useBuild(UnitEntity * unit, ConstructionEntity * construction );//special case of building
           void reportUse(USING_RESULT result, TokenEntity * unit);
    SkillRule * getBasicSkill();
           void extractKnowledge (Entity * recipient, int parameter = 0);
@@ -76,6 +81,7 @@ public:
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
+          bool isRacialEnabled(RaceRule * race);
     protected:
 		SkillBonusComboAttribute  * skillBonuses_;// implemented as pointer
 		                                          // to avoid type definition loop
@@ -84,17 +90,23 @@ public:
     vector <SkillLevelElement *> requirement_;
     vector <vector <SkillLevelElement *> > derivatives_;
     vector <EntityStatistics> stats_;
+    //===========================================================
     vector <BasicLearningStrategy *> learningParadigm_;
     vector <BasicUsingStrategy *> usingParadigm_;
+    vector <CombatActionStrategy *> combatAction_;
+    GameData * learningParadigmGenerator_;
+    GameData * usingParadigmGenerator_;
+    GameData * combatActionGenerator_;
+    //===========================================================
     vector <string>   description_;
-		vector < MovementMode<int> > capacity_;
-	  vector <int> expPoints_;
-	  vector <int> studyCost_;
+    vector < MovementMode<int> > capacity_;
+    vector <int> expPoints_;
+    vector <int> studyCost_;
     void initLevel_(int level);
-		vector <CombatActionStrategy *> combatAction_;
     SkillElement * max_;
     bool isCombat_;
     bool isMagic_;
+    bool isElementalMagic_;
     GameData * targetType_;
 //    int targetDistance
     private:

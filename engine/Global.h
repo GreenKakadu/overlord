@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Nov 27 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef GLOBAL_H
 #define GLOBAL_H

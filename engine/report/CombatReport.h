@@ -3,7 +3,7 @@
                              -------------------
     begin                : Dec 6 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef COMBAT_REPORT_H
 #define COMBAT_REPORT_H

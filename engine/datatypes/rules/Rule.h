@@ -3,14 +3,14 @@
                              -------------------
     begin                : Thu Jan 23 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RULE_H
 #define RULE_H
 #include <vector>
 #include "GameData.h"
 #include "ReportPrinter.h"
-#include "RulesCollection.h"
+//#include "RulesCollection.h"
 #include "MovementBonusAttribute.h"
 
 

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Apr 03 2005
     copyright            : (C) 2005 by Alex Dribin
-     email                : alexliza@netvision.net.il
+     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,7 +22,19 @@
 InventoryAttribute::InventoryAttribute(TokenEntity * entity)
 {
 	entity_ = entity;
+	if(entity == 0)
+		cerr << "creating InventoryAttribute with empty Entity"<<endl;
 }
+
+
+
+void   InventoryAttribute::init(TokenEntity * entity)
+{
+	entity_ = entity;
+	if(entity == 0)
+		cerr << "creating InventoryAttribute with empty Entity"<<endl;
+}
+
 InventoryAttribute::~InventoryAttribute(){
 }
 
@@ -174,31 +186,28 @@ int InventoryAttribute::take(ItemRule * item, int num)
 
   if(numItems > numToGive)
 		{
-							numItems -= numToGive;
-							itemFound->setItemNumber(numItems);
-              if(itemFound->getEquipedNumber() > numItems )
-                  {
-									  itemFound->setEquipedNumber(numItems);
-//									        item->applyEquipementEffects(this,numItems);
-                    entity_->recalculateStats();
-                  }
-							return num;
+			numItems -= numToGive;
+			itemFound->setItemNumber(numItems);
+              		if(itemFound->getEquipedNumber() > numItems )
+                  	{
+				itemFound->setEquipedNumber(numItems);
+			//	item->applyEquipementEffects(this,numItems);
+                    		entity_->recalculateStats();
+                  	}
+			return num;
 		}
-  else if (numItems == numToGive)
-    {
+  else // (numItems <= numToGive)
+    	{
               int wasEquiped = itemFound->getEquipedNumber();
               deleteElement(itemFound);
               if(wasEquiped >0)
                 {
-//									        item->applyEquipementEffects(this,0);
+		//	item->applyEquipementEffects(this,0);
                   entity_->recalculateStats();
                 }
-							return num;
-    }
-      else
-				{
-				  return numItems;
-				}
+
+		return numItems;
+	}
 
 
 }
@@ -363,6 +372,11 @@ int InventoryAttribute::getLearningBonus(SkillRule * skill)
 {
 	int currentBonus = 0;
   int bonus = 0;
+	if(entity_==0)
+	{
+		cerr << "== InventoryAttribute with empty Entity! ("<< skill->getName()<<")"<<endl;
+		return 0;
+	}
 	for (InventoryIterator iter = inventory_.begin();
         iter != inventory_.end(); ++iter)
         {
@@ -404,6 +418,31 @@ void InventoryAttribute::reportInventory(FactionEntity * faction, ReportPrinter 
        if( isFirst)
             {
               isFirst = false;
+            }
+       else
+            {
+              out << ", ";
+            }
+       (*iter).reportEquipment(out);
+     }
+ 	out <<". ";
+}
+
+void InventoryAttribute::reportPublicInventory(ReportPrinter &out, bool isMultiple)
+{
+ 	bool isFirst = true;
+	for (InventoryIterator iter = inventory_.begin();
+                iter != inventory_.end(); ++iter)
+     {
+	if((*iter).getItemType()->getWeight() ==0)
+	continue;
+       if( isFirst)
+            {
+              isFirst = false;
+              if(isMultiple)
+                out << " have: ";
+              else
+                out << " has: ";
             }
        else
             {

@@ -4,7 +4,7 @@
                              -------------------
     begin                : Sun Oct 31 13:35:00 IST 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatOrderProcessor.h"
 #include "TokenEntity.h"
@@ -39,7 +39,7 @@ bool  CombatOrderProcessor::process(TokenEntity * entity, ProcessingMode * proce
 			return true;
 	}
 
-//combatReportFile<< "Processing orders for Entity " << entity->print() <<endl;
+combatReportFile<< "Processing orders for Entity " << entity->print() <<endl;
    for( currentIterator = (instance->getCombatOrderList()).begin();
 	      currentIterator != (instance->getCombatOrderList()).end();)
      {
@@ -71,7 +71,9 @@ bool  CombatOrderProcessor::process(TokenEntity * entity, ProcessingMode * proce
 			currentRound);
      }// End of orders loop
  if(!orderWasExecuted)
+ {
 			; // process default order for this Entity(processingMode,this,cout)
+ }
    return orderWasExecuted;
 }
 
@@ -244,7 +246,7 @@ CombatOrderProcessor::postProcessOrder(TokenEntity * entity, ORDER_STATUS result
 #ifdef TEST_MODE
    if(testMode) 		cout << "====+++ Order deleted (condition failed)"<<endl;
 #endif
-				    	delete (*currentIterator);
+				    	//delete (*currentIterator);
 		    			currentIterator = (instance->getCombatOrderList())
 																						.erase(currentIterator);
 	      			}

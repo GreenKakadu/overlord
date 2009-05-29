@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wen Jul  3 16:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef OVERLORD_TYPES_H
@@ -34,6 +34,7 @@ enum learning_result {
   FOLLOWER_CANNOT_STUDY_SECOND_BASIC_SKILL_FAILURE = 8,
   SKILL_STUDY_LIMIT_FAILURE = 9,
   ITEM_REQUIRED_FAILURE          = 10,
+  ELEMENTAL_SKILL_LIMIT_FAILURE          = 11,
   LEARNING_RESULT_ENUM_END          = 20
                    };
 typedef learning_result  LEARNING_RESULT;
@@ -55,6 +56,7 @@ enum using_result {
   USING_COMPLETED    = 8,
   NO_TARGET          = 9,
   USING_NOT_ALLOWED  = 10,
+  NO_MANA            = 11,
   USING_RESULT_END   = 99
                    };
 typedef using_result  USING_RESULT;
@@ -84,10 +86,12 @@ enum damage_type {
   AIR          = 1,
   EARTH        = 2,
   FIRE         = 3,
-  VOID         = 4,
+  VOID_DAMAGE  = 4,
   WATER        = 5,
   DAMAGE_TYPE_END      = 99
 };
 typedef enum damage_type DAMAGE_TYPE;
+//extern const int VERY_BIG_NUMBER = 9999;
+#define VERY_BIG_NUMBER  9999
 #endif
 

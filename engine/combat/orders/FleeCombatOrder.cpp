@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 09 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "FleeCombatOrder.h"
 #include "RetreatCombatOrder.h"
@@ -13,7 +13,6 @@
 #include "CombatReport.h"
 #include "CombatEngine.h"
 #include "reporting.h"
-static const int FLEE_TRASHOLD = 3;
 FleeCombatOrder * instantiateFleeCombatOrder = new FleeCombatOrder();
 extern ReportPattern * combatRetreatReporter;
 
@@ -31,6 +30,7 @@ FleeCombatOrder::FleeCombatOrder(){
   orderType_   = COMBAT_MOVEMENT_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS FleeCombatOrder::loadParameters(Parser * parser,
@@ -103,11 +103,8 @@ ORDER_STATUS FleeCombatOrder::process (Entity * entity, ParameterList &parameter
 					else
 					{
 					// Stay on place. may advance counter
-					instance->advanceFleeCounter();
-					if(instance->getFleeCounter() >= FLEE_TRASHOLD)
-					{
-						instance->fleeAway();
-					}
+                                          instance->setFleing(true);
+
 							return SUCCESS;
 					}
 	 }
@@ -129,11 +126,8 @@ ORDER_STATUS FleeCombatOrder::process (Entity * entity, ParameterList &parameter
 					else
 					{
 					// Stay on place. may advance counter
-					instance->advanceFleeCounter();
-					if(instance->getFleeCounter() >= FLEE_TRASHOLD)
-					{
-						instance->fleeAway();
-					}
+                                          instance->setFleing(true);
+
 							return SUCCESS;
 					}
 			 	}
@@ -153,22 +147,16 @@ ORDER_STATUS FleeCombatOrder::process (Entity * entity, ParameterList &parameter
 					else
 					{
 					// Stay on place. may advance counter
-					instance->advanceFleeCounter();
-					if(instance->getFleeCounter() >= FLEE_TRASHOLD)
-					{
-						instance->fleeAway();
-					}
+                                          instance->setFleing(true);
+
 							return SUCCESS;
 					}
 			 }
 
 
 // else not move (advance counter)
-					instance->advanceFleeCounter();
-					if(instance->getFleeCounter() >= FLEE_TRASHOLD)
-					{
-						instance->fleeAway();
-					}
+                         instance->setFleing(true);
+
 
 		return FAILURE;
 }

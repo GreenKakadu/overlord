@@ -4,7 +4,7 @@
                              -------------------
     begin                : Jan 27 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef WEATHER_H

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 16 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "SweepCombatOrder.h"
 #include "TokenEntity.h"
@@ -28,6 +28,7 @@ SweepCombatOrder::SweepCombatOrder(){
   orderType_   = COMBAT_MOVEMENT_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS SweepCombatOrder::loadParameters(Parser * parser,

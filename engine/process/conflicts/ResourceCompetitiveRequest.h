@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Apr 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RESOURCE_COMPETITIVE_REQUEST_H
 #define RESOURCE_COMPETITIVE_REQUEST_H
@@ -23,6 +23,7 @@ public:
 	ResourceCompetitiveRequest(UnitEntity * unit, OrderLine * orderId, ItemRule * resource,  RationalNumber& amount);
 	~ResourceCompetitiveRequest();
    RationalNumber getValue() const;
+   void setValue(const RationalNumber& value);
    AbstractData * getType() const;
    bool isValid();
   RationalNumber getTotalAvailableValue() const;

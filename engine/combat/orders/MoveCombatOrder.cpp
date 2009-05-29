@@ -3,7 +3,7 @@
                              -------------------
     begin                : Dec 08 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MoveCombatOrder.h"
 #include "TokenEntity.h"
@@ -25,6 +25,7 @@ MoveCombatOrder::MoveCombatOrder(){
   "The unit moves in specified ditection\n";
   orderType_   = COMBAT_MOVEMENT_ORDER;
   initiative_ = 0;
+  mayInterrupt_ = true;
 }
 
 STATUS MoveCombatOrder::loadParameters(Parser * parser,

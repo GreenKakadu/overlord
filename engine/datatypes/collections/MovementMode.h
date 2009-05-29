@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jan 15 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef MOVEMENT_MODE_H
@@ -16,7 +16,7 @@
 extern VarietiesCollection <MovementVariety> movementModes;
 
 template <class T> class MovementMode : public vector < T>  {
-public: 
+public:
 	MovementMode(){ MovementMode<T>::resize(/*movementModes.size()*/5);}
 	~MovementMode(){}
   T& operator []       (const string &tag);
@@ -36,7 +36,7 @@ template <class T> T&  MovementMode<T>::operator [] (const string &tag)
  for (i = 0; i < movementModes.size(); i++)
    {
       if ( movementModes[i] ->getTag() == tag)
-       return  *(begin()+ i);
+       return  *(this->begin()+ i);
 
    }
  cerr << "Error: Tag (" << tag  << ") was not found in Movement Rules \n";

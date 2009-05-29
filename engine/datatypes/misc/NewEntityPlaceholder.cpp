@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jun 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,12 +14,16 @@
  ***************************************************************************/
 #include "NewEntityPlaceholder.h"
 #include "Entity.h"
+#include "GameConfig.h"
+#include "ConstructionEntity.h"
+#include "UnitEntity.h"
 
 NewEntityPlaceholder::NewEntityPlaceholder(const string& name)
 {
 //   cout << "newPlaceholder with tag " << name<< " created"<<endl;
   temporaryName_ = name;
   entity_ = 0;
+	temporaryEntity_ = 0;
 }
 
 void NewEntityPlaceholder::saveAsParameter (ostream &out)
@@ -29,3 +33,35 @@ void NewEntityPlaceholder::saveAsParameter (ostream &out)
   else
     out << " " << temporaryName_;
 }
+
+
+// Determine type of Entity, based on temporaryName_ and create appropriate entity
+// Default is TokenEntity
+TokenEntity * NewEntityPlaceholder::getNewEntity()
+{
+ if(temporaryEntity_)
+		return temporaryEntity_;
+
+
+ char prefix = gameConfig.getEntityTypePrefix(temporaryName_);
+
+ 	if(prefix == units.getEntityTagPrefix())
+	{
+		temporaryEntity_ = new UnitEntity(sampleUnit);
+	}
+ 	else if(prefix ==  buildingsAndShips.getEntityTagPrefix())
+	{
+		temporaryEntity_ = new ConstructionEntity(sampleConstructionEntity);
+	}
+  else
+	{
+		temporaryEntity_ = new TokenEntity(sampleTokenEntity);
+	}
+
+  temporaryEntity_->explicitInitialization();
+
+		return temporaryEntity_;
+
+
+}
+

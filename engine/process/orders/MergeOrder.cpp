@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jul 8 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -98,6 +98,9 @@ ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
    int totalFigures = unit->getFiguresNumber();
   if( number > totalFigures)
        number = totalFigures;
+  
+  if( number == 0)
+    number = totalFigures;
 
    unit->setFigures(totalFigures - number);
    recipient->mergeUnits(number,unit);

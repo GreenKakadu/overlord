@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RESOURCE_ELEMENT_H
 #define RESOURCE_ELEMENT_H
@@ -20,6 +20,7 @@ typedef Element3<  ItemRule,  int ,  RationalNumber> BasicResourceElement;
 class ResourceElement : public BasicResourceElement  {
 public: 
 	ResourceElement(ItemRule * rule, int num)  : BasicResourceElement (rule,num,num){}
+	ResourceElement(ItemRule * rule, int num, int rest)  : BasicResourceElement (rule,num,rest){}
 	~ResourceElement(){}
 //  /** No descriptions */
 //   void save(ostream & out)
@@ -59,8 +60,27 @@ public:
           return 0;
         if (number == 0 )
           return 0;
-        else  
+        else
+				{
+        int rest = parser->getInteger();
+				if (rest == 0)
           return new ResourceElement(item, number);
+				else
+          return new ResourceElement(item, number, rest);
+				}
+    }
+  static ResourceElement * readStoredElement(Parser * parser)
+    {
+        ItemRule * item = items[parser->getWord()];
+        int number = parser->getInteger();
+        if( item == 0  )
+          return 0;
+        if (number == 0 )
+          return 0;
+        else
+		{
+          	return new ResourceElement(item, number);
+		}
     }
 	protected:
 };

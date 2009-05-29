@@ -42,30 +42,31 @@ SOURCES = turn.cpp \
           combat/CombatTactics.cpp \
           combat/GuardingRequest.cpp \
           combat/PillageRequest.cpp \
-					combat/BattleUnit.cpp \
-					combat/BattleInstance.cpp \
-					combat/CombatEngine.cpp \
-					combat/CombatOrderProcessor.cpp \
-					combat/BattleField.cpp \
-					combat/orders/ParryCombatOrder.cpp \
-					combat/orders/MoveCombatOrder.cpp \
-					combat/orders/FleeCombatOrder.cpp \
-					combat/orders/CombatOrderPrototype.cpp \
-					combat/orders/ChargeCombatOrder.cpp \
-					combat/orders/AdvanceCombatOrder.cpp \
-					combat/orders/MeleeCombatOrder.cpp \
-					combat/orders/FireCombatOrder.cpp \
-					combat/orders/FlankCombatOrder.cpp \
-					combat/orders/RangedCombatOrder.cpp \
-					combat/orders/RetreatCombatOrder.cpp \
-					combat/orders/StandCombatOrder.cpp \
-					combat/orders/SupportCombatOrder.cpp \
-					combat/orders/SweepCombatOrder.cpp \
-					combat/orders/UseCombatOrder.cpp \
-					combat/orders/ApplyCombatOrder.cpp \
-					combat/actions/MeleeCombatAction.cpp \
-					combat/actions/RangedCombatAction.cpp \
-					combat/actions/SpecialCombatAction.cpp \
+	  combat/BattleUnit.cpp \
+	  combat/BattleInstance.cpp \
+	  combat/CombatEngine.cpp \
+	  combat/CombatOrderProcessor.cpp \
+	  combat/BattleField.cpp \
+	  combat/BattleEntity.cpp \
+	  combat/orders/ParryCombatOrder.cpp \
+	  combat/orders/MoveCombatOrder.cpp \
+	  combat/orders/FleeCombatOrder.cpp \
+	  combat/orders/CombatOrderPrototype.cpp \
+	  combat/orders/ChargeCombatOrder.cpp \
+	  combat/orders/AdvanceCombatOrder.cpp \
+	  combat/orders/MeleeCombatOrder.cpp \
+	  combat/orders/FireCombatOrder.cpp \
+	  combat/orders/FlankCombatOrder.cpp \
+	  combat/orders/RangedCombatOrder.cpp \
+	  combat/orders/RetreatCombatOrder.cpp \
+	  combat/orders/StandCombatOrder.cpp \
+	  combat/orders/SupportCombatOrder.cpp \
+	  combat/orders/SweepCombatOrder.cpp \
+	  combat/orders/UseCombatOrder.cpp \
+	  combat/orders/ApplyCombatOrder.cpp \
+	  combat/actions/MeleeCombatAction.cpp \
+	  combat/actions/RangedCombatAction.cpp \
+	  combat/actions/SpecialCombatAction.cpp \
           datatypes/attributes/BasicAttribute.cpp \
           datatypes/attributes/EnchantmentAttribute.cpp \
           datatypes/attributes/InventoryAttribute.cpp \
@@ -101,7 +102,7 @@ SOURCES = turn.cpp \
           datatypes/elements/EnchantmentElement.cpp \
           datatypes/elements/InventoryElement.cpp \
           datatypes/elements/ItemElement.cpp \
-					datatypes/elements/MeleeAttackElement.cpp \
+	  datatypes/elements/MeleeAttackElement.cpp \
           datatypes/elements/MovementElement.cpp \
           datatypes/elements/MovementBonusElement.cpp \
           datatypes/elements/RaceElement.cpp \
@@ -173,6 +174,8 @@ SOURCES = turn.cpp \
           datatypes/varieties/CombatTargetVariety.cpp \
           implementation/actions/PickpocketActionRule.cpp \
           implementation/combat/HeavinessCombatAction.cpp \
+          implementation/combat/EnchantCombatAction.cpp \
+          implementation/combat/SummonCombatAction.cpp \
           misc/FileParser.cpp \
           misc/LineParser.cpp \
           misc/ReportPrinter.cpp \
@@ -260,7 +263,7 @@ SOURCES = turn.cpp \
           process/orders/WorkOrder.cpp \
           process/orders/YieldOrder.cpp \
           report/patterns/BinaryMessage.cpp \
-					report/patterns/CombatParticipantMessage.cpp \
+	  report/patterns/CombatParticipantMessage.cpp \
           report/patterns/CombatAttackMessage.cpp \
           report/patterns/CombatLootMessage.cpp \
           report/patterns/QuartenaryMessage.cpp \

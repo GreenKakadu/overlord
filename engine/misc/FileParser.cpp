@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "FileParser.h"
 extern bool testMode;
@@ -12,6 +12,7 @@ extern bool testMode;
 FileParser::FileParser()
 {
 	useAllocatedMemory_ = false;
+	 lineNumber_ = 0;
 }
 
 //=====================================================================
@@ -27,6 +28,7 @@ FileParser::FileParser (ifstream &input)
  streamInput_ = &input;
  useAllocatedMemory_ = false;
  status = OK;
+ lineNumber_ = 0;
 }
 
 
@@ -44,6 +46,7 @@ FileParser::FileParser (const char * filename)
  			status = IO_ERROR;
 			cerr << "Can't open file " << filename << endl;
 		}
+	lineNumber_ = 0;
 }
 
 
@@ -61,6 +64,7 @@ if(*streamInput_)
  			status = IO_ERROR;
 			cerr << "Can't open file " << filename << endl;
 		}
+	lineNumber_ = 0;
 }
 
 
@@ -87,7 +91,7 @@ void FileParser::getLine()
 {
    streamInput_->getline (buffer_, MAX_LINE_LENGTH,'\n');
    input_ = buffer_;
-
+   lineNumber_++;
 int i;
 	i = streamInput_->gcount();
   if(i<2)
@@ -104,6 +108,8 @@ bool FileParser::eof()
  return streamInput_->eof();
 }
 
+
+// This function will not update line number. It should be done separately.
 void FileParser::setPosition ( long int  position )
 {
   if(streamInput_->eof()) // clear error flags if EOF was reached
@@ -111,7 +117,22 @@ void FileParser::setPosition ( long int  position )
   streamInput_->seekg ( position );
 
 }
+
 long int  FileParser::getPosition()
 {
   return streamInput_->tellg();
+}
+
+
+
+int       FileParser::getLineNumber()
+{
+ return lineNumber_;
+}
+
+
+
+void      FileParser::setLineNumber(int num)
+{
+	lineNumber_ = num;
 }

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jan 21 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef SIMPLE_PATTERN_H
 #define SIMPLE_PATTERN_H

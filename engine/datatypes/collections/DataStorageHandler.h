@@ -7,7 +7,7 @@
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef DATA_HANDLER_H
 #define DATA_HANDLER_H
@@ -15,6 +15,7 @@
 #include "BasicCollection.h"
 //#include "SystemTypes.h"
 #include "OverlordTypes.h"
+extern ofstream reportlist; 
 
 class ProcessingMode;
 
@@ -32,6 +33,8 @@ public:
   STATUS initializeData();
   void printCollection();
    STATUS status;
+   int getInputLineNumber();
+   string * getInputFileName();
 protected:
   FileParser * parser_;
   string * filename_;

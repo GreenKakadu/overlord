@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Nov 19 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef FACTION_ENTITY_H
 #define FACTION_ENTITY_H
@@ -92,6 +92,7 @@ class FactionEntity : public Entity  {
   inline void markAllSkillsToReshow(){allSkillsToReshow_ = true;}
   void markSkillToReshow(SkillRule * skill, int level);
   void resign(FactionEntity * faction = 0);
+  bool checkAnyUnitsLeft();
   bool isNPCFaction();
   bool stanceAtLeast(FactionEntity * faction, StanceVariety * stance);
   bool stanceAtLeast(TokenEntity * token, StanceVariety * stance);
@@ -122,6 +123,7 @@ class FactionEntity : public Entity  {
   int controlPoints_;
   bool terseBattleReport_;
   bool isResigned_;
+  bool isDisbanded_;
   unsigned long temporaryFlags_;
     private:
  };

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef FILEPARSER_H
@@ -23,6 +23,8 @@ public:
                ~FileParser();
 
        void      getLine();
+       int       getLineNumber();
+       void      setLineNumber(int num);
        bool      eof();
        void      setPosition         ( long int position);
        long int        getPosition();
@@ -31,7 +33,8 @@ protected:
 
 private:
        ifstream *streamInput_;
- bool useAllocatedMemory_;
+       bool useAllocatedMemory_;
+       int lineNumber_;
 };
 
 #endif

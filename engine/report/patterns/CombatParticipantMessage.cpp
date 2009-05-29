@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mar 22 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatParticipantMessage.h"
 #include "BattleInstance.h"

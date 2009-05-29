@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun May 11 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -40,14 +40,14 @@ public:
   friend       ostream& operator << ( ostream &out,  RationalNumber rightArgument);
   friend       RationalNumber operator += ( RationalNumber& leftArgument, const RationalNumber& rightArgument);
   friend       RationalNumber operator -= ( RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator == (const RationalNumber& leftArgument, const int& rightArgument);
-  friend const     bool operator != (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator >= (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator <= (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator  > (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  friend const     bool operator  < (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
-  const int getValue() const;
+  friend      bool operator == (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+  friend      bool operator == (const RationalNumber& leftArgument, const int& rightArgument);
+  friend      bool operator != (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+  friend      bool operator >= (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+  friend      bool operator <= (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+  friend      bool operator  > (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+  friend      bool operator  < (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
+   int getValue() const;
   int roundDown() const;
   int roundUp() const;
   inline int getNumenator() const {return numenator_;}

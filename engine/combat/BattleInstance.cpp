@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon Oct 26 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BattleInstance.h"
 #include "BattleField.h"
@@ -19,6 +19,7 @@
 #include "reporting.h"
 #include "BasicLearningStrategy.h"
 #include "EquipmentSlotVariety.h"
+#include "LeaderRaceRule.h"
 
 SkillRule * parrySkill;
 SkillRule * meleeSkill;
@@ -28,6 +29,7 @@ extern ofstream combatReportFile;
 extern int Roll_1Dx(int n);
 ReportPattern * unitSlainAutoReporter= new ReportPattern("unitSlainAutoReporter");
 ReportPattern * combatFleeReporter = new ReportPattern("combatFleeReporter");
+static const int FLEE_TRASHOLD = 3;
 
 BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
 {
@@ -55,8 +57,11 @@ BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
 	repetitionCounter_ = 0;
 	fleeCounter_ = 0;
 	fled_ = false;
+        fleing_ =false;
 	affectingAction_ = 0;
+	movementInitiative_ = 0;
 	// Attributes
+
 	inventory_ = InventoryAttribute(origin_);
 
 	for(InventoryIterator iter = origin_->getAllInventory().begin();
@@ -83,8 +88,9 @@ BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
 	stats_.addStats(origin_->getStats());
 
 	damageType_ = origin_->getDamageType();
-	movementInitiative_ = 0;
 	figuresNumber_ = origin->getFiguresNumber();
+
+
 	int figuresLife = stats_.getLife();
 	for (int i = 0; i <figuresNumber_; ++i)
 		figures_.push_back(figuresLife);
@@ -119,12 +125,21 @@ void BattleInstance::initialize(BattleField * battleField)
 
 string BattleInstance::print()
 {
-	return origin_->print();
+		return origin_->print();
 }
 
 void BattleInstance::postProcess()
 {
-	enchantments_.processExpiration();
+  if(fleing_)
+  {
+    fleing_ = false;
+    advanceFleeCounter();
+    if(getFleeCounter() >= FLEE_TRASHOLD)
+    {
+      fleeAway();
+    }	
+  }
+  enchantments_.processExpiration();
 	affectingAction_ = 0;
 	recalculateStats();
 }
@@ -179,18 +194,22 @@ void BattleInstance::recheckOrders()
 // fill the list with the set of default combat orders
 void BattleInstance::respawnCombatActionOrders()
 {
-		for(CombatOrderIterator iter = origin_->getDefaultCombatOrders().begin();
-			iter != origin_->getDefaultCombatOrders().end(); ++iter)
-		{
-			// When we copy new order all flags should be cleared:
-			(*iter)->initialize(origin_);
-      (*iter)->setPermanent(true);
-	 		combatOrders_.push_back(*iter);
-   		combatReportFile << "added combat action order to "<<origin_<<": ";
-			(*iter)->printOrderLine(combatReportFile);
-		}
-	 	combatOrders_.push_back(new CombatOrderLine(string("@MELEE"),origin_));
-	 	combatOrders_.push_back(new CombatOrderLine(string("@PARRY"),origin_));
+//   if(origin_ == units["u1003"])
+//   {
+//     cout<<"ff";
+//   }
+  for(CombatOrderIterator iter = origin_->getDefaultCombatOrders().begin();
+          iter != origin_->getDefaultCombatOrders().end(); ++iter)
+  {
+          // When we copy new order all flags should be cleared:
+          (*iter)->initialize(origin_);
+          (*iter)->setPermanent(true);
+          combatOrders_.push_back(*iter);
+          combatReportFile << "added combat action order to "<<origin_<<": ";
+          (*iter)->printOrderLine(combatReportFile);
+  }
+  combatOrders_.push_back(new CombatOrderLine(string("@MELEE"),origin_));
+  combatOrders_.push_back(new CombatOrderLine(string("@PARRY"),origin_));
 
 
 }
@@ -220,7 +239,7 @@ int BattleInstance::reCalculateInitiative(int sideBonus,
  			iter != combatOrders_.end(); ++iter)
 			{
 
-				current = (*iter)->reCalculateInitiative(origin_,sideBonus);
+				current = (*iter)->reCalculateInitiative(origin_->getInitiative(),sideBonus);
 				if (current > initMax)
 					initMax = current;
 				if (current < initMin)
@@ -344,6 +363,12 @@ int BattleInstance::getDamage()  const
 }
 
 
+int BattleInstance::getRangedDamage()  const
+{
+	return stats_.getRangedDamage();
+}
+
+
 int BattleInstance::getMelee()const
 {
 	return stats_.getMelee();
@@ -456,12 +481,13 @@ void BattleInstance::planRoundOrders()
 // Returns number of killed figures.
 int BattleInstance::sufferDamage(int hits, int damage, DAMAGE_TYPE type)
 {
+combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
 	if(hits <= 0)
 		return 0;
 	if(damage <= 0)
 		return 0;
 
-combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
+//combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
 
 	int overkill = 0; // calculated for possible future use
 	int figuresDied = 0;
@@ -762,8 +788,11 @@ void BattleInstance::addFinalExperience(int survived, int totalEnemies, int surv
 		 parryExperience_= maxExperience;
 
 	if(parryExperience_)
+	{
 		origin_->addSkill(parrySkill,parryExperience_);
-  	combatReportFile << parryExperience_ << " of parry experience  was added to " <<origin_ <<endl;
+  		combatReportFile << parryExperience_ << " of parry experience  was added to "
+		 <<origin_ <<endl;
+	}
 
 	if(meleeExperience_)
 	{
@@ -798,8 +827,11 @@ void BattleInstance::addFinalExperience(int survived, int totalEnemies, int surv
 
 
 	if(missileExperience_)
+	{
 		origin_->addSkill(missileSkill,missileExperience_);
-  	combatReportFile << missileExperience_ << " of archery experience  was added to " <<origin_ <<endl;
+  		combatReportFile << missileExperience_ << " of archery experience  was added to "
+		 <<origin_ <<endl;
+	}
  // add all action-related experience
   for (vector <SkillElement>::iterator iter = actionExperience_.begin();
 					iter != actionExperience_.end(); ++iter)
@@ -879,7 +911,14 @@ void BattleInstance::fleeAway()
 	getCurrentInitiativeSegment();
 
  	new BinaryMessage(combatFleeReporter,
-								new IntegerData(initiative), origin_) >> *report_;
+				new IntegerData(initiative), origin_) >> *report_;
 
   combatReportFile << origin_ << " fled from the battlefield."<<endl;
+}
+
+
+
+bool BattleInstance::isLeader()
+{
+	return race_->isDescendantFrom(&sampleLeaderRaceRule);
 }

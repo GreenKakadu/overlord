@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jul 2 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,12 +21,14 @@
 #include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "EntitiesCollection.h"
+#include "SimpleMessage.h"
 #include "BinaryMessage.h"
 #include "QuartenaryMessage.h"
 extern EntitiesCollection <UnitEntity>      units;
 extern ReportPattern * recruiterReporter;
 extern ReportPattern * newRecruitReporter;
 extern ReportPattern *	 recruitingNotPermittedReporter;
+extern ReportPattern * cannotPayRecruitReporter ;
 
 NewRecruitRequest::NewRecruitRequest(UnitEntity * unit, OrderLine * orderId,
                               int amount, RaceRule * race, int price,
@@ -94,12 +96,28 @@ AbstractData * NewRecruitRequest::getType() const
 void NewRecruitRequest::answerMarketRequest(int price, int amount)
 {
 
-    if (unit_->isTraced())
+ /*   if (unit_->isTraced())
         cout <<"== TRACING "  << unit_->print()<< " recruits into new unit " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
-     int taken = unit_->takeFromInventory(cash, price * amount); //pay
+ */    
+  if(unit_->hasMoney() < price * amount)
+  {
+    unit_ ->addReport(new SimpleMessage( cannotPayRecruitReporter));
+    return;
+  }
+      int taken = unit_->takeFromInventory(cash, price * amount); //pay
       assert(taken == price * amount);
-     // create new unit and assign it to placeholder  targetUnit_
-     UnitEntity * newUnit   = new UnitEntity(unit_);
+
+		 // create new unit and assign it to placeholder  targetUnit_
+			UnitEntity * newUnit = 0;
+      TokenEntity * temp = targetUnit_->getNewEntity();
+		 if(temp)
+		 {
+       newUnit = dynamic_cast<UnitEntity *>(temp);
+		 }
+
+ 		if(newUnit == 0) // Something wrong with placeholder
+    		newUnit   = new UnitEntity(unit_);
+
       if(units.addNew(newUnit) != OK)
       {
         cout << "Failed to add new unit \n";
@@ -110,6 +128,7 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
        unit_->getLocation()->addUnit(newUnit);
        newUnit->setRace(race_,amount);
        newUnit->recalculateStats();
+
 	     if (unit_->isTraced())
         cout  <<"== TRACING " << "New unit created: "<<newUnit->print() <<" \n";
 
@@ -126,3 +145,29 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
     return;
 
 }
+
+// UnitEntity * createNewUnit(UnitEntity * parentUnit, , int amount, RaceRule * race, NewEntityPlaceholder * target)
+// {
+// 		 // create new unit and assign it to placeholder  targetUnit_
+// 			UnitEntity * newUnit = 0;
+//       TokenEntity * temp = targetUnit_->getNewEntity();
+// 		 if(temp)
+// 		 {
+//        newUnit = dynamic_cast<UnitEntity *>(temp);
+// 		 }
+// 
+//  		if(newUnit == 0) // Something wrong with placeholder
+//     		newUnit   = new UnitEntity(unit_);
+// 
+//       if(units.addNew(newUnit) != OK)
+//       {
+//         cout << "Failed to add new unit \n";
+//         return 0;
+//       }
+//       target->setRealEntity(newUnit);
+//        unit_->getFaction()->addUnit(newUnit);
+//        unit_->getLocation()->addUnit(newUnit);
+//        newUnit->setRace(race,amount);
+//        newUnit->recalculateStats();
+//     // finish order processing  updateOrderResults
+//  }

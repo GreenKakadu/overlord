@@ -3,18 +3,20 @@
                              -------------------
     begin                : Sun jul 03 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "RangedCombatAction.h"
 #include "TokenEntity.h"
 #include "CombatEngine.h"
 #include "BattleInstance.h"
 #include "reporting.h"
+#include "CombatAttackMessage.h"
 
 
 extern int Roll_1Dx(int n);
 extern ReportPattern * noTargetsReporter;
 
+extern ReportPattern * unitSlainReporter;
 RangedCombatAction     sampleRangedAction     ("RANGED",  &sampleCombatAction);
 
 GameData * RangedCombatAction::createInstanceOfSelf()
@@ -23,12 +25,27 @@ GameData * RangedCombatAction::createInstanceOfSelf()
 }
 
 
+RangedCombatAction * RangedCombatAction::cloneSelf()
+{
+  RangedCombatAction* copyOfSelf = new RangedCombatAction(keyword_,parent_);
+  *copyOfSelf = *this;
+  return copyOfSelf;
+}
+
+
+RangedCombatAction::RangedCombatAction  ( const RangedCombatAction * prototype ): CombatActionStrategy (prototype)
+{
+  range_ = 0;
+  action_ = 0;
+  target_ = 0;
+  tag_ = "RangedCombatAction";
+  nonCumulativeStats.clearStats(VERY_BIG_NUMBER);
+}
 
 
 
 // get all potential targets
-BattleTargets RangedCombatAction::getPotentialTargets(
-									BattleInstance * battleInstance, CombatReport * report)
+BattleTargets RangedCombatAction::getPotentialTargets(BattleInstance * battleInstance, CombatReport * report)
 {
   BattleTargets potentialTargets;
 	BattleField * battleField = battleInstance->getBattleField();
@@ -53,8 +70,7 @@ BattleTargets RangedCombatAction::getPotentialTargets(
 				continue;
 		 	}
   // may be
-	 stealthBonus = (*iter).instance_->getStealth() -
-	 													 battleInstance->getObservation();
+	 stealthBonus = (*iter).instance_->getStealth() - battleInstance->getObservation();
 	 if(stealthBonus > 0)
 	 {
 	 	 if(stealthBonus > Roll_1Dx(10))
@@ -75,13 +91,14 @@ BattleTargets RangedCombatAction::getPotentialTargets(
   std::sort(potentialTargets.begin(),potentialTargets.end(),
 		RangedCombatAction::attackPreference);
 
-   combatReportFile << "After sorting: "<<endl;
+
+   combatReportFile << "-------- Ranged Targets after sorting: (";
 	for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
 	iter != potentialTargets.end(); ++iter)
 	{
    combatReportFile <<(*iter).instance_->print()<< " ";
 	}
-	combatReportFile<<endl;
+	combatReportFile<< ")"<<endl;
 
 	return potentialTargets;
 }
@@ -92,8 +109,9 @@ BattleTargets RangedCombatAction::getPotentialTargets(
 MeleeAttackElement RangedCombatAction::attack(BattleInstance * battleInstance,
 					BattleInstance * target, int totalHits)
 {
+//        battleInstance->recalculateStats(); // Find better place
  	int missile =  battleInstance->getMissile();
-	int damage = battleInstance->getDamage();
+	int damage = battleInstance->getRangedDamage();
 	return rangedAttack( battleInstance,  missile,  damage, target,  totalHits);
 }
 
@@ -149,6 +167,8 @@ combatReportFile  <<"     "<<"     "<< "Attack value "
  << missile<<endl;
 combatReportFile  <<"     "<<"     "<< "Defence value "
  << targetDefence  << endl;
+combatReportFile  <<"     "<<"     "<< "Damage: "
+ << damage  << endl;
 combatReportFile  <<"     "<<"     "<< "Number of hits " << hitNums;
 
 if(hitNums)
@@ -157,14 +177,13 @@ if(hitNums)
 //  ====== Additional rule for wounds
 int correctedHits=0;
 if(missile < targetDefence)
-	{
+{
 		int woundLevel = 40 + 4 * missile;
 		for(int i = 0; i < hitNums; ++i)
 		{
 			if(woundLevel > Roll_1Dx(100))
 				correctedHits++;
 		}
-	}
 	int wounds = hitNums - correctedHits;
 	hitNums = correctedHits;
 
@@ -181,6 +200,7 @@ if(missile < targetDefence)
 		target->setWounds(currentFigures);
   	hitNums += (currentWounds + wounds - currentFigures);
 	}
+}
 // ====== End of additional rule for wounds
 combatReportFile  <<"("<< hitNums<<")" <<endl;
 // === Distribute hits between figures
@@ -190,4 +210,44 @@ combatReportFile  <<"("<< hitNums<<")" <<endl;
 
 
 	return MeleeAttackElement(target, numStrikes, totalDamage, figuresDied);
+}
+
+
+void		RangedCombatAction::performAction(BattleInstance * battleInstance, BattleTargets & target, CombatReport * report)
+{
+  int initiative = battleInstance->getBattleField()->getCombatEngine()->getCurrentInitiativeSegment();
+
+  combatReportFile<<" Initiative: "<<initiative<<endl;
+  vector <MeleeAttackElement> attacks =
+  makeAttack(battleInstance, target, report);
+
+  if(expGainingSkill_)
+  {
+    battleInstance->addActionExperience(expGainingSkill_);
+  }
+  else
+  {
+  battleInstance->addMissileExperience(1);
+  }
+
+
+  bool killedAll = false;
+  for (unsigned int i= 0; i< attacks.size(); ++i)
+  {
+    if(attacks[i].target == 0)
+      continue;
+          if(attacks[i].target->getFiguresNumber() == 0)
+                  killedAll = true;
+          else
+                  killedAll = false;
+
+          new CombatAttackMessage(initiative, battleInstance,
+                          attacks[i].hits, attacks[i].target, attacks[i].damage,
+                          attacks[i].killed, killedAll)>>*report;
+          if(killedAll)
+                  new UnaryMessage(unitSlainReporter,
+                          attacks[i].target->getOrigin()) >>*report ;
+  }
+
+
 }

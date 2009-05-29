@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Aug 5 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -48,7 +48,6 @@ BasicRulesCollection  * RuleIndex::findRuleCollection(const string& keyword)
           return (*ruleIter);
         }
      }
-     cerr << "Unknown collection "<< keyword<<endl;
    return 0;
 }
 

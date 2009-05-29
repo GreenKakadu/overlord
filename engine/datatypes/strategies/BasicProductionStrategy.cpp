@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Sep 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -24,12 +24,13 @@
 extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * productionReporter;
 extern GameData  targetTypeSelf;
-
+//extern const int VERY_BIG_NUMBER;
 
 BasicProductionStrategy::BasicProductionStrategy ( const BasicProductionStrategy * prototype ): BasicUsingStrategy(prototype)
 {
   productNumber_ = 1;
   productionDays_ =1;
+	mana_ = 0;
 }
 
 
@@ -44,7 +45,8 @@ GameData * BasicProductionStrategy::createInstanceOfSelf()
 STATUS
 BasicProductionStrategy::initialize        ( Parser *parser )
 {
-      return OK;
+	BasicUsingStrategy::initialize (parser);
+			return OK;
 }
 
 
@@ -70,13 +72,24 @@ USING_RESULT BasicProductionStrategy::unitMayUse(UnitEntity * unit, SkillRule * 
 
  if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
   {
-    if(checkResourcesAvailability(unit) == 0)
+		if(checkManaAvailability(unit) == 0)
+      {
+        return NO_MANA;
+      }
+
+// if (unit->isTraced())
+// {
+//       cout <<"== TRACING " <<unit->print()<<" unitMayUse calls for resourse check.\n";
+// 
+// }
+		if(checkResourcesAvailability(unit) == 0)
       {
         return NO_RESOURCES;
       }
      else
      {
         consumeResources(unit,1);
+        consumeMana(unit,1);
         return  USING_OK;
      }
   }
@@ -87,10 +100,20 @@ USING_RESULT BasicProductionStrategy::unitMayUse(UnitEntity * unit, SkillRule * 
 int BasicProductionStrategy::checkResourcesAvailability(TokenEntity * unit)
 {
   int currentProductionCycles;
-  int maxProductionCycles = 9999;  // very big number
+  int maxProductionCycles = VERY_BIG_NUMBER;  // very big number
+// if (unit->isTraced())
+// {
+//       cout <<"== TRACING " <<unit->print()<<" resourse check.\n";
+// 
+// }
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
       currentProductionCycles = unit->hasItem((*iter)->getItemType()) /(*iter)->getItemNumber();
+// if (unit->isTraced())
+// {
+//       cout <<"== TRACING " <<unit->print()<<" has "<< unit->hasItem((*iter)->getItemType())<< " ==> required for production "<<(*iter)->getItemNumber()<<" of "<< (*iter)->getItemType()->printTag()<<"\n";
+// 
+// }
       if(currentProductionCycles == 0)
         return 0;
       if(iter == resources_.begin())
@@ -186,4 +209,119 @@ RationalNumber BasicProductionStrategy::getEffectiveProductionRate(UnitEntity * 
     effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
   }
 	return effectiveProductionRate;
+}
+
+
+
+
+// process production, consume resources if nescessary
+// 1 portion of resources is consumed during a call of BasicProductionStrategy::unitMayUse
+USING_RESULT BasicProductionStrategy::produce(UnitEntity * unit, SkillRule * skill, int & useRestrictionCounter, int & effectiveProduction, OrderLine * order)
+{
+  if(useRestrictionCounter < 0)  // former restriction counter already expired 
+    return CANNOT_USE;
+        
+  USING_RESULT result;
+// Production modifiers:
+ RationalNumber effectiveProductionRate = getEffectiveProductionRate(unit,skill);
+
+
+  SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
+
+  int cycleCounter  = unit->addSkillUse(dailyUse);
+  if(cycleCounter == 0) // In the middle of the production cycle
+  {
+		 return USING_IN_PROGRESS;
+  }
+
+  else // The old  production cycle is finished. Do we want to start new?
+  {
+   int resourcesAvailable = checkResourcesAvailability(unit);
+    int manaAvailable = checkManaAvailability(unit);
+
+ if (unit->isTraced())
+{
+      cout <<"== TRACING " <<unit->print()<<" cycleCounter= "<<cycleCounter<<" produce calls for resourse check. "<<resourcesAvailable<<" available\n";
+
+}
+
+    if( resourcesAvailable  < cycleCounter -1) // 1 resource was already consumed
+        cycleCounter = resourcesAvailable;
+
+    if( manaAvailable < cycleCounter - 1)
+        cycleCounter = manaAvailable;
+
+    effectiveProduction = cycleCounter * productNumber_;
+if (unit->isTraced())
+{
+      cout <<"== TRACING " <<unit->print()<< " ==> produces "<< productNumber_<<" ->"<<effectiveProduction <<"   resourses: "<<resourcesAvailable <<" restr= "<< useRestrictionCounter<<"\n";
+
+}
+
+    if( (useRestrictionCounter > 0) && (effectiveProduction  >= useRestrictionCounter) ) // limited number of new cycles
+      {
+        effectiveProduction = useRestrictionCounter;
+        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
+        if(cycleCounter >1)
+				{
+			    consumeMana(unit,cycleCounter-1);
+          consumeResources(unit,cycleCounter-1);
+
+				}
+         result = USING_COMPLETED;
+        useRestrictionCounter = -1;
+        order->setCompletionFlag(true);
+      }
+
+    else
+    {
+	consumeMana(unit,cycleCounter-1);
+        consumeResources(unit,cycleCounter-1);
+        if(dailyUse->getDaysUsed() > 0)
+        unit->addSkillUse(dailyUse);
+        if( useRestrictionCounter != 0)
+          useRestrictionCounter = useRestrictionCounter - effectiveProduction;
+        result = USING_IN_PROGRESS;
+    }
+
+}
+return result;
+}
+
+
+
+int BasicProductionStrategy::checkManaAvailability(UnitEntity * unit)
+{
+  if(mana_)
+		return unit->hasMana()/mana_;
+	else
+          return VERY_BIG_NUMBER;
+}
+
+
+
+
+bool BasicProductionStrategy::consumeMana(UnitEntity * unit, int numCycles)
+{
+ if(mana_ != 0)
+	unit->setMana(unit->hasMana() - mana_ * numCycles);
+ return true;
+}
+
+//void BasicProductionStrategy::operator = (BasicProductionStrategy& data)
+//{
+
+//   productionDays_ = data.productionDays_;
+//   resources_ = data.resources_;
+//   productNumber_ = data.productNumber_;
+//   tools_ = data.tools_;
+//	 mana_ = data.mana_;
+//}
+
+BasicUsingStrategy * BasicProductionStrategy::cloneSelf()
+{
+ BasicProductionStrategy * copyOfSelf = new BasicProductionStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+
+ return copyOfSelf;
 }

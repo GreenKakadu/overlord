@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 13 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #include "StudyOrder.h"
@@ -30,6 +30,7 @@ extern ReportPattern * maxLevelErrorReporter;
 extern ReportPattern * paymentErrorReporter;
 extern ReportPattern * learningStartedReporter;
 extern ReportPattern * followerSkillLimitReporter ;
+extern ReportPattern * elementalSkillLimitReporter ;
 extern ReportPattern * itemRequiredReporter;
 //StudyOrder instantiateStudyOrder;
 StudyOrder * instantiateStudyOrder = new StudyOrder();
@@ -94,7 +95,10 @@ ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
 		  unit->addReport(currentMessage,orderId,0 );
  		return INVALID;
     }
-
+     if(skill == skills["sboa"])
+     {
+       cout <<"sboa!"<<endl;
+     }
    int level;
    if(parameters.size() > 1)
       {
@@ -105,7 +109,11 @@ ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
               level = skill->getMaxLevel();
       }
     else
-      level = skill->getMaxLevel();
+	{
+		level = unit->getSkillLevel(skill) +1;
+		if(level > skill->getMaxLevel())
+			level = skill->getMaxLevel();
+	}
 
 
  TeachingOffer * teacher;
@@ -181,7 +189,10 @@ ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
 /** Checks if study order may be processed (except teaching condition)*/
 ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int level)
 {
-
+// if(unit->isTraced())
+// {
+//   cout<<"."<<endl;
+// }
  LEARNING_RESULT result = skill->mayBeStudied(unit);
  teacherRequired_ = false;
   OrderLine * orderId = unit->getCurrentOrder();
@@ -236,9 +247,15 @@ ORDER_STATUS StudyOrder::preProcess_(UnitEntity * unit, SkillRule * skill, int l
  		  return INVALID;
       break;
     }
+    case ELEMENTAL_SKILL_LIMIT_FAILURE:
+    {
+		  unit->addReport(new UnaryMessage(elementalSkillLimitReporter, unit),orderId,0 );
+ 		  return INVALID;
+      break;
+    }
     default:
     {
-      cout << "Unexpected result ("<< result<<") of "<< skill->print() <<" learning for " << unit->printTag() <<endl;
+      cerr << "Unexpected result ("<< result<<") of "<< skill->print() <<" learning for " << unit->printTag() <<endl;
  		  return FAILURE;
     }
   }

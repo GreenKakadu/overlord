@@ -4,7 +4,7 @@ Permission on some sort of activity for factions with stances at least as good a
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef PERMISSION_ELEMENT_H
 #define PERMISSION_ELEMENT_H
@@ -25,7 +25,7 @@ public:
    inline StanceVariety * getStance()    const     {return parameter1_;}
    inline bool         isValidElement() const {return (rule_ )&&(parameter1_); }
 	
-string PermissionElement::print()
+string print()
 {
     if ( !( (rule_ )&&(parameter1_) ) ) return "";
       return  rule_->print()  + " " + parameter1_->print(); 
@@ -33,7 +33,7 @@ string PermissionElement::print()
 
 
 
-void PermissionElement::save(ostream & out)
+void save(ostream & out)
 {
   out << rule_->getTag() << " " <<  parameter1_->getTag()   << endl;
 }
@@ -43,7 +43,7 @@ void PermissionElement::save(ostream & out)
 /*
  * Reads (if it is possible) Permission Element from the input parser
  */
-static PermissionElement  * PermissionElement::readElement (Parser * parser)
+static PermissionElement  * readElement (Parser * parser)
 {
   Rule * rule = ruleIndex.findRule(parser->getWord());
   if( rule == 0  )

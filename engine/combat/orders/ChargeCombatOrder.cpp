@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 09 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ChargeCombatOrder.h"
 #include "TokenEntity.h"
@@ -28,6 +28,7 @@ ChargeCombatOrder::ChargeCombatOrder(){
   orderType_   = COMBAT_MOVEMENT_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS ChargeCombatOrder::loadParameters(Parser * parser,

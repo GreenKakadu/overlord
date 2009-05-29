@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Sep 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -99,7 +99,8 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
 }
 
 
-USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
+USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+			int & useCounter,OrderLine * order)
 {
 	// add production bonus
 	int bonus = calculateProductionBonus(unit,skill);
@@ -147,7 +148,7 @@ USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * s
           }
         }
 
-    unit->getCurrentOrder()->setCompletionFlag(true);
+    order->setCompletionFlag(true);
     return USING_COMPLETED;
   }
   return USING_IN_PROGRESS;
@@ -165,7 +166,7 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
     if(buildCondition->isSatisfied(unit))
       {
 //           report condition
-          cout << "CONDITION FAILED: "<<construction_->getBuildCondition()->print() <<endl;
+          cerr << "CONDITION FAILED: "<<construction_->getBuildCondition()->print() <<endl;
           return CONDITION_FAILURE;
       }
   }
@@ -203,7 +204,7 @@ USING_RESULT ConstructionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule 
 
 void ConstructionUsingStrategy::printSkillDescription(ostream & out)
 {
-  if(!resourceType_)
+  if(resourceType_)
     {
       out << " Use requires: " << resourceNumber_;
       if(resourceNumber_ > 1)
@@ -236,4 +237,13 @@ void    ConstructionUsingStrategy::extractKnowledge (Entity * recipient, int par
       constructionToUpgrade_->extractKnowledge(recipient);
   }
 
+}
+
+
+
+BasicUsingStrategy * ConstructionUsingStrategy::cloneSelf()
+{
+ ConstructionUsingStrategy * copyOfSelf = new ConstructionUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

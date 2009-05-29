@@ -3,7 +3,7 @@
                              -------------------
     begin                : Feb 15 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef MOVEMENT_BONUS_ELEMENT_H
 #define MOVEMENT_BONUS_ELEMENT_H

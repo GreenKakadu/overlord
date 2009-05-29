@@ -3,7 +3,7 @@
                              -------------------
     begin                : Feb 15 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MovementBonusElement.h"
 extern string longtostr(long u);

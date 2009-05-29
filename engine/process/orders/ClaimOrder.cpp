@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Nov 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,6 +23,7 @@
 #include "UnitEntity.h"
 #include "StanceVariety.h"
 #include "LocationEntity.h"
+#include "SimpleMessage.h"
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
@@ -36,6 +37,7 @@ extern ReportPattern * cantPayForTitleReporter;
 extern ReportPattern * noFreeTitleReporter;
 extern ReportPattern * contestTitleReporter;
 extern ReportPattern * claimTitleReporter;
+extern ReportPattern * cantContestFromAllyReporter;
 
 ClaimOrder::ClaimOrder(){
   keyword_ = "claim";
@@ -127,8 +129,8 @@ ORDER_STATUS ClaimOrder::process (Entity * entity, ParameterList &parameters)
       }
       if( *(unit->getFaction()->getStance(titleHolder)) >= *alliedStance )
       {
-        // report can't contest alies use ... instead
-	      return INVALID;
+        unit->addReport(new SimpleMessage(cantContestFromAllyReporter));
+        return INVALID;
       }
 
 

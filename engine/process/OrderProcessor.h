@@ -4,7 +4,7 @@
                              -------------------
     begin                : Sun Oct 31 13:35:00 IST 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef ORDER_PROCESSOR_H

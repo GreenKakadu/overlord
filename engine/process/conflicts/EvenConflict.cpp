@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Apr 22 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -69,6 +69,7 @@ void EvenConflict::resolve(vector  <BasicCompetitiveRequest *> & currentList)
   for(iter = currentList.begin() ; iter != currentList.end();iter++)
     {
       RationalNumber answer((*iter)->getValue());
+//cout << "EvenConflict::resolve "<< (*iter)->print()<<endl;
       (*iter)->answerRequest(answer);
     }
 }

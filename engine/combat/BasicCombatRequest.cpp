@@ -3,7 +3,7 @@
                           ------------------
     begin                : Mon May 24 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "TokenEntity.h"
 #include "OrderLine.h"

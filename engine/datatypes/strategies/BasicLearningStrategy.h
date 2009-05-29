@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 10 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef LEARNING_H
 #define LEARNING_H
@@ -45,7 +45,7 @@ public:
   /**  Add learning experience to all parent skills of a skill studied by unit */
   virtual void addRecursiveLearningExperience(TokenEntity * unit, SkillElement & skill);
   /** No descriptions */
-  virtual  LEARNING_RESULT mayStudy(TokenEntity * unit, SkillRule * skill) const;
+  virtual  LEARNING_RESULT mayStudy(TokenEntity * unit, SkillRule * skill);
   virtual  bool teacherRequired(Entity * unit, SkillRule * skill);
   static int getPointsPerDay()  {return expBase_;}
   virtual  void extractKnowledge (Entity * recipient, int parameter = 0);
@@ -53,6 +53,7 @@ public:
   inline Rule * getRacialClass() {return racialClass_;}
   inline bool isSpecialist() const {return special_;}
   inline InventoryElement * getItemRequired () const {return  itemRequired_;}
+	virtual BasicLearningStrategy * cloneSelf();
 protected:
   static int leaderBonus_;
   static int expBase_;

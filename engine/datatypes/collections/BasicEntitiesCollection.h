@@ -5,7 +5,7 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef BASIC_ENTITIES_COLLECTION_H
 #define BASIC_ENTITIES_COLLECTION_H
@@ -28,7 +28,7 @@ public:
 	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
 	        GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
           bool          isValidTag   (const string &tag)  ;//const;
-          long int        getIndex     (const string &tag)  ;
+          long int        getIndex     (const string &tag, bool errorReportEnabled = true)  ;
   virtual void             add      (GameData* /*const*/ newEntity);
   inline long int        size() const    {return data_.size();}
   inline  EntitiesIterator begin()         {return data_.begin();}
@@ -37,6 +37,7 @@ public:
     void                   remove             (const string &tag);
     bool                   checkDataType    (const string &tag);
     void                   setEntityTagPrefix (char prefix);
+		char                   getEntityTagPrefix ();
     void                   clear();
     string tagFromIndex(long int index);
    void addRIPindex(long int index);

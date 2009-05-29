@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Apr 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ResourceCompetitiveRequest.h"
 #include "ItemElement.h"
@@ -34,6 +34,12 @@ ResourceCompetitiveRequest::~ResourceCompetitiveRequest()
 RationalNumber ResourceCompetitiveRequest::getValue() const
 {
   return amount_;
+}
+
+
+void ResourceCompetitiveRequest::setValue(const RationalNumber& value)
+{
+ amount_ = value;
 }
 
 //ItemElement * ResourceCompetitiveRequest::getResource() const
@@ -83,6 +89,10 @@ RationalNumber ResourceCompetitiveRequest::getTotalAvailableValue() const
 void ResourceCompetitiveRequest::answerRequest(RationalNumber& answer)
 {
     RationalNumber bonus = 0;
+// if(unit_->isTraced())
+// {
+// cout << "Processing request on "<<amount_<< " of "<<resourceType_->print()<< "for"<<unit_->print()<<endl;
+// }
    if(answer <  amount_)
    {
     // Building effect on harvesting

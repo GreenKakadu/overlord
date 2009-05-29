@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Feb 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef MAGIC_LEARNING_H
@@ -21,7 +21,9 @@ public:
                                          BasicLearningStrategy(keyword, parent){}
   MagicLearningStrategy( const MagicLearningStrategy * prototype );                                      
 	~MagicLearningStrategy(){}
+  LEARNING_RESULT mayStudy(TokenEntity * unit, SkillRule * skill);
   GameData * createInstanceOfSelf();
+	BasicLearningStrategy * cloneSelf();
   STATUS initialize        ( Parser *parser );
 };
 extern MagicLearningStrategy    sampleMagicLearning;

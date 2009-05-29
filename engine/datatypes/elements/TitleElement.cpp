@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Sep 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -50,7 +50,15 @@ string TitleElement::print()
 
 void TitleElement::produceReport(ostream & out)
 {
-  out << "Available title of " <<title_->getName() <<" of "<<location_->print();
+  if(!unit_)
+  {
+	out << "Available ";
+  }
+  else
+  {
+   out << "The ";
+  }
+  out << "title of " <<title_->getName() <<" of "<<location_->print();
   if(unit_)  out<< " held by "<< unit_->print();
   if(title_->getClaimingCondition())
     {
@@ -63,9 +71,14 @@ void TitleElement::produceReport(ostream & out)
 
 TitleElement  * TitleElement::readElement (Parser * parser)
 {
+	UnitEntity * unit =0;
         TitleRule * title = titles[parser->getWord()];
         LocationEntity * location   = locations[parser->getWord()];
-        UnitEntity * unit   = units[parser->getWord()];
+	string tag = parser->getWord();
+	if(!tag.empty())
+	{
+	  unit   = units[tag];
+	}
         if(( title == 0 ) || (location == 0) )
           return 0;
         else

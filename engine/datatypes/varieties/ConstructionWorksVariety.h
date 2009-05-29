@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Sep 2 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #define CONSTRUCTION_WORKS_VARIETY_H
 
 #include "Variety.h"
+#include "VarietiesCollection.h"
 
 /**Represents Type of construction work s that some building or ship may demand. 
   *@author Alex Dribin

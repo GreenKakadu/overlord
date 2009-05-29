@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <functional>
 #include <algorithm>
@@ -45,7 +45,7 @@ DataManipulator::DataManipulator()
    ruleIndex.addRules (&seasons);
 
 
-//... add more collections
+//... add more collections Order is important here: factions should be after units (disbanding)
    addEntities  (&units);
    addEntities  (&factions);
    addEntities  (&locations);
@@ -175,6 +175,20 @@ STATUS DataManipulator::load()
   leftCombatFile = combatFiles["left"];
   centerCombatFile = combatFiles["center"];
   rightCombatFile = combatFiles["right"];
+
+
+  battleTargetAll = combatTargets["BATTLEFIELD_TARGET_ALL"];
+  battleTargetOwnSide = combatTargets["BATTLEFIELD_TARGET_OWN_SIDE"];
+  battleTargetOppositeSide = combatTargets["BATTLEFIELD_TARGET_OPPOSITE_SIDE"];
+  battleTargetFriend = combatTargets["BATTLEFIELD_TARGET_FRIENDLY"];
+  battleTargetSelf = combatTargets["BATTLEFIELD_TARGET_SELF"];
+  battleTargetFriendlyLeader = combatTargets["BATTLEFIELD_TARGET_FRIENDLY_LEADER"];
+  battleTargetOpposingLeader = combatTargets["BATTLEFIELD_TARGET_OPPOSING_LEADER"];
+  battleTargetOpposing = combatTargets["BATTLEFIELD_TARGET_OPPOSING"];
+
+
+
+
  return status;
 }
 
@@ -186,10 +200,12 @@ STATUS DataManipulator::load()
 STATUS DataManipulator::save()
 {
   EntitiesCollectionIterator iter;
+  reportlist.open("reportlist.new");
  for (iter = entities_.begin(); iter != entities_.end(); iter++)
    {
       (*iter) ->getStorageHandler()->save();
    }
+   reportlist.close();
  return OK;
 }
 
@@ -291,11 +307,11 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
 
           if(*localIter == 0)
               continue;
-
+	
           if((*localIter)->isHidden())
               continue;
 
-					if((*localIter)->isDisobeying())
+	  if((*localIter)->isDisobeying())
               continue;
 
           if( (*localIter) ->process(processingMode))
@@ -310,9 +326,17 @@ void DataManipulator::processOrders(ProcessingMode * processingMode )
 
           if( (*localIter) ->process(processingMode))
             localChanges = true;
-        }
 
-        if ((locations[i])->ordersToBeRepeated() )  // forced repetition regardless to mode and results
+		(*localIter)->eraseAllRemovedUnits();
+		(*localIter)->addAllAddedUnits();
+
+        }
+	// Only now deleted constructions and units may be erased
+ 	(locations[i])->eraseAllRemovedConstructions();
+  	(locations[i])->eraseAllRemovedUnits();
+	(locations[i])->addAllAddedUnits();
+	(locations[i])->addAllAddedConstructions();
+         if ((locations[i])->ordersToBeRepeated() )  // forced repetition regardless to mode and results
           {
             localChanges = true;
            }

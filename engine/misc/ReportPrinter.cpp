@@ -6,7 +6,7 @@ Copyright (c) 2002. Dimitry Kloper <dimka@cs.technion.ac.il> .
 
     begin                : Mon Oct 13 2003
     Modification         : by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
 ***************************************************************************/
 
 

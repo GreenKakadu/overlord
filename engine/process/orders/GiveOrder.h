@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jan 7 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef GIVE_ORDER_H
 #define GIVE_ORDER_H

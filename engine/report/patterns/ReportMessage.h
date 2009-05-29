@@ -7,7 +7,7 @@ ReportMessage is the Generic object for all report patterns.
                              -------------------
     begin                : Thu Dec 26 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef REPORT_PATTERN_H
 #define REPORT_PATTERN_H
@@ -66,7 +66,8 @@ template <class T>  static void  DELETE_PATTERN (void * deadObject, size_t size)
 	p->next = T::headOfFreeList;
 	T::headOfFreeList = p;
 }
-   inline ReportPrinter& operator << (ReportPrinter& out,  ReportMessage & data)
-                                { data.printReport(out); return out;}
+  inline ReportPrinter& operator << (ReportPrinter& out,  ReportMessage & data)
+                               { data.printReport(out); return out;}
+
 
 #endif

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jan 22 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef REPORTER_H
 #define REPORTER_H

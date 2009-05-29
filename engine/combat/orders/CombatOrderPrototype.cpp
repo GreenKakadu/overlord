@@ -4,7 +4,7 @@
                              -------------------
     begin                : Tue Nov  5 11:46:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatOrderPrototype.h"
 #include "Entity.h"
@@ -17,6 +17,7 @@ CombatOrderPrototype::CombatOrderPrototype()
 {
  initiative_ = 0;
  isSequentive_ = false;
+  mayInterrupt_ = true;
 }
 
 

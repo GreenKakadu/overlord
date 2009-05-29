@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wen jul  15:21:12 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ENTITY_H
 #define ENTITY_H
@@ -43,6 +43,9 @@ class Entity : public GameData
    virtual     void      save (ostream &out);
    virtual     void      loadOrders ();
            GameData *    createInstanceOfSelf();
+#ifdef DEBUG
+          const char * cname;
+#endif
 //               void registerAttribute(BasicAttribute * attribute);
    virtual     bool      process(ProcessingMode * processingMode);
    virtual     bool      updateOrderResults(ORDER_STATUS result);
@@ -56,6 +59,7 @@ class Entity : public GameData
    virtual     void      dailyPreProcess();
    virtual     void      dailyUpdate();
    virtual     void      payUpkeep(){}
+   virtual  inline   bool      isPayingUpkeep(){return isPayingUpkeep_;}
 
   /** prints  report for Entity (stats, posessions, private events) */
   virtual      void      produceFactionReport(FactionEntity * faction, ReportPrinter &out);
@@ -75,6 +79,7 @@ class Entity : public GameData
   inline virtual  void   setLastOrder(OrderLine * order) {lastOrder_ = order;}
   inline virtual OrderLine * getCurrentOrder() const {return currentOrder_;}
   inline virtual  void   setCurrentOrder(OrderLine * order) {currentOrder_ = order;}
+  inline         bool    isTraced() const {return traced_;}  /** used for debugging */
 
   /** Deletes all unused event messages. */
   virtual void finalizeReports();
@@ -121,8 +126,10 @@ friend  ostream &operator << ( ostream &out, Entity * entity);
 //    InternalPropertiesCollection<EffectElement *> effects_;
     EnchantmentAttribute  enchantments_;
     bool silent_;
-		bool disobeying_;
-    private:
+    bool disobeying_;
+    bool isPayingUpkeep_; 
+    bool    traced_;
+  private:
 };
 // This operation is used for processing order parameters that may be Entity
 // or aliases of new entity.

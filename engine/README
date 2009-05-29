@@ -1,12 +1,12 @@
 These are files containing preliminary code  of Overlord turn
 processing engine.
-Version 0.3.4
-Date 25.02.2005
+Version 0.4
+Date 20.02.2008
 
                  1. Functionality.
 
-This version supports main functionality exept of combat.
-Combat is partially supported (see TODO for details)
+This version supports main functionality but most of "special" rules are not implemented.
+
 
 			2. Compillation and building
 
@@ -18,8 +18,8 @@ Combat is partially supported (see TODO for details)
 
 Before running engine (Overlord) you should set game directories and configuration.
 
-File "overlord.config" contains configuration parameters.
-The most important of them are: GAMEDIR and PLAYERSDIR - these should be set 
+File "overlord.config" contains configuration parameters. It should be placed in the same directory as executable file.
+The most important of configuration parameters are: GAMEDIR and PLAYERSDIR - these should be set 
 according to your's directories containing rulefiles, entities data and players subdirectories.
 
 GAMEDIR is a directory where engine will look for game rulefiles (*.rules and *.var)
@@ -65,6 +65,4 @@ TURN  is current turn. It should be identical to extention of order files.
 	RulesNew.txt contain current overlord rules that may be not relevant in some cases.
 
 	DesignDoc.html - contain explanation of overlord engine design.
-	                 Parts 1 and 2 are OK
-									 Part 3 is outdated
-									 Part 4 is not written yet
+	                 

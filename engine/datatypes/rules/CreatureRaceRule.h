@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef CREATURE_RACE_H
@@ -21,6 +21,7 @@ public:
     	~CreatureRaceRule(){}
        STATUS     initialize      ( Parser *parser);
       void printTypeSpecificDescription(ReportPrinter & out);
+      LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
       GameData * createInstanceOfSelf();
       bool mayWork();
 };

@@ -1,9 +1,9 @@
 /***************************************************************************
-                          BasicUsingStrategy.cpp 
+                          BasicUsingStrategy.cpp
                              -------------------
     begin                : Wed Feb 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicUsingStrategy.h"
 #include "TokenEntity.h"
@@ -12,7 +12,6 @@
 BasicUsingStrategy        sampleUsing             ("USING",              &sampleGameData);
 BasicUsingStrategy::BasicUsingStrategy ( const BasicUsingStrategy * prototype ) : Strategy(prototype)
 {
-
 }
 
 
@@ -26,7 +25,8 @@ GameData * BasicUsingStrategy::createInstanceOfSelf()
 STATUS
 BasicUsingStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("SPECIALIST") )
+
+	if (parser->matchKeyword ("SPECIALIST") )
     {
 //			special_ = true;
       return OK;
@@ -40,10 +40,10 @@ BasicUsingStrategy::initialize        ( Parser *parser )
 
 void BasicUsingStrategy::addUsingExperience(TokenEntity * tokenEntity, SkillElement & skill)
 {
-   if(tokenEntity->isTraced())
-   {
-    cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" using experience added to " << skill.getSkill()->printTag()<<endl;
-   }
+//    if(tokenEntity->isTraced())
+//    {
+//     cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << skill.getExpPoints()<<" using experience added to " << skill.getSkill()->printTag()<<endl;
+//    }
 
    if(!tokenEntity->mayGainExperience())
     return;
@@ -69,10 +69,10 @@ void BasicUsingStrategy::addUsingExperience(TokenEntity * tokenEntity, SkillElem
 
 void BasicUsingStrategy::addRecursiveUsingExperience(TokenEntity * tokenEntity,  SkillRule * skill, int experience)
 {
-   if(tokenEntity->isTraced())
+/*   if(tokenEntity->isTraced())
    {
     cout <<"== TRACING " <<tokenEntity->printTag()<< " ==>  " << experience<<" recursive using experience added to " << skill->printTag()<<endl;
-   }
+   }*/
     tokenEntity->addSkill(skill,experience);
 
    int level = tokenEntity->getSkillLevel(skill);
@@ -138,11 +138,12 @@ USING_RESULT BasicUsingStrategy::mayUse(TokenEntity * tokenEntity, SkillRule * s
  * currently only units may use skills
  */
 
-USING_RESULT BasicUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, int & useCounter)
+USING_RESULT BasicUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, int & useCounter,
+					OrderLine * order)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(tokenEntity);
   if(unit)
-     return unitUse(unit, skill,useCounter);
+     return unitUse(unit, skill,useCounter,order);
   else
      return CANNOT_USE;
 }
@@ -152,7 +153,8 @@ USING_RESULT BasicUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skil
 
 
 
-USING_RESULT BasicUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter)
+USING_RESULT BasicUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+	int & useCounter,OrderLine * order)
 {
   // report Skill can't be used
   return UNUSABLE;
@@ -182,4 +184,11 @@ void BasicUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntit
 int BasicUsingStrategy::getUseDuration()
 {
   return 1;
+}
+
+BasicUsingStrategy * BasicUsingStrategy::cloneSelf()
+{
+ BasicUsingStrategy * copyOfSelf = new BasicUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

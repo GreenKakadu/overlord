@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "StackOrder.h"
 #include "UnstackOrder.h"
@@ -21,6 +21,7 @@ extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	stackingUnacceptableReporter;
 extern ReportPattern *	stackReporter;
 extern ReportPattern *	unstackReporter;
+extern ReportPattern *	cantStackSelfReporter;
 
 //StackOrder instantiateStackOrder;
 StackOrder * instantiateStackOrder = new StackOrder();
@@ -48,32 +49,35 @@ STATUS StackOrder::loadParameters(Parser * parser, ParameterList &parameters, En
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-   UnitEntity * leader;
-   const string tag = parser->getWord();
+//    UnitEntity * leader;
+//    const string tag = parser->getWord();
+// 
+//    if (tag.size() == 0)  // Missing parameter
+//         {
+//           leader = 0;
+//           return OK;
+//         }
+        
+   if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+          return IO_ERROR;
 
-   if (tag.size() == 0)  // Missing parameter
-        {
-          leader = 0;
-          return OK;
-        }
-
-  if (!units.checkDataType(tag)) // this can't be a tag
-				{
-         entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("unit id")));
-         return IO_ERROR;
-				}
-
-    leader = units[tag];
-
-  if( leader == 0) // item doesn't exist but we don't want to let player to know that
-				{
-          StringData * dummy = new StringData(tag);
-   		     parameters.push_back(dummy);
-				}
-   else
-				{
-   		     parameters.push_back(leader);
-				}
+//   if (!units.checkDataType(tag)) // this can't be a tag
+// 				{
+//          entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData("unit id")));
+//          return IO_ERROR;
+// 				}
+//
+//    leader = units[tag];
+//
+//   if( leader == 0) // item doesn't exist but we don't want to let player to know that
+// 				{
+//           StringData * dummy = new StringData(tag);
+//    		     parameters.push_back(dummy);
+// 				}
+//    else
+// 				{
+//    		     parameters.push_back(leader);
+// 				}
 
   return OK;
 }
@@ -85,9 +89,24 @@ ORDER_STATUS StackOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
+  UnitEntity * leader   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+  if(leader == 0)
+   		  return FAILURE;
+  OrderLine * orderId = entity->getCurrentOrder();
+  if(leader == unit)
+{
+   UnaryMessage *  cantStackSelfMessage = new UnaryMessage(cantStackSelfReporter, unit);
+   entity->addReport(cantStackSelfMessage,orderId,0 );
+   return FAILURE;
+}
+
+// unit and leader are at the same location
+ if(!unit->mayInterract(leader))
+   		  return FAILURE;
+
+
   UnitEntity * formerLeader = unit->getLeader();
 
-  OrderLine * orderId = entity->getCurrentOrder();
   UnaryMessage * unstackMessage = new UnaryMessage(unstackReporter, unit);
   if (parameters.size() == 0) // This means unstack
     {
@@ -100,15 +119,7 @@ ORDER_STATUS StackOrder::process (Entity * entity, ParameterList &parameters)
       return SUCCESS;
     }
 
-//  UnitEntity * leader = dynamic_cast<UnitEntity *>(parameters[0]);
-	UnitEntity * leader   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
-  if(leader == 0)
-   		  return FAILURE;
-
-// unit and leader are at the same location
- if(!unit->mayInterract(leader))
-   		  return FAILURE;
-// leader is ally or accepts unit
+//leader is ally or accepts unit
 //   cout << "Stance: "<< leader->getFaction()->getStance(unit)<<" "
 //        <<leader->getFaction()->getStance(unit)->getCode()<< " vs "
 //        <<stances["ally"]<<" "<<(stances["ally"])->getCode();
@@ -116,7 +127,9 @@ ORDER_STATUS StackOrder::process (Entity * entity, ParameterList &parameters)
 //    cout << " accepting " <<endl;
 //    else
 //    cout << " not accepting " <<endl;
-   if( (!leader->getFaction()->stanceAtLeast(unit,alliedStance)) ||(leader->isAccepting(unit)))
+//   cout <<"<------------------Get Stance of " <<leader->getFaction()->printTag()<<" to "<< unit->printTag()<<endl;
+
+  if( (leader->getFaction()->stanceAtLeast(unit,alliedStance)) ||(leader->isAccepting(unit)))
       {
         if(unit->unstack())
         {

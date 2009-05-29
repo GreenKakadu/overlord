@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Dec 10 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ItemRule.h"
 #include "EquipmentSlotVariety.h"
@@ -160,7 +160,7 @@ if (parser->matchKeyword("SPECIAL"))
        	GameData * temp =  prototypeManager->findInRegistry(keyword);
 			if(temp == 0)
 				{
-					cout << "Unknown combat action " << keyword  << " for item " << print()<< endl;
+					cerr << "Unknown combat action " << keyword  << " for item " << print()<< endl;
 				}
 			else
 				{
@@ -175,7 +175,7 @@ if (parser->matchKeyword("SPECIAL"))
     {
 			if(combatAction_ == 0)
 			{
-					cout << "combat parameter "<< parser->getText()<< " defined before combat action  for item " << print()<< endl;
+					cerr << "combat parameter "<< parser->getText()<< " defined before combat action  for item " << print()<< endl;
 
       return OK;
 			}

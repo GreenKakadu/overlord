@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "OathOrder.h"
 #include "StringData.h"
@@ -19,6 +19,7 @@
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <FactionEntity>  factions;
 extern ReportPattern *	missingParameterReporter;
+extern ReportPattern *	oathCantReporter;
 
 OathOrder * instantiateOathOrder = new OathOrder();
 
@@ -68,7 +69,12 @@ ORDER_STATUS OathOrder::process (Entity * entity, ParameterList &parameters)
   if(faction == 0)
     {
         TokenEntity * recipient = DOWNCAST_ENTITY<TokenEntity>(parameters[0]);
-        assert(recipient);
+        if(recipient==0) // Dummy oath target
+	{
+       		entity->addReport(new BinaryMessage(oathCantReporter,
+ 					unit, parameters[0]));
+		return FAILURE;
+	}
         faction = recipient->getFaction();
     }
 

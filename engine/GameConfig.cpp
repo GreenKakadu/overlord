@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Nov 20 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "stdio.h"
 #include <time.h>
@@ -19,10 +19,36 @@ GameConfig::GameConfig()
 	unitsFile_ = string("units.dat");
 	locationsFile_ = string("locations.dat");
 	factionsFile_ = string("factions.dat");
-   buildingsFile_ = string("buildings.dat");
-  effectsFile_ = string("effects.dat");
-  newEntityPrefix_ = string("new");
-  daysInMonth = 30;
+        buildingsFile_ = string("buildings.dat");
+        effectsFile_ = string("effects.dat");
+//Vars 
+        combat_filesFile_ = string("combat_files.var");
+        combat_movesFile_ = string("combat_moves.var");  
+        combat_ranksFile_  = string("combat_ranks.var");
+        combat_stancesFile_  = string("combat_stances.var");
+        combat_targetFile_   = string("combat_target.var");
+        construction_worksFile_  = string("construction_works.var");
+        damage_typeFile_  = string("damage_type.var"); 
+        directionsFile_  = string("directions.var");
+        equipmentsFile_  = string("equipments.var"); 
+        movementsFile_   = string("movementsF.var");
+        stancesFile_ = string("stances.var");
+//Rules 
+        constructionsFile_= string("constructions.rules");
+        enchantmentsFile_= string("enchantments.rules");
+        fx_actionsFile_= string("fx_actions.rules");
+        itemsFile_= string("items.rules");
+        racesFile_= string("races.rules");
+        seasonsFile_= string("seasons.rules");
+        skillsFile_= string("skills.rules");
+        terrainsFile_= string("terrains.rules");
+        titlesFile_= string("titles.rules");
+        weathersFile_= string("weathers.rules");
+        
+        gameFile_ = string("game.dat");
+
+        newEntityPrefix_ = string("new");
+        daysInMonth = 30;
 	runMode = NORMAL;
 	randomSeed_ = 0;
 }
@@ -35,7 +61,7 @@ GameConfig::~GameConfig()
 Returns false if faileres to open file */
 void GameConfig::init(const char * filename)
 {
-	cout <<" Game file is " << filename << endl;
+	cout <<" Configuration file is " << filename << endl;
     FileParser * parser = new FileParser ( filename );
 	if( parser->status != OK)
 		{
@@ -113,9 +139,33 @@ void GameConfig::init(const char * filename)
       		 effectsFile_ = parser->getParameter();
       		continue;
     		}
-  	if (parser->matchKeyword("FILE"))
+        
+                if (parser->matchKeyword("COMBAT_FILES_FILE")) { combat_filesFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("COMBAY_MOVES_FILE")) { combat_movesFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("COMBAT_RANKS_FILE")) { combat_ranksFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("COMBAT_STANCES_FILE")) { combat_stancesFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("COMBAT_TARGETFILE")) { combat_targetFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("CONSTRUCTION_WORKS_FILE")) { construction_worksFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("DAMAGE_TYPE_FILE")) { damage_typeFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("DIRECTIONS_FILE")) { directionsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("EQUIPMENTS_FILE")) { equipmentsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("MOVEMENTS_FILE")) { movementsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("STANCES_FILE")) { stancesFile_ = parser->getParameter(); continue;}
+
+                if (parser->matchKeyword("CONSTRUSCTIONS_FILE")) { constructionsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("ENCHANTMENTS_FILE")) { enchantmentsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("FX_ACTIONS_FILE")) { fx_actionsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("ITEMS_FILE")) { itemsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("RACES_FILE")) { racesFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("SEASONS_FILE")) { seasonsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("SKILLS_FILE")) { skillsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("TERRAINS_FILE")) {  terrainsFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("TITLES_FILE")) { titlesFile_ = parser->getParameter(); continue;}
+                if (parser->matchKeyword("WEATHERS_FILE")) { weathersFile_ = parser->getParameter(); continue;}
+                
+        if (parser->matchKeyword("GAMEFILE"))
     		{
-      		 factionsFile_ = parser->getParameter();
+      		 gameFile_ = parser->getParameter();
       		continue;
     		}
  	if (parser->matchKeyword("DAYS_IN_TURN"))
@@ -147,9 +197,41 @@ void GameConfig::init(const char * filename)
  factionsFile_.insert(0, gameDir_+ "/");
  buildingsFile_.insert(0, gameDir_+ "/");
  effectsFile_.insert(0, gameDir_+ "/");
+
+ combat_filesFile_.insert(0, gameDir_+ "/");
+ combat_movesFile_.insert(0, gameDir_+ "/");
+ combat_ranksFile_.insert(0, gameDir_+ "/");
+ combat_stancesFile_.insert(0, gameDir_+ "/");
+ combat_targetFile_.insert(0, gameDir_+ "/");
+ construction_worksFile_.insert(0, gameDir_+ "/");
+ damage_typeFile_.insert(0, gameDir_+ "/");
+ directionsFile_.insert(0, gameDir_+ "/");
+ equipmentsFile_.insert(0, gameDir_+ "/");
+ movementsFile_.insert(0, gameDir_+ "/");
+ stancesFile_.insert(0, gameDir_+ "/");
+
+ constructionsFile_.insert(0, gameDir_+ "/");
+ enchantmentsFile_.insert(0, gameDir_+ "/");
+ fx_actionsFile_.insert(0, gameDir_+ "/");
+ itemsFile_.insert(0, gameDir_+ "/");
+ racesFile_.insert(0, gameDir_+ "/");
+ seasonsFile_.insert(0, gameDir_+ "/");
+ skillsFile_.insert(0, gameDir_+ "/");
+ terrainsFile_.insert(0, gameDir_+ "/");
+ titlesFile_.insert(0, gameDir_+ "/");
+ weathersFile_.insert(0, gameDir_+ "/");
+    
+
+
+ if(game_.empty())
+ {
+ 	gameFile_ = game_ + ".dat";
+ }
+ gameFile_.insert(0, gameDir_+ "/");
+
 // Now initialize dynamic game data
 
-	parser = new FileParser ( game_ + ".dat" );
+	parser = new FileParser ( gameFile_ );
 	if( parser->status != OK)
 		{
 		cout << "Failed to open file "<<game_<<".dat\t\t Exiting..." << endl;
@@ -192,7 +274,7 @@ STATUS GameConfig::save()
 {
   time_t  rawtime;
   cout << "Saving game info  "  <<endl;
-  ofstream outfile ((game_ + ".new").c_str());
+  ofstream outfile ((gameFile_ + ".new").c_str());
   outfile << "# Overlord game info " <<endl;
   time ( &rawtime );
   outfile << "#  Version "<<  version << " " <<ctime(&rawtime) <<endl;
@@ -200,7 +282,7 @@ STATUS GameConfig::save()
   if(!game_.empty()) outfile         << "GAME  " << game_ << endl;
   if(!name_.empty()) outfile         << "NAME  " << name_ << endl;
   if(!description_.empty()) outfile  << "DESCRIPTION  " << description_ << endl;
-  if(turn != 0) outfile << "TURN  "  << turn +1 << endl;
+  /*if(turn != 0) */outfile << "TURN  "  << turn +1 << endl;
 	outfile << "#Random seed used: " << randomSeed_ <<endl; // seed is reported
 	                                                        //but not saved! 
 //  if(!version_.empty()) outfile      << "VERSION  " << version_ << endl;
@@ -273,28 +355,36 @@ string * GameConfig::getEffectsFile()
 return &effectsFile_;
 }
 
+string * GameConfig::getGameFile()
+{
+return &gameFile_;
+}
+
 
 bool GameConfig::isNewEntityName(const string &tag, FactionEntity * faction)
 {
-  // New Entity name should be [fxxx][Px][nnn]
+  // New Entity name should be [fxxx][Px][X][nnn]
   // fxxx - faction tag
-  // Px New Unit prefix
+  // Px New Entity prefix
+	// X - prefix defining type of Entity (Unit, Construction) - same as collection prefix
   // nnn - number
   //// faction tag may be omited for your's own units. In this case
- // cout << "["<<tag<<"] is tested for being new unit placeholder\n";
-  string::size_type factionTagSize = tag.find(newEntityPrefix_,0); //
+// cout << "["<<tag<<"] is tested for being new unit placeholder\n";
+  string::size_type factionTagSize = tag.find(newEntityPrefix_,0);
+  if(factionTagSize ==0)
+	{
+    return true;
+	}
+	//
   if(factionTagSize == string::npos)
    {
-//     cout <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
+//     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
     return false;
     }
-//     string tempTag = tag.substr(0,factionTagSize);
-//     cout << "TempTag= "<<tempTag<<endl;
-//     cout <<  (factions[1])->print()<<endl;
-//  if(factions.isValidTag(tempTag) )
-  if(factions.isValidTag(tag.substr(0,factionTagSize)) )
-
-    return true;
+     string tempTag = tag.substr(0,factionTagSize);
+     faction = dynamic_cast<FactionEntity *>(factions.findByTag(tempTag));
+     if(factions.isValidTag(tempTag) )
+   		 return true;
 //    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";
   return false;
 }
@@ -312,3 +402,27 @@ bool GameConfig::isNPCFaction(FactionEntity * faction)
   return false;
 }
 
+
+// Returns next letter after newEntityPrefix
+char GameConfig::getEntityTypePrefix(const string &tag)
+{
+  string::size_type factionTagSize = tag.find(newEntityPrefix_,0);
+	//
+  if(factionTagSize == string::npos)
+   {
+     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
+    return 0;
+   }
+  if(factionTagSize + newEntityPrefix_.length() > tag.length())
+	{
+     cerr <<  "["<<newEntityPrefix_<<"] contains no entity identifier\n";
+		return 0;
+	}
+   char prefix = tag[factionTagSize + newEntityPrefix_.length()];
+
+	 if(isalpha(prefix))
+	 {
+	 	return prefix;
+	 }
+	 return 0;
+}

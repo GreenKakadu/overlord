@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Feb 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CreatureLearningStrategy.h"
 CreatureLearningStrategy  sampleCreatureLearning  ("LEARNING_CREATURE",  &sampleLearning);
@@ -26,4 +26,13 @@ STATUS
 CreatureLearningStrategy::initialize        ( Parser *parser )
 {
       return BasicLearningStrategy::initialize(parser);
+}
+
+
+
+BasicLearningStrategy * CreatureLearningStrategy::cloneSelf()
+{
+ CreatureLearningStrategy * copyOfSelf = new CreatureLearningStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

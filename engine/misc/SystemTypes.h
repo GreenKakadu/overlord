@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Dec 3 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 //typedef unsigned  long       UINT32;
 typedef unsigned  short  int UINT16;

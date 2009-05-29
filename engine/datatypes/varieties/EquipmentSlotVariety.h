@@ -3,12 +3,13 @@
                              -------------------
     begin                : Mon Jan 6 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef EQUIPMENT_SLOT_H
 #define EQUIPMENT_SLOT_H
 #include "Variety.h"
+#include "VarietiesCollection.h"
 
 class EquipmentSlotVariety : public Variety  {
 public: 

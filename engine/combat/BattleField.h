@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon Nov 01 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef BATTLE_UNIT_H
 #define BATTLE_UNIT_H
@@ -25,7 +25,8 @@ enum  battle_direction{
   FORWARD      = 0,
   BACKWARD     = 1,
   LEFT         = 2,
-  RIGHT        = 3
+  RIGHT        = 3,
+	SELF         = 4
 };
 typedef enum battle_direction BATTLE_DIRECTION;
 typedef vector<TokenEntity *> LocalInstantiations;
@@ -61,9 +62,9 @@ public:
 															BATTLE_DIRECTION battleDirection, int range = 1);
   bool haveEnemies(BattleInstance * battleInstance,
 															BATTLE_DIRECTION battleDirection, int range = 1);
-bool BattleField::haveEnemiesRelative(BattleInstance * battleInstance,
+bool haveEnemiesRelative(BattleInstance * battleInstance,
 			int deltaRank, int deltaFile);
-bool BattleField::isBattlefieldRelative(BattleInstance * battleInstance,
+bool isBattlefieldRelative(BattleInstance * battleInstance,
 			int deltaRank, int deltaFile);
   void addEnemies(BattleInstance * battleInstance,
 									BattleTargets & potentialTargets,
@@ -73,6 +74,17 @@ bool BattleField::isBattlefieldRelative(BattleInstance * battleInstance,
 									BattleTargets & potentialTargets,
 									int rank, int file);
   void addAllEnemiesAtRange(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									int range);
+
+  void addFriends(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									BATTLE_DIRECTION battleDirection);
+
+  void addFriends(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									int rank, int file);
+  void addAllFriendsAtRange(BattleInstance * battleInstance,
 									BattleTargets & potentialTargets,
 									int range);
 

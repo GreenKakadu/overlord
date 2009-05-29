@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "LeadingOrder.h"
 #include "StringData.h"
@@ -49,6 +49,26 @@ ORDER_STATUS LeadingOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
   UnitEntity * follower =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+  if(follower ==0)
+    {
+      NewEntityPlaceholder * placeholder 
+          = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);	
+      if (placeholder)  // Is it new entity?
+      {
+              Entity * realEntity = placeholder->getRealEntity();
+              if(realEntity == 0)
+              {
+                      return FAILURE;
+              }
+              follower =  DOWNCAST_ENTITY<UnitEntity>(realEntity);
+              if(follower ==0)
+              {
+                      return FAILURE;		
+              }
+      }
+      else
+        return FAILURE;		
+    }
   if(follower->isFollowingInStackTo(unit))
   	return SUCCESS;
   else

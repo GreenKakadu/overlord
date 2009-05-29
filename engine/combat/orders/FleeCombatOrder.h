@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 09 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef FLEE_COMBAT_ORDER_H
 #define FLEE_COMBAT_ORDER_H

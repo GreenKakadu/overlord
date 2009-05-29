@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Apr 20 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RANGED_COMBAT_ORDER_H
 #define RANGED_COMBAT_ORDER_H

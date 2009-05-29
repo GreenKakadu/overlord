@@ -5,7 +5,7 @@ Used for report creation.
                              -------------------
     begin                : Wed Dec 11 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef REPORT_ELEMENT_H
 #define REPORT_ELEMENT_H

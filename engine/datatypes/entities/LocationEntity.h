@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Dec 8 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef LOCATION_ENTITY_H
@@ -54,11 +54,20 @@ class LocationEntity : public Entity  {
 
   /** Adds Unit to location */
   void addUnit(UnitEntity * unit);
+  void addUnitImmediatelly(UnitEntity * unit);
+  void addConstruction(ConstructionEntity * construction);
+  void addConstructionImmediatelly(ConstructionEntity * construction);
+  void addAllAddedConstructions();
+  void addAllAddedUnits();
+	LocationEntity * findAdjacientLocation( int x, int y);
   /** Removes Unit from location */
   void removeUnit(UnitEntity * unit);
-  void addConstruction(ConstructionEntity * construction);
+  void eraseRemovedUnit(UnitEntity * unit);
   void removeConstruction(ConstructionEntity * construction);
-  /** prints  report for Entity (stats, posessions, private events) */
+  void eraseRemovedConstruction(ConstructionEntity * construction);
+  void eraseAllRemovedConstructions();
+  void eraseAllRemovedUnits();
+ /** prints  report for Entity (stats, posessions, private events) */
   void produceFactionReport(FactionEntity * faction, ReportPrinter & out);
   /** returns skill learning bonus that location gives */
   int getBonus(SkillRule * skill);
@@ -66,6 +75,8 @@ class LocationEntity : public Entity  {
   void setResource(ItemRule * item, int num);
   int  getResource(ItemRule * item);
   bool mayInterract(UnitEntity * unit);
+  void addResource(ItemRule * item, int num);
+  vector <ResourceElement *> & getResources(){return resources_;}
   /** Some resources may be unavailable */
   RationalNumber  getAvailableResource(ItemRule * item);
   void addDailyConflictRequest(BasicCompetitiveRequest * request);
@@ -74,6 +85,9 @@ class LocationEntity : public Entity  {
   void processDailyConflict();
   void processMonthlyConflict();
   void processMarket();
+   int getLocalBuyPrice(ItemRule * item);
+   int getLocalSellPrice(ItemRule * item);
+   int getLocalRecruitPrice(RaceRule * race);
   void updateTotalMarketValue(const int value);
   void setMarketPrince(UnitEntity * prince);
   UnitEntity * getMarketPrince();
@@ -94,6 +108,8 @@ class LocationEntity : public Entity  {
   inline int getOptima()     const {return optima_;}
          BasicExit *  findExit(LocationEntity * dest);
          BasicExit *  findExit(DirectionVariety * dir);
+	inline int getX() const {return x_;}
+	inline int getY() const {return y_;}
          void harvestResource(ItemRule * item, RationalNumber& num);
   RationalNumber  takeAvailableResource(ItemRule * item, RationalNumber amount);
   //         BasicExit *  findExit(TerrainRule * dest);
@@ -120,6 +136,10 @@ class LocationEntity : public Entity  {
   int hasLocalItem(ItemRule * item);
   OwnershipPolicy & getOwnershipPolicy(){return ownershipPolicy_;}
    BasicCombatManager * getCombatManager() const {return combatManager_;}
+// Teaching
+//    void addLocationTeachingOffer(TeachingOffer *offer);
+//    TeachingOffer * findLocationTeachingOffer(SkillRule  * skill, int level);
+    void cleanLocationTeachingOfers();
 // Weather and seasons ========================================================
 	 WeatherRule * getWeather() const;
 	 void setWeather(WeatherRule * weather);
@@ -133,9 +153,15 @@ class LocationEntity : public Entity  {
           void removeTitle(TitleElement * title);
           void deleteTitle(TitleRule * titleType);
           TitleElement * findTitle(TitleRule * titleType);
+          void turnNpcGuards();
     protected:
     vector <UnitEntity *> units_;
+    vector <UnitEntity *> unitsToRemove_;
+    vector <UnitEntity *> unitsToAdd_;
     vector <ConstructionEntity *> constructions_;
+    vector <ConstructionEntity *> constructionsToRemove_;
+    vector <ConstructionEntity *> constructionsToAdd_;
+//    vector <TeachingOffer *> teachingOffers_;
     BasicCombatManager * combatManager_;
     TitlesAttribute      titles_;
     OwnershipPolicy ownershipPolicy_;
@@ -147,6 +173,7 @@ class LocationEntity : public Entity  {
 		SeasonRule * season_;
 		LocationEntity * titleCenter_;
 		bool isPillaged_;
+		bool isInitialized_;
     int optima_;
     int population_;
     RaceRule * race_;

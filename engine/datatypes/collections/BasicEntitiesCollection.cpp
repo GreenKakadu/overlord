@@ -4,7 +4,7 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <time.h>
 #include <algorithm>
@@ -27,6 +27,9 @@ BasicEntitiesCollection::BasicEntitiesCollection (DataStorageHandler * handler,
   prefix_ = 0;
   status = OK;
 }
+
+
+
 BasicEntitiesCollection::~BasicEntitiesCollection()
 {
   // delete handler_; // <- check
@@ -36,7 +39,7 @@ BasicEntitiesCollection::~BasicEntitiesCollection()
 
 GameData* BasicEntitiesCollection::findByTag (const string &tag, bool errorReportEnabled)
 {
-  long int index = getIndex(tag);
+  long int index = getIndex(tag,errorReportEnabled);
   if (status == OK)
          return data_[index];
 
@@ -44,6 +47,9 @@ GameData* BasicEntitiesCollection::findByTag (const string &tag, bool errorRepor
    cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
  return 0 ;
 }
+
+
+
 GameData* BasicEntitiesCollection::findByIndex (const long int index, bool errorReportEnabled)
 {
 	if (index <= size())
@@ -134,7 +140,7 @@ bool BasicEntitiesCollection::checkDataType(const string &tag)
 
 
 /** Note: this method can also find Entity by it's temporary name */
-long  BasicEntitiesCollection::getIndex (const string &tag)
+long  BasicEntitiesCollection::getIndex (const string &tag, bool errorReportEnabled)
 {
  int i;
  int prefixLen=0;
@@ -146,8 +152,8 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
 	{
   		if (!isalpha (tag[0]) )
     		{
-
-     			cerr << "Tag [" << tag << "] is invalid (non-alphabetical prefix)" <<endl;
+			if(errorReportEnabled)
+     			cerr << "Tag [" << tag << "] is invalid (non-alphabetical prefix) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
 				status = IO_ERROR;
 				return 0;
     		}
@@ -180,6 +186,7 @@ long  BasicEntitiesCollection::getIndex (const string &tag)
 
  if ( i == 0 ) // No digits were found.
     {
+			if(errorReportEnabled)
      cerr << "Tag " << tag << " is invalid (no  digits)" <<endl;
  				status = IO_ERROR;
 				return 0;
@@ -227,6 +234,12 @@ void BasicEntitiesCollection:: remove  (const string &tag)
 void BasicEntitiesCollection:: setEntityTagPrefix (char prefix)
 {
 	prefix_ = prefix;
+}
+
+
+char  BasicEntitiesCollection:: getEntityTagPrefix ()
+{
+	return prefix_;
 }
 
 

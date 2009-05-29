@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 16 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MeleeCombatOrder.h"
 #include "TokenEntity.h"
@@ -15,7 +15,6 @@
 #include "CombatReport.h"
 #include "MeleeCombatAction.h"
 
-ReportPattern * unitSlainReporter= new ReportPattern("unitSlainReporter");
 MeleeCombatOrder * instantiateMeleeCombatOrder = new MeleeCombatOrder();
 
 MeleeCombatOrder::MeleeCombatOrder(){
@@ -29,6 +28,7 @@ MeleeCombatOrder::MeleeCombatOrder(){
   orderType_   = COMBAT_ACTION_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS MeleeCombatOrder::loadParameters(Parser * parser,
@@ -75,9 +75,6 @@ ORDER_STATUS MeleeCombatOrder::process (Entity * entity, ParameterList  &)
  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   BattleInstance * battleInstance = unit->getBattleInstantiation();
-	int initiative = battleInstance->getBattleField()->getCombatEngine()->
-										getCurrentInitiativeSegment();
-	combatReportFile<<" Initiative: "<<initiative<<endl;
 	CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
 										->getCombatReport();
 
@@ -89,27 +86,27 @@ ORDER_STATUS MeleeCombatOrder::process (Entity * entity, ParameterList  &)
 		return FAILURE;
 	}
 
-
-  vector <MeleeAttackElement> attacks =
-	sampleMeleeAction.makeAttack(battleInstance, potentialTargets, report);
-
-	battleInstance->addMeleeExperience(1);
-
-	bool killedAll = false;
-	for (unsigned int i= 0; i< attacks.size(); ++i)
-			{
-				if(attacks[i].target->getFiguresNumber() == 0)
-					killedAll = true;
-				else
-					killedAll = false;
-
-				new CombatAttackMessage(initiative, battleInstance,
-						attacks[i].hits, attacks[i].target, attacks[i].damage,
-						attacks[i].killed, killedAll)>>*report;
- 				if(killedAll)
-					new UnaryMessage(unitSlainReporter,
-						attacks[i].target->getOrigin()) >>*report ;
-			}
+   sampleMeleeAction.performAction(battleInstance, potentialTargets, report);
+//   vector <MeleeAttackElement> attacks =
+// 	sampleMeleeAction.makeAttack(battleInstance, potentialTargets, report);
+//
+// 	battleInstance->addMeleeExperience(1);
+// 
+// 	bool killedAll = false;
+// 	for (unsigned int i= 0; i< attacks.size(); ++i)
+// 			{
+// 				if(attacks[i].target->getFiguresNumber() == 0)
+// 					killedAll = true;
+// 				else
+// 					killedAll = false;
+// 
+// 				new CombatAttackMessage(initiative, battleInstance,
+// 						attacks[i].hits, attacks[i].target, attacks[i].damage,
+// 						attacks[i].killed, killedAll)>>*report;
+//  				if(killedAll)
+// 					new UnaryMessage(unitSlainReporter,
+// 						attacks[i].target->getOrigin()) >>*report ;
+// 			}
 
 //			instance->setActedOnRound(true);
 			return SUCCESS;

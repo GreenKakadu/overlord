@@ -4,7 +4,7 @@
                              -------------------
     begin                : Mon May 24 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicCombatManager.h"
 #include "TokenEntity.h"
@@ -20,6 +20,7 @@ extern ReportPattern *	AttackReporter;
 
 BasicCombatManager::BasicCombatManager()
 {
+ //cout << "===> BasicCombatManager created." <<endl;
   combatEngine_ = new BasicCombatEngine;
 }
 
@@ -32,6 +33,7 @@ BasicCombatManager::BasicCombatManager()
 void BasicCombatManager::attackAttempt(TokenEntity * attacker, TokenEntity * defender, OrderLine * orderId,
                     void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT  result))
 {
+//cout << "===> BasicCombatManager::attackAttempt invoked." <<endl;
   vector<TokenEntity *> attackers;
   vector<TokenEntity *> defenders;
   // Report to units, factions, location
@@ -61,6 +63,7 @@ void BasicCombatManager::attackAttempt(TokenEntity * attacker, TokenEntity * def
 void BasicCombatManager::attackAttempt(FactionEntity * attacker, TokenEntity * defender, OrderLine * orderId,
                     void (*funPtr)(TokenEntity * attacker, TokenEntity * defender,const BATTLE_RESULT  result))
 {
+cout << "===> BasicCombatManager::attackAttempt 2 invoked." <<endl;
   LocationEntity * location = defender->getLocation();
     for (UnitIterator unitIter  = location->unitsPresent().begin(); unitIter != location->unitsPresent().end(); unitIter++)
     {

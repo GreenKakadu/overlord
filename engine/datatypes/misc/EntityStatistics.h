@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 5 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef ENTITY_STATISTICS_H
@@ -26,6 +26,7 @@ public:
   inline int getMelee() const {return melee_;}
   inline int getDefence() const {return defence_;}
   inline int getDamage() const {return damage_;}
+  inline int getRangedDamage() const {return rangedDamage_;}
   inline DAMAGE_TYPE getDamageType() const {return damageType_;}
   inline int getHits() const {return numOfHits_;}
   inline int getMissile() const {return missile_;}
@@ -40,6 +41,7 @@ public:
   inline void modifyMelee(int melee) {melee_ += melee;}
   inline void modifyDefence(int defence) {defence_ += defence;}
   inline void modifyDamage(int damage) {damage_ += damage;}
+  inline void modifyRangedDamage(int damage) {rangedDamage_ += damage;}
          void modifyDamageType(DAMAGE_TYPE damageType);
   inline void modifyHits(int numOfHits) {numOfHits_ += numOfHits;}
   inline void modifyMissile(int missile) {missile_ += missile;}
@@ -55,13 +57,14 @@ public:
         void setStats(EntityStatistics * stats);
         void replaceStats(EntityStatistics * stats);
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
-        void clearStats();
+        void clearStats(int value =0);
         bool empty();
 protected:
 	int initiative_;
 	int melee_;
 	int defence_;
 	int damage_;
+	int rangedDamage_;
 	DAMAGE_TYPE damageType_;
 	int numOfHits_;
 	int missile_;

@@ -9,22 +9,55 @@ Last updated 16.07.2005
 -Location developement
 
 
+---- Alpha TO-DO
+
+Defence against damage type
+markmanship requires lbow
+target the leader
+
+- dead bodies generation and decay
+- apply enchants to locations (now only to tokens) + add target type definition
+
+- Battle summon
+- Target selection
+- Implement firesteeds
+- Implement drain life as example
+- Can learn Skills listed are wrong (?)
+- Checker.
+
+---
+---- Alpha Announce:
+- no taxes and ente: - automatic taxing  based on titles.
+- building is different
+- ships are not items but buildings able to move
+- market is different
+- announce existing buildingd 
+
 Special Rules:
-	Magic Skills
-	Combat/Shaman skills?
-	Overlord Title
-	Merchant Prince Title
-	Market days?
     ==============================================================================
    Post-Alpha features:
 
  -Special combat and non-combat skills implementation
 - Alias names for units
-- Checker.
+	Magic Skills
+	Combat/Shaman skills?
+	Overlord Title
+	Merchant Prince Title
+	Market days?
 =================================================================================
 Things to do:
 
-- add item types: (living, mineral etc) - variety?
+Introduce flags attribute.
+	It alows to configure any entity as "is_living", "is_flying", "is_undead" etc.
+	Then any effects may check flags as (If_flag_X_set?)
+	possible combinations are: X and Y and Z....
+	                           X or Y or Z....
+ operations on flags attribute:
+ 				NOT X
+				X AND Y
+				X OR Y
+	Define special flags Condition (or add it to all conditions) that allows "soft" configuration		(i.e. via data files)	
+
 - title cancellation
 - eating raw products like grain or cattle for upkeep is not implemented
 - unit that borrows money or food for upkeep to other units doesn't keeps 
@@ -32,6 +65,7 @@ Things to do:
 - Rewrite guard-tax-pilage RULES
 - write in rules that working is private and allowed for any unit
 
+- Can learn Skills listed are wrong
 
 - Deal with situation when leader of stack marching into location was slain. - (select new    leader and reform stack? - stack should continue movement)
 - Non-stealth follower of stealth unit/ unaceptable passenger of acceptable ship
@@ -40,7 +74,7 @@ Things to do:
 	- effect added/removed to unit or location
 
 Combat ToDo:
-	- multyday loot
+	- multyday loot (allow unit to spend several days looting battlefield)
 	- equip capacity
 	- for loot mode selection: location may be only entered with some mode
 	- figure-based loot
@@ -72,7 +106,6 @@ Solutions  to change/improve:
 
 - hierachy of reporting: routines that will be used for reporting both in Units and           Constructions
 
-- Use of elements in reports should be avoided because they may report not their current      state  but the state at the time of report printing.
 
 - Introduce attributes as seen by local units
 
@@ -92,6 +125,7 @@ Things to check:
 - what happens if player provides valid but unknown tag?
 - some warnings should be used only while checking orders. 
 
+- Use of elements in reports should be avoided because they may report not their current      state  but the state at the time of report printing.
 ==========================================================================================
 Future todo:
 - Conditional order reporting ('!'  '?')
@@ -324,7 +358,6 @@ modify CombatActionStrategy. getPotentialTargets should take into account target
 modify target types - friendly/opposing leader,  friendly/opposing side
 instead of addEnemies use addTarget
 
-apply temporary modification from modifyingStats for spells like strength of the boar
 
 instead of call of MeleeCombatAction::attack may call special attack function with attack parameters derived from CombatActionStrategy data.
 
@@ -332,7 +365,5 @@ Check use of items that not all have equipped
 
 Build example with firewands and firesteeds
 
-mana!
-	check mana requirements for spells
-	mana regeneration
-	mana consumption
+
+---------------------------------

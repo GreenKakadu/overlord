@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Jun 26 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -22,6 +22,7 @@
 #include "MarketRequest.h"
 #include "IntegerData.h"
 extern ReportPattern * cantTradeReporter;
+//extern const int VERY_BIG_NUMBER;
 
 //SellOrder instantiateSellOrder;
 SellOrder * instantiateSellOrder = new SellOrder();
@@ -56,7 +57,7 @@ STATUS SellOrder::loadParameters(Parser * parser,
             return IO_ERROR;
 
     if (!parseIntegerParameter(parser, parameters))
-      parameters.push_back( new IntegerData (9999)); // means very big number
+      parameters.push_back( new IntegerData (VERY_BIG_NUMBER)); // means very big number
 
     if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
             return IO_ERROR;
@@ -85,10 +86,22 @@ ORDER_STATUS SellOrder::process (Entity * entity, ParameterList &parameters)
      {
  		  return FAILURE;
       }
+  if(amount == 0)
+	{
+	amount = unit->hasItem(item);
+	}
+  if(amount == 0)// nothing to sell
+	{
+		  return FAILURE;	
+	}
 
   IntegerData * par2  = dynamic_cast<IntegerData *>(parameters[2]);
   assert(par2);
   int price = par2->getValue();
+  if(price == 0)
+	{
+		price = unit->getLocation()->getLocalSellPrice(item);		
+	}
   if(!unit->getRace()->mayTrade())
   {
     unit->addReport(new UnaryMessage(cantTradeReporter,unit->getRace()));

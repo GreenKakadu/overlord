@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 16 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ParryCombatOrder.h"
 #include "TokenEntity.h"
@@ -27,6 +27,7 @@ ParryCombatOrder::ParryCombatOrder(){
   orderType_   = COMBAT_ACTION_ORDER;
   initiative_ = +2;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS ParryCombatOrder::loadParameters(Parser * parser,

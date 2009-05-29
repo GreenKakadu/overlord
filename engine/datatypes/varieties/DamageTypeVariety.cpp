@@ -4,7 +4,7 @@
                         Defines types of damage
     begin                : Sun Nov 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "DamageTypeVariety.h"
 #include "DataStorageHandler.h"

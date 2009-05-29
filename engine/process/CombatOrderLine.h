@@ -4,7 +4,7 @@
                              -------------------
     begin                : Fri Oct  29 10:00:00 IST 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef COMBAT_ORDER_LINE_H
@@ -31,7 +31,7 @@ class CombatOrderLine : public OrderLine
   ORDER_STATUS process( ProcessingMode * processingMode, TokenEntity * entity,
 	 int currentRound);
 	void save( ostream & out );
-  int reCalculateInitiative(TokenEntity * entity, int sideBonus);
+  int reCalculateInitiative(int initiative, int sideBonus);
 	ORDER_TYPE	getOrderType() const {return orderPrototype_->getOrderType();}
 	inline void setPermanent(bool value){isPermanent_ = value;}
 	bool isSequentive();

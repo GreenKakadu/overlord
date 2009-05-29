@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen Aug  7 13:28:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ORDER_PROTOTYPE_H
 #define ORDER_PROTOTYPE_H
@@ -40,17 +40,16 @@ class OrderPrototype
         virtual ~OrderPrototype(){}
 
            virtual STATUS loadParameters(Parser * parser,
-					 					ParameterList &parameters, Entity * entity );
+		ParameterList &parameters, Entity * entity );
                    STATUS save( ostream &out);
-	   virtual ORDER_STATUS process (Entity * entity,
-		 								ParameterList &parameters);
+	   virtual ORDER_STATUS process (Entity * entity, ParameterList &parameters);
 		ORDER_TYPE getOrderType() const {return orderType_;}
 // some orders can't be processed immediatelly. Instead of that they are submiting
 // requests that are resolved later. completeOrderProcessing  is a second part of
 // order processing for such request-submitting orders. It is called from
 // conflict resolution, when it is over.
      virtual ORDER_STATUS completeOrderProcessing (Entity * entity,
-		 									ParameterList &parameters, int result);
+		 		ParameterList &parameters, int result);
 	inline string getKeyword() const {return keyword_;}
     bool isFullDayOrder();
     bool mayInterrupt();
@@ -69,19 +68,18 @@ class OrderPrototype
     bool parseGameDataParameter(Entity *entity, const string & tag,
 					 BasicCollection & collection, const string & parameterTypeName,
 					 ParameterList &parameters);
-    bool parseIntegerParameter(Parser * parser,
-															ParameterList &parameters);
-    bool parseStringParameter(Entity *entity, Parser * parser,
-									ParameterList &parameters);
+    bool parseIntegerParameter(Parser * parser, ParameterList &parameters);
+    bool parseStringParameter(Entity *entity, Parser * parser, ParameterList &parameters);
     bool parseOptionalStringParameter(Entity *entity, Parser * parser,
 						ParameterList &parameters, const char * stringParameter);
     bool parseOptionalGameDataParameter(Entity *entity, Parser * parser,
           BasicCollection & collection, ParameterList &parameters);
     bool checkParameterTag(Entity *entity,const string & tag,
-              BasicCollection & collection,
-							ParameterList &parameters);
-    int getIntegerParameter(ParameterList &parameters,
-														unsigned int parIndex);
+              		BasicCollection & collection,
+			ParameterList &parameters);
+    bool checkRuleParameterTag(Entity *entity, const string & tag,
+                                               BasicCollection & collection, ParameterList &parameters);
+    int getIntegerParameter(ParameterList &parameters, unsigned int parIndex);
       string   keyword_;
       string   description;
       ORDER_TYPE orderType_;
@@ -89,9 +87,9 @@ class OrderPrototype
       bool fullDayOrder_;
 
     protected:
-      bool registerOrder_();
-			int initiative_; //
-	    bool isSequentive_;//
+       bool registerOrder_();
+	int initiative_; //
+	bool isSequentive_;//
     private:
 };
 enum report_type {

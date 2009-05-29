@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Jul 2 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -83,8 +83,8 @@ AbstractData * RecruitRequest::getType() const
 void RecruitRequest::answerMarketRequest(int price, int amount)
 {
 
-  if (unit_->isTraced())
-      cout<<"== TRACING "  << unit_->print()<< " recruits " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";
+/*  if (unit_->isTraced())
+      cout<<"== TRACING "  << unit_->print()<< " recruits " << amount << " of " <<  race_->getName() << " for " << price << " coins.\n";*/
    targetUnit_ ->addNewFigures(amount);
     int taken = unit_->takeFromInventory(cash, price * amount); //pay
     assert(taken == price * amount);

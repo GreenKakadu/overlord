@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Apr 7 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MoveOrder.h"
 #include "StringData.h"
@@ -30,6 +30,7 @@ extern ReportPattern * cantMoveReporter;
 extern ReportPattern * overloadReporter;
 extern ReportPattern * noMovementAbilityReporter;
 extern ReportPattern *	invaliDirectionReporter;
+//extern const int VERY_BIG_NUMBER;
 
 //MoveOrder instantiateMoveOrder;
 MoveOrder * instantiateMoveOrder = new MoveOrder();
@@ -58,7 +59,7 @@ MoveOrder::MoveOrder(){
 STATUS MoveOrder::loadParameters(Parser * parser,
                             ParameterList &parameters, Entity * entity )
 {
-   if(!entityIsTokenEntity(entity))
+	 if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
    const string tag = parser->getWord();
@@ -150,14 +151,14 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter,
       tokenEntity->addReport(new BinaryMessage(cantMoveReporter,tokenEntity,tokenEntity->getType()) );
  		  return INVALID;
    }
-	if (tokenEntity->isTraced())
-    cout <<"== TRACING " <<tokenEntity->print()<< " ==> Attempts to move\n";
+// 	if (tokenEntity->isTraced())
+//     cout <<"== TRACING " <<tokenEntity->print()<< " ==> Attempts to move\n";
 
- tokenEntity->leaveStaying();
+  tokenEntity->leaveStaying();
 
  int weight=0;
  int time = 0;
- int totalTravelTime = 999;
+ int totalTravelTime = VERY_BIG_NUMBER;
  MovementVariety * movingMode = 0;
  MovementMode<int> capacity;
  tokenEntity->calculateTotalWeight(weight);
@@ -172,7 +173,10 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter,
    tokenEntity->calculateTotalCapacity(capacity[i], i);
 	 time = tokenEntity->calculateTravelTime(exit->getTravelTime(currentMode),
 	  currentMode);
-// cout <<"++++++++ MOVING: "<< tokenEntity->print() <<" "<< currentMode->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+// 	if(tokenEntity->isTraced())
+// 	{
+// 		cout <<"== TRACING ++++> MOVING: "<< tokenEntity->print() <<" "<< currentMode->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+// 	}
    if(time == 0)
     	continue;
    if(capacity[i] > bestCapacity)

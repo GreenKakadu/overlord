@@ -3,12 +3,14 @@
                              -------------------
     begin                : Mon Nov 12 13:34:00 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "TerrainRule.h"
 #include "SkillRule.h"
+#include "GameConfig.h"
 
 TerrainRule   sampleTerrain   ("TERRAIN",  &sampleGameData);
+//BasicRulesCollection  terrains(new DataStorageHandler(gameConfig.getTerrainsFile()));
 BasicRulesCollection  terrains(new DataStorageHandler("terrains.rules"));
 extern RulesCollection <SkillRule>      skills;
 
@@ -24,6 +26,9 @@ TerrainRule::TerrainRule ( const TerrainRule * prototype ) : Rule(prototype)
   optimalPopulation_ =0;
   landWalk_ =0;
   buildEnabled_ = true;
+  	colorR_ = 255;
+	colorG_= 255;
+	colorB_ = 255;
   }
 
 
@@ -48,9 +53,31 @@ TerrainRule::initialize        ( Parser *parser )
       landWalk_ = skills[parser->getWord()];
       return OK;
     }
+  if (parser->matchKeyword("RESOURCE"))
+	{
+        ResourceElement * newResource = ResourceElement::readElement(parser);
+        if(newResource)
+          potentialResources.push_back(newResource);
+	  return OK;
+	}
   if (parser->matchKeyword ("NOBUILD") )
     {
       buildEnabled_ = false;
+      return OK;
+    }
+  if (parser->matchKeyword ("COLOR_R") )
+    {
+	  colorR_ =  parser->getInteger();
+      return OK;
+    }
+  if (parser->matchKeyword ("COLOR_G") )
+    {
+	  colorG_ =  parser->getInteger();
+      return OK;
+    }
+  if (parser->matchKeyword ("COLOR_B") )
+    {
+	  colorB_ =  parser->getInteger();
       return OK;
     }
   if (parser->matchKeyword ("DAYS") )

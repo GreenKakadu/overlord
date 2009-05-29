@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ACTION_USING_H
 #define ACTION_USING_H
@@ -25,10 +25,11 @@ public:
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
       USING_RESULT unitUse(UnitEntity * tokenEntity, SkillRule *, int &useCounter);
-      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill,OrderLine * order);
       void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       void extractKnowledge (Entity * recipient, int parameter = 0);
       void printSkillDescription(ostream & out);
+			BasicUsingStrategy * cloneSelf();
 private:
       ActionRule * productType_;
 };

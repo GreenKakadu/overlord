@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Apr 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicConflict.h"
 #include "BasicCompetitiveRequest.h"
@@ -95,7 +95,7 @@ void BasicConflict::process()
       resolve(currentList);
     }
   else
-    cout << location_->print()<<" Request list is empty\n";  
+    cerr << location_->print()<<" Request list is empty\n";  
 // Here all request object deleted and  currentList cleaned
   for(iter = currentList.begin() ; iter != currentList.end();++iter)
   {

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatActionStrategy.h"
 #include "CombatTargetVariety.h"
@@ -23,11 +23,26 @@ GameData * CombatActionStrategy::createInstanceOfSelf()
 
 
 
+
 CombatActionStrategy::CombatActionStrategy ( const string & keyword, GameData * parent): Strategy(keyword, parent)
 {
 	range_ = 0;
 	action_ = 0;
 	target_ = 0;
+        nonCumulativeStats.clearStats(VERY_BIG_NUMBER);
+        expGainingSkill_ =0;
+}
+
+
+
+CombatActionStrategy::CombatActionStrategy ( const CombatActionStrategy * prototype ): Strategy(prototype)
+{
+  range_ = 0;
+  action_ = 0;
+  target_ = 0;
+  tag_ = "CombatActionStrategy";
+  nonCumulativeStats.clearStats(VERY_BIG_NUMBER);
+  expGainingSkill_ =0;
 }
 
 
@@ -51,6 +66,13 @@ CombatActionStrategy::initialize        ( Parser *parser )
 			return OK;
     }
 
+	if (parser->matchKeyword ("CONSUME") )
+    {
+			if(parser->matchElement())
+			  resources_.push_back(new ItemElement(parser));
+      return OK;
+    }
+
 	if (parser->matchKeyword ("BONUS") )
     {
      modifyingStats.initialize(parser);
@@ -60,22 +82,90 @@ CombatActionStrategy::initialize        ( Parser *parser )
      nonCumulativeStats.initialize(parser);
 		}
      return OK;
+
+
+
 }
 
 
 
+// Default action is to do nothing.
+void		CombatActionStrategy::performAction(BattleInstance * , BattleTargets & , CombatReport * )
+{
+}
+
+
 // get all potential targets
 BattleTargets CombatActionStrategy::getPotentialTargets(
-									BattleInstance * battleInstance, CombatReport * report)
+		BattleInstance * battleInstance, CombatReport * report)
 {
   BattleTargets potentialTargets;
 	BattleField * battleField = battleInstance->getBattleField();
 //	CombatReport * report = battleField->getCombatEngine()->getCombatReport();
 
-	battleField->addEnemies(battleInstance, potentialTargets, FORWARD);
-	battleField->addEnemies(battleInstance, potentialTargets, LEFT);
-	battleField->addEnemies(battleInstance, potentialTargets, RIGHT);
-	battleField->addEnemies(battleInstance, potentialTargets, BACKWARD);
+		if(target_ == battleTargetSelf)
+		{
+      potentialTargets.push_back(BattleTargetElement(battleInstance,SELF,0));
+		}
+
+		else if (target_ == battleTargetAll)// Dummy. Target should not be empty
+		{
+      potentialTargets.push_back(BattleTargetElement(battleInstance,SELF,0));
+		}
+
+		else if (target_ == battleTargetOwnSide)// Dummy. Target should not be empty
+		{
+      potentialTargets.push_back(BattleTargetElement(battleInstance,SELF,0));
+		}
+
+		else if (target_ == battleTargetOppositeSide)// Dummy. Target should not be empty
+		{
+      potentialTargets.push_back(BattleTargetElement(battleInstance,SELF,0));;
+		}
+
+		else if (target_ == battleTargetOpposing)
+		{
+			battleField->addAllEnemiesAtRange(battleInstance, potentialTargets, range_);
+      processStealthTargets(potentialTargets,battleInstance);
+		}
+
+		else if (target_ == battleTargetFriend)
+		{
+			battleField->addAllFriendsAtRange(battleInstance, potentialTargets, range_);
+		}
+
+		else if (target_ == battleTargetFriendlyLeader)
+		{
+			battleField->addAllFriendsAtRange(battleInstance, potentialTargets, range_);
+			// Now erase all non-leaders
+			for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
+					iter != potentialTargets.end(); )
+				{
+					if(! (*iter).instance_->isLeader())
+		 				{
+							potentialTargets.erase(iter);
+							continue;
+		 				}
+					++iter;
+				}
+		}
+
+		else if (target_ == battleTargetOpposingLeader)
+		{
+			battleField->addAllEnemiesAtRange(battleInstance, potentialTargets, range_);
+      processStealthTargets(potentialTargets,battleInstance);
+			// Now erase all non-leaders
+			for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
+					iter != potentialTargets.end(); )
+				{
+					if(! (*iter).instance_->isLeader())
+		 				{
+							potentialTargets.erase(iter);
+							continue;
+		 				}
+					++iter;
+				}
+		}
 
 	if(potentialTargets.empty()) // No targets. Report
 	{
@@ -83,6 +173,25 @@ BattleTargets CombatActionStrategy::getPotentialTargets(
 		return potentialTargets;
 	}
 
+
+
+  std::sort(potentialTargets.begin(),potentialTargets.end(),
+		&attackPreference);
+
+   combatReportFile << "-------- Targets after sorting: (";
+	for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
+	iter != potentialTargets.end(); ++iter)
+	{
+   combatReportFile <<(*iter).instance_->print()<< " ";
+	}
+	combatReportFile<< ")"<<endl;
+
+	return potentialTargets;
+}
+
+void CombatActionStrategy::processStealthTargets(BattleTargets & potentialTargets,
+		 BattleInstance * battleInstance)
+{
 	int stealthBonus;
 
 
@@ -90,7 +199,7 @@ BattleTargets CombatActionStrategy::getPotentialTargets(
 	iter != potentialTargets.end(); )
 	{
 	 stealthBonus = (*iter).instance_->getStealth() -
-	 													 battleInstance->getObservation();
+	 	battleInstance->getObservation();
 	 if(stealthBonus > 0)
 	 {
 	 	 if(stealthBonus > Roll_1Dx(10))
@@ -101,93 +210,76 @@ BattleTargets CombatActionStrategy::getPotentialTargets(
 		}
 		++iter;
 	}
-	if(potentialTargets.empty()) // No targets.
-	{
-		new UnaryMessage(noTargetsReporter,battleInstance->getOrigin()) >>*report ;
-		return potentialTargets;
-	}
-
-  std::sort(potentialTargets.begin(),potentialTargets.end(),
-		&attackPreference);
-
-   combatReportFile << "After sorting: "<<endl;
-	for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
-	iter != potentialTargets.end(); ++iter)
-	{
-   combatReportFile <<(*iter).instance_->print()<< " ";
-	}
-	combatReportFile<<endl;
-
-	return potentialTargets;
 }
-
-
 
 //--  Performs attacks against all potential targets untill all of them are dead
 //--   or maximum hits
 MeleeReport CombatActionStrategy::makeAttack(BattleInstance * battleInstance,
 		BattleTargets & potentialTargets, CombatReport * report)
 {
-	BattleInstance * target;
-	int targetSize;
+  BattleInstance * target;
+  int targetSize;
+  MeleeReport attacksList;
   MeleeReport attacks;
 
 // apply changes to stats if any (recalculate stats)
 
   battleInstance->recalculateStats();
 
-	for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
-	iter != potentialTargets.end(); ++iter)
-	{
-	 attacks.push_back(MeleeAttackElement((*iter).instance_,0,0,0));
-	}
+  for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
+  iter != potentialTargets.end(); ++iter)
+  {
+    attacksList.push_back(MeleeAttackElement((*iter).instance_,0,0,0));// for finding target index only
+    attacks.push_back(MeleeAttackElement());// Only targets that were subject of attacks should be listed
+  }
 
-	int totalHits =battleInstance->getFiguresNumber();
+  int totalHits =battleInstance->getFiguresNumber();
 
 
-	while (totalHits)
-	{
-	  if(potentialTargets.empty())
-			break;
-		for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
-		iter != potentialTargets.end(); )
-		{
-			target = (*iter).instance_;
-	  	targetSize = target->getFiguresNumber();
-			unsigned int i; // index of attackMessage related to current target
-			for (i= 0; i< attacks.size(); ++i)
-			{
-			 if(attacks[i].target == target)
-			 	break;
-			}
+      while (totalHits)
+      {
+        if(potentialTargets.empty())
+                      break;
+        for(vector <BattleTargetElement>::iterator iter =potentialTargets.begin();
+            iter != potentialTargets.end(); )
+        {
+            target = (*iter).instance_;
+            targetSize = target->getFiguresNumber();
+            unsigned int i; // index of attackMessage related to current target
+            for (i= 0; i< attacksList.size(); ++i)
+            {
+              if(attacksList[i].target == target)
+                    break;
+            }
 
-			MeleeAttackElement attackResults(0,0,0,0);
-			if(totalHits > targetSize)
-				{
-					attackResults = attack(battleInstance, target, targetSize);
-					attacks[i] = attacks[i] + attackResults;
-					totalHits -=targetSize;
-					if(attackResults.killed >= targetSize)
-					{
-						potentialTargets.erase(iter);
-						continue;
-					}
-				}
-			else
-				{
-					attackResults = attack(battleInstance, target, totalHits);
-					attacks[i] = attacks[i] + attackResults;
-					totalHits = 0;
-					if(attackResults.killed >= targetSize)
-					{
-						potentialTargets.erase(iter);
-						continue;
-					}
-					break;
-				}
-			++iter;
-		}
-	}
+            attacks[i].target = target;
+            MeleeAttackElement attackResults(0,0,0,0);
+            if(totalHits > targetSize)
+                    {
+                        attackResults = attack(battleInstance, target, targetSize);
+                        attacks[i] = attacks[i] + attackResults;
+                        totalHits -=targetSize;
+                        if(attackResults.killed >= targetSize)
+                        {
+                                potentialTargets.erase(iter);
+                                continue;
+                        }
+                    }
+            else
+                    {
+                        attackResults = attack(battleInstance, target, totalHits);
+                        attacks[i] = attacks[i] + attackResults;
+                        totalHits = 0;
+                        if(attackResults.killed >= targetSize)
+                        {
+                                potentialTargets.erase(iter);
+                                continue;
+                        }
+                        break;
+                    }
+            ++iter;
+        }
+      }
 // Was it multihit?
 
     int hitNumbers = battleInstance->getHitNumbers();
@@ -291,10 +383,18 @@ int CombatActionStrategy::calculateHitNumber(int numStrikes, int att, int def)
 int CombatActionStrategy::getInitiative()
 {
 	int initiative = nonCumulativeStats.getInitiative();
-	if(initiative == 0)
+        if(initiative == VERY_BIG_NUMBER)
 	{
 	initiative = modifyingStats.getInitiative();
 	}
 	return initiative;
 }
 
+
+
+CombatActionStrategy * CombatActionStrategy::cloneSelf()
+{
+ CombatActionStrategy * copyOfSelf = new CombatActionStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
+}

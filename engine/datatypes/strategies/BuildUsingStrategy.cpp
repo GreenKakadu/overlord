@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BuildUsingStrategy.h"
 #include "ItemRule.h"
@@ -29,6 +29,9 @@ extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern RulesCollection <ConstructionRule>      constructions;
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
+extern ReportPattern * constructionWorksCompletedReporter;
+extern ReportPattern * notEnoughResourcesReporter;
+
 BuildUsingStrategy        sampleBuildUsing        ("USING_BUILD",        &sampleUsing);
 
 GameData * BuildUsingStrategy::createInstanceOfSelf()
@@ -93,18 +96,38 @@ BuildUsingStrategy::initialize        ( Parser *parser )
 
 
 
-
-USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int &useCounter)
+USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+			int &useCounter,OrderLine * order)
 {
   ConstructionEntity * construction =  dynamic_cast<ConstructionEntity *>(unit->getTarget());
 //  buildingsAndShips[unit->getTarget()->getTag()];
+
   assert(construction);
+  return   build(unit,skill,construction);
+}
+
+void BuildUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntity)
+{
+  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+  {
+    if (tokenEntity->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
+      tokenEntity->addReport(new BinaryMessage(notEnoughResourcesReporter, (*iter)->getItemType(), new StringData(constructionWorkProduced_->getPluralName())));
+  }
+}
+
 
 // Production modifiers:
+USING_RESULT BuildUsingStrategy::build(UnitEntity * unit, SkillRule * skill, ConstructionEntity * construction )
+{
+
 
 
   int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
-
+  int workToDo = construction->workToDo(constructionWorkProduced_);
+  if(workToDo ==0) //cannot aply this skill to this building. May be because it is already done.
+   {
+     return CANNOT_USE;
+   }
 
 
 
@@ -119,16 +142,22 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
   else // The old  production cycle is finished. Do we want to start new?
   {
     int resourcesAvailable = checkResourcesAvailability(unit);
-    int workToDo = construction->workToDo(constructionWorkProduced_);
+    int manaAvailable = checkManaAvailability(unit);
+
     if( resourcesAvailable < cycleCounter)
         cycleCounter = resourcesAvailable;
+    if( manaAvailable < cycleCounter)
+        cycleCounter = manaAvailable;
     int effectiveProduction = cycleCounter * productNumber_;
     if( effectiveProduction  >= workToDo) // building will be finished today
       {
         effectiveProduction = workToDo;
         cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
         if(cycleCounter >1)
+				{
           consumeResources(unit,cycleCounter-1);
+          consumeMana(unit,cycleCounter-1);
+				}
 
         if (construction->addBuildingWork(
                 new ConstructionWorksElement(constructionWorkProduced_,
@@ -140,18 +169,27 @@ USING_RESULT BuildUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
                               new StringData(construction->printTag())));
               // private
               unit->addReport(
-                  new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
-                              new StringData(construction->printTag())));
+                              new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
+                  new StringData(construction->printTag())));
+             }
+            else // May be this Building is not finished yet but this sort of works is already finished.
+            {
+             // private report
+              unit->addReport(
+                              new BinaryMessage(constructionWorksCompletedReporter,  new StringData(constructionWorkProduced_->getPluralName()),
+                  new StringData(construction->printTag())));
             }
         return USING_COMPLETED;
       }
     else
       {
         consumeResources(unit,cycleCounter-1);
+        consumeMana(unit,cycleCounter-1);
         if(dailyUse->getDaysUsed() > 0)
           {
             unit->addSkillUse(dailyUse);
             consumeResources(unit,1); // new cycle started
+            consumeMana(unit,cycleCounter-1);
             }
         construction->addBuildingWork(
                 new ConstructionWorksElement(constructionWorkProduced_,
@@ -190,7 +228,11 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
                 {
                   return NO_RESOURCES;
                 }
-              if( !unit->getLocation()->getTerrain()->mayBuild())
+               if(checkManaAvailability(unit) == 0)
+                {
+                  return NO_MANA;
+                }
+             if( !unit->getLocation()->getTerrain()->mayBuild())
                 {
                   return CANNOT_USE;
                 }
@@ -213,6 +255,7 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
 
                   unit->setTarget(newBuilding);
                   consumeResources(unit,1);
+                  consumeMana(unit,1);
                   unit->getLocation()->addReport(
                       new BinaryMessage(newBuidingStartedReporter, constructionType,
                                         new StringData(newBuilding->printTag())));
@@ -269,9 +312,14 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
       {
         return NO_RESOURCES;
       }
+    if(checkManaAvailability(unit) == 0)
+      {
+        return NO_MANA;
+      }
      else
      {
         consumeResources(unit,1);
+        consumeMana(unit,1);
         return  USING_OK;
      }
   }
@@ -305,3 +353,12 @@ void    BuildUsingStrategy::extractKnowledge (Entity * recipient, int parameter)
 
 }
 
+
+
+
+BasicUsingStrategy * BuildUsingStrategy::cloneSelf()
+{
+  BuildUsingStrategy* copyOfSelf = new BuildUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
+}

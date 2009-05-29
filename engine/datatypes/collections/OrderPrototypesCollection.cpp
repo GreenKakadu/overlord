@@ -4,7 +4,7 @@
                              -------------------
     begin                : Tue Nov  5 11:46:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "OrderPrototypesCollection.h"
 #include "OrderPrototype.h"
@@ -13,7 +13,7 @@ OrderPrototypesCollection *  orderPrototypesCollection;
 
 OrderPrototypesCollection::OrderPrototypesCollection()
 {
-//  cout << "OrderPrototypesCollection created \n";
+ // cout << "OrderPrototypesCollection created \n";
 }
 OrderPrototypesCollection::~OrderPrototypesCollection()
 {
@@ -48,7 +48,7 @@ OrderPrototypesCollection::find(const string & keyword)
     {
       if (!ciStringCompare((*iter)->getKeyword(), keyword))
       {
-//          cout << " ... found!\n";
+ //         cout << " ... found! ->"<<(*iter)->getKeyword()<<endl;
 	      return (*iter);
       }
     }

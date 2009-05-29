@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jul 8 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #include "InventoryElement.h"
 #include "UnitEntity.h"
 #include "BinaryMessage.h"
+#include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RaceElement.h"
 #include "RaceRule.h"
@@ -75,21 +76,38 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
       }
   if( number == 0 )
         number  = unit->getFiguresNumber();
-  UnitEntity * newUnit;
+//======================================================
+	UnitEntity * newUnit;
   NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);
-  if (placeholder)  // Is it new entity?
+
+	if (placeholder)  // Is it new entity?
   {
     Entity * realEntity = placeholder->getRealEntity();
     if(realEntity == 0)
     {
-	    if (unit->isTraced())
-        cout <<"== TRACING " << unit->print()<< " merges into new unit " << number << " of " <<  unit->getRace()->getName() << "\n";
-      newUnit   = new UnitEntity(unit);
+// 	    if (unit->isTraced())
+// 		{
+//         		cout <<"== TRACING " << unit->print()<< " merges into new unit " << number << " of " <<
+// 			  unit->getRace()->getName()<<endl;
+// 		}
+
+		TokenEntity * temp = placeholder->getNewEntity();
+		 if(temp)
+		 {
+       			newUnit = dynamic_cast<UnitEntity *>(temp);
+		 }
+ 
+ 		if(newUnit == 0) // Something wrong with placeholder
+		{
+			newUnit   = new UnitEntity(unit);
+		}
+
       if(units.addNew(newUnit) != OK)
       {
         cout << "Failed to add new unit \n";
         return INVALID;
       }
+
        unit->setFigures(unit->getFiguresNumber() - number);
        unit->recalculateStats();
        RaceRule * race = unit->getRace();
@@ -100,7 +118,9 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
        unit->getFaction()->addUnit(newUnit);
        unit->getLocation()->addUnit(newUnit);
        newUnit->setRace(race,number);
-       // skills - add all skills
+
+//========================================================
+			 // skills - add all skills
         SkillIterator iter;
         for (iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); ++iter)
 		      {
@@ -128,8 +148,8 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
     newUnit ->addReport(new BinaryMessage (newSplitReporter,
                         newUnit, new RaceElement ( race, number)));
 
-    unit->addReport(new BinaryMessage(splitterReporter, unit,
-                    new RaceElement(race, number) ));
+    unit->addReport(new TertiaryMessage(splitterReporter, unit,
+                    new RaceElement(race, number),newUnit ));
   return SUCCESS;
 
      }

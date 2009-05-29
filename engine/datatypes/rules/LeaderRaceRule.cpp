@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "LeaderRaceRule.h"
 LeaderRaceRule sampleLeaderRaceRule = LeaderRaceRule("LEADER", &sampleRace);
@@ -54,6 +54,10 @@ LEARNING_RESULT LeaderRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 // and combat skill above 3-rd level
 // Heroes may not study combat skill above 4-th level
    
+// if( (level ==2) && (skill == skills["obse"]))
+// {
+ //  cout<<":";
+// }
 
 
 
@@ -82,12 +86,22 @@ LEARNING_RESULT LeaderRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 bool LeaderRaceRule::teacherRequired(SkillRule * skill, UnitEntity * unit)
 {
   // if it is a combat skill and level >= 3
-  if(skill->isCombatSkill() && unit->getSkillLevel(skill) >= 3)
-    return true;
+  if(skill->isCombatSkill())
+  {
+      if(unit->getSkillLevel(skill) >= 3)
+        return true;
+      else
+        return false;
+  }
 
   // if it is a magic skill and level >= 1
-  if(skill->isMagicSkill() && unit->getSkillLevel(skill) >= 1)
-    return true;
+  if(skill->isMagicSkill())
+  {
+    if(unit->getSkillLevel(skill) >= 1)
+      return true;
+    else
+      return false;
+  }
 
   // if it is any other skill and level >= 2
   if( unit->getSkillLevel(skill) >= 2)

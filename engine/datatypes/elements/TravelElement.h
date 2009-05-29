@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Apr 4 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef TRAVEL_ELEMENT_H

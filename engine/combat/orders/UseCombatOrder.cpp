@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 16 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "UseCombatOrder.h"
 #include "CombatActionStrategy.h"
@@ -28,6 +28,7 @@ UseCombatOrder::UseCombatOrder(){
   orderType_   = COMBAT_ACTION_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS UseCombatOrder::loadParameters(Parser * parser,
@@ -107,8 +108,8 @@ ORDER_STATUS UseCombatOrder::process (Entity * entity, ParameterList &parameters
 		return FAILURE;
 	}
 	battleInstance->setAffectingAction(combatAction);
-  vector <MeleeAttackElement> attacks =
-	combatAction->makeAttack(battleInstance, potentialTargets, report);
+
+	combatAction->performAction(battleInstance, potentialTargets, report);
 
 	return SUCCESS;
 }

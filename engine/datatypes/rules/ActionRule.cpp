@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,7 +14,9 @@
  ***************************************************************************/
 #include "ActionRule.h"
 #include "PrototypeManager.h"
+#include "GameConfig.h"
 
+//RulesCollection <ActionRule>    fx_actions(new DataStorageHandler(gameConfig.getFx_actionsFile()));
 RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions.rules"));
 ActionRule    sampleAction    ("FX_ACTION",&sampleGameData);
 
@@ -44,7 +46,7 @@ ActionRule::initialize        ( Parser *parser )
       targetType_ =  prototypeManager->findInRegistry(targetName);
 			if( targetType_== 0)
 				{
-					cout << "Unknown target type " <<  targetName << " for action " << print()<< endl;
+					cerr << "Unknown target type " <<  targetName << " for action " << print()<< endl;
 				}
 
       return OK;

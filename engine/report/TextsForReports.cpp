@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu May 22 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -45,9 +45,12 @@ ReportPattern *  acceptOwnReporter         = new ReportPattern("acceptOwnReporte
 ReportPattern *	acceptReporter            = new ReportPattern("acceptReporter");
 // Attack
 ReportPattern *	AttackReporter                  = new ReportPattern("AttackReporter");
+ReportPattern *	AttackedReporter                = new ReportPattern("AttackedReporter");
 ReportPattern *	ownUnitAttackReporter           = new ReportPattern("ownUnitAttackReporter");
 ReportPattern *	ownFactionAttackReporter        = new ReportPattern("ownFactionAttackReporter");
 ReportPattern *	ownConstructionAttackReporter   = new ReportPattern("ownConstructionAttackReporter");
+ReportPattern *	attackParticipatonReporter      = new ReportPattern("attackParticipatonReporter");
+ReportPattern *	defenseParticipatonReporter     = new ReportPattern("defenseParticipatonReporter");
 // Bestow
 ReportPattern * publicBestowReporter= new ReportPattern("publicBestowReporter");
 ReportPattern * privateBestowReporter= new ReportPattern("privateBestowReporter");
@@ -60,6 +63,7 @@ ReportPattern * newBuidingStartedReporter    = new ReportPattern("newBuidingStar
 ReportPattern * buidingFinishedReporter    = new ReportPattern("buidingFinishedReporter");
 ReportPattern * constructionStartedReporter    = new ReportPattern("constructionStartedReporter");
 ReportPattern * buildingDestroyedReporter    = new ReportPattern("buildingDestroyedReporter");
+ReportPattern * constructionWorksCompletedReporter = new ReportPattern("constructionWorksCompletedReporter");
 // Buy/Sell/Recruit
 ReportPattern * cantTradeReporter = new ReportPattern("cantTradeReporter");
 ReportPattern * buyReporter       = new ReportPattern("buyReporter");
@@ -67,6 +71,7 @@ ReportPattern * sellReporter       = new ReportPattern("sellReporter");
 ReportPattern * recruiterReporter    = new ReportPattern("recruiterReporter");
 ReportPattern * recruitedReporter    = new ReportPattern("recruitedReporter");
 ReportPattern * newRecruitReporter   = new ReportPattern("newRecruitReporter");
+ReportPattern * cannotPayRecruitReporter  = new ReportPattern( "cannotPayRecruitReporter");
 // Cancel
 ReportPattern * publicCancelTitleReporter = new ReportPattern("publicCancelTitleReporter");
 ReportPattern * privateCancelTitleReporter = new ReportPattern("privateCancelTitleReporter");
@@ -85,6 +90,7 @@ ReportPattern * failedContestTitleReporter    = new ReportPattern("failedContest
 ReportPattern * successContestTitleReporter    = new ReportPattern("successContestTitleReporter");
 ReportPattern * claimTitleReporter    = new ReportPattern("claimTitleReporter");
 ReportPattern * reclaimTitleReporter    = new ReportPattern("reclaimTitleReporter");
+ReportPattern * cantContestFromAllyReporter = new ReportPattern("cantContestFromAllyReporter");
 // Christen
 ReportPattern * cannotChristenReporter   = new ReportPattern("cannotChristenReporter");
 ReportPattern * publicChristenReporter   = new ReportPattern("publicChristenReporter");
@@ -131,6 +137,7 @@ ReportPattern * changeNameReporter = new ReportPattern("changeNameReporter");
 // Oath
 ReportPattern *	oathRejectedReporter      = new ReportPattern("oathRejectedReporter");
 ReportPattern *	oathReporter      = new ReportPattern("oathReporter");
+ReportPattern *	oathCantReporter = new ReportPattern("oathCantReporter");
 // Promote
 ReportPattern *	promoteReporter = new ReportPattern("promoteReporter");
 ReportPattern *	promotedReporter = new ReportPattern("promotedReporter");
@@ -143,6 +150,8 @@ ReportPattern * recruitForeignUnitReporter  = new ReportPattern("recruitForeignU
 ReportPattern * recruitMaxUnitSizeReporter  = new ReportPattern("recruitMaxUnitSizeReporter");
 ReportPattern * recruitMixedRaceReporter  = new ReportPattern("recruitMixedRaceReporter");
 ReportPattern * unrecruitableRaceReporter = new ReportPattern("unrecruitableRaceReporter");
+// Resign
+ReportPattern * resignReporter = new ReportPattern("resignReporter");
 // Retreat
 ReportPattern * retreatPublicReporter= new ReportPattern("retreatPublicReporter");
 ReportPattern * retreatGroupReporter= new ReportPattern("retreatGroupReporter");
@@ -153,6 +162,7 @@ ReportPattern * newSplitReporter    = new ReportPattern("newSplitReporter");
 // Stack
 ReportPattern *	stackingUnacceptableReporter   = new ReportPattern("stackingUnacceptableReporter" );
 ReportPattern *	stackReporter             = new ReportPattern("stackReporter" );
+ReportPattern *	cantStackSelfReporter    = new ReportPattern("cantStackSelfReporter");
 // Stay
 ReportPattern *	stayReporter             = new ReportPattern("stayReporter" );
 // Study
@@ -165,6 +175,7 @@ ReportPattern * maxLevelErrorReporter      = new ReportPattern("maxLevelErrorRep
 ReportPattern * paymentErrorReporter       = new ReportPattern("paymentErrorReporter");
 ReportPattern * learningStartedReporter    = new ReportPattern("learningStartedReporter");
 ReportPattern * followerSkillLimitReporter = new ReportPattern("followerSkillLimitReporter");
+ReportPattern * elementalSkillLimitReporter= new ReportPattern("elementalSkillLimitReporter");
 // Teach
 ReportPattern * unknownTactics  = new ReportPattern("unknownTactics");
 // Teach
@@ -178,6 +189,10 @@ ReportPattern * invalidReporter            = new ReportPattern("invalidReporter"
 ReportPattern * notAvailableReporter       = new ReportPattern("notAvailableReporter");
 ReportPattern * notEnoughResourcesReporter = new ReportPattern("notEnoughResourcesReporter");
 ReportPattern * unusableSkillReporter      = new ReportPattern("unusableSkillReporter");
+ReportPattern * unusableBuildingSkillReporter      = new ReportPattern("unusableBuildingSkillReporter");
+//ReportPattern * newSummonedReporter = new ReportPattern("newSummonedReporter");
+//ReportPattern * summonerReporter = new ReportPattern("summonerReporter");
+ReportPattern * summoningReporter =  new ReportPattern("summoningReporter");
 // Withdraw
 ReportPattern * withdrawRestrictedReporter = new ReportPattern("withdrawRestrictedReporter");
 ReportPattern * withdrawInvalidReporter = new ReportPattern("withdrawInvalidReporter");

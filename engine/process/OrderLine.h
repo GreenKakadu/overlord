@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen Aug  7 16:08:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef ORDER_LINE_H
@@ -60,6 +60,7 @@ class OrderLine
          void setReportingFlag(UINT flag);
          void clearReportingFlag(UINT flag);
          bool getReportingFlag(UINT flag);
+
 
 		protected:
 static const  UINT NO_NORMAL_REPORT_FLAG;

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Feb 16 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "SkillBonusAttribute.h"
 #include "BonusElement.h"
@@ -35,7 +35,7 @@ SkillBonusAttribute::~SkillBonusAttribute(){
 STATUS
 SkillBonusAttribute::initialize        ( Parser *parser )
 {
-	if ( parser->matchKeyword ("STUDY_BONUS") )
+	if ( parser->matchKeyword (keyword_) )
     {
         SkillRule * skill = skills[parser->getWord()];
         int bonusPoints = parser->getInteger();

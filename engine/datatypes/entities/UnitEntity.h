@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Nov 13 18:21:12 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef UNIT_H
@@ -39,14 +39,14 @@ class UnitEntity : public TokenEntity
                   int number, LocationEntity * location);
   STATUS  initialize      ( Parser *parser );
   void    preprocessData();
-	void    dailyPreProcess();
+  void    dailyPreProcess();
   STATUS  dataConsistencyCheck();
   void    save (ostream &out);
   void    dailyUpdate();
   bool    defaultAction();
-  void      postProcessData();
-  void      payUpkeep();
-//  BattleInstance * battleInstantiation();
+  void    postProcessData();
+  void    payUpkeep();
+//  BattleInstance * createBattleInstantiation();
 // Reporting ==============================================
   void    produceFactionReport(FactionEntity * faction, ReportPrinter &out);
   void    publicReport(int observation, ReportPrinter &out);
@@ -61,35 +61,38 @@ class UnitEntity : public TokenEntity
          int              getStealth() const;
          int              getWeight();
          int              getCapacity(int modeIndex);
-				 int              getCapacity(MovementVariety * mode);
+	 int              getCapacity(MovementVariety * mode);
          RaceRule *       getRace() const;
          void setRace(RaceRule * race, int number);
-  inline UnitEntity *     getLeader() const {return stackFollowingTo_;}
          int              getFiguresNumber() const;
+         int getControlPoints() const;
+
+   inline UnitEntity *     getLeader() const {return stackFollowingTo_;}
    inline ConstructionEntity * getContainingConstruction() const {return containingConstruction_ ;}
-   inline void setContainingConstruction(ConstructionEntity * containingConstruction)  { containingConstruction_ = containingConstruction;}
+   inline void setContainingConstruction(ConstructionEntity * containingConstruction)  
+					{ containingConstruction_ = containingConstruction;}
           void enterConstruction(ConstructionEntity * containingConstruction) ;
           void exitConstruction() ;
-          int getControlPoints() const;
 	 inline int getDamage() const {return stats.getDamage();}
+	 inline int getRangedDamage() const {return stats.getRangedDamage();}
 	 inline DAMAGE_TYPE getDamageType() const { return stats.getDamageType();}
 //	 DAMAGE_TYPE modifyDamageType(DAMAGE_TYPE value){}
 	 inline int getLife() const {return stats.getLife();}
-   inline int getInitiative() const {return stats.getInitiative();}
+         inline int getInitiative() const {return stats.getInitiative();}
 	 inline int getMelee() const {return stats.getMelee();}
 	 inline int getMissile() const {return stats.getMissile();}
 	 inline int getDefence() const {return stats.getDefence();}
 	 inline int getHits() const {return stats.getHits();}
-	 string printComposition();
+	      string printComposition();
 	      Rule * getComposition();
 
-	 // Inventory methods ==============================================
+// Inventory methods ==============================================
 
 /** Updates number of equiped items after decreasing of number of figures in unit */
          vector < InventoryElement>    updateEquipement();
          int     hasMoney();                    // These two items play special
-  inline int     hasMana()  {return hasItem(items["mana"]);} // role.
-	                                                     //Demand special care?
+  inline int     hasMana()  {return mana_;} // role.
+  inline void    setMana(int mana)  {mana_ = mana;} 
          int     equipItem(ItemRule * item, int num);
          int     mayBorrow(ItemRule * item, int amount);
          int     borrow(ItemRule * item, int amount);
@@ -103,6 +106,7 @@ class UnitEntity : public TokenEntity
           bool            unstack();
                        /** returns list of all units following current unit */
  vector< UnitEntity *> &createStackMembersList(vector< UnitEntity *> &followers);
+          void printStackMembersList(ReportPrinter &out);
                        /** Applies all movement effects to all units in stack */
           void            setStackMoving(TravelElement * moving) ;
                        /** recursively calculates weight of all units in stack */
@@ -182,6 +186,7 @@ class UnitEntity : public TokenEntity
   void clearStay(); // may be these are not needed
   bool isStaying();
   void moveToLocation();
+  void moveToLocation(LocationEntity * destination);
   void movingEntityArrived();
   bool addLandwalkExperience();
   bool work();
@@ -199,6 +204,7 @@ class UnitEntity : public TokenEntity
    int getAttackRating() const;
    int getDefenceRating() const;
 	 EntityStatistics  getBasicStats();
+
 // ReportPatterns ========================================================
 
 
@@ -214,6 +220,7 @@ class UnitEntity : public TokenEntity
          bool             isAssignedToStaff_;
   vector < UnitEntity *>      stackFollowers_;
   TitlesAttribute      titles_;
+	int mana_;
     private:
 
 };

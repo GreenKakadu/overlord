@@ -8,11 +8,12 @@
                           ------------------
     begin                : Mon Oct 26 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <fstream>
 #include "CombatEngine.h"
 #include "TokenEntity.h"
+#include "BattleEntity.h"
 #include "LocationEntity.h"
 #include "FactionEntity.h"
 #include "BattleField.h"
@@ -52,6 +53,7 @@ ReportPattern * combatDrawReporter = new ReportPattern("combatDrawReporter");
 
 CombatEngine::CombatEngine() : BasicCombatEngine()
 {
+cout << "===> CombatEngine created " <<report_<<endl;
 		 maxFile_ = 3;
 		 minFile_ = 0;
 		 maxRank_ = 3;
@@ -91,6 +93,9 @@ CombatEngine::~CombatEngine()
 
 BATTLE_RESULT CombatEngine::processBattle(vector< TokenEntity * >& attackers, vector< TokenEntity * >& defenders)
 {
+	report_ = new CombatReport();
+	allReports_.push_back(report_);
+cout << "===> New combat created using CombatEngine" <<endl;
 //	BattleInstance * newInstance = 0;
 	battleField_ = new BattleField(this);
   location_ = (*(defenders.begin()))->getLocation();
@@ -99,17 +104,17 @@ BATTLE_RESULT CombatEngine::processBattle(vector< TokenEntity * >& attackers, ve
 			cout << "Error with determining battle location for"<< *(*(defenders.begin()))<<endl;
 			return DRAW;
 		}
-	battleField_->setName(location_->getName());
+	battleField_->setName(location_->print());
   attackers_ = &attackers;
 	defenders_ = &defenders;
   vector<TokenEntity *>::iterator iter;
 
 
 // ==== For debugging: open file for printing debugging info
-cout << "Combat on turn "<<currentDay<<" at " << location_<<endl;
+cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
  string combatReportFileName = combatName + longtostr(BasicCombatEngine::battleId) + ".crep";
  combatReportFile.open(combatReportFileName.c_str());
- combatReportFile<< "Combat on turn "<<currentDay<<" at " << location_<<endl;
+ combatReportFile<< "Combat on day "<<currentDay<<" at " << location_<<endl;
  combatReportFile<< "Attackers: "<<endl;
 // ==== End of debugging info
 
@@ -119,8 +124,7 @@ cout << "Combat on turn "<<currentDay<<" at " << location_<<endl;
 // Create BattleInstances
  for(iter = attackers.begin(); iter != attackers.end(); ++iter )
   {
-    (*iter)->battleInstantiation(battleField_);
-		currentInstance = (*iter)->getBattleInstantiation();
+		currentInstance = (*iter)->createBattleInstantiation(battleField_);
     currentInstance->setAttacker();// mark as attackers
 	  currentInstance->setSideEnchantment(&attackerSideEnchantments_);
    battleField_->placeEntity(*iter,0,0);// place on battlefield
@@ -160,8 +164,7 @@ cout << "Combat on turn "<<currentDay<<" at " << location_<<endl;
  combatReportFile<<endl<< "Defenders: "<<endl;
  for(iter = defenders.begin(); iter != defenders.end(); ++iter )
   {
-   (*iter)->battleInstantiation(battleField_);
-		currentInstance = (*iter)->getBattleInstantiation();
+		currentInstance = (*iter)->createBattleInstantiation(battleField_);
     currentInstance->setDefender();// mark as defender
 	  currentInstance->setSideEnchantment(&defenderSideEnchantments_);
    battleField_->placeEntity(*iter,0,0);// place on battlefield
@@ -193,8 +196,8 @@ cout << "Combat on turn "<<currentDay<<" at " << location_<<endl;
  endLineMessage >>*report_ ;
 
 	 preProcess();
-//		int maxRoundNum = 100;
-		int maxRoundNum = 5;
+		int maxRoundNum = 10;
+//		int maxRoundNum = 5;
 		int N = 1;
 	 while (N <= maxRoundNum)
 	 {
@@ -290,29 +293,29 @@ void CombatEngine::preProcess()
 
 	if(attackerStrategy_)
 				new TertiaryMessage(combatAdvantageReporter,
-				new StringData("Attacker"), new StringData("strategical"),
+				new StringData("Attacker "), new StringData("strategical "),
 				 new IntegerData(attackerStrategy_)) >>*report_ ;
 	if(defenderStrategy_)
 				new TertiaryMessage(combatAdvantageReporter,
-					new StringData("Defender"), new StringData("strategical"),
+					new StringData("Defender "), new StringData("strategical "),
 					 new IntegerData(defenderStrategy_)) >>*report_ ;
 
 	if(attackerTactics_)
 				new TertiaryMessage(combatAdvantageReporter,
-				new StringData("Attacker"), new StringData("tactical"),
+				new StringData("Attacker "), new StringData("tactical "),
 				 new IntegerData(attackerTactics_)) >>*report_ ;
 	if(defenderTactics_)
 				new TertiaryMessage(combatAdvantageReporter,
-					new StringData("Defender"), new StringData("tactical"),
+					new StringData("Defender "), new StringData("tactical "),
 					 new IntegerData(defenderTactics_)) >>*report_ ;
 
 	if(attackerAmbush_)
 				new TertiaryMessage(combatAdvantageReporter,
-				new StringData("Attacker"), new StringData("ambush"),
+				new StringData("Attacker "), new StringData("ambush "),
 				 new IntegerData(attackerAmbush_)) >>*report_ ;
 	if(defenderAmbush_)
 				new TertiaryMessage(combatAdvantageReporter,
-					new StringData("Defender"), new StringData("ambush"),
+					new StringData("Defender "), new StringData("ambush "),
 					 new IntegerData(defenderAmbush_)) >>*report_ ;
 
 
@@ -347,7 +350,10 @@ void CombatEngine::preProcessRound(int round)
  initMax_ = 0;
  woundlessRoundCounter_++;
  new UnaryMessage(combatRoundReporter,new IntegerData(round)) >>*report_ ;
- /*combatReportFile*/ cout << "------ Round " << round <<endl;
+
+
+ /*combatReportFile*/ cout << "------ Round " << round <<"-------"<<endl;
+ combatReportFile << "------ Round " << round<<"-------" <<endl;
 // Determine tactics bonus
 	int currentAttackerTactics = calculateAttackerInitiative(round);
 	int currentDefenderTactics = calculateDefenderInitiative(round);
@@ -435,6 +441,9 @@ void CombatEngine::processRound(int round)
 			<< (*iter)<<
 			" ("<<((*iter)->getBattleInstantiation()->getCombatOrderList()).size()
 			<<") "<<endl;
+//    for( currentIterator = ((*iter)->getBattleInstantiation()->getCombatOrderList()).begin();
+// 	      currentIterator != ((*iter)->getBattleInstantiation()->getCombatOrderList()).end();)
+//      {
 
 			// clear waiting for initiative flag
 			(*iter)->getBattleInstantiation()->setWaiting(false);
@@ -579,8 +588,57 @@ void CombatEngine::postProcess()
   combatReportFile << "Attackers lost "<< (attackersCount_ - attackersAliveCount_)<< " men and defenders lost "<< (defendersCount_ - defendersAliveCount_)<<" men."<<endl;
 	// die from wounds
 
+// Add dead bodies
+	ItemRule * deads = items["dead"];
+	if(deads != 0)
+	{
+	location_->addResource(deads, attackersCount_ - attackersAliveCount_ 
+					+ defendersCount_ - defendersAliveCount_);
+	}
+
+    BattleInstance * current;
+// unsummon summoned units
+		for(BattleEntityIterator iter = summoned_.begin();
+	    iter != summoned_.end(); ++iter)
+  	{
+			current = (*iter)->getBattleInstantiation();
+
+
+			if(current->isAttacker())
+				{
+					attackersCount_ -= (*iter)->getFigures();
+					attackersAliveCount_ -= current->getFiguresNumber();
+					for(BattleIterator iterA = attackers_->begin();
+	    			iterA != attackers_->end(); ++iterA )
+  					{
+							if(*iter == *iterA)
+							{
+								attackers_->erase(iterA);
+								break;
+							}
+						}
+				}
+			else
+				{
+					defendersCount_ -= (*iter)->getFigures();
+					defendersAliveCount_ -= current->getFiguresNumber();
+					for(BattleIterator iterA = defenders_->begin();
+	    			iterA != defenders_->end(); ++iterA )
+  					{
+							if(*iter == *iterA)
+							{
+								defenders_->erase(iterA);
+								break;
+							}
+						}
+				}
+			delete (*iter)->getBattleInstantiation();
+			delete (*iter);
+
+
+		}
+		summoned_.clear();
 	// remove dead figures, add  experience and loot
-BattleInstance * current;
 		for(BattleIterator iter = attackers_->begin();
 	    iter != attackers_->end(); ++iter )
   	{
@@ -966,3 +1024,29 @@ void CombatEngine::extendMinInitiative()
 }
 
 
+void CombatEngine::addSummonedEntity(BattleInstance * summoner, BattleEntity * summonedOne)
+{
+	 summoned_.push_back(summonedOne);
+	 BattleInstance * summonedInstance =summonedOne->getBattleInstantiation();
+	// name?
+  if(summoner->isAttacker())
+	{
+    summonedInstance->setAttacker();// mark as attacker
+	  summonedInstance->setSideEnchantment(&attackerSideEnchantments_);
+		attackers_->push_back(summonedOne);
+		attackersCount_ += summonedOne->getFigures();
+		attackersAliveCount_ += summonedOne->getFigures();
+	}
+	else
+	{
+    summonedInstance->setDefender();// mark as defender
+	  summonedInstance->setSideEnchantment(&defenderSideEnchantments_);
+		defenders_->push_back(summonedOne);
+		defendersCount_ += summonedOne->getFigures();
+		defendersAliveCount_ += summonedOne->getFigures();
+	}
+	// side observation update
+ // no update for side  ambush, tactis, stategy -
+ // new summoned unit has no time to reorganize troops that are already in the battle
+
+}

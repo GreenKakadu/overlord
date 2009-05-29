@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Aug 31 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,10 +29,16 @@
 #include "RulesCollection.h"
 #include "TitleRule.h"
 #include "TitleElement.h"
+#include "BuildUsingStrategy.h"
+#include "PrototypeManager.h"
+#include "BinaryMessage.h"
+#include "StringData.h"
 
 extern EntitiesCollection <ConstructionEntity>   buildingsAndShips;
 ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);
 RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions.rules"));
+extern ReportPattern * newBuidingStartedReporter;
+extern ReportPattern * buidingFinishedReporter;
 
 ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(prototype)
 {
@@ -45,7 +51,9 @@ ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(
  skill_ = 0;
  buildCondition_ = 0;
  staffCondition_ = 0;
+ buildingSkill_ =0;
  isBattle_ = false;
+ buildingParadigm_  = 0;
 }
 
 ConstructionRule::~ConstructionRule(){}
@@ -81,6 +89,11 @@ ConstructionRule::initialize        ( Parser *parser )
   if (parser->matchKeyword("SKILL"))
 	  {
       skill_ = SkillElement::readElement(parser);
+	    return OK;
+	  }
+  if (parser->matchKeyword("BUILDING_SKILL"))
+	  {
+            buildingSkill_ = SkillElement::readElement(parser);
 	    return OK;
 	  }
   if (parser->matchKeyword("TITLE"))
@@ -146,7 +159,22 @@ ConstructionRule::initialize        ( Parser *parser )
 	  weight_ = parser->getInteger();
 	  return OK;
 	}
-  if (parser->matchKeyword("BUILD_CONDITION"))
+  if (parser->matchKeyword ("BUILDING_PARADIGM") )
+        {
+          string keyword = parser->getWord();
+          GameData * temp =  prototypeManager->findInRegistry(keyword);
+          if(temp == 0)
+          {
+            cerr << "Unknown building paradigm " << keyword  << " for construstion " << print()<< endl;
+          }
+          else
+          {
+            buildingParadigm_ = dynamic_cast<BuildUsingStrategy *>(temp ->createInstanceOfSelf ());
+          }
+          return OK;
+        }
+          
+          if (parser->matchKeyword("BUILD_CONDITION"))
     {
 
       buildCondition_ = dynamic_cast<BasicCondition *> (createByKeyword(parser->getWord()));
@@ -157,10 +185,18 @@ ConstructionRule::initialize        ( Parser *parser )
         }
       return OK;
     }
-
-     stats_.initialize(parser);
-		skillBonuses_.initialize(parser);
-		movementBonuses_.initialize(parser);
+ 	if (parser->matchKeyword("BONUS"))
+	{
+	  bonuses_.initialize(parser);
+	  return OK;
+	}
+        if(buildingParadigm_)
+        {   
+          buildingParadigm_->initialize(parser);
+        }
+    stats_.initialize(parser);
+    skillBonuses_.initialize(parser);
+    movementBonuses_.initialize(parser);
 
       return OK;
 }
@@ -183,6 +219,8 @@ ConstructionEntity * ConstructionRule::startConstruction(UnitEntity * unit)
      unit->getLocation()->addConstruction(newBuilding);
      newBuilding->setFaction(unit->getFaction());
 	   unit->getFaction()->addConstruction(newBuilding);
+     newBuilding->explicitInitialization();
+		 // NEWTARGET
 //     cout << "New "<< print() << " was built in "<< unit->getLocation()->print()<<endl;
   }
   return newBuilding;
@@ -251,6 +289,11 @@ void    ConstructionRule::extractKnowledge (Entity * recipient, int parameter)
       skill_->getSkill()->extractKnowledge(recipient,skill_->getLevel());
   }
 
+  if(buildingSkill_)
+  {
+    if(recipient->addSkillKnowledge(buildingSkill_->getSkill(),buildingSkill_->getLevel()))
+      buildingSkill_->getSkill()->extractKnowledge(recipient,buildingSkill_->getLevel());
+  }
 
 	skillBonuses_.extractKnowledge(recipient, 1);
 
@@ -289,6 +332,11 @@ void ConstructionRule::printDescription(ReportPrinter & out)
           }
     }
     out<< ". ";
+    if(buildingSkill_)
+    {
+      out << " Requires ";
+      out << buildingSkill_->print() << " to build.";
+    }
     if(generateTitle_)
       {
         out << "Generates "<< generateTitle_->print()
@@ -305,4 +353,78 @@ void ConstructionRule::printDescription(ReportPrinter & out)
    }
 
 	 skillBonuses_.report(out);
+}
+
+USING_RESULT ConstructionRule::startNewConstruction(UnitEntity * unit,ConstructionEntity *buildingOrShip, AbstractData * target)
+{
+
+// Check unit has skill to start construction
+  SkillElement * skillRequired = 0;
+  skillRequired = getBuildingSkill(); 
+  if(skillRequired)
+  {
+    if(!unit->hasSkill(skillRequired))
+    {
+      // Print report: cn't build skill required.
+      return CANNOT_USE; //?
+    }
+  }
+  ConstructionEntity * newBuilding;
+  if(buildingOrShip ==0)
+  {
+  newBuilding = startConstruction(unit);
+  }
+  else
+  {
+    newBuilding = buildingOrShip;
+  }
+  if(!newBuilding)
+    return UNUSABLE;
+  if(newBuilding->isCompleted())// If no resourses required
+  {
+    newBuilding->buildingCompleted();
+    unit->addReport( new BinaryMessage
+        (buidingFinishedReporter, this, new StringData(newBuilding->printTag())));
+    unit->getLocation()->addReport( new BinaryMessage
+        (buidingFinishedReporter, this, new StringData(newBuilding->printTag())));
+  }
+
+  else
+  {
+    unit->addReport( new BinaryMessage
+        (newBuidingStartedReporter, this, new StringData(newBuilding->printTag())));
+    unit->getLocation()->addReport( new BinaryMessage
+        (newBuidingStartedReporter, this, new StringData(newBuilding->printTag())));
+  }
+
+    // If we used placeholder  now it's time to set it to real construction
+  if(target)
+  {
+    NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(target);
+    if(placeholder)
+    {
+      Entity * newEntity = placeholder->getRealEntity();
+      if (!newEntity)
+      {
+        placeholder->setRealEntity(newBuilding);
+              //unit->setTarget(newBuilding);
+      }
+      else
+      {
+                  //report placeholder duplication ?
+      }
+    }
+  }
+  return USING_COMPLETED;
+}
+
+
+
+USING_RESULT ConstructionRule::buildExistingConstruction(UnitEntity * unit, SkillRule * skill, int &useCounter,OrderLine * order)
+{
+  
+  
+  USING_RESULT result = buildingParadigm_->unitUse(unit, skill, useCounter,order);
+
+  return result;  
 }

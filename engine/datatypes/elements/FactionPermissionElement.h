@@ -5,7 +5,7 @@
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef FACTION_PERMISSION_ELEMENT_H
 #define FACTION_PERMISSION_ELEMENT_H
@@ -28,7 +28,7 @@ public:
    inline bool         getPermission()    const     {return parameter2_;}
    inline bool         isValidElement() const {return (rule_ )&&(parameter1_); }
 	
-string FactionPermissionElement::print()
+string print()
 {
     if ( !( (rule_ )&&(parameter1_) ) ) return "";
     if(parameter2_)
@@ -39,7 +39,7 @@ string FactionPermissionElement::print()
 
 
 
-void FactionPermissionElement::save(ostream & out)
+void save(ostream & out)
 {
   out << rule_->getTag() << " " <<  parameter1_->getTag() << parameter2_ << endl;
 }
@@ -49,7 +49,7 @@ void FactionPermissionElement::save(ostream & out)
 /*
  * Reads (if it is possible) Permission Element from the input parser
  */
-static FactionPermissionElement  * FactionPermissionElement::readElement (Parser * parser)
+static FactionPermissionElement  * readElement (Parser * parser)
 {
   Rule * rule = ruleIndex.findRule(parser->getWord());
   if( rule == 0  )

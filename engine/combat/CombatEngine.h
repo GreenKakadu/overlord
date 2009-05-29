@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon Oct 26 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef COMBAT_ENGINE_H
@@ -19,6 +19,7 @@ class BattleField;
 class LocationEntity;
 class ProcessingMode;
 class BattleInstance;
+class BattleEntity;
 
 class CombatEngine : public BasicCombatEngine
 {
@@ -63,9 +64,10 @@ public:
 	void removeDefenderSideEnchantment(EnchantmentElement * data);
 	void removeAllDefenderSideEnchantment();
 
-
+  void addSummonedEntity(BattleInstance * summoner, BattleEntity * summonedEntity);
 	protected:
   private:
+			vector <BattleEntity *>  summoned_;
 			vector <TokenEntity *> * attackers_;
 			vector <TokenEntity *> * defenders_;
 			vector <TokenEntity *>  deadCombatants_;
@@ -101,6 +103,7 @@ public:
 
  		 int initMin_;
  		 int initMax_;
+		vector <CombatReport *> allReports_;
 
 
 };

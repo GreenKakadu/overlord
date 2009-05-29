@@ -5,7 +5,7 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef BASIC_VARIETIES_COLLECTION_H
@@ -15,8 +15,11 @@
 //#include "SystemTypes.h"
 #include "OverlordTypes.h"
 #include "BasicCollection.h"
+#include "Variety.h"
 using namespace std;
 class  Variety;
+
+
 class  DataStorageHandler;
 typedef     vector <Variety *>::iterator VarietiesIterator;
 /** Defines interface for rules collections */

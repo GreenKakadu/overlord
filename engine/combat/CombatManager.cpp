@@ -6,7 +6,7 @@
                              -------------------
     begin                : Mon May 24 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
 #include "CombatManager.h"
@@ -19,7 +19,11 @@
 #include "CombatStanceVariety.h"
 #include "PillageRequest.h"
 #include "UnaryMessage.h"
+#include "TertiaryMessage.h"
 #include "GameConfig.h"
+#include "SimpleMessage.h"
+#include "BinaryMessage.h"
+#include "IntegerData.h"
 
 //CombatManager combatManager;
 ReportPattern  *	pillagingOwnerReporter = new
@@ -34,7 +38,14 @@ ReportPattern  *	alreadyGuardedReporter= new
             ReportPattern("alreadyGuardedReporter");
 ReportPattern  *	uncoordinatedGuardReporter = new
             ReportPattern("uncoordinatedGuardReporter");
-
+ReportPattern  *	pillager20FiguresReporter = new
+                   ReportPattern("pillager20FiguresReporter");
+ReportPattern  *	pillagerNotEnoughReporter = new
+                    ReportPattern("pillagerNotEnoughReporter");
+extern ReportPattern *	attackParticipatonReporter;
+extern ReportPattern *	defenseParticipatonReporter;
+extern ReportPattern *	AttackReporter;
+extern ReportPattern *	AttackedReporter;
 SkillRule * ambushSkill;
 SkillRule * strategySkill;
 SkillRule * tacticSkill;
@@ -48,6 +59,7 @@ SkillRule * combatSkill;
 CombatManager::CombatManager(LocationEntity * location)
 {
     location_ = location;
+//cout << "===> CreatingCombatManager for" <<location->print()<<endl;
     combatEngine_ = new BasicCombatEngine;
 }
 
@@ -61,7 +73,8 @@ void CombatManager::attackAttempt(TokenEntity * attacker,
                     TokenEntity * defender,const BATTLE_RESULT result))
 {
 
-  addCombatRequest_(new BasicCombatRequest(attacker,defender,orderId,funPtr));
+// cout << "===> CombatManager::attackAttempt invoked." <<endl;
+ addCombatRequest_(new BasicCombatRequest(attacker,defender,orderId,funPtr));
 }
 
 
@@ -461,7 +474,9 @@ for (PillageRequestIterator iter  = pillageRequests_.begin();
 			continue;
 		}
 	else
+	{
 		iter++;
+	}
  }
 // Otherwise distribute money proportionally to number of pillagers
 int numPillagers = 0;
@@ -471,6 +486,38 @@ for (PillageRequestIterator iter  = pillageRequests_.begin();
  {
    numPillagers += (*iter)->getPillager()->getFiguresNumber();
  }
+UnitEntity * unit;
+ if(numPillagers < 10 )  // Pillagers should have at least 20 figures in order to pillage
+ {
+	for (PillageRequestIterator iter  = pillageRequests_.begin();
+		iter != pillageRequests_.end(); iter++)
+	{
+	  unit = (*iter)->getPillager();
+	  unit->addReport(new SimpleMessage(pillager20FiguresReporter),0,0);
+	}
+
+ pillageRequests_.clear();
+ return;
+ }
+
+
+ if(location_->getPopulation()/ 50 > numPillagers) // Need 1 soldier for 50 population to pillage
+ {
+	for (PillageRequestIterator iter  = pillageRequests_.begin();
+		iter != pillageRequests_.end(); iter++)
+	{
+	  unit = (*iter)->getPillager();
+	unit->addReport(new BinaryMessage( pillagerNotEnoughReporter,
+	   new IntegerData(location_->getPopulation()), location_),0,0);
+	}
+
+ pillageRequests_.clear();
+ return;
+ }
+
+
+
+
  if(numPillagers)
 	{
 	location_ ->setPillaged(true);
@@ -565,6 +612,43 @@ void CombatManager::processCombat()
      cout <<"--------------------- Combat  Start ---------------------"<<endl;
    determineCombatParticipants(currentRequest,attackers,defenders,
 	                                  localFactions,currentRequests);
+  BinaryMessage * attackMessage = new BinaryMessage(AttackReporter,attackers[0],defenders[0]);
+  BinaryMessage * attackedMessage = new BinaryMessage(AttackedReporter,defenders[0],attackers[0]);
+  location_->addReport(attackMessage,0,0);
+//  attackers[0]->getFaction()->addReport(attackMessage,orderId,0);
+//  defenders[0]->getFaction()->addReport(attackMessage,orderId,0);
+//  attackers[0]->addReport(attackMessage,0,0);
+//  defenders[0]->addReport(attackMessage,0,0);
+// participation message
+  for(TokenIterator iter = attackers.begin();
+          iter != attackers.end();++iter)
+{
+	if(iter == attackers.begin())
+	{
+	 (*iter)->addReport(attackMessage,0,0);
+	}
+	else
+	{
+	 (*iter)->addReport(new TertiaryMessage 
+		(attackParticipatonReporter,(*iter),attackers[0],defenders[0]), 0,0);
+	}
+
+}
+  for(TokenIterator iter = defenders.begin();
+          iter != defenders.end();++iter)
+{
+	if(iter == defenders.begin())
+	{
+	 (*iter)->addReport(attackedMessage,0,0);
+	}
+	else
+	{
+	 (*iter)->addReport(new TertiaryMessage 
+		(defenseParticipatonReporter,(*iter),defenders[0],attackers[0]), 0,0);
+	}
+
+}
+
    result = currentRequest->getCombatEngine()->processBattle(attackers,defenders);
     cout <<"---- "<<attackers[0]->print()<< " vs. "<<defenders[0]->print()<<endl;
     cout <<"--------------------- Combat End ------------------------"<<endl;
@@ -1222,16 +1306,16 @@ GuardingRequest * CombatManager::findGuardingRequest(TokenEntity *guard)
 void CombatManager::attackLocalEnemies(TokenEntity * currentToken)
 {
   for (UnitIterator iter = location_->unitsPresent().begin();
-								iter != location_->unitsPresent().end(); ++iter)
-		{
-			if(!currentToken->getFaction()->stanceAtLeast(*iter,hostileStance))
-				{
-					if(currentToken->mayInterractTokenEntity(*iter))
-						attackAttempt(currentToken,*iter,0,0);
-				}
-		}
+			iter != location_->unitsPresent().end(); ++iter)
+	{
+		if(!currentToken->getFaction()->stanceAtLeast(*iter,hostileStance))
+			{
+				if(currentToken->mayInterractTokenEntity(*iter))
+					attackAttempt(currentToken,*iter,0,0);
+			}
+	}
   for (ConstructionIterator iter = location_->constructionsPresent().begin();
-								iter != location_->constructionsPresent().end(); ++iter)
+			iter != location_->constructionsPresent().end(); ++iter)
 		{
 			if(!currentToken->getFaction()->stanceAtLeast(*iter,hostileStance))
 				{

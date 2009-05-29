@@ -4,13 +4,14 @@
                              -------------------
     begin                : Sun Jun 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef COMBAT_FILE_H
 #define COMBAT_FILE_H
 
 #include "Variety.h"
+#include "VarietiesCollection.h"
 
 class CombatFileVariety : public Variety  {
 public: 

@@ -1,0 +1,37 @@
+	 Replace XXX with actual action name and delete this line
+/***************************************************************************
+                          XXXCombatAction.h
+                             -------------------
+    begin                :
+    copyright            : (C) 2005 by Alex Dribin
+    email                : alexliza@netvision.net.il
+ ***************************************************************************/
+#ifndef XXX_COMBAT_ACTION_H
+#define XXX_COMBAT_ACTION_H
+
+#include "CombatActionStrategy.h"
+
+
+/**
+  * XXX Action
+  *@author Alex Dribin
+  */
+
+class AbstractData;
+
+class XXXCombatAction : public CombatActionStrategy  {
+public:
+      XXXCombatAction ( const string & keyword, GameData * parent):
+				 CombatActionStrategy(keyword, parent){}
+      XXXCombatAction ( const XXXCombatAction * prototype ):
+				 CombatActionStrategy(prototype){}
+		 ~XXXCombatAction(){}
+      GameData * createInstanceOfSelf();
+       BattleTargets getPotentialTargets(BattleInstance * battleInstance,
+																		 CombatReport * report);
+	void		performAction(BattleInstance * battleInstance, BattleTargets & 		potentialTargets, CombatReport * report);
+	protected:
+};
+
+extern XXXCombatAction       sampleXXXAction;
+#endif

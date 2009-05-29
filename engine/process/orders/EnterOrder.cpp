@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Sep 29 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -82,7 +82,10 @@ ORDER_STATUS EnterOrder::process (Entity * entity, ParameterList &parameters)
 
    if(buildingOrShip->getFaction())
    {
-    if(!(buildingOrShip->getFaction()->stanceAtLeast(unit, alliedStance)) ||(buildingOrShip->isAccepting(unit)))
+    if(!( (buildingOrShip->getFaction()->stanceAtLeast(unit, alliedStance))
+	 ||(buildingOrShip->isAccepting(unit))
+         || (buildingOrShip->isPublic()) )
+      )
       {
         // stealth unit may enter
         if( buildingOrShip->getLocation()->getFactionalObservation (buildingOrShip->getFaction())

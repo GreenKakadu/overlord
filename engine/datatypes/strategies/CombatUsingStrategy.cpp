@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatUsingStrategy.h"
 #include "TokenEntity.h"
@@ -27,7 +27,12 @@ CombatUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT CombatUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, int &useCounter)
+USING_RESULT CombatUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, 
+			int &useCounter,OrderLine * order)
 {
   return UNUSABLE;
 }
+
+
+
+

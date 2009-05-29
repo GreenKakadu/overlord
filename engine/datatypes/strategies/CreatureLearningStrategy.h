@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Feb 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef CREATURE_LEARNING_H
@@ -23,6 +23,7 @@ public:
 	~CreatureLearningStrategy(){}
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
+	BasicLearningStrategy * cloneSelf();
 };
 extern CreatureLearningStrategy sampleCreatureLearning;
 

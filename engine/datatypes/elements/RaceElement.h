@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RACE_ELEMENT_H
 #define RACE_ELEMENT_H
@@ -30,7 +30,7 @@ public:
    inline bool         isValidElement() const {return (rule_ )&&(parameter1_); }
 //  static RaceElement readRaceElement(Parser * parser);
 	
-string RaceElement::print()
+string /*RaceElement::*/print()
 {
     if (rule_ == 0) return "";
     if( parameter1_ > 1)
@@ -51,7 +51,7 @@ string RaceElement::print()
 /*
  * Reads (if it is possible) Race Element from the input parser
  */
-static RaceElement  * RaceElement::readElement (Parser * parser)
+static RaceElement  * /*RaceElement::*/readElement (Parser * parser)
 {
   RaceRule * item = races[parser->getWord()];
   int number = parser->getInteger();

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jan 7 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "GiveOrder.h"
 #include "OrderLine.h"
@@ -55,11 +55,15 @@ GiveOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * e
     if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
             return IO_ERROR;
     if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
-            return IO_ERROR;
-
-
-    if(!parseIntegerParameter(parser, parameters))
-            return IO_ERROR;
+            {
+    		parseIntegerParameter(parser, parameters);
+    		if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+            		return IO_ERROR;
+	    }
+    else
+	{
+    	parseIntegerParameter(parser, parameters);
+	}
 
      parseIntegerParameter(parser, parameters);
 
@@ -80,16 +84,35 @@ GiveOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * e
 ORDER_STATUS
 GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 {
-
+  int given = 0; 
+  bool isGiveItemNum = true; // Order supports both GIVE to UNIT ITEM NUM
+                             // and  GIVE to UNIT NUM of ITEM   
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
-	UnitEntity * recipient   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
+  UnitEntity * recipient   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 
   ItemRule * item          =  dynamic_cast<ItemRule *>(parameters[1]);
-  assert(item);
-
-  int given =   getIntegerParameter(parameters,2);
+  if ( item == 0) // Parameter 1 is number
+    {
+      isGiveItemNum = false;
+      IntegerData * par=  dynamic_cast<IntegerData *>(parameters[1]); 
+      if(par==0)
+      {
+              return FAILURE;
+      }
+      given = par->getValue();
+      item          =  dynamic_cast<ItemRule *>(parameters[2]);
+      if ( item == 0) 
+      {
+              return FAILURE;
+      }
+    }
+   else
+    {
+      isGiveItemNum = true;
+      given =   getIntegerParameter(parameters,2);
+    }
 
   int kept =   getIntegerParameter(parameters,3);
 
@@ -99,10 +122,11 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
  if (!unit->mayInterract(recipient)) // Not In the same place or can't see
 	  return FAILURE;
 
- if(recipient->getFaction()->stanceAtLeast(unit,friendlyStance))
+ if(!recipient->getFaction()->stanceAtLeast(unit,friendlyStance))
       {
         // not accepting. Reports to both sides
-      UnaryMessage * giveRejectedMessage = new UnaryMessage(giveRejectedReporter, recipient);
+      UnaryMessage * giveRejectedMessage = 
+          new UnaryMessage(giveRejectedReporter, recipient);
       unit->addReport(giveRejectedMessage,orderId,0);
       recipient->addReport(giveRejectedMessage,orderId,0);
 		  return INVALID;
@@ -134,22 +158,28 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
 //                given = 0;
 
 
-        if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
-	  {
-      unit->addReport( new QuartenaryMessage(giveReporter, unit, new IntegerData(reallyGiven), item, recipient),orderId,0);
-     }
+   if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
+      {
+        unit->addReport( new QuartenaryMessage(giveReporter, unit, 
+                   new IntegerData(reallyGiven), item, recipient),orderId,0);
+      }
 
-        if (!recipient->isSilent())
-	  {
-      recipient->addReport( new QuartenaryMessage(receiveReporter, recipient , new IntegerData(reallyGiven), item, unit),orderId,0);
-	  }
+    if (!recipient->isSilent())
+      {
+        recipient->addReport( new QuartenaryMessage(receiveReporter, recipient , 
+                              new IntegerData(reallyGiven), item, unit),orderId,0);
+      }
 
     if(given > reallyGiven)
     {
-        IntegerData * par       =  dynamic_cast<IntegerData *>(parameters[2]);
-        assert(par);
-        par->setValue(given - reallyGiven);
-        return IN_PROGRESS;
+      IntegerData * par = 0;
+      if(isGiveItemNum)
+        par       =  dynamic_cast<IntegerData *>(parameters[2]);
+      else
+        par       =  dynamic_cast<IntegerData *>(parameters[1]);
+      assert(par);
+      par->setValue(given - reallyGiven);
+      return IN_PROGRESS;
     }
         return SUCCESS;
 

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "UnstackOrder.h"
 #include "Entity.h"
@@ -32,7 +32,11 @@ ORDER_STATUS UnstackOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
-  UnitEntity * formerLeader = unit->getLeader();
+//   if(unit->isTraced())
+//   {
+//     cout << unit->print()<< " is trying to unstack"<<endl;
+//   }
+    UnitEntity * formerLeader = unit->getLeader();
   if(unit->unstack())
      {
       UnaryMessage *  unstackMessage = new UnaryMessage(unstackReporter, unit);

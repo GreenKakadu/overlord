@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon May 5 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -80,7 +80,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
 
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-
+ 
   SkillRule * skill = dynamic_cast<SkillRule *>(parameters[0]);
  if ( skill == 0)
     {
@@ -88,9 +88,17 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
  		  return INVALID;
     }
 
+//  if(unit->isTraced())
+// {
+// cout << "UseOrder::process1 "<< skill->print()<<endl;
+// }
  if(parameters.size() >1)
     {
-      par1       =  dynamic_cast<IntegerData *>(parameters[1]);
+//  if(unit->isTraced())
+// {
+// cout << "UseOrder::process1 "<< parameters[1]->print()<<endl;
+// }
+     par1       =  dynamic_cast<IntegerData *>(parameters[1]);
       if(!par1)
       {
         parameterOffset = 1;
@@ -106,10 +114,10 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
       assert(par1);
       useCounter = par1->getValue();
 //      if (useCounter == 0 )
-//         useCounter = 1;
+//         return SUCCESS;
     }
    // check that entity may use skill (has enough resources ETC.)
- USING_RESULT result = skill->mayBeUsedBy(unit);
+    USING_RESULT result = skill->mayBeUsedBy(unit);
 
  switch (result)
   {
@@ -123,6 +131,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
  		  return INVALID;
       break;
     }
+    case NO_MANA:
     case NO_RESOURCES:
     {
      if(!unit->getCurrentOrder()->getReportingFlag(NO_RESOURCE_REPORT_FLAG ))
@@ -170,7 +179,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
       break;
     }
     default:
-      cout << "ILLEGAL USING_RESULT (" << result<<") for evaluation of use of "<<skill->print()<<"\n";
+      cerr << "ILLEGAL USING_RESULT (" << result<<") for evaluation of use of "<<skill->print()<<"\n";
       return FAILURE;
   }
   if(parameterOffset)
@@ -178,7 +187,7 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
     (parameters[1])->clean();
      parameters[1] = unit->getTarget();
   }
-  result = skill->use(unit,useCounter);
+  result = skill->use(unit,useCounter,unit->getCurrentOrder());
 
   if(parameters.size() > 1+ parameterOffset)
     {
@@ -202,16 +211,25 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
       break;
       }
     case UNUSABLE:
+      {
+      return FAILURE;
+      break;
+      }
     case CANNOT_USE:
+      {
+      return FAILURE;
+      break;
+      }
     case USING_OK:
     case NO_RESOURCES:
+    case NO_MANA:
     case CONDITION_FAILURE:
     case WRONG_TARGET:
     case NO_TARGET:
     case TARGET_NOT_EXIST:
     case USING_NOT_ALLOWED:
     default:
-      cout << "ILLEGAL USING_RESULT (" << result<<") for use of "<<skill->print()<<"\n";
+      cerr << "ILLEGAL USING_RESULT (" << result<<") for use of "<<skill->print()<<"\n";
       return FAILURE;
   }
 }
@@ -224,6 +242,11 @@ UseOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, i
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
   unsigned int parameterOffset = 0;
+	int amount =0;
+// if(unit->isTraced())
+// {
+// cout << " . ";
+// }
 
  if(parameters.size() >1)
     {
@@ -237,12 +260,12 @@ UseOrder::completeOrderProcessing (Entity * entity, ParameterList &parameters, i
   if(parameters.size() > 1 + parameterOffset)
   {
     IntegerData * par1  = dynamic_cast<IntegerData *>(parameters[1]);
-    assert(par1);
-    int amount = par1->getValue();
+	assert(par1);
+    amount = par1->getValue();
 
     if ( amount > result)
     {
-      par1->setValue(amount - result);
+      	par1->setValue(amount - result);
       entity->updateOrderResults(FAILURE);
 //  cout << "Saving order for "<< unit->print() <<"=[ ";
 //  orderId->save(cout);

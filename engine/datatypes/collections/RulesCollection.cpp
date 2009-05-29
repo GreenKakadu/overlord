@@ -7,7 +7,7 @@ operations on all objects stored in the collection.
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef RULESCOLLECTIONEXPLICIT_H
 #define RULESCOLLECTIONEXPLICIT_H
@@ -36,7 +36,7 @@ RulesIterator iter;
 //       return  (*iter);
    } 
 
- cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";   
+ cerr << "Error []: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";   
  return 0 ;    
 }
 

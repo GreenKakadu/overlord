@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Apr 18 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef BASIC_COMPETITIVE_REQUEST_H

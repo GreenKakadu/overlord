@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
 #include "IntegerData.h"
@@ -194,6 +194,7 @@ int TitleRule::markTerritoryOwned(LocationEntity * start, UnitEntity * titleHold
   while(current->getDistance() <= distance)
   {
     current->setLegalOwner(owner,start);
+    current->turnNpcGuards();
     counter++;
     current->examineNeighboringLocations(currentDistance, openList,
                                 examinedLocations);

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CraftUsingStrategy.h"
 #include "ItemElement.h"
@@ -24,6 +24,7 @@ CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ):
 {
   productNumber_ = 1;
   productType_ =0;
+	mana_ = 0;
 }
 
 
@@ -64,6 +65,12 @@ CraftUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
 
+	if (parser->matchKeyword ("USE_MANA") )
+    {
+      mana_ =  parser->getInteger();
+      return OK;
+    }
+
 
   if (parser->matchKeyword ("TOOL") )
   {
@@ -77,48 +84,22 @@ CraftUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & useRestrictionCounter)
+USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+					int & useRestrictionCounter,OrderLine * order)
 {
-   USING_RESULT result;
-// Production modifiers:
- RationalNumber effectiveProductionRate = getEffectiveProductionRate(unit,skill);
-
-
-  SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
-
-  int cycleCounter  = unit->addSkillUse(dailyUse);
-  if(cycleCounter == 0) // In the middle of the production cycle
-  {
-     return USING_IN_PROGRESS;
-  }
-
-  else // The old  production cycle is finished. Do we want to start new?
-  {
-    int resourcesAvailable = checkResourcesAvailability(unit);
-
-    if( resourcesAvailable < cycleCounter)
-        cycleCounter = resourcesAvailable;
-    int effectiveProduction = cycleCounter * productNumber_;
-    if( (useRestrictionCounter != 0) && (effectiveProduction  >= useRestrictionCounter) ) // limited number of new cycles
-      {
-        effectiveProduction = useRestrictionCounter;
-        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
-        if(cycleCounter >1)
-          consumeResources(unit,cycleCounter-1);
-         result = USING_COMPLETED;
-        useRestrictionCounter = 0;
-      unit->getCurrentOrder()->setCompletionFlag(true);
-      }
-
-    else
-    {
-      consumeResources(unit,cycleCounter-1);
-      if(dailyUse->getDaysUsed() > 0)
-        unit->addSkillUse(dailyUse);
-      useRestrictionCounter = useRestrictionCounter - effectiveProduction;
-         result = USING_IN_PROGRESS;
-    }
-
+ //cout << unit->print()<<" "<<skill->print()<<" level " <<endl;
+    int effectiveProduction = 0;
+		USING_RESULT result =
+			produce(unit, skill, useRestrictionCounter, effectiveProduction,order);
+		if (effectiveProduction == 0)
+		{
+			return result;
+		}
+//  if (unit->isTraced())
+// {
+//       cout <<"== TRACING " <<unit->print()<< " ==> produces "<< effectiveProduction<< " of "<< productType_->print() <<"\n";
+// 
+// }
     unit->addToInventory(productType_, effectiveProduction);
       if(!unit->isSilent())
         {
@@ -133,9 +114,7 @@ USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, i
         /*, 0, observation condition*/);
     }
     return result;
-  }
 }
-
 
 
 //USING_RESULT CraftUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
@@ -225,6 +204,8 @@ void CraftUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntit
     }
 }
 
+
+
 void CraftUsingStrategy::printSkillDescription(ostream & out)
 {
   BasicProductionStrategy::printSkillDescription(out);
@@ -240,4 +221,13 @@ void CraftUsingStrategy::printSkillDescription(ostream & out)
   out << productType_->print();
 
   out<<" in "<< productionDays_ <<" days.";
+}
+
+
+
+BasicUsingStrategy * CraftUsingStrategy::cloneSelf()
+{
+ CraftUsingStrategy * copyOfSelf = new CraftUsingStrategy(this);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

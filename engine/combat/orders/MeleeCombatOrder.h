@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 16 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef MELEE_COMBAT_ORDER_H
 #define MELEE_COMBAT_ORDER_H

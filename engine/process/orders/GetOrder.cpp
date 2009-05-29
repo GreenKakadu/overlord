@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "GetOrder.h"
 #include "StringData.h"
@@ -82,6 +82,7 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
   LocationEntity * location = 0;
+
   UnitEntity * donor   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
   if(donor == 0)
   {
@@ -99,9 +100,20 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
     }
    else
    {
-     toGet =   getIntegerParameter(parameters,1);
+     IntegerData * par       =  dynamic_cast<IntegerData *>(parameters[1]);
+     if(par !=0)
+     {
+       toGet = par->getValue();
+     }
+      else
+      {
+        return FAILURE;
+      }
      item          =  dynamic_cast<ItemRule *>(parameters[2]);
-     assert(item);
+     if(item ==0)
+     {
+       return FAILURE;
+     }
      nextParameterIndex = 3;
    }
 
@@ -111,12 +123,14 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
   if(donor)
   {
    if(unit->getFaction() != donor->getFaction())
-   {
-   // can't get items from foreign units
+      {
+      // can't get items from foreign units
  	  return INVALID;
- 	  }
- 	  itemPossesion = donor-> hasItem(item);
-        if (!itemPossesion)
+      }
+    if (!donor->mayInterract(unit)) // Not In the same place or can't see
+            return FAILURE;
+    itemPossesion = donor-> hasItem(item);
+    if (!itemPossesion)
                 return FAILURE;
   }
   else
@@ -141,7 +155,8 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
   if (reallyGot <= 0)
     return FAILURE;
 
-  unit->getLocation()->addLocalItem(item, reallyGot);
+//  unit->getLocation()->addLocalItem(item, reallyGot);
+  unit->addToInventory(item,reallyGot);
 
   ItemElement * gotItems = new ItemElement(item, reallyGot);
 
@@ -160,7 +175,7 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
     location->addReport(new BinaryMessage(publicGetItemsReporter,gotItems,unit));
   }
 
-    if(toGet > reallyGot)
+    if((toGet > reallyGot)&&(nextParameterIndex == 3))
     {
         IntegerData * par       =  dynamic_cast<IntegerData *>(parameters[1]);
         assert(par);

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Aug 31 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -29,6 +29,8 @@
 #include "TravelElement.h"
 #include "ObservationCondition.h"
 #include "SkillCondition.h"
+#include "CombatOrderLine.h"
+#include "CombatMoveVariety.h"
 
 extern ReportPattern * buildingDestroyedReporter;
 
@@ -46,6 +48,7 @@ ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) :
 {
   effectiveStaff_ = 0;
   construction_ = 0;
+  public_ = false;
 }
 
 
@@ -72,6 +75,7 @@ ConstructionEntity::initialize        ( Parser *parser )
  if (parser->matchKeyword("CONSTRUCTION"))
 	{
 	  construction_ = constructions[parser->getWord()];
+	  stats.addStats(construction_->getStats());
 	  return OK;
 	}
 
@@ -82,6 +86,11 @@ ConstructionEntity::initialize        ( Parser *parser )
           buildingWorks_.push_back(newResource);
 	    return OK;
 	  }
+ if (parser->matchKeyword("PUBLIC"))
+	{
+	  public_ = true;
+	  return OK;
+	}
 	return TokenEntity::initialize(parser );
 }
 
@@ -92,7 +101,7 @@ void    ConstructionEntity::preprocessData()
 	if(faction_)
 	faction_-> addConstruction(this);
    if(construction_ == 0)
-    cout << "ERROR: "<< print() << " has undefined construction type"<<endl;
+    cerr << "ERROR: "<< print() << " has undefined construction type"<<endl;
   TokenEntity::preprocessData();
 }
 
@@ -136,6 +145,7 @@ void      ConstructionEntity::save (ostream &out)
 
   if(getFaction()) out << "OWNER " << getFaction()->getTag()<<endl;
 
+  if(public_)  out <<"PUBLIC"<<endl;
 }
 
 
@@ -173,7 +183,7 @@ bool ConstructionEntity::addBuildingWork(ConstructionWorksElement * buildingWork
         return  isCompleted();
     }
   }
-  cout << "BUILDING ERROR on building "<< construction_->print()<<" - no such material as" <<buildingWorks->getWorkType()->print()<<endl;
+  cerr << "BUILDING ERROR on building "<< construction_->print()<<" - no such material as " <<buildingWorks->getWorkType()->print()<<endl;
   return false;
 }
 
@@ -190,17 +200,18 @@ void      ConstructionEntity::produceFactionReport (FactionEntity * faction, Rep
     }
      out<< " at "<< location_->print()<<".\n";
      out.incr_indent();
-  for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
-  {
-    if(iter == buildingWorks_.begin())
-        out << " Needs ";
-    else
-        out << ", ";
-
-    out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->print();
-  }
+//   for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
+//   {
+//     if(iter == buildingWorks_.begin())
+//         out << " Needs ";
+//     else
+//         out << ", ";
+// 
+//     out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->print();
+//   }
 
  reportAppearence(getFaction(), out);
+  if(public_)  out <<" It is public.";
  reportInventory(getFaction(), out);
  reportSkills(getFaction(), out);
 // recalculateStats();  // Do we really need that?
@@ -208,6 +219,10 @@ void      ConstructionEntity::produceFactionReport (FactionEntity * faction, Rep
  if(getTarget())
   out<< " Targeting "<< getTarget()<<".\n";
  out <<endl;
+
+ out << "Events for "<<print()<<":"<<endl;
+ reportEvents(out);
+    out <<endl;
  out.decr_indent();
     out <<endl;
 
@@ -225,8 +240,11 @@ void      ConstructionEntity::privateReport (ReportPrinter &out)
       out <<endl;
       return;
     }
+    if(!isCompleted())
+      out << " (unfinished).";
 // out.incr_indent();
 // reportAppearence(getFaction(), out);
+//  if(public_)  out <<" It is public.";
  reportInventory(getFaction(), out);
  reportSkills(getFaction(), out);
 // recalculateStats();  // Do we really need that?
@@ -245,14 +263,19 @@ void      ConstructionEntity::publicReport (int observation, ReportPrinter &out)
     if(isDisbanded())
           return;
     out << " - "<< print()  <<construction_->getName();
+
     if(getFaction())
     {
       out << " (belongs to ";
       out <<getFaction()->print()<<")";
-      if(!isCompleted())
-        out << " unfinished.";
     }
-
+    if(!isCompleted())
+      out << " unfinished.";
+    if(!description_.empty())
+	{
+		out<<description_;
+	}
+   if(public_)  out <<" It is public.";
  if(moving_)
     out << moving_->getMode()->getName()<<" to " << moving_->getDestination()->print()
     << " (" << moving_->getTravelTime() - moving_->getRemainingTime() <<" of "<<moving_->getTravelTime() <<" days)" ;
@@ -505,21 +528,54 @@ bool ConstructionEntity::isOnBoard(UnitEntity * unit)
 
 void ConstructionEntity::addUnit(UnitEntity * unit)
 {
-  units_.push_back(unit) ;
+	// may demand additional actions (update of location and unit's data)
+		if(unit == 0)
+			return;
+	   unitsToAdd_.push_back(unit);
+//		cout << "Unit " << unit << " added at " << *this << endl;
 }
 
 
 
 void ConstructionEntity::removeUnit(UnitEntity * unit)
 {
-  UnitIterator iter = find(units_.begin(),units_.end(),unit);
-  if(iter != units_.end())
-  {
-    units_.erase(iter);
-    removeStaff(unit);
-    }
+ 			return;
+    unitsToRemove_.push_back(unit);
+    removeStaff(unit); // May cause the same Tree problem as with adding/removing units
+
 }
 
+void ConstructionEntity::eraseRemovedUnit(UnitEntity * unit)
+{
+		if(unit == 0)
+			return;
+    UnitIterator iter = find(units_.begin(),units_.end(),unit);
+    if( iter == units_.end())
+			return;
+
+     units_.erase( iter);
+}
+
+void ConstructionEntity::eraseAllRemovedUnits()
+{
+	for(UnitIterator iter = unitsToRemove_.begin(); iter != unitsToRemove_.end(); ++iter)
+	{
+		eraseRemovedUnit(*iter);	
+	}
+	unitsToRemove_.clear();
+}
+
+
+
+void ConstructionEntity::addAllAddedUnits()
+{
+	for(UnitIterator iter =unitsToAdd_.begin(); iter != unitsToAdd_.end(); ++iter)
+	{
+//cout << (*iter)->print() << " is added to "<< print()<<endl;
+		units_.push_back(*iter);
+	}
+	unitsToAdd_.clear();
+}
 
 
 void ConstructionEntity::addStaff(UnitEntity * unit)
@@ -552,20 +608,21 @@ void ConstructionEntity::removeStaff(UnitEntity * unit)
 
 void ConstructionEntity::destroy()
 {
-  location_->removeConstruction(this);
+	LocationEntity * location = location_;
   // remove title
-  location_->deleteTitle(construction_->getTitle());
+  location->deleteTitle(construction_->getTitle());
+  location->removeConstruction(this);
   // move all units otside
   for(UnitIterator iter = units_.begin();
-                                iter != units_.end(); ++iter)
+                                iter != units_.end(); /*++iter*/)
       {
         (*iter)->setContainingConstruction(0);
         (*iter)->recalculateStats();
         removeUnit(*iter);
         // may be report ?
        }
-   location_->freeLand(construction_->getLandUse());
-   location_->addReport(new UnaryMessage(buildingDestroyedReporter, this));
+   location->freeLand(construction_->getLandUse());
+   location->addReport(new UnaryMessage(buildingDestroyedReporter, this));
   // RIP
     buildingsAndShips.addRIPindex(buildingsAndShips.getIndex(tag_));
 }
@@ -703,12 +760,12 @@ void ConstructionEntity::calculateTotalCapacity(int & capacity, int modeIndex)
   for (vector <UnitEntity *>::iterator iter = units_.begin();
         iter != units_.end(); ++iter)
         {
-          if(( *iter) ->isStaff()  )
+         if(( *iter) ->isStaff()  )
               continue;
           if(mayUseAsStaff(*iter))
           {
             addStaff(*iter);
-            if(effectiveStaff_ < getConstructionType()->getMaxStaff())
+            if(effectiveStaff_ >= getConstructionType()->getMaxStaff())
               break;
            }
         }
@@ -783,7 +840,7 @@ void ConstructionEntity::movingEntityArrived()
 //      }
 
   moving_ = 0;
-
+  isMoving_ = false;
 }
 
 
@@ -919,3 +976,49 @@ void ConstructionEntity::disband()
 	destroy();
 }
 
+
+
+void ConstructionEntity::dailyUpdate()
+{
+   enchantments_.processExpiration(getFiguresNumber());
+   TokenEntity::dailyUpdate();
+
+// if terrain is ocean or lake check swimming capacity
+// ifnot enough - drowning
+// smart drowning
+// - equip items that may rise capacity
+// sortout  items that have positive capacity/weight ratio
+// sort all items according to weight/price ratio
+// throw away items
+   LocationEntity * location = getLocation();
+   if(location)
+	{
+		if(location->getTerrain()->isAquatic())
+		{
+			if (getCapacity(swimingMode) < getWeight())
+				{
+				cout << "SOS! " << print()<< " is drowning\n";
+				// drop away cargo
+				}
+		}
+	}	 
+
+}
+
+void ConstructionEntity::setDefaultCombatMovement()
+{
+	if(mayMove())
+	{
+		if(combatTactics_.getCombatMove())
+			defaultCombatMovement_ =
+					new CombatOrderLine( combatTactics_.getCombatMove()->getTag(), this);
+		else
+			defaultCombatMovement_ =
+					new CombatOrderLine( defaultCombatMove->getTag(), this);
+	}
+	else // Can't move should stay.
+	{
+		defaultCombatMovement_ =
+					new CombatOrderLine( "stand", this);
+	}
+}

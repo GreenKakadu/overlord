@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jun 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #include "LineParser.h"
@@ -15,13 +15,15 @@
 
 CombatTactics::CombatTactics()
 {
-  move_ =   defaultCombatMove; 
+}
+
+void     CombatTactics::defaultInitialization()
+{
+	move_ =   defaultCombatMove;
   stance_ = defaultCombatStance;
   rank_ =   defaultCombatRank;
   file_ =   defaultCombatFile;
 }
-
-
 
 STATUS
 CombatTactics::initialize        ( Parser *parser )
@@ -88,7 +90,10 @@ string CombatTactics::print()
 
 void      CombatTactics::report (ostream &out)
 {
- out << "Tactis settings: "<< (stance_)->getName() << " "<< (rank_)->getName()
+if((stance_)&& (rank_) && (file_) && (move_))
+ out << "Tactics settings: "<< (stance_)->getName() << " "<< (rank_)->getName()
  		 << " " <<(file_)->getName()<< " " <<(move_)->getName()<< ".";
+else
+ out << "Tactics settings undefined. ";
 }
 

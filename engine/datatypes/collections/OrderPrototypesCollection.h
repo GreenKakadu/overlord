@@ -4,7 +4,7 @@
                              -------------------
     begin                : Tue Nov  5 11:46:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ORDER_PROTOTYPES_COLLECTION_H
 #define ORDER_PROTOTYPES_COLLECTION_H

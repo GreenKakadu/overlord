@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Feb 28 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef SKILL_LEVEL_ELEMENT_H
 #define SKILL_LEVEL_ELEMENT_H

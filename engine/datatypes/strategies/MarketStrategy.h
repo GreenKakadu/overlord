@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jun 24 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -23,6 +23,8 @@ class LocalMarketRequest;
 class LocationEntity;
 class FactionEntity;
 class UnitEntity;
+class ItemRule;
+class RaceRule;
 
 /**
   *@author Alex Dribin
@@ -43,6 +45,9 @@ public:
    void setLocation(LocationEntity * location);
    void setMerchantPrince(UnitEntity *prince){ merchantPrince_ = prince;}
    UnitEntity * getMerchantPrince() const {return merchantPrince_;}
+   int getLocalBuyPrice(ItemRule * item);
+   int getLocalSellPrice(ItemRule * item);
+   int getLocalRecruitPrice(RaceRule * race);
 protected:
    MarketConflict * marketConflict_;
    vector <LocalMarketRequest *> sellRequests_;

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ActionUsingStrategy.h"
 #include "SkillUseElement.h"
@@ -82,7 +82,8 @@ ActionUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT ActionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int &useCounter)
+USING_RESULT ActionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+					int &useCounter)
 {
 // Production modifiers:
 int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
@@ -108,7 +109,7 @@ int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
 }
 
 
-USING_RESULT ActionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
+USING_RESULT ActionUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill,OrderLine * order)
 {
   // check target type
     USING_RESULT result = checkTarget(unit,productType_->getTargetType());
@@ -171,3 +172,9 @@ void ActionUsingStrategy::printSkillDescription(ostream & out)
   out<<" in "<< productionDays_ <<" days.";
 }
 
+BasicUsingStrategy * ActionUsingStrategy::cloneSelf()
+{
+ ActionUsingStrategy * copyOfSelf = new ActionUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
+}

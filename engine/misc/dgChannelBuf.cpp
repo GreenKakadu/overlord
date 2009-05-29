@@ -109,8 +109,9 @@ channelbuf::int_type channelbuf::overflow( int_type ch ) {
 
         if( m_column < indent && pos < pptr() ) // add Indent
           {
-            propagate( prefix_, prefix_ + prefixLength_); // added by Alex Dribin
-            propagate( ' ', indent - m_column - prefixLength_); // added by Alex Dribin
+		if(prefix_)                                           // added by Alex Dribin
+            		propagate( prefix_, prefix_ + prefixLength_); // added by Alex Dribin
+            	propagate( ' ', indent - m_column - prefixLength_);       // added by Alex Dribin
 //            propagate( ' ', indent - m_column );
 	          m_column = indent;	 
           }

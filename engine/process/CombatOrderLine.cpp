@@ -4,7 +4,7 @@
                              -------------------
     begin                : Fri Oct  29 10:00:00 IST 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatOrderLine.h"
 #include "TokenEntity.h"
@@ -39,7 +39,7 @@ void CombatOrderLine::initialize(TokenEntity * entity)
 
 
 
-int CombatOrderLine::reCalculateInitiative(TokenEntity * entity, int sideBonus)
+int CombatOrderLine::reCalculateInitiative(int initiative, int sideBonus)
 {
 	if(orderPrototype_ == 0)
 	{
@@ -47,8 +47,7 @@ int CombatOrderLine::reCalculateInitiative(TokenEntity * entity, int sideBonus)
 			printOrderLine(cout);
 			return 0;
 	}
-	initiative_ = entity->getInitiative() + orderPrototype_->getInitiative()
-							+ sideBonus;
+	initiative_ = initiative + orderPrototype_->getInitiative() + sideBonus;
 	return initiative_;
 }
 
@@ -132,13 +131,13 @@ ORDER_STATUS CombatOrderLine::process( ProcessingMode * processingMode,
      TokenEntity * entity, int currentRound)
      {
        ORDER_STATUS result;
-     #ifdef TEST_MODE
-       if ( testMode )
-       {
-         cout << "==== Trying to process ";
-         save( cout );
-       }
-     #endif
+
+//        if (entity->isTraced())
+//        {
+//          cout << "==== Trying to process ";
+//          save( cout );
+//        }
+
 
 //     combatReportFile << "==== Trying to process "; save( combatReportFile );
 				if(!isPlanned()) // This order was not planned for this day. Skip
@@ -180,19 +179,16 @@ ORDER_STATUS CombatOrderLine::process( ProcessingMode * processingMode,
 
        if ( executedOnRound_ == currentRound )
        {
-     #ifdef TEST_MODE
-         if ( testMode )
+/*         if ( entity->isTraced() )
            cout << "==== Was already executed on this round" << endl;
-     #endif
-         return FAILURE;
+ */        return FAILURE;
        }
 
        if ( !orderPrototype_->mayBeProcessed( processingMode, entity ) )
        {
-     #ifdef TEST_MODE
-         if ( testMode )
-           cout << "==== Order can't be processed duiring this mode" << endl;
-     #endif
+//          if ( entity->isTraced() )
+//            cout << "==== Order can't be processed duiring this mode" << endl;
+
          return FAILURE;
        }
 

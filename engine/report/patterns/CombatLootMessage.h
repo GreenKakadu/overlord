@@ -3,7 +3,7 @@
                              -------------------
     begin                : Apr 14 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef COMBAT_PARTICIPANT_PATTERN_H
 #define COMBAT_PARTICIPANT_PATTERN_H

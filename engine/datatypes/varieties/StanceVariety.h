@@ -3,13 +3,14 @@
                              -------------------
     begin                : Thu Jan 9 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef STANCE_H
 #define STANCE_H
 
 #include <iostream>
 #include "Variety.h"
+#include "VarietiesCollection.h"
 using namespace std;
 
 

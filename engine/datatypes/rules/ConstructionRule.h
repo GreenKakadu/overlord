@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Aug 31 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -33,6 +33,7 @@ class UnitEntity;
 class ConstructionWorksVariety;
 class TitleRule;
 class LocationEntity;
+class BuildUsingStrategy;
 
 class ConstructionRule : public Rule  {
 public: 
@@ -41,41 +42,48 @@ public:
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
 	   ~ConstructionRule();
-  ConstructionEntity * startConstruction(UnitEntity * unit);
+              ConstructionEntity * startConstruction(UnitEntity * unit);
         void finishConstruction(LocationEntity * location);
         void extractKnowledge (Entity * recipient, int parameter = 0);
         void printDescription(ReportPrinter & out);
   inline BasicCondition * getBuildCondition() const {return buildCondition_;}
   inline SkillCondition * getStaffCondition() const {return staffCondition_;}
   inline EntityStatistics * getStats()  {return &stats_;}
+  inline EntityStatistics * getBonusStats()  {return &bonuses_;}
   inline int getLandUse() const {return landUse_;}
          int getResourceRequirement(ConstructionWorksVariety * resource);
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
-	inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
+  inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
+         inline SkillElement * getBuildingSkill(){return buildingSkill_;};
   inline int getWeight() const {return weight_;}
   inline int getMaxStaff() const {return maxStaff_;}
-	inline bool isBattle()const {return isBattle_;}
-        bool mayMove();
+  inline bool isBattle()const {return isBattle_;}
+         bool mayMove();
   inline TitleRule * getTitle() const {return generateTitle_;}
+  USING_RESULT startNewConstruction(UnitEntity * unit,ConstructionEntity *buildingOrShip, AbstractData * target =0);
+  USING_RESULT buildExistingConstruction( UnitEntity * unit, SkillRule * skill, int &useCounter,OrderLine * order);
 	protected:
       vector<ConstructionWorksElement *>    resources_;
-	    MovementMode<int> capacity_;
+      BuildUsingStrategy * buildingParadigm_;
+      MovementMode<int> capacity_;
       TitleRule * generateTitle_;
       SkillElement * skill_ ;
+      SkillElement * buildingSkill_ ;
       int weight_;
       int landUse_;
       BasicCondition * buildCondition_;
       SkillCondition * staffCondition_;
       int maxStaff_;
       EntityStatistics stats_;
+      EntityStatistics bonuses_;
       /*const*/ string entityKeyword_ ;
       bool mobile_;
-			bool isBattle_;
-			// Attributes
-			SkillBonusComboAttribute skillBonuses_;
+      bool isBattle_;
+      // Attributes
+      SkillBonusComboAttribute skillBonuses_;
 //		  SkillBonusAttribute useBonuses_;
 //		  SkillBonusAttribute studyBonuses_;
 //		  SkillBonusAttribute learningBonuses_;

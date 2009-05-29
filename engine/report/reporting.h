@@ -4,7 +4,7 @@
                              -------------------
     begin                : Dec 7 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef REPORTING_H
 #define REPORTING_H

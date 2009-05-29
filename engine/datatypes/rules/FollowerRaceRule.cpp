@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "FollowerRaceRule.h"
 FollowerRaceRule sampleFollowerRaceRule= FollowerRaceRule("FOLLOWER",&sampleRace);
@@ -40,14 +40,17 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
 
 //   cout << "==check== Can "<< unit->print()<< " learn " << skill->print()<<" ?\n";
 
-//   if(skill->getRequirement(0))
-//        return true;   //    This is not basic skill
+   if(skill->getRequirement(0))
+        return true;   //    This is not basic skill
    if(unit->getSkillPoints(skill))
         return true;   //unit already knows this skill
    vector < SkillElement>::iterator iter;
    
-   for(iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); ++iter)
+    SkillRule * scouting = skills["scou"];
+    for(iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); ++iter)
    {
+     if((*iter).getSkill()->getBasicSkill() == scouting) //Do not take scouting into account
+		continue;
      if( (*iter).getSkill()->getBasicSkill() != skill->getBasicSkill() )
       return false;
        
@@ -88,8 +91,22 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
   int  level = unit->getSkillLevel(skill);
 // Follower may not study magic skills
    if(skill->isMagicSkill())
-     return CANNOT_STUDY_FAILURE;
-	int bonus = unit->getLearningLevelBonus(skill);
+	{
+		if(unit->isTraced())
+		{
+                  cerr << unit->printTag()<<" Can't study magic skill "<<skill->print()<<endl;
+		}
+     	return CANNOT_STUDY_FAILURE;
+	}
+        if(skill->isRacialEnabled(this))
+        {
+          if(unit->isTraced())
+          {
+            cerr << " Can't study Racial skill "<<skill->print()<<endl;
+          }
+          return CANNOT_STUDY_FAILURE;
+        }
+        int bonus = unit->getLearningLevelBonus(skill);
 // Follower may not study non-combat skill above 1-st level
 // and combat skill above 2-nd level
   if(level >= 1 + bonus)

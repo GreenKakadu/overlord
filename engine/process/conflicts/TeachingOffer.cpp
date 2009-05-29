@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Jul 25 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -14,6 +14,7 @@
  ***************************************************************************/
 #include "TeachingOffer.h"
 #include "TokenEntity.h"
+#include "LocationEntity.h"
 #include "SkillRule.h"
 
 TeachingOffer::TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <Entity *> &students)
@@ -23,11 +24,17 @@ TeachingOffer::TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <E
   level_   =  teacher_->getSkillLevel(skill_);
   students_ =  students;
   vector <Entity *>::iterator iter;
-  for(iter = students_.begin(); iter != students_.end(); ++iter)
-  {
-    (*iter)->addTeachingOffer(this);
-    }
-
+	if(students_.size() == 0)
+	{
+		teacher->getLocation()->addTeachingOffer(this);
+	}
+	else
+	{
+		for(iter = students_.begin(); iter != students_.end(); ++iter)
+		{
+			(*iter)->addTeachingOffer(this);
+		}
+	}
 }
 
 

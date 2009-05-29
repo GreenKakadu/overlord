@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Sep 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -34,10 +34,11 @@ public:
 		 ~ConstructionUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter);
+      USING_RESULT unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       void printSkillDescription(ostream & out);
       void extractKnowledge (Entity * recipient, int parameter);
+			BasicUsingStrategy * cloneSelf();
 	protected:
       ConstructionRule * construction_;
       int productionDays_;

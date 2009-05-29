@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Jan 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ExplicitExit.h"
 #include "LocationEntity.h"
@@ -38,8 +38,9 @@ void ExplicitExit::save(ostream & out)
 	out << "EXIT_EXPLICIT " << dir_->getTag() << " " << destination_->getTag();
   for (i = 0; i < standardTravelTime_.size(); i++)
 		{
-     if( standardTravelTime_[i] != 0)
-			 out << standardTravelTime_[i] << " " << movementModes[i];
+     int time = standardTravelTime_[i];
+		 if( time != 0)
+			 out << " " << (movementModes[i])->getTag()<< " " << time ;
 		}
 		
 		out << endl;

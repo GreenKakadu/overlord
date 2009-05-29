@@ -4,7 +4,7 @@
                              -------------------
     begin                : Mon May 24 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #if !defined(COMBAT_MANAGER_H)
   #define COMBAT_MANAGER_H
@@ -82,7 +82,7 @@ public:
                 CombatStanceVariety * stance);
      static void guardingConflictResolution(TokenEntity * attacker,
 		            TokenEntity * defender,const BATTLE_RESULT  result);
-		 void CombatManager::attackLocalEnemies(TokenEntity * currentToken);
+		 void attackLocalEnemies(TokenEntity * currentToken);
 protected:
 // static      bool compareStrategyRating(const RequestPtr  request1, const RequestPtr  request2);
 virtual void addCombatRequest_(BasicCombatRequest *request);

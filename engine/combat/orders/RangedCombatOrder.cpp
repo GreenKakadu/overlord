@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Apr 20 2005
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "RangedCombatOrder.h"
 #include "RangedCombatAction.h"
@@ -15,7 +15,6 @@
 #include "CombatAttackMessage.h"
 #include "reporting.h"
 
-extern ReportPattern * unitSlainReporter;
 
 
 RangedCombatOrder * instantiateRangedCombatOrder = new RangedCombatOrder();
@@ -34,6 +33,7 @@ RangedCombatOrder::RangedCombatOrder(){
   orderType_   = COMBAT_ACTION_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS RangedCombatOrder::loadParameters(Parser * parser,
@@ -77,41 +77,31 @@ ORDER_STATUS RangedCombatOrder::process (Entity * entity, ParameterList &paramet
  TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
   assert(unit);
   BattleInstance * battleInstance = unit->getBattleInstantiation();
-	int initiative = battleInstance->getBattleField()->getCombatEngine()->
-										getCurrentInitiativeSegment();
-	combatReportFile<<" Initiative: "<<initiative<<endl;
-	CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
-										->getCombatReport();
+  CombatReport * report = battleInstance->getBattleField()->getCombatEngine()->getCombatReport();
+ // Fails if ranged damage of unit =0 
+  if((battleInstance->getRangedDamage() <= 0)/* || (battleInstance->getRange() == 0)*/)
+  {
+    return FAILURE;
+  }
+  // If there are adjacient units RANGED fails
+  BattleField * battleField = battleInstance->getBattleField();
+  if(  battleField->haveEnemiesRelative(battleInstance, -1, -1) ||
+       battleField->haveEnemiesRelative(battleInstance, +1, +1) ||
+       battleField->haveEnemiesRelative(battleInstance, +1, -1) ||
+       battleField->haveEnemiesRelative(battleInstance, -1, +1) )
+  {
+    return FAILURE;
+  }  
+  vector <BattleTargetElement> potentialTargets =
+          sampleRangedAction.getPotentialTargets(battleInstance, report);
 
-	vector <BattleTargetElement> potentialTargets =
-			 					sampleRangedAction.getPotentialTargets(battleInstance, report);
-
-	if(potentialTargets.empty()) // No targets. Already reported
-	{
-		return FAILURE;
-	}
+  if(potentialTargets.empty()) // No targets. Already reported
+  {
+          return FAILURE;
+  }
 
 
-  vector <MeleeAttackElement> attacks =
-	sampleRangedAction.makeAttack(battleInstance, potentialTargets, report);
-
-	battleInstance->addMissileExperience(1);
-
-	bool killedAll = false;
-	for (unsigned int i= 0; i< attacks.size(); ++i)
-			{
-				if(attacks[i].target->getFiguresNumber() == 0)
-					killedAll = true;
-				else
-					killedAll = false;
-
-				new CombatAttackMessage(initiative, battleInstance,
-						attacks[i].hits, attacks[i].target, attacks[i].damage,
-						attacks[i].killed, killedAll)>>*report;
- 				if(killedAll)
-					new UnaryMessage(unitSlainReporter,
-						attacks[i].target->getOrigin()) >>*report ;
-			}
+  sampleRangedAction.performAction(battleInstance, potentialTargets, report);
 
 //			instance->setActedOnRound(true);
 			return SUCCESS;

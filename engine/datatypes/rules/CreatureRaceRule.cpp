@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CreatureRaceRule.h"
 CreatureRaceRule sampleCreatureRaceRule=CreatureRaceRule("CREATURE", &sampleRace);
@@ -42,4 +42,14 @@ bool CreatureRaceRule::mayWork()
 void CreatureRaceRule::printTypeSpecificDescription(ReportPrinter & out)
 {
   out << " This is a creature.";
+}
+
+
+LEARNING_RESULT CreatureRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
+{
+		if(unit->isTraced())
+		{
+			cerr << " Can't study reature c "<<skill->print()<<endl;
+		}
+   return CANNOT_STUDY_FAILURE;
 }

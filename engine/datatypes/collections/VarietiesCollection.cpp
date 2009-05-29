@@ -7,16 +7,17 @@ operations on all objects stored in the collection.
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
+#include "Variety.h"
 #ifndef VARIETIESCOLLECTIONEXPLICIT_H
 #define VARIETIESCOLLECTIONEXPLICIT_H
 #include "VarietiesCollection.h"
 #endif
 #include <time.h>
-#include "Variety.h"
+//#include "Global.h"
 #include "GameData.h"
-
+extern bool ciStringCompare(const string& s1,const string& s2);
 template <class T> T* VarietiesCollection <T>::operator [] (long int index)
 {
 	if (index <= size())
@@ -32,13 +33,13 @@ VarietiesIterator iter;
 // vector<GameData *>::const_iterator iter;
  for (iter = begin(); iter != end(); iter++)
    {
-      if ((*iter) ->getTag() == tag)
+      if (!ciStringCompare((*iter) ->getTag(),tag))
        return dynamic_cast< T*> (*iter);
 //       return  (*iter);
-   } 
+   }
 
- cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";   
- return 0 ;    
+ cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
+ return 0 ;
 }
 
 

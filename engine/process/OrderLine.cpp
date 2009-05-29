@@ -3,12 +3,13 @@
  OrderLine.cpp . -------------------
  begin                : Tue Nov  5 11:46:00 IST 2002
  copyright            : (C) 2002 by Alex Dribin
- email                : alexliza@netvision.net.il
+ email                : Alex.Dribin@gmail.com
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff */
 #include "OrderLine.h"
 #include "Entity.h"
 #include "OrderPrototype.h"
 #include "OrderPrototypesCollection.h"
+#include "UnitEntity.h" //For Debugging only
 extern int currentDay;
 extern bool testMode;
 
@@ -54,14 +55,14 @@ bool OrderLine::getCompletionFlag() const
 OrderLine::~OrderLine()
 {
   //#ifdef TEST_MODE
-  //   if(testMode)  cout << "Order deleted" << endl;
+ //    /*if(testMode) */ cout << "Order deleted" << endl;
   //#endif
 
-  for ( vector < AbstractData * >::iterator iterator = parameters_.begin();
-       iterator != parameters_.end(); ++iterator )
-       {
-         ( * iterator )->clean();
-  }
+//   for ( vector < AbstractData * >::iterator iterator = parameters_.begin();
+//        iterator != parameters_.end(); ++iterator )
+//        {
+//          ( * iterator )->clean();
+//   }
 
 }
 
@@ -211,7 +212,9 @@ void OrderLine::stripModifiers(Parser * parser )
 bool OrderLine::parse( Parser * parser, Entity * entity )
 {
   string tempKeyword = parser->getWord();
+// If keyword is "combat" we would like to insert  order
   orderPrototype_ = orderPrototypesCollection->find( tempKeyword );
+//cout << " Order ->"<<orderPrototype_->getKeyword()<<endl;
   if ( orderPrototype_ == 0 )
   {
 		if(elseStatement_ || endifStatement_)
@@ -221,6 +224,7 @@ bool OrderLine::parse( Parser * parser, Entity * entity )
          << parser->getText() << endl;
     return false;
   }
+  
   else if ( orderPrototype_->
        loadParameters( parser, parameters_, entity ) == OK )
          return true;
@@ -238,7 +242,14 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
      Entity * entity )
      {
        ORDER_STATUS result;
-     #ifdef TEST_MODE
+
+//        if(entity->isTraced())                                  //For Debugging only
+//          {                                                      //For Debugging only
+//            cout <<"==== Trying to process "; printOrderLine(cout); //For Debugging only
+//          }                                                     //For Debugging only
+
+
+#ifdef TEST_MODE
        if ( testMode )
        {
          cout << "==== Trying to process ";
@@ -247,18 +258,24 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
      #endif
 
        if ( orderPrototype_ == 0 )
-			 	{
-					if(elseStatement_ || endifStatement_)
+		{
+		if(elseStatement_ || endifStatement_)
          		return FAILURE;
 					else
          		return INVALID;
-				}
+		}
        if ( executedOnDay_ == currentDay )
        {
      #ifdef TEST_MODE
          if ( testMode )
            cout << "==== Was already executed on this day" << endl;
      #endif
+
+/*           if(entity->isTraced())                                  //For Debugging only
+           {                                                      //For Debugging only
+             cout <<"==== Was already executed on this day" << endl;  //For Debugging only
+           }  */                                                   //For Debugging only
+
          return FAILURE;
        }
 
@@ -277,7 +294,13 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
          if ( testMode )
            cout << "==== Order can't be processed duiring this mode" << endl;
      #endif
-         return FAILURE;
+
+/*           if(entity->isTraced())                                  //For Debugging only
+           {                                                      //For Debugging only
+             cout <<"==== Order can't be processed duiring this mode "<< endl;  //For Debugging only
+           }                                                     //For Debugging only
+    
+ */        return FAILURE;
        }
 
        if ( ( dayRestricted_ == 0 ) || ( dayRestricted_ == currentDay ) )
@@ -345,6 +368,7 @@ void OrderLine::printOrderLine( ostream & out )
     for ( iterator2 = parameters_.begin(); iterator2 != parameters_.end();
          iterator2++ )
          {
+//		out<<" ";
            ( * iterator2 )->saveAsParameter( out );
     }
   }

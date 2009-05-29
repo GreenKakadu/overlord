@@ -4,7 +4,7 @@
       Defines possible values for combat file settings
     begin                : Sun Jun 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatFileVariety.h"
 CombatFileVariety    sampleCombatFile    ("COMBAT_FILE",   &sampleGameData);

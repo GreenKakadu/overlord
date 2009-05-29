@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jun 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef COMBAT_TACTICS_H
 #define COMBAT_TACTICS_H
@@ -25,6 +25,7 @@ public:
 	CombatTactics();
 	~CombatTactics(){}
    STATUS     initialize      ( Parser *parser);
+   void     defaultInitialization();
    void       save (ostream &out);
    void       report (ostream &out);
    string print();

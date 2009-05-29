@@ -3,7 +3,7 @@
                              -------------------
     begin                : Feb 16 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MovementBonusAttribute.h"
 #include "MovementBonusElement.h"

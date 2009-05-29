@@ -4,7 +4,7 @@
                              -------------------
     begin                : Tue Nov  5 11:46:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "OrderPrototype.h"
 #include "Entity.h"
@@ -126,17 +126,38 @@ bool OrderPrototype::isFullDayOrder()
  * Entity may be busy (moving)
  * Determines if order may be processed
  */
-bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode,
-									Entity * entity)
+bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode, Entity * entity)
 {
-  	if ( !processingMode-> mayExecute(orderType_))
-		return false;
+/*  if(entity->isTraced())                                  //For Debugging only
+  {                                                      //For Debugging only
+    cout <<"==== Checking mayBeProcessed for "<<entity->print()<< endl;  //For Debugging only
+  }*/                                                     //For Debugging only
+  if ( !processingMode-> mayExecute(orderType_))
+    {
+/*      if(entity->isTraced())                                  //For Debugging only
+      {                                                      //For Debugging only
+        cout <<"==== Order can't be Executed "<< endl;  //For Debugging only
+      }                                                     //For Debugging only*/
+      return false;
+    }
 
     if(entity->isUnaccessible())
-		return false;
+    {
+/*      if(entity->isTraced())                                  //For Debugging only
+      {                                                      //For Debugging only
+        cout <<"==== isUnaccessible "<< endl;  //For Debugging only
+      }*/                                                     //For Debugging only
+      return false;
+    }
 
     if(entity->isBusy() && !mayInterrupt())
-		  return false;
+    {
+/*      if(entity->isTraced())                                  //For Debugging only
+      {                                                      //For Debugging only
+        cout <<"====  isBusy"<< endl;  //For Debugging only
+      }*/                                                     //For Debugging only
+      return false;
+    }
 
     return true;
 }
@@ -203,12 +224,15 @@ bool OrderPrototype::entityIsFaction(Entity *entity, PARSING_MODE mode )
 /*
  * Tries to get a word from the parser and to interpret it as a tag
  * of GameData object stored in collection.
+ * Will return false if it is a number (integer can't be a tag)
  * parameterTypeName is provided for error reporting.
  */
 bool OrderPrototype::parseGameDataParameter(Entity *entity, Parser * parser,
 				BasicCollection & collection, const string & parameterTypeName,
 				ParameterList &parameters)
 {
+   if(parser->matchInteger())
+	return false;
    return parseGameDataParameter(entity, parser->getWord(),collection,parameterTypeName,parameters);
 }
 
@@ -247,8 +271,8 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, B
  * Check includes:
  * - Checking parameter as possible new entity placeholder
  * We don't want to let player to detect valid unknown tags so
- * no error on unexisting tag will be returned but we'll give him
- * warning when he uses unknown tag
+ * no error on unexisting tag will be returned 
+ * but we'll give him warning when he uses unknown tag
  */
 bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
 			BasicCollection & collection, ParameterList &parameters)
@@ -303,11 +327,28 @@ bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
 
 
 
+bool OrderPrototype::checkRuleParameterTag(Entity *entity, const string & tag,
+                                        BasicCollection & collection, ParameterList &parameters)
+{
+//   cout << "[][]== checking tag "<<tag << endl;
+  GameData* item = collection.findByTag(tag,false);
+  if( item == 0) // Data doesn't exist 
+  {  
+    return false;
+  }
+  else
+  {
+    parameters.push_back(item);
+  }
+  return true;
+}
+
+
+
 /*
  * Tries to get a word from the parser and to interpret it as an integer
  */
-bool OrderPrototype::parseIntegerParameter(Parser * parser,
-										ParameterList &parameters)
+bool OrderPrototype::parseIntegerParameter(Parser * parser, ParameterList &parameters)
 {
   if(parser -> matchInteger())
 		{
@@ -349,13 +390,16 @@ bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity,
  * Tries to interpret parIndex'th parameter in order parameters as integer
  * returns value or 0 on error.
  */
-int OrderPrototype::getIntegerParameter(ParameterList &parameters,
-										unsigned int parIndex)
+int OrderPrototype::getIntegerParameter(ParameterList &parameters, unsigned int parIndex)
 {
   IntegerData * par;
   if(parameters.size() > parIndex)
     {
       par       =  dynamic_cast<IntegerData *>(parameters[parIndex]);
+//       if(par ==0)
+//       {
+//         cout << "Ops:"<<(parameters[parIndex])->print()<<endl;
+//       }
       assert(par);
       return (par->getValue());
     }

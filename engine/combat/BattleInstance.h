@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon Oct 26 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef BATTLE_INSTANCE_H
 #define BATTLE_INSTANCE_H
@@ -52,6 +52,7 @@ public:
 	void addSideEnchantment(EnchantmentElement * data, bool targetSide);
 	void removeSideEnchantment(EnchantmentElement * data, bool targetSide);
 	void removeAllSideEnchantment(bool targetSide);
+
 //--------- State and stats------
 	virtual bool isAlive();
   virtual bool isFlying();
@@ -71,6 +72,7 @@ public:
 			    int getFiguresNumber()const ;
 			   void setFiguresNumber(int value);
   		    int getDamage()  const;
+  		    int getRangedDamage()  const;
 			    int getHitNumbers()const ;
 			    int getStealth()const ;
 			    int getObservation()const ;
@@ -79,6 +81,7 @@ public:
 	DAMAGE_TYPE modifyDamageType(DAMAGE_TYPE value);
 	inline bool isFanatic() const {return fanatic_;}
 	inline void setFanatic(bool value){fanatic_ = value;}
+	bool isLeader();
 	inline int getMovementInitiative()const {return movementInitiative_;}
 
 //--------- Flags ------
@@ -113,6 +116,7 @@ public:
 //--------- Data ------
 	inline  CombatReport * getCombatReport()const {return report_;}
 	inline TokenEntity * getOrigin() const {return origin_;}
+	inline void setOriginForSummoned(TokenEntity * origin)  {origin_ = origin;}
 	inline BattleField * getBattleField() const {return battleField_;}
   void addEnchantment(EnchantmentElement *enchantment) {enchantments_.add(enchantment); }
   void removeEnchantment(EnchantmentElement *enchantment) {enchantments_.remove(enchantment); }
@@ -130,6 +134,7 @@ public:
   inline void setFleeCounter(int counter)  { fleeCounter_ = counter;}
   inline void advanceFleeCounter()  { fleeCounter_++;}
 	inline bool isFled() const {return fled_;}
+  inline void setFleing(bool value){fleing_ = value;}
 
 	protected:
 		TokenEntity * origin_;
@@ -174,6 +179,7 @@ public:
 		bool fanatic_;
 		bool routed_;
 		bool fled_;
+                bool fleing_;
   private:
 
 };

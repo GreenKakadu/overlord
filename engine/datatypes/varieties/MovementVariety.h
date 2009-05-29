@@ -3,13 +3,14 @@
                              -------------------
     begin                : Wed Jan 15 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef MOVEMENT_VARIETY_H
 #define MOVEMENT_VARIETY_H
 #include <vector>
 #include "Variety.h"
+#include "VarietiesCollection.h"
 class SkillRule;
 class MovementVariety : public Variety  {
 public:
@@ -21,7 +22,7 @@ public:
     protected:
     private:
 };
-extern MovementVariety   sampleMode;
+
 extern MovementVariety * walkingMode;
 extern MovementVariety * swimingMode;
 extern MovementVariety * flyingMode;

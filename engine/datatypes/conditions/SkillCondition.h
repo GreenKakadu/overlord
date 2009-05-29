@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 26 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef SKILL_CONDITION_H
 #define SKILL_CONDITION_H

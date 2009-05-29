@@ -4,7 +4,7 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <time.h>
 #include "BasicRulesCollection.h"
@@ -25,7 +25,7 @@ RulesIterator iter;
        return  (*iter);
    }
  if(errorReportEnabled)
- cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
+ cerr << "Error findByTag: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
  return 0 ;
 }
 GameData* BasicRulesCollection::findByIndex (const long int index, bool errorReportEnabled)

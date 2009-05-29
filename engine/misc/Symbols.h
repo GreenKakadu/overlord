@@ -4,7 +4,7 @@
                              -------------------
     begin                : Fri Nov 15 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef SYMBOLS_H
 #define SYMBOLS_H

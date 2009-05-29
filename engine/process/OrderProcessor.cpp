@@ -4,11 +4,12 @@
                              -------------------
     begin                : Sun Oct 31 13:35:00 IST 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "OrderProcessor.h"
 #include "Entity.h"
 #include "ProcessingMode.h"
+#include "UnitEntity.h" //For Debugging only
 extern bool testMode;
 //  Processes all possible ( at this phase) orders for Entity.
 // Each order processed only once
@@ -19,23 +20,35 @@ bool  OrderProcessor::process(Entity * entity, ProcessingMode * processingMode)
   bool orderWasExecuted = false;
   OrderIterator currentIterator ;
   ORDER_STATUS result;
+  
+                                                     //For Debugging only
+//   if(entity->isTraced())                                 //For Debugging only
+//     {                                                    //For Debugging only
+//       cout<< "Processing orders for Entity " << entity->print() <<endl; //For Debugging only
+//     }                                                   //For Debugging only
+
 #ifdef TEST_MODE
-   if(testMode) 	cout<< "Processing orders for Entity " << entity->print() <<endl;
+ if(testMode) 	cout<< "Processing orders for Entity " << entity->print() <<endl;
 #endif
 
    for( currentIterator = (entity->getOrderList()).begin();
 	                      currentIterator != (entity->getOrderList()).end();)
      {
-			if( (*currentIterator)->ifConditionLevel > 0)
-					{
-						currentIterator++;
-						continue;
-					}
-			if( (*currentIterator)->ifStatementLevel > 0)
-					{
-						currentIterator++;
-						continue;
-					}
+//        if(entity->isTraced())                                  //For Debugging only
+//         {                                                      //For Debugging only
+//           cout <<"[->"; (*currentIterator)->printOrderLine(cout); //For Debugging only
+//         }                                                     //For Debugging only
+
+        if( (*currentIterator)->ifConditionLevel > 0)
+          {
+                  currentIterator++;
+                  continue;
+          }
+        if( (*currentIterator)->ifStatementLevel > 0)
+          {
+                  currentIterator++;
+                  continue;
+          }
       result = (*currentIterator) ->process(processingMode,  entity);
       if (result == SUSPENDED) // second pass needed
         return true;
@@ -72,48 +85,49 @@ bool OrderProcessor::processOrderResults(Entity * entity, ORDER_STATUS result, O
 
   switch (result)
   {
-					case SUCCESS:
-	  				{
+	case SUCCESS:
+	  	{
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Result of order processing is Success" << endl;
 #endif
-	    				postProcessOrder(entity, result, currentIterator);
+	    	postProcessOrder(entity, result, currentIterator);
               if((*currentIterator)->getCompletionFlag())
-	      				{
-				    		 delete (*currentIterator);
-		    				 currentIterator = (entity->getOrderList()).erase(currentIterator);
-				 				 break;
-		  					}
-	    				if ((*currentIterator) -> repetitionCounter() > 1)
+	      		{
+		          //delete (*currentIterator);
+		    	currentIterator = (entity->getOrderList()).erase(currentIterator);
+			break;
+		  	}
+	    	if ((*currentIterator) -> repetitionCounter() > 1)
 	      				{
          					(*currentIterator)->decrementRepetitionCounter()  ;
 									currentIterator++;
 				 					break;
 	      				}
 
-	    				if ((*currentIterator)->isPermanent())
+	    	if ((*currentIterator)->isPermanent())
 	      				{
 									currentIterator++;
 				 					break;
 	      				}
 
-	    				else
-	      				{
-				    		 delete (*currentIterator);
-		    				 currentIterator = (entity->getOrderList()).erase(currentIterator);
-		  					}
-							break;
-	  				}
-			case FAILURE:
-	  				{
+	    	else
+	      		{
+				    		 //delete (*currentIterator);
+		    		currentIterator =
+							(entity->getOrderList()).erase(currentIterator);
+		  	}
+		break;
+	  	}
+		case FAILURE:
+	  	{
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Result of order processing is Failure" << endl;
 #endif
-							currentIterator++;
-	    				break;
-	  				}
-			case INVALID:
-	  				{
+			currentIterator++;
+	    		break;
+	  	}
+		case INVALID:
+	  	{
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Result of order processing is Invalid" << endl;
 #endif
@@ -122,9 +136,9 @@ bool OrderProcessor::processOrderResults(Entity * entity, ORDER_STATUS result, O
 				    	(*currentIterator) -> ~OrderLine();
 		    			currentIterator = (entity->getOrderList()).erase(currentIterator);
 	    				break;
-	  				}//end of INVALID case
-			case IN_PROGRESS:
-          {
+	  	}//end of INVALID case
+		case IN_PROGRESS:
+                {
 #ifdef TEST_MODE
    if(testMode) 	    cout << "==== Order is in progress" << endl;
 #endif
@@ -135,25 +149,26 @@ bool OrderProcessor::processOrderResults(Entity * entity, ORDER_STATUS result, O
 //				 					  break;
 //		  					}
 
-          if ((*currentIterator)->isPermanent())
-	      				{
+                        if ((*currentIterator)->isPermanent())
+	      			{
 									currentIterator++;
 				 					break;
-	      				}
-	    				if ((*currentIterator) -> repetitionCounter() == 1)
-	      				{
-				    		 delete (*currentIterator);
-		    				 currentIterator = (entity->getOrderList()).erase(currentIterator);
-		  					}
-	    				if ((*currentIterator) -> repetitionCounter() > 1)
+	      			}
+	    		if ((*currentIterator) -> repetitionCounter() == 1)
+	      			{
+                                        // this is equal to SUCCESS:	
+                                  postProcessOrder(entity, SUCCESS, currentIterator); 
+                                  currentIterator = (entity->getOrderList()).erase(currentIterator);
+		  		}
+	    		if ((*currentIterator) -> repetitionCounter() > 1)
 	      				{
          					(*currentIterator)->decrementRepetitionCounter()  ;
 									currentIterator++;
 				 					break;
 	      				}
 
-	    				break;
-            }
+	    	break;
+                }
 			case SUSPENDED:
 			case WAITING: // Not used
 	    				break;
@@ -180,7 +195,7 @@ OrderProcessor::postProcessOrder(Entity * entity, ORDER_STATUS result, OrderIter
   currentIterator++;
   for ( ; currentIterator != (entity->getOrderList()).end(); )
     {
-			if( !((*currentIterator)->whileCondition()) && !((*currentIterator)->ifConditionLevel > 0))
+		if( !((*currentIterator)->whileCondition()) && !((*currentIterator)->ifConditionLevel > 0))
 			return;
 #ifdef TEST_MODE
    if(testMode)
@@ -192,54 +207,56 @@ OrderProcessor::postProcessOrder(Entity * entity, ORDER_STATUS result, OrderIter
 			{
 				case SUCCESS:
 	  			{
-	    			if ((*currentIterator)->ifConditionLevel > 0)
+	    		if ((*currentIterator)->ifConditionLevel > 0)
 	      			{
-								(*currentIterator)->ifConditionLevel--;
-							}
+					(*currentIterator)->ifConditionLevel--;
+				}
 		// Checking next conditional modifier
 		// if it is "+" Order will be deleted in the next "if" (combination "-+" is illegal (?))
 		// otherwise put "else"
 
-	    			if ((*currentIterator)->whileCondition()) // Delete order
+	    		if ((*currentIterator)->whileCondition()) // Delete order
 	      			{
+					//(*currentIterator)->printOrderLine(cout);
 #ifdef TEST_MODE
    if(testMode) 		cout << "====+++ Order deleted (condition failed)"<<endl;
 #endif
-				    	delete (*currentIterator);
+				    	//delete (*currentIterator);
 		    			currentIterator = (entity->getOrderList()).erase(currentIterator);
 	      			}
 	      		else
 	      			{
 		    				currentIterator++;
-		    			}
+		    		}
 	    		break;
 	  		}
 			case INVALID:
 	  		{
 	    		if ((*currentIterator)->whileCondition()) // +
 	      		{
-					 		(*currentIterator)->setWhileCondition(false);
-								// Checking next conditional modifier
-								// if any exists delete order
-							if ((*currentIterator)->ifConditionLevel > 0) // Delete order (and Node)
-		  					{
+				(*currentIterator)->setWhileCondition(false);
+					// Checking next conditional modifier
+					// if any exists delete order
+				if ((*currentIterator)->ifConditionLevel > 0) // Delete order (and Node)
+		  			{
 #ifdef TEST_MODE
    if(testMode) 		    cout << "====+++ Order deleted (impossible conditions)"<<endl;
 #endif
-		    					(*currentIterator)  ->  ~OrderLine();
-		    						currentIterator = (entity->getOrderList()).erase(currentIterator);
-		  					}
-							else
-		    						currentIterator++;
-	    				break;
+		    			//delete (*currentIterator);
+		    			currentIterator = (entity->getOrderList()).erase(currentIterator);
+		  			}
+				else
+		    			currentIterator++;
+	    			break;
 	      		}
 
 	    		if ((*currentIterator)->ifConditionLevel > 0) // Delete order
 	      		{
+				//(*currentIterator)->printOrderLine(cout);
 #ifdef TEST_MODE
-   if(testMode) 		cout << "====+++ Order deleted (condition failed)"<<endl;
+  if(testMode)		cout << " ====+++ Order deleted (condition failed) "<<endl;
 #endif
-				    	(*currentIterator) -> ~OrderLine();
+				    	//delete (*currentIterator);
 		    			currentIterator = (entity->getOrderList()).erase(currentIterator);
 	      		}
 	    		break;

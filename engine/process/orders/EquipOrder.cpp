@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Mar 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "EquipOrder.h"
 #include "SkillLevelElement.h"
@@ -84,6 +84,7 @@ ORDER_STATUS EquipOrder::process (Entity * entity, ParameterList &parameters)
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
+
   ItemRule * item = dynamic_cast< ItemRule*>(parameters[0]);
 
   if ( item == 0) // item doesn't exist but we don't want to let player to know that
@@ -148,7 +149,20 @@ ORDER_STATUS EquipOrder::process (Entity * entity, ParameterList &parameters)
       }
     else  // equip all available
       {
+// 	if(unit->isTraced())
+// 	{
+// 	//cout << unit->print()<< " is equipping all "<< item->print()<<endl;
+// 	}
         number = unit->hasItem(item);
+
+//         if((number > 0) && (unit == units["U8599"]))
+//         {
+//           cout << "o"<<endl;
+//         }
+//         if(number >= 17 )
+//         {
+//           cout << "!"<<endl;
+//         } 
         result = unit->equipItem (item, number);
         if (result == 0)
               {

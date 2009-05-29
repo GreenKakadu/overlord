@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Dec 09 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef CHARGE_COMBAT_ORDER_H
 #define CHARGE_COMBAT_ORDER_H

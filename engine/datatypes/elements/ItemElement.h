@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ITEM_ELEMENT_H
 #define ITEM_ELEMENT_H

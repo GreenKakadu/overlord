@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Nov  9 19:24:42 IST 2001
     copyright            : (C) 2001 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "PrototypeManager.h"
 PrototypeManager * prototypeManager = 0; // will be created on first call

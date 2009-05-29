@@ -4,7 +4,7 @@ Template for implementation of small objects demanding efficient memory use.
                              -------------------
     begin                : Wed Jan 1 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ELEMENT_H
 #define ELEMENT_H

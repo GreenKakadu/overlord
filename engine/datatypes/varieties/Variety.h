@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 16 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef VARIETY_H
@@ -11,7 +11,7 @@
 
 #include "GameData.h"
 #include "OverlordTypes.h"
-#include "VarietiesCollection.h"
+
 
 
 

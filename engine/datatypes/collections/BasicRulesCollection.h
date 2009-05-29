@@ -5,13 +5,14 @@
                              -------------------
     begin                : Mon Jun 10 12:24:42 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef BASIC_RULES_COLLECTION_H
 #define BASIC_RULES_COLLECTION_H
 #include <string>
 #include <vector>
+#include <iostream>
 //#include "SystemTypes.h"
 #include "OverlordTypes.h"
 #include "BasicCollection.h"
@@ -52,7 +53,7 @@ template <class T>  T * GET_FROM_COLLECTION(BasicRulesCollection * collection, c
   T * castedData = dynamic_cast<T*>(rawData);
   if(castedData == 0)
   {
-      cout << "Casting failed for " << collection->print() << "["<<tag<<"]"<<endl;
+      cerr << "Casting failed for " << collection->print() << "["<<tag<<"]"<<endl;
       return 0;
   }
    return castedData;

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "EnchantmentUsingStrategy.h"
 #include "EnchantmentElement.h"
@@ -43,7 +43,8 @@ GameData * EnchantmentUsingStrategy::createInstanceOfSelf()
 STATUS
 EnchantmentUsingStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("GRANTS") )
+
+	if (parser->matchKeyword ("GRANTS") )
     {
       productType_ = enchantments[parser->getWord()];
       productionDays_ =  parser->getInteger();
@@ -82,7 +83,8 @@ EnchantmentUsingStrategy::initialize        ( Parser *parser )
 
 
 
-USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, int & repetitionCounter)
+USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
+					int & repetitionCounter,OrderLine * order)
 {
    USING_RESULT result;
 // Production modifiers:
@@ -106,19 +108,26 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
        // as defined by repetition counter
   {
     int resourcesAvailable = checkResourcesAvailability(unit);
+    int manaAvailable = checkManaAvailability(unit);
 
     if( resourcesAvailable < cycleCounter)
         cycleCounter = resourcesAvailable;
+    if( manaAvailable < cycleCounter)
+        cycleCounter = manaAvailable;
+
     int effectiveProduction = cycleCounter * productNumber_;
     if( (repetitionCounter != 0) && (effectiveProduction  >= repetitionCounter) ) // production will be finished now
       {
         effectiveProduction = repetitionCounter;
         cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
         if(cycleCounter >1)
+				{
           consumeResources(unit,cycleCounter-1);
+          consumeMana(unit,cycleCounter-1);
+				}
          result = USING_COMPLETED;
         repetitionCounter = 0;
-      unit->getCurrentOrder()->setCompletionFlag(true);
+      order->setCompletionFlag(true);
 
    // Determine target
    TokenEntity * target;
@@ -156,6 +165,7 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
     else
     {
       consumeResources(unit,cycleCounter-1);
+      consumeMana(unit,cycleCounter-1);
 //      if(dailyUse->getDaysUsed() > 0)
 //        unit->addSkillUse(dailyUse);
 //      repetitionCounter = repetitionCounter - effectiveProduction;
@@ -236,3 +246,9 @@ void EnchantmentUsingStrategy::printSkillDescription(ostream & out)
 
 
 
+BasicUsingStrategy * EnchantmentUsingStrategy::cloneSelf()
+{
+ EnchantmentUsingStrategy * copyOfSelf = new EnchantmentUsingStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
+}

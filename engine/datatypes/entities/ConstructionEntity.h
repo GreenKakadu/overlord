@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Aug 31 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -38,6 +38,7 @@ public:
 	   ~ConstructionEntity();
       STATUS  initialize      ( Parser *parser );
        void      save (ostream &out);
+       void      dailyUpdate();
        void      produceFactionReport (FactionEntity * faction, ReportPrinter &out);
        void      publicReport (int observation, ReportPrinter &out);
        void      privateReport (ReportPrinter &out);
@@ -46,6 +47,7 @@ public:
       GameData * createInstanceOfSelf();
        void    preprocessData();
        void    postProcessData();
+	void setDefaultCombatMovement();
 //       void      payUpkeep();
        inline LocationEntity * getLocation()const {return location_;}
        inline void setLocation(LocationEntity * location){location_ = location;}
@@ -60,12 +62,17 @@ public:
       int addSkill(SkillRule  * skill, int expPoints);
       void buildingCompleted();
       int getStealth() const;
-	    void sufferDamage(int value);
+      void sufferDamage(int value);
+
       void addUnit(UnitEntity * unit);
       void removeUnit(UnitEntity * unit);
+      void eraseRemovedUnit(UnitEntity * unit);
+      void eraseAllRemovedUnits();
+      void addAllAddedUnits();
+
       void destroy();
       bool mayMove();
-			bool mayParticipateInCombat() const {return construction_->isBattle();}
+      bool mayParticipateInCombat() const {return construction_->isBattle();}
       bool mayInterract(UnitEntity * unit);
       int getLandUse();
       int getProductionBonus(ItemRule * item, SkillRule * skill,int level);
@@ -98,14 +105,29 @@ public:
 	   Rule * getComposition();
      EntityStatistics  getBasicStats();
      void disband();
+     inline bool isPublic() {return public_;}
+
+// Later Construction Stats should be done more sophisticated 
+// and also depend on crew skills, enchants, weather etc.
+	 inline  int    getMelee() const {return construction_->getStats()->getMelee();}
+	 inline  int    getMissile() const {return construction_->getStats()->getMissile();}
+	 inline  int    getDefence() const {return construction_->getStats()->getDefence();}
+	 inline  int    getHits() const {return construction_->getStats()->getHits();}
+	 inline  int 	getLife() const {return construction_->getStats()->getLife();}
+	 inline  int 	getDamage() const {return construction_->getStats()->getDamage();}
+	 inline  int 	getRangedDamage() const {return construction_->getStats()->getRangedDamage();}
+
 
     protected:
     vector <UnitEntity *> units_;
+	vector <UnitEntity *> unitsToAdd_;
+	vector <UnitEntity *> unitsToRemove_;
     vector <UnitEntity *> staff_;
     ConstructionRule * construction_;
     vector<ConstructionWorksElement *>    buildingWorks_;
     vector <ResourceElement *>   resourceQuotas_;
     int effectiveStaff_;
+    bool public_;
 };
 extern ConstructionEntity   sampleConstructionEntity;
 #include "EntitiesCollection.h"

@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Nov 19 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <stdio.h>
 #include <algorithm>
@@ -14,12 +14,14 @@
 
 #include "FileParser.h"
 #include "ReportPrinter.h"
+#include "SimpleMessage.h"
 
 #include "FactionEntity.h"
 #include "UnitEntity.h"
 #include "TokenEntity.h"
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
+#include "TokenEntity.h"
 
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
@@ -33,9 +35,10 @@
 #include "CombatReport.h"
 #include "ReportElement.h"
 #include "ReportMessage.h"
+#include "DataManipulator.h"
 
-
-
+extern ReportPattern *	 resignReporter;
+extern DataManipulator * dataManipulatorPtr;
 extern bool ciStringCompare(const string& s1,const string& s2);
 //extern StanceVariety * findStanceByTag(const string &tag);
 EntitiesCollection <FactionEntity>   factions(new DataStorageHandler(gameConfig.getFactionsFile() ));
@@ -50,12 +53,16 @@ FactionEntity::FactionEntity ( const FactionEntity * prototype ) : Entity(protot
   terseBattleReport_ = false;
   allSkillsToReshow_ = false;
   isResigned_ = false;
+  isDisbanded_ = false;
   temporaryFlags_ = 0x0;
 }
 
 void    FactionEntity::preprocessData()
 {
+  if(defaultStance_==0)
+  {
 	defaultStance_  = neutralStance;
+  }
   newKnowledge = knowledge_.size();
   newSkillKnowledge = skillKnowledge_.size();
 //  cout <<"Begin: (" <<knowledge_.size()<<") -> " <<newKnowledge <<" ->end: " << (knowledge_.end() - knowledge_.begin())<<endl;
@@ -63,6 +70,7 @@ void    FactionEntity::preprocessData()
   controlPoints_ = 0;
   terseBattleReport_ = false;
   isResigned_= false;;
+  isDisbanded_ = false;
 }
 
 
@@ -92,6 +100,7 @@ FactionEntity::initialize        ( Parser *parser )
 		StanceVariety * defaultStance = stances[parser->getWord()];
 			if(defaultStance)
 	   		defaultStance_ =  defaultStance;
+//cout << "DEFAULIT_STANCE of "<< printTag()<< " = "<<defaultStance_->print()<<endl;
 	  return OK;
 	}
        if (parser->matchKeyword("STANCE"))
@@ -147,7 +156,7 @@ FactionEntity::initialize        ( Parser *parser )
 void FactionEntity::save(ostream &out)
 {
 	saveReport();
-  if(isResigned_)
+  if(isResigned_ || isDisbanded_)
     return;
 
   out << keyword_ << " " << tag_ << endl;
@@ -211,49 +220,54 @@ void FactionEntity::loadOrders()
 // ============== UNIT orders	  ====================
 	do
 	  {
- 			if (parser->matchKeyword ("END") )
-    			{
-    		 		delete parser;
-    		 		return;
-     			}
+		if (parser->matchKeyword ("END") )
+		{
+			delete parser;
+			return;
+		}
 
-      if(parser->matchChar(COMMENT_SYMBOL))  // skip  lines starting from comment
-				  {
-  			    parser -> getLine();
-					  continue;
-				  }
-			else
-				{
-					if(parser->matchChar(';'))  // overlord comment compartibility
-					{
-  			    parser -> getLine();
-						continue;
-					}
-				}
+ 	     	if(parser->matchChar(COMMENT_SYMBOL))  // skip  lines starting from comment
+		{
+			parser -> getLine();
+			continue;
+		}
+		else
+		{
+			if(parser->matchChar(';'))  // overlord comment compartibility
+			{
+				parser -> getLine();
+				continue;
+			}
+		}
 
-      if(parser->matchKeyword ("UNIT"))
-        {
-
-          currentEntity = currentEntityOrders(units, parser);
-          continue;
-        }
-
-      if(parser->matchKeyword ("CONSTRUCTION"))
-        {
-          currentEntity =  currentEntityOrders(buildingsAndShips, parser);
-          continue;
-        }
+		if(parser->matchKeyword ("UNIT"))
+			{
+		
+				currentEntity = currentEntityOrders(units, parser);
+				continue;
+			}
+		
+		if(parser->matchKeyword ("CONSTRUCTION"))
+			{
+				currentEntity =  currentEntityOrders(buildingsAndShips, parser);
+				continue;
+			}
+                if(parser->matchKeyword ("BUILDING"))
+                {
+                  currentEntity =  currentEntityOrders(buildingsAndShips, parser);
+                  continue;
+                }
 
 		  if(currentEntity == 0)
 			  {
-  			  parser -> getLine();
+  			  	parser -> getLine();
   				continue;
 			  }
 		// Then it is order line
 		string order =  parser->getText();
 		if( !order.empty() )
 			{
-//    				cout << "Entity order " << order<<endl;
+//    				cout <<currentEntity->getName() << ": Entity order " << order<<endl;
 				currentEntity  -> addOrder(order);
 			}
 
@@ -364,34 +378,59 @@ TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & colle
                                   Parser * parser)
 {
   string entityName =  parser->getWord();
-  GameData * current = collection.findByTag(entityName);
-  if(current == 0)
-		{
-		  cerr << "Wrong entity name " << entityName <<endl;
-  		parser -> getLine();
-  		return 0;
+ TokenEntity * currentEntity = 0;
+ FactionEntity * faction = 0;
+	// First check it for being new entity placaholder
+  if(gameConfig.isNewEntityName(entityName,faction))
+    {
+      NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(entityName);
+      if(placeholder != 0)  // this is  placeholder. Now we'll create new unit but will
+			// not register it untill it is really created
+        {
+//          GameData* realEntity = placeholder->getRealEntity();
+//         if(realEntity) //
+//					{
+//						currentEntity = realEntity
+//					}
+//          else   // placeholder is still empty. use temporary entity to store orders
+//					{
+	currentEntity = placeholder->getNewEntity();
+	if(faction ==0) // Faction was omited. Default is this
+	faction = this;
+	currentEntity->setFaction(faction);
+//					}
+        }
 		}
+  else
+	{
+  	GameData * current = collection.findByTag(entityName);
+  	if(current == 0)
+			{
+		  	cerr << "Wrong entity name " << entityName <<endl;
+  			parser -> getLine();
+  			return 0;
+			}
 
-  TokenEntity * currentEntity = dynamic_cast<TokenEntity *>(current);
-  if(currentEntity == 0)
-		{
-		  cerr << "Wrong entity name " << entityName <<endl;
-  		parser -> getLine();
-  		return 0;
-		}
+  	currentEntity = dynamic_cast<TokenEntity *>(current);
+  	if(currentEntity == 0)
+			{
+		  	cerr << "Wrong entity name " << entityName <<endl;
+  			parser -> getLine();
+  			return 0;
+			}
+	}
 
   if(  currentEntity -> getFaction() != this )
 		{
 		  cerr << "Attempt to give orders to foreign entity " <<  currentEntity -> getTag() << endl;
 		  currentEntity =0;
-   	  parser -> getLine();
+   	  	parser -> getLine();
   		return 0;
 		}
   else
 		{
-//      cout << "Entity "<< currentEntity->print()<<endl;
 		  currentEntity -> clearOrders();
-   	  parser -> getLine();
+   	  	parser -> getLine();
   		return currentEntity;
 		}
 
@@ -445,7 +484,13 @@ void FactionEntity::dailyReport()
 	}
 }
 
-
+bool locOrder(LocationEntity *l1,LocationEntity *l2)
+{
+	if(locations.getIndex(l1->getTag()) < locations.getIndex(l2->getTag()))
+		return true;
+	else
+		return false;
+}
 
 /*
  * Adds report to the list if it is different from those,
@@ -472,13 +517,18 @@ ReportPrinter outfile;
 void FactionEntity::saveReport()
 {
     outfile.open(gameConfig.getReportFileName(this));
+	cout << gameConfig.getReportFileName(this)<<endl;
+	if(!isNPCFaction())
+	{
+    		reportlist<< gameConfig.getReportFileName(this)<<endl;
+	}
 
 // Mail header
-  outfile << "Subject:"<< gameConfig.getGameId()<<" Report for Turn "
+	outfile << "To: " << email_<<"\n";
+  	outfile << "Subject:"<< gameConfig.getGameId()<<" Report for Turn "
 	        << gameConfig.turn << endl;
 	outfile << "From: "<< gameConfig.getServer()
-	        <<" ("<<gameConfig.getServerName()<< " Game server )"<< endl;
-	outfile << "To: " << email_<<"\n";
+	        <<" ("<<gameConfig.getServerName()<< " )"<< endl;
 	outfile << "\n";
 
 // Report
@@ -491,7 +541,7 @@ void FactionEntity::saveReport()
        outfile.close();
        return;
       }
-
+     outfile << "Next turn: "<<gameConfig.getDeadline()<<endl;
 	 outfile <<  endl << "// Faction stats " <<  endl;
    reportFunds(outfile);
    outfile << "Control Points: " << getControlPoints() <<" of "
@@ -518,7 +568,7 @@ void FactionEntity::saveReport()
       if (  this == (*reportIterator)->getDestination())
 				    {
                (*reportIterator)->printReport(outfile);
-              collectedReports_.erase(reportIterator);
+              reportIterator = collectedReports_.erase(reportIterator);
 				    }
             else
               reportIterator++;
@@ -542,6 +592,9 @@ void FactionEntity::saveReport()
   vector< LocationEntity *>::iterator locIterator;
 //  ReportIterator reportIterator;
   bool eventsReported = false;
+//locOrder(*(visitedLocations_.begin()),*(visitedLocations_.end()));
+	std::sort(visitedLocations_.begin(),visitedLocations_.end(),locOrder);
+
 	for ( locIterator = visitedLocations_.begin(); locIterator != visitedLocations_.end(); locIterator++)
 		{
         (*locIterator) -> produceFactionReport(this, outfile);
@@ -552,7 +605,7 @@ void FactionEntity::saveReport()
          	  if (  (*locIterator) == (*reportIterator)->getDestination())
 				    {
                (*reportIterator)->printReport(outfile);
-              collectedReports_.erase(reportIterator);
+              reportIterator = collectedReports_.erase(reportIterator);
               eventsReported = true;
 				    }
             else
@@ -574,6 +627,7 @@ void FactionEntity::saveReport()
    outfile <<  endl << "// Knowledge " <<  endl <<  endl;
 
    reportNewKnowledge(outfile);
+	outfile.max_width(60); // Make string shorter for reports
 
    outfile <<  endl <<  endl << "#============== Orders Template ==========" <<  endl <<  endl;
 
@@ -584,7 +638,7 @@ void FactionEntity::saveReport()
  		(*unitIterator) -> printOrderTemplate(outfile);
 	}
 
-   outfile <<  endl << "// Constructions " <<  endl <<  endl;
+   outfile <<  endl << "#    --- Constructions ---" <<  endl <<  endl;
  for ( vector< ConstructionEntity *>::iterator constructionIterator = loyalConstructions_.begin(); constructionIterator != loyalConstructions_.end(); constructionIterator++)
 	{
  		(*constructionIterator) -> printOrderTemplate(outfile);
@@ -633,7 +687,7 @@ void FactionEntity::addUnit(UnitEntity * unit)
 		}
 	else
 	{
-		cout << "Cant register" << unit->print() <<" to faction " << printTag()<<endl;
+		cerr << "Cant register" << unit->print() <<" to faction " << printTag()<<endl;
 	}
 }
 
@@ -647,14 +701,14 @@ void FactionEntity::removeUnit(UnitEntity * unit)
 {
 	if (!unit)
 		{
-		  cout << "Cant remove" << unit->print() <<" from faction " << printTag()<<endl;
+		  cerr << "Cant remove" << unit->print() <<" from faction " << printTag()<<endl;
        return;
     }
 
  vector< UnitEntity *>::iterator iter = find (loyalUnits_.begin(), loyalUnits_.end(), unit);
 	if (iter == loyalUnits_.end())
 		{
-		  cout << "Cant find" << unit->print() <<" in faction " << printTag()<<endl;
+		  cerr << "Cant find" << unit->print() <<" in faction " << printTag()<<endl;
        return;
     }
 ////       controlPoints_ -= unit->getControlPoints();
@@ -681,7 +735,7 @@ void FactionEntity::addConstruction(ConstructionEntity * construction)
 		}
 	else
 	{
-		cout << "Cant register" << construction->print() <<" to faction " << printTag()<<endl;
+		cerr << "Cant register" << construction->print() <<" to faction " << printTag()<<endl;
 	}
 }
 
@@ -695,14 +749,14 @@ void FactionEntity::removeConstruction(ConstructionEntity * construction)
 {
   	if (!construction)
 		{
-		  cout << "Cant remove" << construction->print() <<" from faction " << printTag()<<endl;
+		  cerr << "Cant remove" << construction->print() <<" from faction " << printTag()<<endl;
        return;
     }
 
  vector< ConstructionEntity *>::iterator iter = find (loyalConstructions_.begin(), loyalConstructions_.end(), construction);
 	if (iter == loyalConstructions_.end())
 		{
-		  cout << "Cant find" << construction->print() <<" in faction " << printTag()<<endl;
+		  cerr << "Cant find" << construction->print() <<" in faction " << printTag()<<endl;
        return;
     }
 
@@ -747,6 +801,8 @@ StanceVariety * FactionEntity::getStance(TokenEntity * token)
 				return (*iter).getRule();
 		}
     // Check that we can determine unit's owner
+		if(token->getAdvertising())
+	    return  getStance(faction);
 		if(token->getStealth() < token->getLocation()->getFactionalObservation(this))
 	    return  getStance(faction);
 		else
@@ -867,6 +923,7 @@ bool FactionEntity::addKnowledge(Rule * info)
   if(info == 0)
       return false;
 
+  
   if(!hasKnowledge(info))
   {
     knowledge_.push_back(info);
@@ -884,7 +941,7 @@ bool FactionEntity::addSkillKnowledge(SkillRule * knowledge, int level)
 {
   if(knowledge == 0)
       return false;
-
+  
   if(!hasSkillKnowledge(knowledge,level))
   {
     skillKnowledge_.push_back(new SkillLevelElement(knowledge,level));
@@ -900,13 +957,22 @@ bool FactionEntity::addSkillKnowledge(SkillRule * knowledge, int level)
 /** No descriptions */
 Rule * FactionEntity::hasKnowledge(Rule * info)
 {
+    for(KnowledgeIterator iter = knowledge_.begin(); iter != knowledge_.end(); ++iter)
+    {
+      if((*iter)->getTag()== info->getTag())
+      {
+        return (*iter);
+      }
+    }
+    return 0;
 
-  KnowledgeIterator  iter = find(knowledge_.begin(), knowledge_.end(),info) ;
 
-  if ( iter != knowledge_.end())
-    return *iter;
-  else
-      return 0;
+ // KnowledgeIterator  iter = find(knowledge_.begin(), knowledge_.end(),info) ;
+
+//   if ( iter != knowledge_.end())
+//     return *iter;
+//   else
+//       return 0;
 }
 
 
@@ -1107,7 +1173,8 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
       for(KnowledgeIterator iter = knowledgeToReshow_.begin();
                         iter != knowledgeToReshow_.end(); ++iter)
       {
-          if((*iter)->isDescendantFrom((*((*collIter)->begin()))) )
+//          if((*iter)->isDescendantFrom((*((*collIter)->begin()))) )
+        if((*collIter)->isValidTag((*iter)->getTag()))
             {
               if(isFirst)
               {
@@ -1162,6 +1229,29 @@ void FactionEntity::loadKnowledge(Parser *parser)
 
 
 
+bool FactionEntity::checkAnyUnitsLeft()
+{
+ for (vector< UnitEntity *>::iterator iter = loyalUnits_.begin();
+     iter != loyalUnits_.end(); ++iter)
+  {
+    if(!(*iter)->isDisbanded())
+	return true;
+  }
+
+ for (vector< ConstructionEntity *>::iterator iter = loyalConstructions_.begin();
+     iter != loyalConstructions_.end(); ++iter)
+  {
+      if((*iter)->oath(0) != SUCCESS) // Everything will be destroyed
+         {
+          (*iter)->destroy();
+         }
+  }
+  isDisbanded_ = true;
+  addReport(new SimpleMessage(resignReporter),0,0); 
+  return false;
+}
+
+
 void FactionEntity::resign(FactionEntity * faction)
 {
  // transfer all posessions
@@ -1195,7 +1285,7 @@ bool FactionEntity::isNPCFaction()
 
 
 bool FactionEntity::stanceAtLeast(FactionEntity * faction, StanceVariety * stance)
-{
+{ 
   return (*(getStance(faction)) >= *stance) ;
 }
 
@@ -1294,6 +1384,7 @@ void FactionEntity::calculateControlPoints()
 
 void FactionEntity::addCombatReport(CombatReport * combatReport)
 {
+//cout << " === Adding combat report "<<combatReport<< "to "<<print()<<" === "<<endl;
  for (vector< CombatReport *>::iterator iter = combatReports_.begin();
      iter != combatReports_.end(); ++iter)
   {

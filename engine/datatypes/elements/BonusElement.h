@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Feb 14 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef BONUS_ELEMENT_H
 #define BONUS_ELEMENT_H

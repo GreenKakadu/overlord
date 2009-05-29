@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Feb 20 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef HARVEST_USING_H
@@ -29,7 +29,7 @@ public:
 		 ~HarvestUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter);
+      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       RationalNumber getDailyProduction(); // should return scaled int
@@ -37,6 +37,7 @@ public:
       inline ItemRule * getConsumedResource(){return resourceConsumed_;}
       void extractKnowledge (Entity * recipient, int parameter = 0);
       void printSkillDescription(ostream & out);
+			BasicUsingStrategy * cloneSelf();
     protected:
      ItemRule * resourceHarvested_;
      ItemRule * resourceConsumed_;

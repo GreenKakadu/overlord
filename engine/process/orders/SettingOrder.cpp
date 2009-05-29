@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "SettingOrder.h"
 #include "StringData.h"
@@ -95,6 +95,7 @@ ORDER_STATUS SettingOrder::process (Entity * entity, ParameterList &parameters)
 	if (parameters.size() < 2)
     {
     	// Missing parameters
+	return INVALID;
     }
     string par1 = parameters[0]->print();
     string par2 = parameters[1]->print();

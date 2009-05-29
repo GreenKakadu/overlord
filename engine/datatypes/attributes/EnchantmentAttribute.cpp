@@ -1,9 +1,9 @@
 /***************************************************************************
-                          EnchantmentAttribute.cpp 
+                          EnchantmentAttribute.cpp
                              -------------------
     begin                : Thu Mar 11 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -19,6 +19,7 @@
 #include "EntityStatistics.h"
 
 extern RulesCollection <EnchantmentRule>    enchantments;
+extern ofstream combatReportFile;
 
 EnchantmentAttribute::EnchantmentAttribute(){
 dataCollection_.clear();
@@ -79,6 +80,7 @@ ostream&  EnchantmentAttribute::report(ostream &out)
 
 void EnchantmentAttribute::add(EnchantmentElement * data)
 {
+      combatReportFile <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
@@ -218,9 +220,10 @@ void EnchantmentAttribute::processExpiration(int figuresNumber)
 //      cout <<"----- Expiration of Enchantment "<< *((*iter)->getRule()) << " " << (*iter)->getParameter1() << endl;
       if( (*iter).getParameter1() <= figuresNumber) // Enchantment expired and deleted
       {
+      combatReportFile <<"----- Enchantment "<< *((*iter).getRule()) << " expired " << endl;
             //delete *iter ;
             dataCollection_.erase(iter);
-      } 
+      }
       else
       {
          (*iter).setParameter1((*iter).getParameter1() - figuresNumber);

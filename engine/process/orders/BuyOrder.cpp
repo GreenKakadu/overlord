@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Jun 26 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -21,7 +21,8 @@
 #include "RaceRule.h"
 #include "LocationEntity.h"
 #include "MarketRequest.h"
-const int BuyOrder::ANY_PRICE = 9999;
+//extern const int VERY_BIG_NUMBER;
+const int BuyOrder::ANY_PRICE =VERY_BIG_NUMBER;
 extern ReportPattern * cantTradeReporter;
 
 //BuyOrder instantiateBuyOrder;
@@ -89,6 +90,10 @@ ORDER_STATUS BuyOrder::process (Entity * entity, ParameterList &parameters)
   IntegerData * par2  = dynamic_cast<IntegerData *>(parameters[2]);
   assert(par2);
   int price = par2->getValue();
+  if(price == 0)
+	{
+		price = unit->getLocation()->getLocalBuyPrice(item);		
+	}
 
   if(!unit->getRace()->mayTrade())
   {

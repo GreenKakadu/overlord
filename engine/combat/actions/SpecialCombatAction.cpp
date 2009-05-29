@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun jul 03 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "SpecialCombatAction.h"
 #include "TokenEntity.h"

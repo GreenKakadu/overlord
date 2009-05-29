@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 09 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "AdvanceCombatOrder.h"
 #include "TokenEntity.h"
@@ -30,7 +30,8 @@ AdvanceCombatOrder::AdvanceCombatOrder(){
  "with a mount has a double chance of moving first.\n";
   orderType_   = COMBAT_MOVEMENT_ORDER;
   initiative_ = 0;
- isSequentive_ = true;
+   mayInterrupt_ = true;
+isSequentive_ = true;
 }
 
 STATUS AdvanceCombatOrder::loadParameters(Parser * parser,

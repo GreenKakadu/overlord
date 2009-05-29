@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -53,7 +53,7 @@ EnchantmentRule::initialize        ( Parser *parser )
       targetType_ =  prototypeManager->findInRegistry(targetName);
 			if( targetType_== 0)
 				{
-					cout << "Unknown target type " <<  targetName << " for enchantment " << print()<< endl;
+					cerr << "Unknown target type " <<  targetName << " for enchantment " << print()<< endl;
 				}
 
       return OK;

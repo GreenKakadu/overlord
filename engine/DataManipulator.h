@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef DATA_MANIPULATOR_H
 #define DATA_MANIPULATOR_H
@@ -14,6 +14,7 @@ class BasicRulesCollection;
 class BasicVarietiesCollection;
 class ProcessingMode;
 class NewEntityPlaceholder;
+class GameData;
 
 class DataManipulator {
 public:

@@ -4,7 +4,7 @@
                              -------------------
     begin                : Sun Nov 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef DAMAGE_TYPE_H
 #define DAMAGE_TYPE_H

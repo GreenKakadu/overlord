@@ -3,7 +3,7 @@
                              -------------------
     begin                : 30 Mar 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef MELEE_ATTACK_ELEMENT_H

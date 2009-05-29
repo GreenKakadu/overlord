@@ -3,7 +3,7 @@
                              -------------------
     begin                : Fri Jul 25 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -57,16 +57,47 @@ extern SkillRule * combatSkill;
 ReportPattern *	 movementBlockedReporter      = new ReportPattern("movementBlockedReporter");
 TokenEntity sampleTokenEntity  ("PHYSICAL_ENTITY",  &sampleEntity);
 
+TokenEntity::TokenEntity (const string & keyword, GameData * parent ) : Entity(keyword, parent)
+{
+      location_  = 0;
+      combatTactics_.defaultInitialization();
+// cerr << "---TokenEntity constructor";
+// combatTactics_.report(cerr);
+// cerr <<endl;
+      faction_ = 0;
+      toOath_ = 0;
+      traced_ = false;
+      moving_ = 0;
+      isMoving_ = false;
+      guarding_ = false;
+      passenger_ = false;
+      advertising_ = false;
+      announcing_ = false;
+      fanatic_ = false;
+      sharing_ = true;
+      alive_ = true;
+      withdrawingSupport_ = true;
+      target_ = 0;
+      defaultTarget_ = 0;
+      battleInstance_ = 0;
+      defaultCombatMovement_ = 0;
+      inventory_ = InventoryAttribute(this);
+      loyality_ = 100;
+}
 
 
 
 TokenEntity::TokenEntity(const TokenEntity * prototype): Entity(prototype)
 {
       location_  = 0;
+      combatTactics_.defaultInitialization();
+// cerr << "---TokenEntity constructor";
+// combatTactics_.report(cerr);
+// cerr <<endl;
     	faction_ = 0;
       toOath_ = 0;
-			traced_ = false;
       moving_ = 0;
+      isMoving_ = false;
       guarding_ = false;
       passenger_ = false;
       advertising_ = false;
@@ -76,9 +107,24 @@ TokenEntity::TokenEntity(const TokenEntity * prototype): Entity(prototype)
       alive_ = true;
       withdrawingSupport_ = true;
       target_ = 0;
+      defaultTarget_ = 0;
 			battleInstance_ = 0;
       defaultCombatMovement_ = 0;
 			inventory_ = InventoryAttribute(this);
+                        loyality_ = 100;
+}
+
+
+// members that are not pointers may need explicit initialization
+// for the cases when entities are created on-the-fly (like summoning new unit)
+void TokenEntity::explicitInitialization()
+{
+	combatTactics_.defaultInitialization();
+	inventory_.init(this);
+	isPayingUpkeep_ = true;
+// cerr << "---TokenEntity explicit initialization of CombatTactics";
+// combatTactics_.report(cerr);
+// cerr <<endl;
 }
 
 
@@ -106,11 +152,6 @@ STATUS TokenEntity::initialize        ( Parser *parser )
 	  return OK;
 	}
 
- if (parser->matchKeyword("TRACED"))
-	{
-	  traced_ = true;
-		return OK;
-	}
 
  if (parser->matchKeyword("TARGET"))
     {
@@ -126,6 +167,7 @@ STATUS TokenEntity::initialize        ( Parser *parser )
  if (parser->matchKeyword("MOVING"))
 	{
     moving_ = TravelElement::readElement(parser);
+    isMoving_ = true;
 		return OK;
 	}
 
@@ -137,11 +179,17 @@ STATUS TokenEntity::initialize        ( Parser *parser )
 	    return OK;
 	  }
 
- if (parser->matchKeyword("SILENT"))
+ if (parser->matchKeyword("LOYALITY"))
 	{
-    silent_ = true;
+          loyality_ = parser->getInteger(); 
 		return OK;
 	}
+        
+  if (parser->matchKeyword("SILENT"))
+        {
+          silent_ = true;
+          return OK;
+        }
 
  if (parser->matchKeyword("NO_SHARING"))
 	{
@@ -218,8 +266,9 @@ void TokenEntity::save(ostream &out)
            out << "SKILL_USE ";
 										(*iter)->save(out);
     }
+    
+    out <<"LOYALITY "<<loyality_<<endl;
 
-  if (traced_) out << "TRACED" << endl;
   if(target_)
   {
     out << "TARGET "; target_->saveAsParameter(out); out<< endl;
@@ -230,29 +279,12 @@ void TokenEntity::save(ostream &out)
 
 void TokenEntity::dailyUpdate()
 {
-   moveAdvance();
-//   cout << "... Updating TokenEntity " << print()<<endl;
    LocationEntity * location = getLocation();
    if(!location) // Disbanded
 	 	return;
-
-// if terrain is ocean or lake check swimming capacity
-// ifnot enough - drowning
-// smart drowning
-// - equip items that may rise capacity
-// sortout  items that have positive capacity/weight ratio
-// sort all items according to weight/price ratio
-// throw away items
-
-   if(location->getTerrain()->isAquatic())
-   {
-     if (getCapacity(swimingMode) < getWeight())
-//     if (getStackCapacity(3) < getStackWeight())
-      {
-       cout << "SOS! " << print()<< " is drowning\n";
-       // unstack all
-      }
-   }
+  Entity::dailyUpdate();
+   moveAdvance();
+//   cout << "... Updating TokenEntity " << print()<<endl;
 
 	 if(isGuarding())
 	 	addSkill(combatSkill,BasicLearningStrategy::getPointsPerDay()/2);
@@ -269,6 +301,9 @@ void TokenEntity::postProcessData()
 void TokenEntity::postPostProcessData()
 {
 }
+
+
+
 void TokenEntity::recalculateTravelTime()
 {
 	// Update movement times with new weather
@@ -302,10 +337,10 @@ void  TokenEntity::printOrderTemplate(ReportPrinter &out)
 {
  if(isDisbanded())
  	return; // no templates for dead units
+ out << getKeyword()<< " "<< getTag()<<endl;
  out.setPrefix("#");
  privateReport(out);
  out.setPrefix(0);
- out << getKeyword()<< " "<< getTag()<<endl;
   for (vector<OrderLine *>::iterator iter = orders_.begin(); iter != orders_.end(); iter++)
     {
            (*iter)->printOrderLine(out);
@@ -357,7 +392,9 @@ void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
        if((skill->getRequirement(0) == 0) && (getSkillLevel(skill) == 0))
        continue;
 
-        if( mayStudySkill(skill))
+       if (isTraced())
+         cout <<"== TRACING " << print()<< " May learn [T] " << endl; 
+       if( mayStudySkill(skill))
             {
               faction->addSkillKnowledge(skill, getSkillLevel(skill) + 1); // It may be better placed
                                                                       // in addNewSkill
@@ -505,6 +542,15 @@ void TokenEntity::addToInventory(ItemRule * item, RationalNumber& num)
 /** No descriptions */
 int TokenEntity::hasItem(ItemRule * item)
 {
+  // This is a hack.
+	if(item == items["mana"])
+	{
+		UnitEntity * unit = dynamic_cast<UnitEntity *>(this);
+		if(unit)
+			return unit->hasMana();
+		else
+			return 0;
+	}
 	return inventory_.hasItem(item);
 }
 
@@ -514,6 +560,8 @@ int TokenEntity::hasEquiped(ItemRule * item)
 {
 	return inventory_.hasEquiped(item);
 }
+
+
 
 bool TokenEntity::isEquiped(InventoryElement * item)
 {
@@ -579,6 +627,13 @@ vector < SkillElement>& TokenEntity::getAllSkills()
 bool TokenEntity::mayStudySkill(SkillRule * skill)
 {
   if( skill->mayBeStudied(this) == LEARNING_OK)
+        return true;
+  else
+      return false;
+}
+bool TokenEntity::mayStudyWithTeacher(SkillRule * skill)
+{
+  if( skill->mayBeStudied(this) == TEACHING_REQUIRED)
         return true;
   else
       return false;
@@ -661,7 +716,7 @@ void TokenEntity::cancelTeachingOffer()
          return;
       }
     }
-  cout << "ERROR. on cancelling "<< print() <<" Can't find his own teachingOffers\n";
+  cerr << "ERROR. on cancelling "<< print() <<" Can't find his own teachingOffers\n";
 
 }
 
@@ -820,9 +875,26 @@ bool TokenEntity::isCurrentlyUsingSkill(SkillRule * skill)
  */
 LEARNING_RESULT TokenEntity::mayLearn(SkillRule * skill)
 {
+		if(isTraced())
+		{
+			cerr << " Basic method called for  "<<skill->print()<<endl;
+		}
   return CANNOT_STUDY_FAILURE;
 }
 
+int TokenEntity::countElementalMagicSkill()
+{
+  int elementalSkillCounter = 0;
+  vector < SkillElement> skills = skills_.getAll();
+        for (SkillIterator iter= skills.begin(); iter != skills.end(); iter++)
+  {
+    if((*iter).getSkill()->isElementalMagicSkill())
+    {
+      elementalSkillCounter++;
+    }
+  }
+  return elementalSkillCounter;
+}
 // Movement ========================================================
 
 
@@ -835,6 +907,14 @@ void TokenEntity::setEntityMoving(TravelElement * moving)
     getLocation()->selectNewGuard();
   }
   moving_ = moving;
+  if(isTraced())                                  //For Debugging only
+  {                                                      //For Debugging only
+    cout <<"--xxx--->  Start Moving"<< endl;  //For Debugging only
+  }                                                     //For Debugging only
+  if(moving)
+    isMoving_ = true;
+  else
+    isMoving_ = false;
 }
 
 
@@ -858,6 +938,11 @@ bool TokenEntity::moveAdvance()
      movingGroupArrived();
      delete moving_;
      moving_ = 0;
+     if(isTraced())                                  //For Debugging only
+     {                                                      //For Debugging only
+       cout <<"--xxx--->  Token Arrived"<< endl;  //For Debugging only
+     }                                                     //For Debugging only
+     isMoving_ = false;
      return true;
    }
      return false;
@@ -934,10 +1019,16 @@ void TokenEntity::marchAttackPostprocessing(TokenEntity * attacker, TokenEntity 
 
 void TokenEntity::moveToLocation()
 {
+  LocationEntity * newLocation = moving_->getDestination();
+	moveToLocation(newLocation);
+}
+
+
+void TokenEntity::moveToLocation(LocationEntity * newLocation)
+{
   getLocation()->addReport(new UnaryMessage(leavePublicReporter, this), 0 ,
 			ObservationCondition::createObservationCondition(getStealth() ));
   addReport(new UnaryMessage(leavePrivateReporter, getLocation()));
-  LocationEntity * newLocation = moving_->getDestination();
   getFaction()->addVisitedLocation(newLocation);
 
 	if (isTraced())
@@ -1037,7 +1128,6 @@ int  TokenEntity::calculateTotalWeight (int & weight)
 
 void TokenEntity::calculateTotalCapacity(int & capacity, int modeIndex)
 {
-
 }
 
 
@@ -1064,8 +1154,15 @@ int TokenEntity::calculateMovementBonus(MovementVariety * mode)
 
 // weather
 	LocationEntity * currentLocation = getLocation();
-	bonus += currentLocation->getWeather()->getMovementBonus(mode);
-	bonus += currentLocation->getMovementBonus(mode);
+	if(currentLocation)
+	{
+		WeatherRule * weather = currentLocation->getWeather();
+		if(weather)
+		{
+			bonus += weather->getMovementBonus(mode);
+		}
+		bonus += currentLocation->getMovementBonus(mode);
+	}
 // Enchantment
 	bonus += enchantments_.getMovementBonus(mode);
 
@@ -1286,11 +1383,9 @@ int  TokenEntity::getDefenceRating() const
   return 0;
 }
 
-
-void TokenEntity::preprocessData()
+// Convert combat setting strings to combat orders.
+void TokenEntity::setDefaultCombatMovement()
 {
-	guarding_ = false;
-	// Convert combat setting strings to combat orders.
 	if(combatTactics_.getCombatMove())
 	defaultCombatMovement_ =
 	 			new CombatOrderLine( combatTactics_.getCombatMove()->getTag(), this);
@@ -1301,20 +1396,50 @@ void TokenEntity::preprocessData()
 
 
 
-void TokenEntity::addCombatSetting(string combatOrderText)
+void TokenEntity::preprocessData()
 {
-	combatSettings_.push_back(combatOrderText);
-	if(CombatOrder::checkCombatAction(combatOrderText,this))
-	{
-		CombatOrderLine * currentOrder = new CombatOrderLine(combatOrderText,this);
-//		currentOrder->parse(combatOrderText,this);
-  	defaultCombatOrders_.push_back(currentOrder);
+	guarding_ = false;
+	if(getFaction()->isNPCFaction())
+	{	
+		isPayingUpkeep_ = false;
 	}
+	for (vector <string>::iterator iter = combatSettings_.begin(); iter != combatSettings_.end(); ++iter)
+	{
+		checkCombatSetting(*iter);
+	}
+	setDefaultCombatMovement();
 }
 
 
 
-void TokenEntity::battleInstantiation(BattleField * battleField)
+void TokenEntity::addCombatSetting(string combatOrderText)
+{
+	combatSettings_.push_back(combatOrderText);
+// 	if(CombatOrder::checkCombatAction(combatOrderText,this))
+// 	{
+// 		CombatOrderLine * currentOrder = new CombatOrderLine(combatOrderText,this);
+// //		currentOrder->parse(combatOrderText,this);
+//   	defaultCombatOrders_.push_back(currentOrder);
+//	}
+}
+
+void TokenEntity::checkCombatSetting(string combatOrderText)
+{
+if(isTraced())
+{
+//cout << "...";
+}
+
+  if(CombatOrder::checkCombatAction(combatOrderText,this,false))
+  {
+          CombatOrderLine * currentOrder = new CombatOrderLine(combatOrderText,this);
+      //		currentOrder->parse(combatOrderText,this);
+    defaultCombatOrders_.push_back(currentOrder);
+  }
+}
+
+
+BattleInstance * TokenEntity::createBattleInstantiation(BattleField * battleField)
 {
   if(battleInstance_)
 		delete battleInstance_;
@@ -1323,6 +1448,7 @@ void TokenEntity::battleInstantiation(BattleField * battleField)
 	// for each order line set executed on turn flag on 0 (reset)
 	battleInstance_ = new BattleInstance(this, battleField->getCombatReport());
   battleInstance_->initialize(battleField);
+	return battleInstance_;
 }
 
 
@@ -1509,4 +1635,20 @@ bool TokenEntity::takeLoot(vector <ItemElement> & items)
 		}
 	}
 		return false;
+}
+
+
+TeachingOffer * TokenEntity::findTeachingOffer(SkillRule  * skill, int level)
+{
+TeachingOffer *offer = location_->findTeachingOffer(skill, level);
+ if(offer)
+	return offer;
+ return Entity::findTeachingOffer(skill, level);
+}
+
+
+
+bool             TokenEntity::isNpcGuard() const 
+{
+  return guarding_ && faction_->isNPCFaction();
 }

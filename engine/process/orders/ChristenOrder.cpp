@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ChristenOrder.h"
 #include "StringData.h"
@@ -66,7 +66,7 @@ ORDER_STATUS ChristenOrder::process (Entity * entity, ParameterList &parameters)
         entity->addReport(new BinaryMessage(privateChristenReporter,
         					construction,new StringData(newName)));
         construction->getLocation()->addReport(new TertiaryMessage(publicChristenReporter,
-                        entity, construction,new StringData(newName)));
+                        entity, new StringData(construction->getName()),new StringData(newName)));
   		return SUCCESS;
   	}
 
@@ -80,7 +80,7 @@ ORDER_STATUS ChristenOrder::process (Entity * entity, ParameterList &parameters)
         entity->addReport(new BinaryMessage(privateChristenReporter,
         					unit->getLocation(),new StringData(newName)));
         unit->getLocation()->addReport(new TertiaryMessage(publicChristenReporter, entity,
-        					unit->getLocation(),new StringData(newName)));
+        					new StringData(unit->getLocation()->getName()),new StringData(newName)));
   		return SUCCESS;
   }
 

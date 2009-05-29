@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Jan 18 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -17,6 +17,7 @@
 #define ACTION_RULE_H
 
 #include "Rule.h"
+#include "RulesCollection.h"
 class Entity;
 
 /**Action types

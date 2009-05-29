@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Jan 6 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "EquipmentSlotVariety.h"
 EquipmentSlotVariety sampleEquipmentSlot     ("EQUIPMENT_SLOT", &sampleGameData);

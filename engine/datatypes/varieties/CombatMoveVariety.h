@@ -4,14 +4,14 @@
                              -------------------
     begin                : Sun Jun 20 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #ifndef COMBAT_MOVE_H
 #define COMBAT_MOVE_H
 
 #include "Variety.h"
-
+#include "VarietiesCollection.h"
 class CombatMoveVariety : public Variety  {
 public: 
       CombatMoveVariety ( const string & keyword, GameData * parent): Variety(keyword, parent){}

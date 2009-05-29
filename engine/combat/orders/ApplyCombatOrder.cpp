@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Apr 20 2005
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ApplyCombatOrder.h"
 #include "CombatActionStrategy.h"
@@ -33,6 +33,7 @@ ApplyCombatOrder::ApplyCombatOrder(){
   orderType_   = COMBAT_ACTION_ORDER;
   initiative_ = 0;
  isSequentive_ = true;
+  mayInterrupt_ = true;
 }
 
 STATUS ApplyCombatOrder::loadParameters(Parser * parser,
@@ -94,6 +95,8 @@ ORDER_STATUS ApplyCombatOrder::process (Entity * entity, ParameterList &paramete
 
 	int level = unit->getSkillLevel(skill);
 	CombatActionStrategy * combatAction = 	skill->getCombatAction(level);
+        //cout<<entity<<" applies "<<skill->print()<<" "<<level<<" "<<combatAction<<endl;
+        //combatAction->debugPrint();
 	if(combatAction ==0)
 	    return FAILURE;
 
@@ -110,8 +113,7 @@ ORDER_STATUS ApplyCombatOrder::process (Entity * entity, ParameterList &paramete
 	}
 
 	battleInstance->setAffectingAction(combatAction);
-  vector <MeleeAttackElement> attacks =
-	combatAction->makeAttack(battleInstance, potentialTargets, report);
+	combatAction->performAction(battleInstance, potentialTargets, report);
 
 	battleInstance->addActionExperience(skill);
 

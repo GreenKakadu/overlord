@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jun 3 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +18,7 @@
 
 #include "AbstractData.h"
 class Entity;
-
+class TokenEntity;
 /**
   *@author Alex Dribin
    NewEntityPlaceholder is an object that provides temporary alias name
@@ -32,12 +32,16 @@ public:
 	NewEntityPlaceholder(const string& name);
 	~NewEntityPlaceholder(){cout << "newPlaceholder destroyed "<<endl;}
   inline Entity * getRealEntity() {return entity_;}
+  inline TokenEntity * getTemporaryEntity() {return temporaryEntity_;}
   inline void     setRealEntity(Entity * entity) {entity_ = entity;}
+  inline void     setTemporaryEntity(TokenEntity * entity) {temporaryEntity_ = entity;}
          void saveAsParameter (ostream &out);
-  inline string getName() const {return temporaryName_;}       
+  inline string getName() const {return temporaryName_;}
+	TokenEntity * getNewEntity();
 private:
   Entity * entity_;
-  string temporaryName_; 
+  TokenEntity * temporaryEntity_;
+  string temporaryName_;
 };
 
 #endif

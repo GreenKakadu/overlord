@@ -3,7 +3,7 @@
                              -------------------
     begin                : Tue Jun 24 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -224,4 +224,43 @@ void  MarketStrategy::produceFactionReport(FactionEntity * faction, ostream &out
   out << ".\n";
   }
  
+}
+
+
+
+int MarketStrategy::getLocalBuyPrice(ItemRule * item)
+{
+  RequestIterator iter;
+  for(iter = buyRequests_.begin(); iter != buyRequests_.end(); ++iter)
+	{
+	  if((*iter)->getType() == item)
+		return (*iter)->getPrice();
+	}
+  return 0;
+}
+
+
+
+int MarketStrategy::getLocalSellPrice(ItemRule * item)
+{
+  RequestIterator iter;
+  for(iter = sellRequests_.begin(); iter != sellRequests_.end(); ++iter)
+	{
+	  if((*iter)->getType() == item)
+		return (*iter)->getPrice();
+	}
+  return 0;
+}
+
+
+
+int MarketStrategy::getLocalRecruitPrice(RaceRule * race)
+{
+  RequestIterator iter;
+  for(iter = recruitRequests_.begin(); iter != recruitRequests_.end(); ++iter)
+	{
+	  if((*iter)->getType() == race)
+		return (*iter)->getPrice();
+	}
+  return 0;
 }

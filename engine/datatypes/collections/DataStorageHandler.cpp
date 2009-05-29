@@ -4,7 +4,7 @@
                              -------------------
     begin                : Wen May 22 13:52:00 IST 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <time.h>
 #include <iostream>
@@ -16,7 +16,7 @@
 #include "GameConfig.h"
 
 extern bool testMode;
-
+ofstream reportlist; 
 
 
 
@@ -24,7 +24,7 @@ DataStorageHandler::DataStorageHandler (string * filename)
 {
 	filename_ = filename;
   status = UNDEFINED;
-//cout << "Collection "<< filename << " created.\n";
+//cout << "Collection(s) "<< filename->c_str() << " created.\n";
 }
 
 
@@ -83,7 +83,7 @@ STATUS DataStorageHandler::open()
   	if( parser_ -> matchInteger() )
     		{
       			collectionSize_ = parser_->getInteger();
-//      			collection->redimention(collectionSize_);
+      			collection_->redimention(collectionSize_);
     		}
 //cout << "Collection "<< collectionKeyword_ << " created.\n";
 				return status;
@@ -101,6 +101,7 @@ string optionalDerivativeKeyword;
    if(status == IO_ERROR)
     return status;
    parser_->setPosition ( beginning_ );
+   parser_->setLineNumber ( 0 );
   do //Find class keyword  definition
     {
       	parser_->getLine();
@@ -150,7 +151,7 @@ string optionalDerivativeKeyword;
     } while (!  parser_->eof() );
 if(keyword.empty())
 	{
-		cout <<"Data are not matching keyword " <<  collectionKeyword_<<endl ;
+		cout <<"Data in the file " <<filenameString_<<"  are not matching keyword " <<  collectionKeyword_<<". May be it is empty."<<endl ;
 	}
 return OK;
 }
@@ -164,7 +165,7 @@ STATUS DataStorageHandler::save()
 
   cout << "Saving data for "<< collectionKeyword_  <<endl;
   ofstream outfile ((*filename_ + ".new").c_str());
-//  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
+ //  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
   outfile << "# Overlord units data " <<endl;
   time ( &rawtime );
   outfile << "# Ver " <<  GameConfig::version <<" " <<ctime(&rawtime) <<endl;
@@ -187,7 +188,6 @@ STATUS DataStorageHandler::save()
     }
 
   outfile.close();
-
 return OK;
 }
 
@@ -200,6 +200,7 @@ STATUS DataStorageHandler::initializeData()
   long int i=0;
 
    parser_->setPosition ( beginning_ );
+   parser_->setLineNumber ( 0 );
   while (!  parser_->eof() )
     {
       parser_->getLine();
@@ -256,3 +257,16 @@ void DataStorageHandler::define()
 {
 }
 
+
+// Returns input line number for input error messages
+int DataStorageHandler::getInputLineNumber()
+{
+	return parser_->getLineNumber();
+}
+
+
+// Returns input file name for input error messages
+string * DataStorageHandler::getInputFileName()
+{
+	return filename_;
+}

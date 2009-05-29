@@ -3,7 +3,7 @@
                              -------------------
     begin                : Mon Feb 10 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 #include "BasicLearningStrategy.h"
@@ -24,6 +24,7 @@ BasicLearningStrategy::BasicLearningStrategy ( const BasicLearningStrategy * pro
    special_ = false;
    itemRequired_ = 0;
    bonusItem_ = 0;
+   //name_ = "a generic skill";
 }
 
 
@@ -83,7 +84,7 @@ bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill)
  * Ability of entity to study skill
  *  Level limitations also taken into considerations
  */
-LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, SkillRule * skill) const
+LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, SkillRule * skill) 
 {
 // Check that Entity is able to study this skill at current level
     LEARNING_RESULT  result = tokenEntity->mayLearn(skill);
@@ -94,8 +95,10 @@ LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, Skill
 
 // Some skills may be studied only by specific races or types of Entities
   if( (racialClass_ != 0) && !tokenEntity->isOfType(racialClass_))
+{
+//	cout << "Race failure"<<endl; // This is used in printing 'May learn"
       return RACE_FAILURE;
-
+}
 // Some skills may require item in order to be studied
    if(itemRequired_)
    {
@@ -113,9 +116,41 @@ LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, Skill
     }
   // Special case of magecraft skill limitations will be considered in
   // special MagecraftLearningStrategy
-
+if(tokenEntity->isTraced())
+{
+//cout <<"?";
+}
   if(tokenEntity->hasSkill(skill->getMax()) )
     return MAX_LEVEL_FAILURE;
+if(tokenEntity->isTraced())
+{
+//cout <<"!";
+}
+  if(skill->isElementalMagicSkill())
+{
+  int magecraftLevel = tokenEntity->getSkillLevel(skills["mage"]);
+  int elementalSkillKnown = 0;
+  int fireLevel = tokenEntity->getSkillLevel(skills["fire"]);
+  if(fireLevel >= 1)
+    elementalSkillKnown++;
+  int airLevel = tokenEntity->getSkillLevel(skills["airs"]);
+  if( airLevel >= 1)
+    elementalSkillKnown++;
+  int waterLevel = tokenEntity->getSkillLevel(skills["wate"]);
+  if( waterLevel >= 1)
+    elementalSkillKnown++;
+  int earthLevel = tokenEntity->getSkillLevel(skills["eart"]);
+  if( earthLevel >= 1)
+    elementalSkillKnown++;
+  int voidLevel = tokenEntity->getSkillLevel(skills["void"]);
+  if( voidLevel >= 1)
+    elementalSkillKnown++;
+  
+  if(magecraftLevel <= elementalSkillKnown)
+    return ELEMENTAL_SKILL_LIMIT_FAILURE;
+  else
+    return   LEARNING_OK;
+}
 return LEARNING_OK;
 }
 /** applies all bonuses and returns number of experience points gained by one day
@@ -203,7 +238,9 @@ void BasicLearningStrategy::addLearningExperience(TokenEntity * tokenEntity, Ski
    // already checked before studying started, but for the cases of group
    // study (like staff training) study may start if at least some entities
    // may learn. Entities unable to learn should not benefit from that
-   if(tokenEntity->mayLearn(skill.getSkill()) != LEARNING_OK)
+
+   LEARNING_RESULT result = tokenEntity->mayLearn(skill.getSkill());
+   if((result != LEARNING_OK) && (result != TEACHING_REQUIRED))
     return;
     tokenEntity->addSkill(skill);
    // add experience to parent skills
@@ -211,13 +248,18 @@ void BasicLearningStrategy::addLearningExperience(TokenEntity * tokenEntity, Ski
 
    int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
+   vector<SkillRule *> reqList;
    for (tryLevel = 0; tryLevel<= level ; tryLevel++)
     {
       SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
       if(requirement != 0)
         {
-          SkillElement recursive(requirement->getSkill(),exp);
-          addRecursiveLearningExperience(tokenEntity,recursive);
+          if(reqList.end() == find(reqList.begin(),reqList.end(),requirement->getSkill()))
+          {
+            SkillElement recursive(requirement->getSkill(),exp);
+            reqList.push_back(requirement->getSkill());
+            addRecursiveLearningExperience(tokenEntity,recursive);
+          }
         }
      }
       //  problem with teaching requests
@@ -232,12 +274,24 @@ void BasicLearningStrategy::addRecursiveLearningExperience(TokenEntity * tokenEn
 
    int level = tokenEntity->getSkillLevel(skill.getSkill());
    int tryLevel;
+   vector<SkillRule *> reqList;
    for (tryLevel = 0; tryLevel< level ; tryLevel++)
     {
       SkillLevelElement * requirement = skill.getSkill()->getRequirement(tryLevel);
-      if(requirement != 0)
+       if(requirement != 0)
         {
-          addRecursiveLearningExperience(tokenEntity,skill);
+          if(reqList.end() == find(reqList.begin(),reqList.end(),requirement->getSkill()))
+          {
+          SkillElement recursive(requirement->getSkill(),skill.getExpPoints());
+          reqList.push_back(requirement->getSkill());
+//  	if(tokenEntity->isTraced())
+//   	{
+// 	SkillElement * se =tokenEntity->getSkillElement(requirement->getSkill());
+// 	cout << "requirement: " <<requirement->getSkill()->printTag()<<" -> "<< se->getSkill()->printTag();
+// 	cout<< " + "<<se->getExpPoints() <<endl;
+//	}
+          addRecursiveLearningExperience(tokenEntity, recursive );
+          }
         }
      }
 
@@ -260,4 +314,13 @@ void    BasicLearningStrategy::extractKnowledge (Entity * recipient, int paramet
           bonusItem_->getItemType()->extractKnowledge(recipient);
       }
     }
+}
+
+
+
+BasicLearningStrategy * BasicLearningStrategy::cloneSelf()
+{
+ BasicLearningStrategy * copyOfSelf = new BasicLearningStrategy(keyword_,parent_);
+ *copyOfSelf = *this;
+ return copyOfSelf;
 }

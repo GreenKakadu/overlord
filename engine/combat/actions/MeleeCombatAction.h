@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Apr 27 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef MELEE_COMBAT_ACTION_H
 #define MELEE_COMBAT_ACTION_H
@@ -25,10 +25,14 @@ public:
 				 CombatActionStrategy(prototype){}
 		 ~MeleeCombatAction(){}
       GameData * createInstanceOfSelf();
-  MeleeAttackElement meleeAttack(BattleInstance * battleInstance,
+      void	performAction(BattleInstance * battleInstance,
+			                    BattleTargets & target, CombatReport * report);
+			  MeleeAttackElement meleeAttack(BattleInstance * battleInstance,
 								int melee, int damage, BattleInstance * target, int attFigNum);
 	MeleeAttackElement attack(BattleInstance * battleInstance,
 					BattleInstance * target, int totalHits);
+  BattleTargets getPotentialTargets(BattleInstance * battleInstance,
+																		 CombatReport * report);
 	protected:
 };
 

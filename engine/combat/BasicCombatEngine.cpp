@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon May 24 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <iostream>
 #include <functional>
@@ -30,11 +30,13 @@ extern ReportPattern * listReporter;
 BasicCombatEngine::BasicCombatEngine()
 {
 	report_ = new CombatReport();
+//cout << "===> BasicCombatEngine created "<<report_ <<endl;
 }
 
 BATTLE_RESULT BasicCombatEngine::processBattle(vector<TokenEntity *> &attackers,
                     vector<TokenEntity *> &defenders)
 {
+cout << "=== NB ===> New combat created using BasicCombatEngine created" <<endl;
  new UnaryMessage(combatStartReporter,new IntegerData(BasicCombatEngine::battleId)) >>*report_ ;
  new BinaryMessage(combatStart2Reporter,new IntegerData(currentDay),(*(attackers.begin()))->getLocation()) >>*report_ ;
 

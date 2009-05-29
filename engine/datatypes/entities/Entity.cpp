@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Nov 17 2002
     copyright            : (C) 2002 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
 #include "Entity.h"
@@ -21,7 +21,9 @@ Entity::Entity ( const Entity * prototype ): GameData(prototype)
 {
   fullDayOrder_ = 0;
   silent_ = false;
-	disobeying_ = false;
+  traced_ = false;
+  disobeying_ = false;
+  isPayingUpkeep_ = true;
 }
 
 
@@ -107,6 +109,12 @@ STATUS currentResult = OK;
  	{
 	  orders_.push_back(new OrderLine(parser->getText(),this));
  	}
+   
+        if (parser->matchKeyword("TRACED"))
+        {
+          traced_ = true;
+          return OK;
+        }
 
    currentResult = enchantments_.initialize(parser);
    if(currentResult != OK)
@@ -125,11 +133,12 @@ Entity::save(ostream &out)
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
   enchantments_.save(out);
-  out << endl;
+//  out << endl;
   for (OrderIterator iter = orders_.begin(); iter != orders_.end(); iter++)
     {
            (*iter)->save(out);
     }
+    if (traced_) out << "TRACED" << endl;
 }
 
 
@@ -185,6 +194,9 @@ void Entity::clearOrders()
 STATUS Entity::prepareData()
 {
 //	STATUS status = OK;
+#ifdef DEBUG
+          cname = tag_.c_str();
+#endif
 	preprocessData();    // Re-establish internal references, there they  were not saved.
    if(IO_ERROR == dataConsistencyCheck())    // Check consistency of data
       return IO_ERROR;
@@ -259,7 +271,7 @@ void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extra
 			{
 //             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter).reportMessage->print(cout);
             	extractedReports.push_back
-							(new ReportElement((*iter).reportMessage,this));
+						(new ReportElement((*iter).reportMessage,this));
 			}
 	}
 }
@@ -394,6 +406,7 @@ bool Entity::mayInterractTokenEntity(TokenEntity * tokenEntity)
 
 void Entity::clearTeachingOffers()
 {
+//  cout <<" -------------------- All Teching Offers cleared for "<< print()<<endl;
   teachingOffers_.clear();
 //  cout << *this << " clears all teachin offers"<<endl;
 }
@@ -402,6 +415,7 @@ void Entity::clearTeachingOffers()
 
 void Entity::addTeachingOffer(TeachingOffer * offer)
 {
+ // cout <<" -------------------- Teching Offer added for "<< print()<<endl;
  teachingOffers_.push_back(offer);
 // cout <<*offer << " added to "<< *this<<endl;
 }
@@ -417,6 +431,7 @@ int Entity::getSkillLevel(SkillRule  * const skill)
 
 TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
 {
+//  cout <<" -------------------- Looking for Teching Offer in "<< print()<<" here "<<teachingOffers_.size() <<" offers"<<endl;
   vector <TeachingOffer  *>::iterator iter;
   for(iter = teachingOffers_.begin(); iter != teachingOffers_.end(); ++iter)
   {
@@ -438,7 +453,7 @@ bool Entity::checkTeachingConfirmation()
     if((*iter)->getTeacher() == this)
         return (*iter)->isConfirmed();
     }
-  cout << "ERROR."<< print() <<" Can't find his own teachingOffers\n";
+  cerr << "ERROR."<< print() <<" Can't find his own teachingOffers\n";
   return false;
 }
 

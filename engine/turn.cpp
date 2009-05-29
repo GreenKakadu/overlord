@@ -3,7 +3,7 @@
                              -------------------
  begin                : Fri Nov  9 19:24:42 IST 2001
  copyright            : (C) 2001 by Alex Dribin
- email                : alexliza@netvision.net.il
+ email                : Alex.Dribin@gmail.com
 **************************************************************************/
 #include <stdlib.h>
 #include <time.h>
@@ -25,7 +25,7 @@ extern ProcessingMode immediateOrders;
 extern ProcessingMode stackOrders;
 extern ProcessingMode dayOrders;
 #ifndef VERSION
-  #define VERSION "0.3.4"
+  #define VERSION "0.6.0"
 #endif
 string GameConfig::version = VERSION;
 DataManipulator * dataManipulatorPtr = 0;
@@ -75,10 +75,11 @@ int main( int argc, char * argv[] )
     gameConfig.init( "overlord.config" );
   }
 
-  cout << "Units data taken from " << * ( gameConfig.getUnitsFile() ) << endl;
-  cout << "Factions data taken from " << * ( gameConfig.getFactionsFile() ) << endl;
-  cout << "Locations data taken from " <<
-       * ( gameConfig.getLocationsFile() ) << endl;
+  cout << "Game " <<        ( gameConfig.getGameId() ) << endl;
+  cout << "Game data taken from " <<      *  ( gameConfig.getGameFile() ) << endl;
+  cout << "Units data taken from " <<     * ( gameConfig.getUnitsFile() ) << endl;
+  cout << "Factions data taken from " <<  * ( gameConfig.getFactionsFile() ) << endl;
+  cout << "Locations data taken from " << * ( gameConfig.getLocationsFile() ) << endl;
   //   cout<< "Orders taken from " <<gameConfig.getOrdersFileName()<<endl;
   DataManipulator dataManipulator;
   dataManipulatorPtr = & dataManipulator;
@@ -87,19 +88,29 @@ int main( int argc, char * argv[] )
 
   if (  gameConfig.runMode ==  COMBAT_SIMULATOR )
 	{
-		combatSimulator();
+          cout << endl<< "    === Running combat simulation mode. ==="<<endl<<endl;
+          combatSimulator();
 		cout << endl<< "    === Combat simulation completed. ==="<<endl;
 		return 0;
 	}
 
+ if (  gameConfig.runMode ==   LOCATION_INITIALIZATION)
+	{
+          cout << endl<< "    === Running Data initialization mode. ==="<<endl<<endl;
+          dataManipulator.save();
+			cout << endl<< "    === Data initialization completed. ==="<<endl;
+		return 0;
+	}
   if ( ( gameConfig.runMode == MEMORY_TEST )
        || ( gameConfig.runMode == DAILY_MEMORY_TEST ) )
        {
+         cout << endl<< "    === Running memory test mode. ==="<<endl<<endl;
          cout << "After loading orders \n"; getchar();
   }
 
   if ( gameConfig.runMode == TIME_TEST )
   {
+    cout << endl<< "    === Running time test mode. ==="<<endl<<endl;
     time( & end );
     dif1 = difftime( end, start );
     time( & start );
@@ -115,47 +126,50 @@ int main( int argc, char * argv[] )
   cout << endl << endl << " ================= Turn processing ==============="
        << endl << endl;
 
-  for ( currentDay = 1; currentDay <= gameConfig.daysInMonth; currentDay++ )
+  if ( gameConfig.runMode != STARTING_TURN )
   {
-    cout << endl << "    #### Processing day " << currentDay
-         << " ####" << endl;
-    cout << endl << "Daily data pre-Processing  " << endl << endl;
-    dataManipulator.dailyPreProcessData();
-
-    cout << endl << "Processing immediate orders " << endl << endl;
-    dataManipulator.processOrders( & immediateOrders );
-
-    cout << "Processing stack orders " << endl << endl;
-    dataManipulator.processOrders( & stackOrders );
-
-    cout << "Processing combat resoution  for all combats" << endl << endl;
-    dataManipulator.processCombat();
-
-
-    cout << "Processing full day orders " << endl << endl;
-    dataManipulator.processOrders( & dayOrders );
-
-    cout << "Processing competitive requests " << endl << endl;
-    dataManipulator.processCompetitiveRequests( 0 );
-
-    if ( gameConfig.runMode == DAILY_MEMORY_TEST )
-    {
-      cout << "After Processing orders on day " << currentDay << "\n";
-      getchar();
-    }
-
-    dataManipulator.dailyUpdate(); // mana, time-lasting effects, item decay,  reports
-
-    if ( gameConfig.runMode == DAILY_MEMORY_TEST )
-    {
-      cout << "After Processing reports on day " << currentDay << "\n";
-      getchar();
-    }
-    //cout << "Number of free positions in ReportElement pool:
-    // "<<countList(BasicReportElement::headOfFreeList)<<endl;
+	for ( currentDay = 1; currentDay <= gameConfig.daysInMonth; currentDay++ )
+	{
+	cout << endl << "    #### Processing day " << currentDay
+		<< " ####" << endl;
+	cout << endl << "Daily data pre-Processing  " << endl << endl;
+	dataManipulator.dailyPreProcessData();
+	
+	cout << endl << "Processing immediate orders " << endl << endl;
+	dataManipulator.processOrders( & immediateOrders );
+	
+	cout << "Processing stack orders " << endl << endl;
+	dataManipulator.processOrders( & stackOrders );
+	
+	cout << "Processing combat resoution  for all combats" << endl << endl;
+	dataManipulator.processCombat();
+	
+	
+	cout << "Processing full day orders " << endl << endl;
+	dataManipulator.processOrders( & dayOrders );
+	
+	cout << "Processing competitive requests " << endl << endl;
+	dataManipulator.processCompetitiveRequests( 0 );
+	
+	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
+	{
+	cout << "After Processing orders on day " << currentDay << "\n";
+	getchar();
+	}
+	
+	dataManipulator.dailyUpdate(); // mana, time-lasting effects, item decay,  reports
+	
+	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
+	{
+	cout << "After Processing reports on day " << currentDay << "\n";
+	getchar();
+	}
+	//cout << "Number of free positions in ReportElement pool:
+	// "<<countList(BasicReportElement::headOfFreeList)<<endl;
+	}
+	cout << endl << endl << " ============== End of Turn processing ============"
+	<< endl << endl;
   }
-  cout << endl << endl << " ============== End of Turn processing ============"
-       << endl << endl;
   if ( gameConfig.runMode == TIME_TEST )
   {
     time( & end );
@@ -165,6 +179,9 @@ int main( int argc, char * argv[] )
 #ifdef TEST_MODE
   //   if(testMode)  dataManipulator.printAllData();
 #endif
+
+
+
   currentDay = gameConfig.daysInMonth; // currentDay is daysInMonth + 1 after finishing cycle
   dataManipulator.turnPostProcessing();
   dataManipulator.save();
@@ -207,6 +224,7 @@ int main( int argc, char * argv[] )
 #include <vector>
 void combatSimulator()
 {
+  ReportPattern::initialize( "report_patterns.txt" );
   FileParser * parser = new FileParser ( "combat.dat" );
 	if( parser->status != OK)
 		{

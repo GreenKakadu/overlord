@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Mar 16 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicData.h"
 const string BasicData::l_bracket("[");

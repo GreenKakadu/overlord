@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Mar 6 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef ACCEPT_ORDER_H
 #define ACCEPT_ORDER_H

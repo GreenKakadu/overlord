@@ -3,7 +3,7 @@
                              -------------------
     begin                : Apr 04 2005
     copyright            : (C) 2005 by Alex Dribin
-     email                : alexliza@netvision.net.il
+     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -103,7 +103,11 @@ void TitlesAttribute::removeTitle(TitleElement * title)
 void TitlesAttribute::deleteTitle(TitleRule * titleType)
 {
   TitleElement * title = findTitle(titleType);
-  title->getTitleHolder()->removeTitle(title);
+  UnitEntity * unit = title->getTitleHolder();
+	if(unit)
+	{
+	unit->removeTitle(title);
+	}
   removeTitle(title);
   delete title;
 }
@@ -198,6 +202,22 @@ void TitlesAttribute::releaseAll(UnitEntity * unit)
    (*iter)->desactivateClaimingEffects(); // will clean ownership info
   }
 }
+
+void TitlesAttribute::activateAll()
+{
+	UnitEntity * unit =0;
+  for(TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+  {
+    unit = (*iter)->getTitleHolder();
+	if(unit)
+		{
+   		unit->addTitle((*iter));
+		(*iter)->activateClaimingEffects(); // will clean ownership info
+		}
+  }
+}
+
+
 
 void TitlesAttribute::printAll(ostream &out)
 {

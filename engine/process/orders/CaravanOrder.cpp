@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CaravanOrder.h"
 #include "StringData.h"
@@ -36,7 +36,7 @@ CaravanOrder::CaravanOrder(){
   "reversed after the move is initiated, and the order is considered executed.  A\n" +
   "repetition of the order will then execute the reversed move, not the initial\n" +
   "one.\n";
-  orderType_   = IMMEDIATE_ORDER;
+  orderType_   = STACK_ORDER;
 }
 
 STATUS CaravanOrder::loadParameters(Parser * parser,

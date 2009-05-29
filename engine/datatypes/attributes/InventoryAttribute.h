@@ -3,7 +3,7 @@
                              -------------------
     begin                : Sun Apr 03 2005
     copyright            : (C) 2005 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 
 /***************************************************************************
@@ -42,6 +42,7 @@ public:
    void    add(ItemRule * item, RationalNumber& num);
    void    add(ItemRule * item, int num);
    void    add(InventoryElement item);
+	 void   init(TokenEntity * entity);
    int     take(ItemRule * item, int num);
    int     hasItem(ItemRule * item) ;
           bool isEquiped(InventoryElement * item);
@@ -56,6 +57,7 @@ public:
   virtual  int getStudyBonus(SkillRule * skill);
 //  ==============================================
      void reportInventory(FactionEntity * faction, ReportPrinter &out);
+     void reportPublicInventory(ReportPrinter &out, bool isMultiple);
 		inline bool empty()  {return inventory_.empty();}
 		int getWeight();
    virtual int getCapacity(int modeIndex);

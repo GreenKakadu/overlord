@@ -4,7 +4,7 @@
                           ------------------
     begin                : Mon Nov 01 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
 #include <cstdlib>
@@ -123,13 +123,13 @@ void BattleField::placeEntity(TokenEntity * entity, int rank, int file)
 				else
 					rank = 6;
 			}
-		entity->getBattleInstantiation()->setRank(rank);
-		entity->getBattleInstantiation()->setFile(file);
 	}
 	else
 		assert	((file <= maxFile_) && (file >= minFile_)
 		        && (rank >=minRank_) && (rank <=maxRank_));
 
+	entity->getBattleInstantiation()->setRank(rank);
+	entity->getBattleInstantiation()->setFile(file);
 	(units[file][rank]).push_back(entity);
 }
 
@@ -273,6 +273,9 @@ bool BattleField::calculateMovementCoordinates(TokenEntity * entity, BATTLE_DIRE
 							return false;
 				}
 			}
+    case SELF: // Do nothing
+		{
+		}
 	}
 	return false;
 }
@@ -364,8 +367,7 @@ void BattleField::shiftEntity(BattleInstance *instance, int newFile, int newRank
 
 
 
-bool BattleField::haveEnemies(BattleInstance * battleInstance,
-															BATTLE_DIRECTION battleDirection, int range)
+bool BattleField::haveEnemies(BattleInstance * battleInstance, BATTLE_DIRECTION battleDirection, int range)
 {
 	int rank = getRelativeRank(battleInstance,battleDirection, range);
 	int file = getRelativeFile(battleInstance,battleDirection, range);
@@ -488,6 +490,7 @@ int BattleField::getRelativeRank(BattleInstance * battleInstance,
  int position = battleInstance->getRank();
 	switch(battleDirection)
 	{
+    case SELF:
 		case LEFT:
 			{
 				return position;
@@ -572,6 +575,7 @@ int BattleField::getRelativeFile(BattleInstance * battleInstance,
  int position = battleInstance->getFile();
 	switch(battleDirection)
 	{
+    case SELF:
 		case FORWARD:
 			{
 				return position;
@@ -682,7 +686,40 @@ void BattleField::addEnemies(BattleInstance * battleInstance,
 
 
 
-// Add to target list all enemies at given position
+// Add to target list all friends at given direction (range 1)
+void BattleField::addFriends(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									BATTLE_DIRECTION battleDirection)
+{
+	int rank = getRelativeRank(battleInstance,battleDirection);
+	int file = getRelativeFile(battleInstance,battleDirection);
+  	if((file < minFile_) || (rank <minRank_))
+		return;
+
+ 	if((file > maxFile_) || (rank > maxRank_))
+		return;
+
+  if((units[file][rank]).empty())
+		return;
+
+	if( (*((units[file][rank]).begin()))->getBattleInstantiation()->isAttacker() !=
+	 battleInstance->isAttacker())
+		{
+		return;
+		}
+
+	for(vector <TokenEntity *>::iterator iter = (units[file][rank]).begin();
+			iter != (units[file][rank]).end(); ++iter)
+			{
+				if((*iter)->getBattleInstantiation()->isAttacker() != battleInstance->isAttacker())
+					continue;
+				potentialTargets.push_back(
+					BattleTargetElement((*iter)->getBattleInstantiation(),
+					 battleDirection, 1));
+			}
+}
+
+
 BATTLE_DIRECTION BattleField::getDirection(BattleInstance * battleInstance,
 		int rank, int file)
 {
@@ -732,6 +769,7 @@ BATTLE_DIRECTION BattleField::getDirection(BattleInstance * battleInstance,
 
 
 
+// Add to target list all enemies at given position
 void BattleField::addEnemies(BattleInstance * battleInstance,
 									BattleTargets & potentialTargets,
 									int rank, int file)
@@ -773,6 +811,48 @@ void BattleField::addEnemies(BattleInstance * battleInstance,
 }
 
 
+// Add to target list all friends at given position
+void BattleField::addFriends(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									int rank, int file)
+{
+
+
+// 	if((file < minFile_) || (rank < minRank_))
+//		return;
+
+// 	if((file > maxFile_) || (rank > maxRank_))
+//		return;
+
+  if((units[file][rank]).empty())
+		return;
+
+	if( (*((units[file][rank]).begin()))->getBattleInstantiation()->isAttacker() !=
+	 battleInstance->isAttacker())
+		{
+		return;
+		}
+
+	BATTLE_DIRECTION battleDirection = getDirection( battleInstance,
+		rank, file);
+
+		int range = abs(battleInstance->getRank() - rank) +
+		 abs(battleInstance->getFile() - file);
+
+
+
+	for(vector <TokenEntity *>::iterator iter = (units[file][rank]).begin();
+			iter != (units[file][rank]).end(); ++iter)
+			{
+				if((*iter)->getBattleInstantiation()->isAttacker() != battleInstance->isAttacker())
+					continue;
+				potentialTargets.push_back(
+					BattleTargetElement((*iter)->getBattleInstantiation(),
+					 battleDirection,range));
+			}
+}
+
+
 
 
 void BattleField::addAllEnemiesAtRange(BattleInstance * battleInstance,
@@ -788,6 +868,25 @@ void BattleField::addAllEnemiesAtRange(BattleInstance * battleInstance,
 			 currentRange = abs(rank0 - rank) + abs(file0 - file);
 			 if(currentRange <= range)
 			 	addEnemies(battleInstance, potentialTargets, rank,  file);
+
+		}
+}
+
+
+
+void BattleField::addAllFriendsAtRange(BattleInstance * battleInstance,
+									BattleTargets & potentialTargets,
+									int range)
+{
+	int rank0 = battleInstance->getRank();
+	int file0 = battleInstance->getFile();
+	int currentRange = 0;
+	for(int file= minFile_; file <=maxFile_; ++file)
+		for(int rank= minRank_; rank <=maxRank_; ++rank)
+		{
+			 currentRange = abs(rank0 - rank) + abs(file0 - file);
+			 if(currentRange <= range)
+			 	addFriends(battleInstance, potentialTargets, rank,  file);
 
 		}
 }
@@ -811,7 +910,9 @@ void BattleField::addLoot(ItemRule * item, int number)
 
 void BattleField::addAttackerTitles(TitlesAttribute * titles)
 {
-  for(TitleIterator iter = titles->getAll()->begin();
+  if(titles == 0)
+    return;
+    for(TitleIterator iter = titles->getAll()->begin();
 	iter != titles->getAll()->end(); ++iter)
   {
   	freeAttackerTitles_.push_back(*iter);
@@ -821,6 +922,8 @@ void BattleField::addAttackerTitles(TitlesAttribute * titles)
 
 void BattleField::addDefenderTitles(TitlesAttribute * titles)
 {
+  if(titles == 0)
+    return;
   for(TitleIterator iter = titles->getAll()->begin();
 	iter != titles->getAll()->end(); ++iter)
   {

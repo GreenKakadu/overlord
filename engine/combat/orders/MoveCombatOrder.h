@@ -3,7 +3,7 @@
                              -------------------
     begin                : Dec 08 2004
     copyright            : (C) 2004 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #ifndef MOVE_COMBAT_ORDER_H
 #define MOVE_COMBAT_ORDER_H

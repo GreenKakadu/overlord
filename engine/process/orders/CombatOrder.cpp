@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CombatOrder.h"
 #include "StringData.h"
@@ -20,6 +20,7 @@ extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	AtReporter;
 ReportPattern * noCombatUseReporter = new ReportPattern("noCombatUseReporter");
+ReportPattern * noCombatUse2Reporter = new ReportPattern("noCombatUse2Reporter");
 
 CombatOrder * instantiateCombatOrder = new CombatOrder();
 
@@ -65,6 +66,10 @@ STATUS CombatOrder::loadParameters(Parser * parser,
         {
          break;
         }
+// if(unit->isTraced())
+// {
+// cout << "...";
+// }
 		parameters.push_back( new StringData (combatOrderText));
 		checkCombatAction(keyword,unit);
 
@@ -81,15 +86,18 @@ ORDER_STATUS CombatOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
 
-	// Test only
-  cout << "COMBAT " <<entity->print()<< ": ";
-	for (vector <AbstractData *>::iterator iter = parameters.begin();
-			iter != parameters.end(); ++iter)
-			{
-				cout << (*iter)->print() << "; ";
-			}
-	cout << endl;
-	// End of Test
+// if(unit->isTraced())
+// {
+//   cout << "COMBAT " <<entity->print()<< ": ";
+// 
+// 	for (vector <AbstractData *>::iterator iter = parameters.begin();
+// 			iter != parameters.end(); ++iter)
+// 			{
+// 				cout << (*iter)->print() << "; ";
+// 			}
+// 	cout << endl;
+// }
+
 	Parser * tempParser;
 	string combatOrderText;
 	for (vector <AbstractData *>::iterator iter = parameters.begin();
@@ -114,33 +122,41 @@ ORDER_STATUS CombatOrder::process (Entity * entity, ParameterList &parameters)
 
 
 
-bool CombatOrder::checkCombatAction(string & keyword, TokenEntity * entity)
+bool CombatOrder::checkCombatAction(string & keyword, TokenEntity * entity, bool noReport)
 {
 	GameData * rule;
 	ItemRule * item;
 	SkillRule * skill;
-//cout << " ==== Keyword: "<<keyword<<endl;
- if (!ciStringCompare(keyword,"melee"))
-	 	{
-//cout << " ====     identified as Melee: "<<endl;
-			return true;
-	 	}
-   	if (!ciStringCompare(keyword,"parry"))
-	 	{
-//cout << " ====     identified as Parry: "<<endl;
-			return true;
-	 	}
-   	if (!ciStringCompare(keyword,"reload"))
-	 	{
-//cout << " ====     identified as Reload: "<<endl;
-			return true;
-	 	}
+// if(entity->isTraced())
+// {
+// //cout << "checkCombatAction ==== Keyword: "<<keyword<<endl;
+// }
+  if (!ciStringCompare(keyword,"melee"))
+    {
+      //cout << " ====     identified as Melee: "<<endl;
+      return true;
+    }
+  if (!ciStringCompare(keyword,"parry"))
+    {
+    //cout << " ====     identified as Parry: "<<endl;
+      return true;
+    }
+  if (!ciStringCompare(keyword,"reload"))
+    {
+    //cout << " ====     identified as Reload: "<<endl;
+            return true;
+    }
+   if (!ciStringCompare(keyword,"ranged"))
+    {
+    //cout << " ====     identified as Ranged: "<<endl;
+      return true;
+    }
 
-		rule = items.findByTag(keyword,false);
+    rule = items.findByTag(keyword,false);
 
-		if(rule)
-			{
-			  item = dynamic_cast<ItemRule*>(rule);
+	if(rule) // <-------------- Item 
+	{
+		 item = dynamic_cast<ItemRule*>(rule);
 // You may issue order without having item yet!
 //				if(!entity->hasItem(item))// check that unit has this item
 //				{
@@ -150,48 +166,62 @@ bool CombatOrder::checkCombatAction(string & keyword, TokenEntity * entity)
 //				}
 
 //cout << " ====     identified as valid Rule: "<<endl;
-				if(!item->getCombatAction())// check that this item may be used in combat
-				{
-				entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
-                      new StringData(keyword)));
-							return false;
-				}
-// insert CombatUse into the beginning of the keyword string
+		if(!item->getCombatAction())// check that this item
+								// may be used in combat
+		{
+                  if(!noReport) entity->addReport(new BinaryMessage(noCombatUseReporter,entity, new StringData(keyword)));
+			return false;
+		}
+	
+	// At the present moment only units are allowed to use items
+	
+	
+	
+	// insert CombatUse into the beginning of the keyword string
 		keyword.insert(0, "CombatUse ");
-							return true;
+		return true;
 
-			}
-		else
+	}
+	else// <-------------- Skill
+	{
+		rule= skills.findByTag(keyword,false);
+		if(rule)
 			{
-				 rule= skills.findByTag(keyword,false);
-				if(rule)
-					{
-			      skill = dynamic_cast<SkillRule*>(rule);
-						int level = entity->getSkillLevel(skill);
-						if(level == 0)// check that unit has this skill
-						{
-							entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
-                      new StringData(keyword)));
-							return false;
-						}
-						if(!skill->getCombatAction(level))// check that this skill may be
-																						 // used in combat
-						{
-							entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
-                      new StringData(keyword)));
-							return false;
-						}
+			skill = dynamic_cast<SkillRule*>(rule);
+			int level = entity->getSkillLevel(skill);
+			if(level == 0)// check that unit has this skill
+				{
+                                  if(!noReport) entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
+						new StringData(keyword)));
+				return false;
+				}
+			if(!skill->getCombatAction(level))// check that this skill may be
+								// used in combat
+			{
+                          if(!noReport) entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
+				new StringData(keyword)));
+				return false;
+				}
+// May be entity has this skill but not allowed to use it in combat
+// (For instance building may be allowed use skills bit not in combat)
+			if(!skill->mayBeUsedBy(entity))
+			{
+				entity->addReport(new BinaryMessage(noCombatUse2Reporter,entity,
+				new StringData(keyword)));
+				return false;
+				}
+
 //cout << " ====     identified as valid skill: "<<endl;
 // insert Apply  into the beginning of the keyword string
-		keyword.insert(0, "Apply ");
-	return true;
-					}
-				else // not-existing
-				{
-					entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
-                      new StringData(keyword)));
-					return false;
-				}
+			keyword.insert(0, "Apply ");
+			return true;
 			}
+		else // not-existing
+			{
+                          if(!noReport) entity->addReport(new BinaryMessage(noCombatUseReporter,entity,
+				new StringData(keyword)));
+			return false;
+			}
+	}
 	return false;
 }

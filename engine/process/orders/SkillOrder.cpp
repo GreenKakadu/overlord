@@ -3,7 +3,7 @@
                              -------------------
     begin                : Thu Nov 19 2003
     copyright            : (C) 2003 by Alex Dribin
-    email                : alexliza@netvision.net.il
+    email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "SkillOrder.h"
 #include "StringData.h"
@@ -46,10 +46,10 @@ STATUS SkillOrder::loadParameters(Parser * parser,
     }
   if(parser ->matchKeyword("DAYS"))
 	{
-      parameters.push_back( new StringData ("DAYS"));
+          parameters.push_back( new StringData ("DAYS"));
 	}
-	else
-      parameters.push_back( new StringData ("LEVEL"));
+  parser ->matchKeyword("LEVEL");// call to parser advances input position
+  parameters.push_back( new StringData ("LEVEL"));
 
 
   return OK;

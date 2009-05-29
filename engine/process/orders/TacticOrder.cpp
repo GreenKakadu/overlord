@@ -2,7 +2,7 @@
 *************************************************************************
  TacticOrder.cpp ------------------- begin                : Thu Nov 19 2003
  copyright            : (C) 2003 by Alex Dribin
- email                : alexliza@netvision.net.il
+ email                : Alex.Dribin@gmail.com
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff */
 #include "TacticOrder.h"
 #include "StringData.h"
@@ -56,6 +56,7 @@ STATUS TacticOrder::loadParameters( Parser * parser,
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "avoid" );
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "defend" );
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "attack" );
+  parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "fight" );
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "front" );
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "middle" );
   parsingResult |= parseOptionalStringParameter( entity, parser, parameters, "rear" );
