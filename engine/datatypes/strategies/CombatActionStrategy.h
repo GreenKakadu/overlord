@@ -13,7 +13,6 @@
 #include "CombatReport.h"
 #include "BattleField.h"
 #include "MeleeAttackElement.h"
-#include "BasicApplyStrategy.h"
 class TokenEntity;
 class ActionRule;
 class CombatTargetVariety;
