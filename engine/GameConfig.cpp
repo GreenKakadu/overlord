@@ -16,38 +16,39 @@ extern EntitiesCollection <FactionEntity>   factions;
 
 GameConfig::GameConfig()
 {
-	unitsFile_ = string("units.dat");
-	locationsFile_ = string("locations.dat");
-	factionsFile_ = string("factions.dat");
-        buildingsFile_ = string("buildings.dat");
-        effectsFile_ = string("effects.dat");
+	unitsFile_          = string("units.dat");
+	locationsFile_      = string("locations.dat");
+	factionsFile_       = string("factions.dat");
+        buildingsFile_      = string("buildings.dat");
+        effectsFile_        = string("effects.dat");
 //Vars 
-        combat_filesFile_ = string("combat_files.var");
-        combat_movesFile_ = string("combat_moves.var");  
-        combat_ranksFile_  = string("combat_ranks.var");
-        combat_stancesFile_  = string("combat_stances.var");
-        combat_targetFile_   = string("combat_target.var");
+        combat_filesFile_   = string("combat_files.var");
+        combat_movesFile_   = string("combat_moves.var");
+        combat_ranksFile_   = string("combat_ranks.var");
+        combat_stancesFile_ = string("combat_stances.var");
+        combat_targetFile_  = string("combat_target.var");
         construction_worksFile_  = string("construction_works.var");
-        damage_typeFile_  = string("damage_type.var"); 
-        directionsFile_  = string("directions.var");
-        equipmentsFile_  = string("equipments.var"); 
-        movementsFile_   = string("movementsF.var");
-        stancesFile_ = string("stances.var");
+        damage_typeFile_    = string("damage_type.var");
+        directionsFile_     = string("directions.var");
+        equipmentsFile_     = string("equipments.var");
+        movementsFile_      = string("movementsF.var");
+        stancesFile_        = string("stances.var");
 //Rules 
-        constructionsFile_= string("constructions.rules");
-        enchantmentsFile_= string("enchantments.rules");
-        fx_actionsFile_= string("fx_actions.rules");
-        itemsFile_= string("items.rules");
-        racesFile_= string("races.rules");
-        seasonsFile_= string("seasons.rules");
-        skillsFile_= string("skills.rules");
-        terrainsFile_= string("terrains.rules");
-        titlesFile_= string("titles.rules");
-        weathersFile_= string("weathers.rules");
+        constructionsFile_  = string("constructions.rules");
+        enchantmentsFile_   = string("enchantments.rules");
+        fx_actionsFile_     = string("fx_actions.rules");
+        itemsFile_          = string("items.rules");
+        racesFile_          = string("races.rules");
+        effectsRuleFile_    = string("effects.rules");
+        seasonsFile_        = string("seasons.rules");
+        skillsFile_         = string("skills.rules");
+        terrainsFile_       = string("terrains.rules");
+        titlesFile_         = string("titles.rules");
+        weathersFile_       = string("weathers.rules");
         
-        gameFile_ = string("game.dat");
+        gameFile_           = string("game.dat");
 
-        newEntityPrefix_ = string("new");
+        newEntityPrefix_    = string("new");
         daysInMonth = 30;
 	runMode = NORMAL;
 	randomSeed_ = 0;
@@ -140,29 +141,30 @@ void GameConfig::init(const char * filename)
       		continue;
     		}
         
-                if (parser->matchKeyword("COMBAT_FILES_FILE")) { combat_filesFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("COMBAY_MOVES_FILE")) { combat_movesFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("COMBAT_RANKS_FILE")) { combat_ranksFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("COMBAT_STANCES_FILE")) { combat_stancesFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("COMBAT_TARGETFILE")) { combat_targetFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("CONSTRUCTION_WORKS_FILE")) { construction_worksFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("DAMAGE_TYPE_FILE")) { damage_typeFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("DIRECTIONS_FILE")) { directionsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("EQUIPMENTS_FILE")) { equipmentsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("MOVEMENTS_FILE")) { movementsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("STANCES_FILE")) { stancesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("COMBAT_FILES_FILE")) { combat_filesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("COMBAY_MOVES_FILE")) { combat_movesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("COMBAT_RANKS_FILE")) { combat_ranksFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("COMBAT_STANCES_FILE")) { combat_stancesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("COMBAT_TARGETFILE")) { combat_targetFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("CONSTRUCTION_WORKS_FILE")) { construction_worksFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("DAMAGE_TYPE_FILE")) { damage_typeFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("DIRECTIONS_FILE")) { directionsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("EQUIPMENTS_FILE")) { equipmentsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("MOVEMENTS_FILE")) { movementsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("STANCES_FILE")) { stancesFile_ = parser->getParameter(); continue;}
 
-                if (parser->matchKeyword("CONSTRUSCTIONS_FILE")) { constructionsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("ENCHANTMENTS_FILE")) { enchantmentsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("FX_ACTIONS_FILE")) { fx_actionsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("ITEMS_FILE")) { itemsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("RACES_FILE")) { racesFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("SEASONS_FILE")) { seasonsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("SKILLS_FILE")) { skillsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("TERRAINS_FILE")) {  terrainsFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("TITLES_FILE")) { titlesFile_ = parser->getParameter(); continue;}
-                if (parser->matchKeyword("WEATHERS_FILE")) { weathersFile_ = parser->getParameter(); continue;}
-                
+        if (parser->matchKeyword("CONSTRUSCTIONS_FILE")) { constructionsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("ENCHANTMENTS_FILE")) { enchantmentsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("FX_ACTIONS_FILE")) { fx_actionsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("ITEMS_FILE")) { itemsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("RACES_FILE")) { racesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("EFFECTS_RULE__FILE")) { effectsRuleFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("SEASONS_FILE")) { seasonsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("SKILLS_FILE")) { skillsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("TERRAINS_FILE")) {  terrainsFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("TITLES_FILE")) { titlesFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("WEATHERS_FILE")) { weathersFile_ = parser->getParameter(); continue;}
+
         if (parser->matchKeyword("GAMEFILE"))
     		{
       		 gameFile_ = parser->getParameter();
@@ -215,6 +217,7 @@ void GameConfig::init(const char * filename)
  fx_actionsFile_.insert(0, gameDir_+ "/");
  itemsFile_.insert(0, gameDir_+ "/");
  racesFile_.insert(0, gameDir_+ "/");
+ effectsRuleFile_.insert(0, gameDir_+ "/");
  seasonsFile_.insert(0, gameDir_+ "/");
  skillsFile_.insert(0, gameDir_+ "/");
  terrainsFile_.insert(0, gameDir_+ "/");
@@ -382,7 +385,7 @@ bool GameConfig::isNewEntityName(const string &tag, FactionEntity * faction)
     return false;
     }
      string tempTag = tag.substr(0,factionTagSize);
-     faction = dynamic_cast<FactionEntity *>(factions.findByTag(tempTag));
+     faction = dynamic_cast<FactionEntity *>(factions.findByTag(tempTag,false));
      if(factions.isValidTag(tempTag) )
    		 return true;
 //    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";

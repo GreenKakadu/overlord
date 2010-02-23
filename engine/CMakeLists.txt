@@ -12,6 +12,9 @@ INCLUDE_DIRECTORIES(
 	${OVERLORD_SOURCE_DIR}/datatypes
 	${OVERLORD_SOURCE_DIR}/process
 	${OVERLORD_SOURCE_DIR}/report
+	${OVERLORD_SOURCE_DIR}/combat
+	${OVERLORD_SOURCE_DIR}/combat/actions
+	${OVERLORD_SOURCE_DIR}/combat/orders
  	${OVERLORD_SOURCE_DIR}/datatypes/rules
   	${OVERLORD_SOURCE_DIR}/datatypes/entities
    	${OVERLORD_SOURCE_DIR}/datatypes/varieties
@@ -24,6 +27,10 @@ INCLUDE_DIRECTORIES(
         ${OVERLORD_SOURCE_DIR}/process/conflicts
         ${OVERLORD_SOURCE_DIR}/report/patterns
         ${OVERLORD_SOURCE_DIR}/misc
+	${OVERLORD_SOURCE_DIR}/implementation
+	${OVERLORD_SOURCE_DIR}/implementation/actions
+	${OVERLORD_SOURCE_DIR}/implementation/combat
+	${OVERLORD_SOURCE_DIR}/implementation/effects
 	)
 
 SET(OVERLORD_SOURCES  )
@@ -46,6 +53,13 @@ AUX_SOURCE_DIRECTORY ( process/orders  OVERLORD_DATALIB )
 AUX_SOURCE_DIRECTORY ( report  OVERLORD_SOURCES )
 AUX_SOURCE_DIRECTORY ( process/conflicts OVERLORD_SOURCES )
 AUX_SOURCE_DIRECTORY ( report/patterns OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( implementation OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( implementation/actions OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( implementation/combat OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( implementation/effects OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( combat  OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( combat/actions  OVERLORD_SOURCES )
+AUX_SOURCE_DIRECTORY ( combat/sources  OVERLORD_SOURCES )
 AUX_SOURCE_DIRECTORY ( misc OVERLORD_SOURCES )
 
 ADD_LIBRARY ( ovlLib ${OVERLORD_DATALIB} )

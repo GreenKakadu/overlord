@@ -14,18 +14,14 @@
 #include "GameConfig.h"
 #include "DataManipulator.h"
 #include "BasicCombatManager.h"
-#include "ReportPattern.h" //temp
+#include "ReportPattern.h" 
 #include "CombatReport.h"
-#include "ReportPrinter.h"
-// tests
 
 extern int currentDay;
 extern bool testMode;
-extern ProcessingMode immediateOrders;
-extern ProcessingMode stackOrders;
-extern ProcessingMode dayOrders;
+
 #ifndef VERSION
-  #define VERSION "0.6.0"
+  #define VERSION "0.9"
 #endif
 string GameConfig::version = VERSION;
 DataManipulator * dataManipulatorPtr = 0;
@@ -132,33 +128,36 @@ int main( int argc, char * argv[] )
 	{
 	cout << endl << "    #### Processing day " << currentDay
 		<< " ####" << endl;
-	cout << endl << "Daily data pre-Processing  " << endl << endl;
+	cout << endl << "Daily data pre-Processing  "  << endl;
 	dataManipulator.dailyPreProcessData();
-	
-	cout << endl << "Processing immediate orders " << endl << endl;
+
+	cout  << "Processing immediate orders "  << endl;
 	dataManipulator.processOrders( & immediateOrders );
-	
-	cout << "Processing stack orders " << endl << endl;
+
+        cout  << "Processing request orders "  << endl;
+	dataManipulator.processOrders( & requestOrders );
+
+	cout << "Processing stack orders "  << endl;
 	dataManipulator.processOrders( & stackOrders );
-	
-	cout << "Processing combat resoution  for all combats" << endl << endl;
+
+	cout << "Processing combat resoution  for all combats"  << endl;
 	dataManipulator.processCombat();
-	
-	
-	cout << "Processing full day orders " << endl << endl;
+
+
+	cout << "Processing full day orders "  << endl;
 	dataManipulator.processOrders( & dayOrders );
-	
-	cout << "Processing competitive requests " << endl << endl;
+
+	cout << "Processing competitive requests "  << endl;
 	dataManipulator.processCompetitiveRequests( 0 );
-	
+
 	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
 	{
 	cout << "After Processing orders on day " << currentDay << "\n";
 	getchar();
 	}
-	
+
 	dataManipulator.dailyUpdate(); // mana, time-lasting effects, item decay,  reports
-	
+
 	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
 	{
 	cout << "After Processing reports on day " << currentDay << "\n";
@@ -205,6 +204,7 @@ int main( int argc, char * argv[] )
 
 
 
+  #ifdef TEST_MODE
   cout << "The size of integer is " << sizeof( int ) << endl;
   cout << "The size of sampleGameData is " << sizeof( sampleGameData ) << endl;
   cout << "The size of sampleEntity is " << sizeof( sampleEntity ) << endl;
@@ -213,7 +213,7 @@ int main( int argc, char * argv[] )
   cout << "The size of sampleUnit is " << sizeof( sampleUnit ) << endl;
   cout << "The size of sampleFaction is " << sizeof( sampleFaction ) << endl;
   cout << "The size of sampleLocation is " << sizeof( sampleLocation ) << endl;
-
+#endif
 
 }
 

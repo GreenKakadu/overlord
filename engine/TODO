@@ -1,37 +1,18 @@
 Overlord Engine ToDo list:
 
-Last updated 16.07.2005
+Last updated 22.02.2010
 ==================================================================================
-	Alpha version features:
-	
 
--faction statistics
--Location developement
+ Post-Alpha features:
 
-
----- Alpha TO-DO
-
-Defence against damage type
-markmanship requires lbow
-target the leader
-
-- dead bodies generation and decay
-- apply enchants to locations (now only to tokens) + add target type definition
-
-- Battle summon
-- Target selection
+- faction statistics
+- Defence against damage type
+- markmanship requires lbow
+- add target type definition
 - Implement firesteeds
-- Implement drain life as example
-- Can learn Skills listed are wrong (?)
+- Implement drain life 
 - Checker.
 
----
----- Alpha Announce:
-- no taxes and ente: - automatic taxing  based on titles.
-- building is different
-- ships are not items but buildings able to move
-- market is different
-- announce existing buildingd 
 
 Special Rules:
     ==============================================================================
@@ -39,8 +20,6 @@ Special Rules:
 
  -Special combat and non-combat skills implementation
 - Alias names for units
-	Magic Skills
-	Combat/Shaman skills?
 	Overlord Title
 	Merchant Prince Title
 	Market days?
@@ -58,20 +37,15 @@ Introduce flags attribute.
 				X OR Y
 	Define special flags Condition (or add it to all conditions) that allows "soft" configuration		(i.e. via data files)	
 
-- title cancellation
 - eating raw products like grain or cattle for upkeep is not implemented
 - unit that borrows money or food for upkeep to other units doesn't keeps 
 		money or food for it's own upkeep
-- Rewrite guard-tax-pilage RULES
-- write in rules that working is private and allowed for any unit
 
-- Can learn Skills listed are wrong
 
 - Deal with situation when leader of stack marching into location was slain. - (select new    leader and reform stack? - stack should continue movement)
 - Non-stealth follower of stealth unit/ unaceptable passenger of acceptable ship
 	( current implementation based on leader/ship owner only)
-- recalculate movement bonuses when:
-	- effect added/removed to unit or location
+
 
 Combat ToDo:
 	- multyday loot (allow unit to spend several days looting battlefield)
@@ -89,7 +63,7 @@ Combat ToDo:
 - let SEE order accept [faction] parameter
 - let GET order interpret missing unit/location parameter as current location.
 - Conditions (Skill) may be demanded to enter location/Building
-- add/remove Unit/Entity to locations
+- SAIL order
 
 
 
@@ -122,7 +96,6 @@ Things to check:
 - check all orders that have unit parameters for using  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 - forget removes skill bonuses
 - check Title overlaping
-- what happens if player provides valid but unknown tag?
 - some warnings should be used only while checking orders. 
 
 - Use of elements in reports should be avoided because they may report not their current      state  but the state at the time of report printing.
@@ -131,8 +104,86 @@ Future todo:
 - Conditional order reporting ('!'  '?')
 - Define static type of reporter (ERROR, NORMAL...) for use in conditional order reporting.
 - Smart Drowning
+-Do not count foreign unseen units in stack capacity
+-Use stack capacity
+-If drowning:
+-- try to equip all items adding swimming capacity
+-- try to equip all items adding swimming capacity
+-- Sort unequipped items according to price/weight walue
+-- Drop unequipped items
+-- Sort units according to num Units/ per extra weight
+-- unstack units
+-- unequip all items without flying/swimming capacity
+-- Sort equipped items without 
 
+(Future) If faction of unit unknown, then attitude/stance is toward this unit only, not the faction. What happens when faction of this unit is revealed?
+keep unit ownership knowledge per faction.
+//--------------------------------------Fame and Honor ----------------------------------------------------------------
+Fame and Honor stats
+Change as a result of battle outcome
+Items may temporary change Fame and Honor
+Skill use may permanently change it
+Finishing building may permanently change
 
+Better 1-day turns support
+Controlling faction or some part of it.
+    Assign unit to another faction
+    Recall unit from another faction
+    Assigned unit counted in CP of owner faction (OFR)
+                        reported in OFR as assigned to xxx
+                        detailed report for controlling faction CFR
+                        accepts orders from CFR
+                        accept only Recall order from OFR
+                        have stances of OFR. They can't be changed.
+                        Can't attack own faction
+provide some aliases for orders, so that you can define "USE spy" as "SPY" etc.,
+Damage and defense type
+
+Requests:
+
+ - anti-monster skill and weapon, or a weakness attribute of monsters versus a specific weapon attribute
+- remove the loss of title when leaving influence, or lower the barrier for the title challenge
+- NPC faction control - necromancy and through title
+- possibility to switch off the detailed skill level report i.e. show "novice" instead of swordplay (3000)
+- prevent an item from beeing givable 
+- prevent leaders from beeing givable (probably this can be done by switching off the respective order)
+- volcanos with eruption ;)
+- keys for locations ("doors").
+- bribe command to take control of other leaders or followers
+- interesting effects that can be linked to artifacts: i.e. rain, scouting nearby provinces, victory point
+- victory point attribute that can be linked to items, titles, etc.
+- weather reducing production (if that has not been done already)
+- assassinate order
+- spy on skills command
+
+- magic
+* magical gates with optional password protection and brute force cracking spell. Well, magical gates in enough
+* farsight
+* weather
+* attack
+* detect magic
+* necromancing
+* hypnotize (unit can not move)
+* locate specific artifact 
+//-------------------------------------- Prisoners ----------------------------------------------------------------
+ A prisoner should have the following attributes:
+ - it must be a leader unit
+ - a prisoner can be taken in combat or through a capturing skill
+ * a unit taken prisoner looses all its items
+ - it does not show anymore on the report
+ - it still claims faction points
+ - it can flee with a certain chance each day, let us say 0.5%.
+ - it is stacked with the unit that took it prisoner
+ - it is free once the unit it is stacked to is killed or captured.
+ * then it will randomly walk to one of neighbouring provinces
+ * if it was on a boat, it will appear on the next shore
+ - apart from beeing freed by a third party, the prisoner can be
+ * executed
+ * tortured (changes loyality, reduces skills, unit could die)
+ * set free by unstacking
+Prison building
+Imprisoning in the Castle
+Skills for capturing, torturing, keeping prisoners.
 
 
 ==========================================================================================
@@ -152,7 +203,11 @@ Known Bugs/features:
 10.	Unit enters location in post-turn phase. so AT commands works only on the next day.
 
 30. Comments in faction orders
-31.
+31. No CP calculation on 0 turn.
+32. No teaching reports on 0 turn.
+33 If unit tries to buy/sell/recruit (market conflict) then amount of items is checked before conflict resolution but independently for each request, so unit that have 10 swords may try to issue 2 requests to sell 10 swords each, affecting total market behavior.
+
+34 Wrong calculation of stats for some units. that lost figures in battle!
 
 Portability:
 
@@ -160,14 +215,6 @@ In Compillation with Borland C++BuilderX data structures use much more memory th
 
 
 
-Orders implementation status:
-																	( * - means known bugs)
-
-
-* CANCEL   ---- implemented ---- *
-* NAME     ---- implemented ---- tested *
-* OATH     ---- implemented ---- tested *
-* STANCE   ---- implemented ---- tested *
 
 
 Actions:
@@ -254,20 +301,6 @@ FX_SINGLE_SUMMONING <--- Summoning
 Combat ToDo::
 
 
-* CHARGE:
-* FLEE:
-* STAND
-* RETREAT
-* SWEEP:
-* FLANK:
-* FIRE:
-* SUPPORT  -
-
-
-* USE (item)
-* APPLY (skill)
-* RANGED     
-* RELOAD:    -- Not implementing now
 
 
 

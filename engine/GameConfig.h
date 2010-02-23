@@ -74,8 +74,9 @@ public:
   string  * getEnchantmentsFile(){return &enchantmentsFile_;} 
   string  * getFx_actionsFile(){return &fx_actionsFile_;} 
   string  * getItemsFile(){return &itemsFile_;} 
-  string  * getRacesFile(){return &racesFile_;} 
-  string  * getSeasonsFile(){return &seasonsFile_;} 
+  string  * getEffectsRuleFile(){return &effectsRuleFile_;}
+  string  * getRacesFile(){return &racesFile_;}
+  string  * getSeasonsFile(){return &seasonsFile_;}
   string  * getSkillsFile(){return &skillsFile_;} 
   string  * getTerrainsFile(){return &terrainsFile_;} 
   string  * getTitlesFile(){return &titlesFile_;} 
@@ -133,7 +134,7 @@ public:
   string   terrainsFile_;
   string   titlesFile_;
   string   weathersFile_;
- 
+  string   effectsRuleFile_;
   
   string gameFile_;
   vector <string> npcFactions_;

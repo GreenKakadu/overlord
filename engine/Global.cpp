@@ -23,7 +23,8 @@ bool testMode = false;
 GameData  targetTypeSelf("SELF", &sampleGameData);
 
 ProcessingMode   immediateOrders  (IMMEDIATE_ORDER);
-ProcessingMode  stackOrders  (STACK_ORDER);
+ProcessingMode   requestOrders  (REQUEST_ORDER);
+ProcessingMode   stackOrders  (STACK_ORDER);
 ProcessingMode 	 dayOrders  (DAY_LONG_ORDER);
 
 ItemRule * cash;
@@ -90,7 +91,7 @@ void longtostr(unsigned long u, char *out)
 string longtostr(long in)
   {
     int    j = 0;
-    u_long k = 1000000000;
+    unsigned long k = 1000000000;
     char str[12];
 
     if (in<0)
@@ -239,7 +240,8 @@ int roll_1Dx(int n)
              Element2<RaceRule, int > * Element2<RaceRule, int >::headOfFreeList;
              BasicInventoryElement * BasicInventoryElement::headOfFreeList;
              BasicReportElement  * BasicReportElement::headOfFreeList;
-             StanceElement * StanceElement::headOfFreeList;
+             BasicStanceElement * BasicStanceElement::headOfFreeList;
+//             StanceElement * StanceElement::headOfFreeList;
              BasicResourceElement * BasicResourceElement::headOfFreeList;
              BasicMovementElement * BasicMovementElement::headOfFreeList;
              BasicSkillUseElement * BasicSkillUseElement::headOfFreeList;
@@ -253,7 +255,8 @@ template  <> BasicItemElement * BasicItemElement::headOfFreeList = 0;
 template  <> BasicRaceElement * BasicRaceElement::headOfFreeList = 0;
 template  <> BasicInventoryElement * BasicInventoryElement::headOfFreeList = 0;
 template  <> BasicReportElement  * BasicReportElement::headOfFreeList = 0;
-template  <> StanceElement * StanceElement::headOfFreeList = 0;
+template  <> BasicStanceElement * BasicStanceElement::headOfFreeList = 0;
+//template  <> StanceElement * StanceElement::headOfFreeList = 0;
 template  <> BasicResourceElement * BasicResourceElement::headOfFreeList = 0;
 template  <> BasicMovementElement * BasicMovementElement::headOfFreeList = 0;
 template  <> BasicSkillUseElement * BasicSkillUseElement::headOfFreeList = 0;

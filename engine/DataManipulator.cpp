@@ -12,6 +12,7 @@
 #include "DataManipulator.h"
 #include "BasicCombatManager.h"
 #include "WeatherRule.h"
+#include "EffectRule.h"
 #include "SeasonRule.h"
 #include "DataStorageHandler.h"
 #include "MovementVariety.h"
@@ -38,6 +39,7 @@ DataManipulator::DataManipulator()
    ruleIndex.addRules (&skills);
    ruleIndex.addRules (&items);
    ruleIndex.addRules (&races);
+   ruleIndex.addRules (&effectRules);
    ruleIndex.addRules (&fx_actions);
    ruleIndex.addRules (&enchantments);
    ruleIndex.addRules (&constructions);
@@ -50,7 +52,7 @@ DataManipulator::DataManipulator()
    addEntities  (&factions);
    addEntities  (&locations);
    addEntities  (&buildingsAndShips);
-   addEntities  (&effects);
+   addEntities  (&effects); 
 
 }
 
@@ -138,6 +140,8 @@ STATUS DataManipulator::load()
    assert(neutralStance);
   hostileStance =   stances["hostile"];
    assert(hostileStance);
+  enemyStance =   stances["enemy"];
+   assert(enemyStance);
   avoidStance = combatStances["avoid"];
    assert(avoidStance);
   defenceStance = combatStances["defend"];
@@ -439,40 +443,43 @@ void DataManipulator::prepareData()
 
 
 
-
 /*
  * Performs daily update of mana, time-lasting effects, item decay
  */
 void DataManipulator::dailyUpdate()
 {
-// cout <<"Manipulator Daily report"<<endl;
-  EntitiesCollectionIterator collIter;
-  EntitiesIterator iter;
+    // cout <<"Manipulator Daily report"<<endl;
+    EntitiesCollectionIterator collIter;
+    EntitiesIterator iter;
 
-  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
-	   {
-      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+    for (collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+    {
+        for (iter = (*collIter)->begin(); iter != (*collIter)->end(); iter++)
         {
-            if(*iter )
-              (*iter) ->dailyUpdate();
+            if (*iter)
+            {
+
+                (*iter) ->dailyUpdate();
+            }
         }
-		}
-  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
-	   {
-      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+
+    }
+    for (collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+    {
+        for (iter = (*collIter)->begin(); iter != (*collIter)->end(); iter++)
         {
-            if(*iter )
-               (*iter) ->finalizeReports();
+            if (*iter)
+                (*iter) ->finalizeReports();
         }
-		}
-  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
-	   {
-      for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
+    }
+    for (collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+    {
+        for (iter = (*collIter)->begin(); iter != (*collIter)->end(); iter++)
         {
-            if(*iter )
-               (*iter) ->cleanPublicReports();
+            if (*iter)
+                (*iter) ->cleanPublicReports();
         }
-		}
+    }
 }
 
 
@@ -566,6 +573,7 @@ void DataManipulator::processCompetitiveRequests(ProcessingMode * )
     if(currentDay ==gameConfig.daysInMonth )
           locations[i]->processMonthlyConflict();
   }
+
 }
 
 
@@ -612,14 +620,14 @@ void DataManipulator::turnPostProcessing()
                (*iter) ->postProcessData();
         }
 		}
-/*  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
+  for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {
       for(iter = (*collIter)->begin(); iter !=(*collIter)->end(); iter++ )
         {
             if(*iter )
                (*iter) ->postPostProcessData();
         }
-		}*/
+		}
 // add Reports events from post-processing stage
   for( collIter = entities_.begin(); collIter != entities_.end(); collIter++)
 	   {

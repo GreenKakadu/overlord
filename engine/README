@@ -1,20 +1,31 @@
-These are files containing preliminary code  of Overlord turn
-processing engine.
-Version 0.4
-Date 20.02.2008
+These are files containing code of alpha version of Overlord turn
+processing engine. It was used for running aplha-test game.
+Version 0.9.0
+Date 22-feb-2010
 
-                 1. Functionality.
+                
+		1. Functionality.
 
-This version supports main functionality but most of "special" rules are not implemented.
+This version supports main functionality but part of "special" rules are not implemented.
 
 
-			2. Compillation and building
+		
+		2. Compillation and building
 
 			make -f OverlordMakefile
 
 			executable file is "Overlord"
+			
+			Code is cross-platform. It may be compliled with GCC, MSVC and BC.
+			You may need to set flags NOLRAND48 or GCC_OLD 
+		
+		
+		
+		3. Using sample game settings
+		
+directory game contains sample game setting.		
 
-			3. Use
+		4. Building new game
 
 Before running engine (Overlord) you should set game directories and configuration.
 
@@ -23,17 +34,18 @@ The most important of configuration parameters are: GAMEDIR and PLAYERSDIR - the
 according to your's directories containing rulefiles, entities data and players subdirectories.
 
 GAMEDIR is a directory where engine will look for game rulefiles (*.rules and *.var)
-	Rules are:
-			titles.rules
-			terrains.rules
-			races.rules
-			constructions.rules
-			fx_actions.rules
-			enchantments.rules
-			items.rules
-			skills.rules
-			seasons.rules
-			weathers.rules
+ Rules are:
+		titles.rules
+		terrains.rules
+		races.rules
+		constructions.rules
+		fx_actions.rules
+		effects.rules
+		enchantments.rules
+		items.rules
+		skills.rules
+		seasons.rules
+		weathers.rules
   Varieties are:
 		stances.var
 		movements.var
@@ -59,10 +71,18 @@ GAME is a name of game. File "name of the game".dat will keep some game data. (F
 
 TURN  is current turn. It should be identical to extention of order files.
 	so if TURN is 5 you should name order file order.5
+	
 
-  4. Documentation
+  5. Documentation
 
-	RulesNew.txt contain current overlord rules that may be not relevant in some cases.
-
+	OverlordRules.html (RulesNew.txt) contain current overlord rules.
 	DesignDoc.html - contain explanation of overlord engine design.
-	                 
+	CombatDesign.txt - contain explanation of overlord combat engine design.
+	HowTo.txt explains how to add new functionality to the game engine
+
+
+
+  6. Running the game.
+  
+  The game may be run either as PBeM game or as Client-Server application
+  Code for Client and Server may be found in PBMClient and PBMServer directories.

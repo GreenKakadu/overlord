@@ -4,7 +4,7 @@ MODULE_DIR= $(BASE_DIR)
 MODULE_NAME = overlord
 CXX = c++
 LD = c++
-CXXFLAGS = -O3 -DGCC_OLD -W -Wall -Wno-unused -Wno-sign-compare $(INCLUDES)
+CXXFLAGS = -O3 -W -Wall -Wno-unused -Wno-sign-compare $(INCLUDES)
 ######################## Include Directories   #########################
 INCLUDES = -I$(BASE_DIR)                       \
            -I$(BASE_DIR)/datatypes             \
@@ -172,10 +172,19 @@ SOURCES = turn.cpp \
           datatypes/varieties/CombatRankVariety.cpp \
           datatypes/varieties/CombatStanceVariety.cpp \
           datatypes/varieties/CombatTargetVariety.cpp \
+          implementation/actions/InfectionActionRule.cpp \
+          implementation/actions/BuryActionRule.cpp \
+          implementation/actions/RitualActionRule.cpp \
           implementation/actions/PickpocketActionRule.cpp \
+          implementation/actions/AffectWeatherAction.cpp \
+          implementation/actions/CreatePortalAction.cpp \
+          implementation/actions/AssassinateAction.cpp \
+          implementation/actions/TerraformAction.cpp \
+          implementation/actions/TransformAction.cpp \
           implementation/combat/HeavinessCombatAction.cpp \
           implementation/combat/EnchantCombatAction.cpp \
           implementation/combat/SummonCombatAction.cpp \
+	  implementation/Effects/PlagueEntity.cpp \
           misc/FileParser.cpp \
           misc/LineParser.cpp \
           misc/ReportPrinter.cpp \

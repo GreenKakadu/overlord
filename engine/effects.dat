@@ -1,8 +1,0 @@
-# Overlord effects data
-# Ver 0.3 06.11.2003
-
-KEYWORD EFFECT 199
-EFFECT E001
-FACTION f004
-LOCATION L0
-NAME plague
