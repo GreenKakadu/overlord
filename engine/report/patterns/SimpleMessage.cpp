@@ -28,3 +28,7 @@ void SimpleMessage::printReport(ReportPrinter &out) const
 }
 
 SimpleMessage  * SimpleMessage::headOfFreeList;
+vector <AbstractData *>  SimpleMessage::aPrint()
+{
+  return reporter_->aPrint();
+}

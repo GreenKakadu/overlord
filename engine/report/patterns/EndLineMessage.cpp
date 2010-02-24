@@ -11,4 +11,9 @@ void EndLineMessage::printReport(ReportPrinter &out) const
 {
 	out << endl;
 }
+vector <AbstractData *>  EndLineMessage::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
 

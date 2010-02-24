@@ -91,6 +91,11 @@ void CombatParticipantMessage::printReport(ReportPrinter &out) const
 	out <<endl;
 	out.decr_indent();
 }
+vector <AbstractData *>  CombatParticipantMessage::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
 
 
 

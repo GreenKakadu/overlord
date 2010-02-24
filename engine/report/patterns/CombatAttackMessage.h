@@ -32,7 +32,8 @@ public:
 			CombatAttackMessage  * next; //for use in operator new
   		ReportPattern * reporter_;
 	};*/
-protected:
+  vector <AbstractData *>  aPrint();
+  protected:
 	~CombatAttackMessage(){}
 		int initiative_;
 		TokenEntity * attacker_;

@@ -35,6 +35,19 @@ void UnaryMessage::clean()
   param1_->clean();
 }
 
+vector <AbstractData *>  UnaryMessage::aPrint()
+{
+  return reporter_->aPrint(param1_);
+}
+
+
+  AbstractData * UnaryMessage::getParameter(int index)
+  {
+      if(index==1)
+          return param1_;
+      else
+          return 0;
+  }
 
 
 UnaryMessage  * UnaryMessage::headOfFreeList;

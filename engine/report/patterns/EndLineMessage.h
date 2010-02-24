@@ -14,7 +14,8 @@ class EndLineMessage : public ReportMessage  {
 public:
 	EndLineMessage(){}
   void printReport(ReportPrinter &out) const;
-protected:
+        vector <AbstractData *>  aPrint();
+  protected:
 	~EndLineMessage(){}
 };
 extern EndLineMessage * endLineMessage;

@@ -28,7 +28,7 @@ class TokenEntity;
 
 class TeachingOffer {
 public: 
-	TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <Entity *>& students);
+	TeachingOffer(TokenEntity * teacher, SkillRule * skill/*, vector <Entity *> students*/);
 	virtual ~TeachingOffer();
   ostream&  reportOffer(ostream& out) const;
   virtual int getTeachingBonus();
@@ -42,7 +42,7 @@ public:
   SkillRule * skill_;
   int level_;
   vector <Entity *> confirmedStudents_;
-  vector <Entity *> students_;
+  //vector <Entity *> students_;
 
 };
    inline ostream& operator << (ostream& out,  TeachingOffer& data)

@@ -35,5 +35,23 @@ void BinaryMessage::clean()
 
 
 
+vector <AbstractData *>  BinaryMessage::aPrint()
+{
+  return reporter_->aPrint(param1_, param2_);
+}
+
+AbstractData * BinaryMessage::getParameter(int index)
+{
+  switch(index)
+  {
+      case 1:
+          return param1_;
+      case 2:
+          return param2_;
+  default:
+      return 0;
+  }
+}
+
 BinaryMessage  * BinaryMessage::headOfFreeList;
 

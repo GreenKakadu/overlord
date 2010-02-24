@@ -58,8 +58,10 @@ void  LocalMarketRequest::produceFactionReport(FactionEntity * faction, ostream 
 // Local request is allways valid
 bool LocalMarketRequest::isValid()
 {
-  
-  return amount_;
+    if(amount_)
+        return true;
+    else
+        return false;
 }
 
 void LocalMarketRequest::free()

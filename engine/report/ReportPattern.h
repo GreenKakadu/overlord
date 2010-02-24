@@ -28,6 +28,14 @@ public:
   //static vector<ReportPattern *> reportPatternsRegistry;
   static STATUS initialize(const string & fileName);
   static const string keyword;
+  
+    vector <AbstractData *>  aPrint();
+    vector <AbstractData *>  aPrint( AbstractData * param1);
+    vector <AbstractData *>  aPrint( AbstractData * param1, AbstractData * param2);
+    vector <AbstractData *>  aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3);
+    vector <AbstractData *>  aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4);
+    vector <AbstractData *>  aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5);
+  
 	protected:
   string keytag_;
 	~ReportPattern(){}

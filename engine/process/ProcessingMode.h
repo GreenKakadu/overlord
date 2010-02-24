@@ -14,10 +14,11 @@ enum order_type {
   DEFAULT                        = 0,
   INSTANT_ORDER      = 1,
   IMMEDIATE_ORDER      = 2,
-  STACK_ORDER    = 3,
-  DAY_LONG_ORDER = 4,
-  COMBAT_ACTION_ORDER = 5,
-  COMBAT_MOVEMENT_ORDER = 6,
+  REQUEST_ORDER      = 3,
+  STACK_ORDER    = 4,
+  DAY_LONG_ORDER = 5,
+  COMBAT_ACTION_ORDER = 6,
+  COMBAT_MOVEMENT_ORDER = 7,
   ORDER_TYPE_END = 10
                    };
 
@@ -45,6 +46,7 @@ protected:
 	int initiative_;
 };
 extern ProcessingMode   immediateOrders;
+extern ProcessingMode   requestOrders;
 extern ProcessingMode   stackOrders;
 extern ProcessingMode 	dayOrders;
 

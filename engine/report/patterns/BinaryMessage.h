@@ -32,6 +32,9 @@ public:
 			BinaryMessage  * next; //for use in operator new
   		ReportPattern * reporter_;
 	};
+        vector <AbstractData *>  aPrint();
+  inline ReportPattern * getPattern() {return reporter_;}
+  AbstractData * getParameter(int index);
 protected:
 	~BinaryMessage(){}
 		AbstractData * param1_;

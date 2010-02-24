@@ -23,13 +23,14 @@
 #include "LocationEntity.h"
 #include "TokenEntity.h"
 #include "DataManipulator.h"
+#include "UnaryMessage.h"
 
 extern DataManipulator * dataManipulatorPtr;
 extern RulesCollection <ConstructionRule>      constructions;
 extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern EntitiesCollection <UnitEntity>      units;
 extern EntitiesCollection <LocationEntity>      locations;
-
+extern ReportPattern * TargetReporter;
 //TargetOrder instantiateTargetOrder;
 TargetOrder * instantiateTargetOrder = new TargetOrder();
 
@@ -54,10 +55,14 @@ STATUS TargetOrder::loadParameters(Parser * parser, ParameterList &parameters, E
             return IO_ERROR;
 // Player can't detect not-existing rules and enties by trying them as targets
 //
+
+
 	if(!parseStringParameter(entity, parser,parameters))
         return IO_ERROR;
     else
-  		return OK;
+    {
+ 		return OK;
+    }
 }
 
 
@@ -73,7 +78,10 @@ ORDER_STATUS TargetOrder::process (Entity * entity, ParameterList &parameters)
       string tag = (parameters[0])->print();
       if (tag.size() != 0)
         {
-          tokenEntity->setTarget(TargetOrder::findTarget(tag));
+          AbstractData * target = TargetOrder::findTarget(tag);
+          tokenEntity->setTarget(target);
+            entity->addReport( new UnaryMessage(TargetReporter , target ),
+                     entity->getCurrentOrder(), 0 );
         }
      }
       return SUCCESS;

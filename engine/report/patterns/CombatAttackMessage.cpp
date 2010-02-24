@@ -54,7 +54,7 @@ void CombatAttackMessage::printReport(ReportPrinter &out) const
 
 	if(damage_ <= 0)
 	{
-		out << " but misses."<<endl;
+		out << " but fails to do any damage."<<endl;
 		return;
 	}
 	out << " for " <<damage_<< " damage";
@@ -72,6 +72,11 @@ void CombatAttackMessage::printReport(ReportPrinter &out) const
 
 void CombatAttackMessage::clean()
 {
+}
+vector <AbstractData *>  CombatAttackMessage::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
 }
 
 

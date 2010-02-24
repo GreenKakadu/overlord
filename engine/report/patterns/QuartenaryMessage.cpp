@@ -37,6 +37,10 @@ void QuartenaryMessage::clean()
   param4_->clean();
 }
 
+vector <AbstractData *>  QuartenaryMessage::aPrint()
+{
+  return reporter_->aPrint(param1_, param2_, param3_, param4_);
+}
 
 
 QuartenaryMessage  * QuartenaryMessage::headOfFreeList;

@@ -102,7 +102,10 @@ ORDER_STATUS AttackOrder::process (Entity * entity, ParameterList &parameters)
   if( unitTarget != 0)
     {
       if (!tokenEntity->mayInterractTokenEntity(unitTarget)) // Not In the same place or can't see
+      {
+	//cout<<"Attack:"<<tokenEntity->print()<<" can't see " << unitTarget->print()<<endl;
 	    return FAILURE;
+      }
       if(unitTarget->getFaction() == tokenEntity->getFaction())
         {
           tokenEntity->addReport(new UnaryMessage(ownUnitAttackReporter,unitTarget));
@@ -169,6 +172,10 @@ ORDER_STATUS AttackOrder::process (Entity * entity, ParameterList &parameters)
        }
 // the same for constructions
      }
+    else
+    {
+	cout<<"Attack: undetectable target "<< parameters[0]->print()<<endl;
+    }
 	return FAILURE;
 }
 

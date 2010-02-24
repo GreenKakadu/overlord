@@ -95,7 +95,9 @@ void BasicConflict::process()
       resolve(currentList);
     }
   else
-    cerr << location_->print()<<" Request list is empty\n";  
+  {
+    //cerr << location_->print()<<" Request list is empty\n"; 
+  }
 // Here all request object deleted and  currentList cleaned
   for(iter = currentList.begin() ; iter != currentList.end();++iter)
   {

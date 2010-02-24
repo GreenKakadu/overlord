@@ -77,7 +77,7 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
   if( number == 0 )
         number  = unit->getFiguresNumber();
 //======================================================
-	UnitEntity * newUnit;
+        UnitEntity * newUnit =0;
   NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);
 
 	if (placeholder)  // Is it new entity?

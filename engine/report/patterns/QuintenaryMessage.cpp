@@ -42,6 +42,10 @@ void QuintenaryMessage::clean()
   param5_->clean();
 }
 
+vector <AbstractData *>  QuintenaryMessage::aPrint()
+{
+  return reporter_->aPrint(param1_, param2_, param3_, param4_, param5_);
+}
 
 
 

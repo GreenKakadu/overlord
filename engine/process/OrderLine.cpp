@@ -212,28 +212,33 @@ void OrderLine::stripModifiers(Parser * parser )
 bool OrderLine::parse( Parser * parser, Entity * entity )
 {
   string tempKeyword = parser->getWord();
-// If keyword is "combat" we would like to insert  order
+  // If keyword is "combat" we would like to insert  order
   orderPrototype_ = orderPrototypesCollection->find( tempKeyword );
-//cout << " Order ->"<<orderPrototype_->getKeyword()<<endl;
+  //cout << " Order ->"<<orderPrototype_->getKeyword()<<endl;
   if ( orderPrototype_ == 0 )
   {
-		if(elseStatement_ || endifStatement_)
-         return true;
-		else
-		cerr << "=xx= Parsing failed for order " << tempKeyword << " "
-         << parser->getText() << endl;
+    if(elseStatement_ || endifStatement_)
+      return true;
+    else
+    {
+      if(!tempKeyword.empty())
+      {
+	cerr << "=xx= Parsing failed for order [" << tempKeyword << "] "
+	<< parser->getText() << endl;
+      }
+    }
     return false;
   }
   
   else if ( orderPrototype_->
-       loadParameters( parser, parameters_, entity ) == OK )
-         return true;
+    loadParameters( parser, parameters_, entity ) == OK )
+    return true;
   else
   {
     orderPrototype_ = 0;
     return false;
   }
-
+  
 }
 
 
@@ -306,7 +311,9 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
        if ( ( dayRestricted_ == 0 ) || ( dayRestricted_ == currentDay ) )
        {
          entity->setCurrentOrder( this );
+         //cout<<"orderPrototype_->process:"<<entity->print()<<endl;//(&OrderPrototype::process)
          result = orderPrototype_->process( entity, parameters_ );
+         //cout<<" ok." <<endl;//(&OrderPrototype::process)
          entity->setCurrentOrder( 0 );
        }
        else

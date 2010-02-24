@@ -64,6 +64,7 @@ ReportPattern * buidingFinishedReporter    = new ReportPattern("buidingFinishedR
 ReportPattern * constructionStartedReporter    = new ReportPattern("constructionStartedReporter");
 ReportPattern * buildingDestroyedReporter    = new ReportPattern("buildingDestroyedReporter");
 ReportPattern * constructionWorksCompletedReporter = new ReportPattern("constructionWorksCompletedReporter");
+ReportPattern * constructionWorksAddedReporter = new ReportPattern("constructionWorksAddedReporter");
 // Buy/Sell/Recruit
 ReportPattern * cantTradeReporter = new ReportPattern("cantTradeReporter");
 ReportPattern * buyReporter       = new ReportPattern("buyReporter");
@@ -95,6 +96,8 @@ ReportPattern * cantContestFromAllyReporter = new ReportPattern("cantContestFrom
 ReportPattern * cannotChristenReporter   = new ReportPattern("cannotChristenReporter");
 ReportPattern * publicChristenReporter   = new ReportPattern("publicChristenReporter");
 ReportPattern * privateChristenReporter  = new ReportPattern("privateChristenReporter");
+// Combat
+ReportPattern * combatSettingsReporter  = new ReportPattern("combatSettings");
 // Disband
 ReportPattern * disbandReporter    = new ReportPattern("disbandReporter");
 ReportPattern * skillLossReporter  = new ReportPattern("skillLossReporter");
@@ -114,6 +117,7 @@ ReportPattern *	unequipReporter           = new ReportPattern("unequipReporter")
 ReportPattern *	equipReporter             = new ReportPattern("equipReporter");
 ReportPattern *	unequipableReporter       = new ReportPattern("unequipableReporter");
 ReportPattern *	equipSkillReporter        = new ReportPattern("equipSkillReporter");
+ReportPattern *	maxEquipmentPerSlotReporter 	  = new ReportPattern("maxEquipmentPerSlotReporter");
 // Exit
 ReportPattern * followerExitReporter    = new ReportPattern("followerExitReporter");
 ReportPattern * leaderExitReporter    = new ReportPattern("leaderExitReporter");
@@ -176,6 +180,10 @@ ReportPattern * paymentErrorReporter       = new ReportPattern("paymentErrorRepo
 ReportPattern * learningStartedReporter    = new ReportPattern("learningStartedReporter");
 ReportPattern * followerSkillLimitReporter = new ReportPattern("followerSkillLimitReporter");
 ReportPattern * elementalSkillLimitReporter= new ReportPattern("elementalSkillLimitReporter");
+// Tactics
+ReportPattern * tacticsSettings  = new ReportPattern("tacticsSettings");
+// Target
+ReportPattern * TargetReporter = new ReportPattern("targetReporter");
 // Teach
 ReportPattern * unknownTactics  = new ReportPattern("unknownTactics");
 // Teach
@@ -184,6 +192,7 @@ ReportPattern * teachingReporter    = new ReportPattern("teachingReporter");
 ReportPattern *	unstackReporter           = new ReportPattern("unstackReporter");
 // Use
 ReportPattern * productionReporter         = new ReportPattern("productionReporter");
+ReportPattern * startUseReporter         = new ReportPattern("startUseReporter");
 ReportPattern * harvestReporter            = new ReportPattern("harvestReporter");
 ReportPattern * invalidReporter            = new ReportPattern("invalidReporter");
 ReportPattern * notAvailableReporter       = new ReportPattern("notAvailableReporter");
@@ -215,6 +224,10 @@ ReportPattern * combatEndReporter = new ReportPattern("combatEndReporter");
 ReportPattern * combatAttackersReporter = new ReportPattern("combatAttackersReporter");
 ReportPattern * combatDefendersReporter = new ReportPattern("combatDefendersReporter");
 ReportPattern * listReporter= new ReportPattern("listReporter");
+ReportPattern * combatUseReporter = new ReportPattern("combatUseReporter");
+ReportPattern * combatSummonReporter  = new ReportPattern("combatSummonReporter");
+ReportPattern * combatCastReporter  = new ReportPattern("combatCastReporter");
+ReportPattern * combatApplyReporter  = new ReportPattern("combatApplyReporter");
 
 //==========================================================================
 ReportPattern * privateEnchantmentReporter = new ReportPattern("privateEnchantmentReporter");
@@ -230,5 +243,38 @@ ReportPattern * pickPocketStealingFailureReporter = new ReportPattern("pickPocke
 ReportPattern * pickPocketStealingPrivateReporter = new ReportPattern("pickPocketStealingPrivateReporter" );
 ReportPattern * pickPocketStealingTargetReporter = new ReportPattern( "pickPocketStealingTargetReporter");
 //ReportPattern * pickPocket Reporter = new ReportPattern( );
+ReportPattern * drowningReporter = new ReportPattern( "DrowningReporter");
 
+//==================== Ritual
+ReportPattern * ritualSourceReporter = new ReportPattern("ritualSourceReporter");
+ReportPattern * ritualTargetReporter = new ReportPattern("ritualTargetReporter");
+//==================== Plague
+ ReportPattern * plagueStartReporter = new ReportPattern("plagueStartReporter");
+ ReportPattern * plagueReporter = new ReportPattern("plagueReporter");
+ ReportPattern * plagueStopReporter = new ReportPattern("plagueStopReporter");
+ReportPattern * plagueDeathReporter = new ReportPattern("plagueDeathReporter");
+ReportPattern * plagueDeathReporter2 = new ReportPattern("plagueDeathReporter2");
+//==================== Terraform
+ReportPattern * terraformReport = new ReportPattern(" terraformReport");
+ReportPattern * terraformReport2 = new ReportPattern(" terraformReport2");
+//==================== Transform
+ReportPattern * transformReport = new ReportPattern(" transformReport");
+        //==================== Assassinate
+ReportPattern * assassineEscapededReport2   = new ReportPattern("assassineEscapededReport2");
+ReportPattern * assassineEscapededReport    = new ReportPattern("assassineEscapededReport");
+ReportPattern * assassineCapturedReport3    = new ReportPattern("assassineCapturedReport3");
+ReportPattern * assassineCapturedReport2    = new ReportPattern("assassineCapturedReport2");
+ReportPattern * assassineCapturedReport     = new ReportPattern("assassineCapturedReport");
+ReportPattern * assassinationSuccessReport  = new ReportPattern("assassinationSuccessReport");
+ReportPattern * assassinationSuccessReport2 = new ReportPattern("assassinationSuccessReport2");
+ReportPattern * assassinationSuccessReport3 = new ReportPattern("assassinationSuccessReport3");
+ReportPattern * assassinationSuccessReport4 = new ReportPattern("assassinationSuccessReport4");
+ReportPattern * assassinNoTargetReport = new ReportPattern("assassinNoTargetReport");
+//==================== Create Portal
+ReportPattern * portalFailureReport  = new ReportPattern("portalFailureReport");
+ReportPattern * portalCreatedReport  = new ReportPattern("portalCreatedReport");
+ReportPattern * portalAlreadyExistReport  = new ReportPattern("portalAlreadyExistReport");
+//==================== Weather
+ReportPattern * weatherChangedReport = new ReportPattern("weatherChangedReport");
+ReportPattern * weatherChangedReport2 = new ReportPattern("weatherChangedReport2");
 

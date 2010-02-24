@@ -189,7 +189,14 @@ ORDER_STATUS BuildOrder::process ( Entity * entity, ParameterList &parameters )
             {
               return buildExistingConstruction(buildingOrShip,unit,skill,unit->getCurrentOrder());
             }
-               
+            else
+            {
+                cerr << "Build order for "<<entity->print()
+                        <<" wrong use of skill "
+                        <<(parameters[0 + parameterOffset])->print()<<endl;
+              return INVALID;
+          }
+
         }
 
 }

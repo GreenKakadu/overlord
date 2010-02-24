@@ -34,7 +34,11 @@ void CombatLootMessage::printReport(ReportPrinter &out) const
 	}
 	out <<"."<<endl;
 }
-
+vector <AbstractData *>  CombatLootMessage::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
 
 
 

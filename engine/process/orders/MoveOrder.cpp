@@ -170,13 +170,17 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter,
  for(i = 0; i < movementModes.size(); i++)
   {
 	 currentMode = movementModes[i];
-   tokenEntity->calculateTotalCapacity(capacity[i], i);
+ 	if(tokenEntity->isTraced())
+ 	{
+ 		cout <<"== TRACING ++++> MOVING: "<<" "<< currentMode->print();
+                cout<<"Exit time " << exit->getTravelTime(currentMode)<<endl;
+ 	}   tokenEntity->calculateTotalCapacity(capacity[i], i);
 	 time = tokenEntity->calculateTravelTime(exit->getTravelTime(currentMode),
 	  currentMode);
-// 	if(tokenEntity->isTraced())
-// 	{
-// 		cout <<"== TRACING ++++> MOVING: "<< tokenEntity->print() <<" "<< currentMode->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
-// 	}
+ 	if(tokenEntity->isTraced())
+ 	{
+ 		cout <<"== TRACING ++++> MOVING: "<< tokenEntity->print() <<" "<< currentMode->print()<<" capacity "<< capacity[i]<<" time " << time<<endl;
+ 	}
    if(time == 0)
     	continue;
    if(capacity[i] > bestCapacity)

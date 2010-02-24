@@ -89,6 +89,8 @@ void RecruitRequest::answerMarketRequest(int price, int amount)
     int taken = unit_->takeFromInventory(cash, price * amount); //pay
     assert(taken == price * amount);
     // report to targetUnit_
+    LocationEntity * location = targetUnit_->getLocation();
+    location->setPopulation(location->getPopulation() -amount);
 //QQQ
     targetUnit_ ->addReport(new BinaryMessage(recruitedReporter,
                             new RaceElement(race_ , amount), targetUnit_));

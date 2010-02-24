@@ -31,7 +31,10 @@ public:
 			UnaryMessage  * next; //for use in operator new
   		ReportPattern * reporter_;
 	};
-protected:
+        vector <AbstractData *>  aPrint();
+  inline ReportPattern * getPattern() {return reporter_;}
+  AbstractData * getParameter(int index);
+ protected:
 	~UnaryMessage(){}
 		AbstractData * param1_;
 };

@@ -23,7 +23,8 @@ public:
  CombatParticipantMessage(TokenEntity * participant);
   void printReport(ReportPrinter &out) const;
   void clean(){}
-protected:
+  vector <AbstractData *>  aPrint();
+  protected:
 	~CombatParticipantMessage(){}
 	  TokenEntity * participant_;
 		string report_;

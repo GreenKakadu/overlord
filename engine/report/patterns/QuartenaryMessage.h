@@ -33,7 +33,9 @@ public:
 			QuartenaryMessage  * next; //for use in operator new
   		ReportPattern * reporter_;
 	};
-protected:
+    inline ReportPattern * getPattern() {return reporter_;}
+      vector <AbstractData *>  aPrint();
+  protected:
 	~QuartenaryMessage(){}
 		AbstractData * param1_;
 		AbstractData * param2_;

@@ -36,6 +36,10 @@ void TertiaryMessage::clean()
   param3_->clean();
 }
 
+vector <AbstractData *>  TertiaryMessage::aPrint()
+{
+  return reporter_->aPrint(param1_, param2_, param3_);
+}
 
 
 

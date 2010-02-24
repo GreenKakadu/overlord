@@ -7,6 +7,7 @@
  ***************************************************************************/
 #include "ReportPattern.h"
 #include "AbstractData.h"
+#include "StringData.h"
 #include "FileParser.h"
 vector<ReportPattern *> * reportPatternsRegistry = 0;
 //vector<ReportPattern *> ReportPattern::reportPatternsRegistry;
@@ -95,6 +96,10 @@ void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1)
 
 void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, AbstractData * param2)
 {
+  if(param1==0)
+  {
+    cout<<  rep1_ << "[empty]" << rep2_ << param2->print() << rep3_  << endl;
+  }
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << endl;
 }
 
@@ -114,4 +119,79 @@ void ReportPattern::printReport (ReportPrinter &out, AbstractData * param1, Abst
 	out << rep1_ << param1->print() << rep2_ << param2->print() << rep3_  << param3->print() << rep4_  << param4->print() << rep5_    << param5->print() << rep6_  << endl;
 }
 
+vector <AbstractData *>  ReportPattern::aPrint()
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  return v;
+}
+
+
+
+vector <AbstractData *>  ReportPattern::aPrint( AbstractData * param1)
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  v.push_back(param1);
+  v.push_back(new StringData(rep2_));
+  return v;
+}
+
+
+
+vector <AbstractData *>  ReportPattern::aPrint( AbstractData * param1, AbstractData * param2)
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  v.push_back(param1);
+  v.push_back(new StringData(rep2_));
+  v.push_back(param2);
+  v.push_back(new StringData(rep3_));
+  return v;
+}
+
+vector <AbstractData *>  ReportPattern::aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3)
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  v.push_back(param1);
+  v.push_back(new StringData(rep2_));
+  v.push_back(param2);
+  v.push_back(new StringData(rep3_));
+  v.push_back(param3);
+  v.push_back(new StringData(rep4_));
+  return v;
+}
+
+vector <AbstractData *>  ReportPattern::aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4)
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  v.push_back(param1);
+  v.push_back(new StringData(rep2_));
+  v.push_back(param2);
+  v.push_back(new StringData(rep3_));
+  v.push_back(param3);
+  v.push_back(new StringData(rep4_));
+  v.push_back(param4);
+  v.push_back(new StringData(rep5_));
+  return v;
+}
+
+vector <AbstractData *>  ReportPattern::aPrint( AbstractData * param1, AbstractData * param2, AbstractData * param3, AbstractData * param4, AbstractData * param5)
+{
+  vector <AbstractData *> v;
+  v.push_back(new StringData(rep1_));
+  v.push_back(param1);
+  v.push_back(new StringData(rep2_));
+  v.push_back(param2);
+  v.push_back(new StringData(rep3_));
+  v.push_back(param3);
+  v.push_back(new StringData(rep4_));
+  v.push_back(param4);
+  v.push_back(new StringData(rep5_));
+  v.push_back(param5);
+  v.push_back(new StringData(rep6_));
+  return v;
+}
 

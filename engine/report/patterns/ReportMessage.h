@@ -25,7 +25,11 @@ public:
   virtual int getTag(){return 0;} // dummy method which is never used
                             // defined in order to provide  reportElements
                             // with interface similar with other elements
-
+  virtual vector <AbstractData *>  aPrint()=0;
+  // New methods
+  //virtual void save(ostream &out);
+  virtual ReportPattern * getPattern(){return 0;}
+  virtual AbstractData * getParameter(int index){return 0;}
 protected:
 	ReportMessage(){}
 	virtual ~ReportMessage(){}
@@ -66,6 +70,7 @@ template <class T>  static void  DELETE_PATTERN (void * deadObject, size_t size)
 	p->next = T::headOfFreeList;
 	T::headOfFreeList = p;
 }
+
   inline ReportPrinter& operator << (ReportPrinter& out,  ReportMessage & data)
                                { data.printReport(out); return out;}
 

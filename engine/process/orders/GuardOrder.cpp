@@ -42,7 +42,7 @@ GuardOrder::GuardOrder(){
   "the unit guarded the location only one day during the turn.\n";
 
     fullDayOrder_= true;
-  orderType_   = IMMEDIATE_ORDER;// ?
+  orderType_   = REQUEST_ORDER;// ?
 }
 
 STATUS GuardOrder::loadParameters(Parser * parser,

@@ -372,11 +372,13 @@ bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity,
         {
          return false;
         }
-
-  if (!collection.checkDataType(tag)) // this can't be a tag
-				{
-         return false;
-				}
+   if (!collection.checkDataType(tag)) // this can't be a tag but can be new entity placeholder
+        {
+          if(!gameConfig.isNewEntityName(tag))
+          {
+            return false;
+          }
+        }
   if(!checkParameterTag(entity, tag,  collection, parameters))
 				{
          return false;

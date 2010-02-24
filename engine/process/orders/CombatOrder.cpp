@@ -19,10 +19,11 @@ extern EntitiesCollection <UnitEntity>      units;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	AtReporter;
+extern ReportPattern *	combatSettingsReporter;
 ReportPattern * noCombatUseReporter = new ReportPattern("noCombatUseReporter");
 ReportPattern * noCombatUse2Reporter = new ReportPattern("noCombatUse2Reporter");
 
-CombatOrder * instantiateCombatOrder = new CombatOrder();
+CombatOrder  * instantiateCombatOrder = new CombatOrder();
 
 CombatOrder::CombatOrder(){
   keyword_ = "Combat";
@@ -89,7 +90,7 @@ ORDER_STATUS CombatOrder::process (Entity * entity, ParameterList &parameters)
 // if(unit->isTraced())
 // {
 //   cout << "COMBAT " <<entity->print()<< ": ";
-// 
+  // 
 // 	for (vector <AbstractData *>::iterator iter = parameters.begin();
 // 			iter != parameters.end(); ++iter)
 // 			{
@@ -98,26 +99,30 @@ ORDER_STATUS CombatOrder::process (Entity * entity, ParameterList &parameters)
 // 	cout << endl;
 // }
 
-	Parser * tempParser;
-	string combatOrderText;
-	for (vector <AbstractData *>::iterator iter = parameters.begin();
-			iter != parameters.end(); ++iter)
-			{
+  Parser * tempParser;
+  string combatOrderText;
+  unit->clearCombatSettings();
+  for (vector <AbstractData *>::iterator iter = parameters.begin();
+       iter != parameters.end(); ++iter)
+  {
 				// extract keyword
-				combatOrderText =(*iter)->print();
-	 			tempParser = new Parser( combatOrderText);
-   			OrderLine::stripModifiers(tempParser);
-	 			string keyword = tempParser->getWord(); // now without prefixes
-   			if (keyword.size() == 0)
-        {
-         break;
-        }
-				unit->addCombatSetting(combatOrderText);	// create order
+    combatOrderText =(*iter)->print();
+    tempParser = new Parser( combatOrderText);
+    OrderLine::stripModifiers(tempParser);
+    string keyword = tempParser->getWord(); // now without prefixes
+    if (keyword.size() == 0)
+    {
+      break;
+    }
+    unit->addCombatSetting(combatOrderText);	// create order
 //				checkCombatAction(keyword,unit);// check validity
-			delete tempParser;
-			}
+    delete tempParser;
+  }
+ // cout<<"Combat settings "<< unit->reportCombatSettings()<<endl;
+    unit->reportCombatSettings();
+    unit->addReport(new UnaryMessage(combatSettingsReporter,new StringData(unit->reportCombatSettings())));
 
-	return SUCCESS;
+  return SUCCESS;
 }
 
 

@@ -19,6 +19,7 @@ extern EntitiesCollection < UnitEntity > units;
 extern ReportPattern * invalidParameterReporter;
 extern ReportPattern * missingParameterReporter;
 extern ReportPattern * unknownTactics;
+extern ReportPattern * tacticsSettings;
 
 TacticOrder * instantiateTacticOrder = new TacticOrder();
 
@@ -137,5 +138,7 @@ ORDER_STATUS TacticOrder::process
                      new UnaryMessage( unknownTactics, new StringData( par ) ),
                      entity->getCurrentOrder(), 0 );
               }
+               token->addReport(
+                     new UnaryMessage( tacticsSettings, new StringData(token->reportCombatTactics())));
               return SUCCESS;
 }

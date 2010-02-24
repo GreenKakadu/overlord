@@ -89,10 +89,10 @@ RationalNumber ResourceCompetitiveRequest::getTotalAvailableValue() const
 void ResourceCompetitiveRequest::answerRequest(RationalNumber& answer)
 {
     RationalNumber bonus = 0;
-// if(unit_->isTraced())
-// {
-// cout << "Processing request on "<<amount_<< " of "<<resourceType_->print()<< "for"<<unit_->print()<<endl;
-// }
+ if(unit_->isTraced())
+ {
+ cout << "Processing request on "<<amount_<< " of "<<resourceType_->print()<< "for"<<unit_->print()<<endl;
+ }
    if(answer <  amount_)
    {
     // Building effect on harvesting
@@ -112,12 +112,20 @@ void ResourceCompetitiveRequest::answerRequest(RationalNumber& answer)
   unit_->addToInventory(resourceType_, answer);
   RationalNumber nowHas = hadBefore + answer + bonus;
   int added = nowHas.getValue() - hadBefore.getValue();
-
+      if(unit_->isTraced())
+      {
+          cout << unit_->print()<< " had " << hadBefore
+                  << " resourceType_->print() " << (answer + bonus)
+                  << " added. Now has " << nowHas<<endl;
+      }
   if(added !=0)
   {
-//  cout << unit_->print()<<" harvests " << answer << " "
-// << resourceType_->print() << " at "<<  unit_->getLocation()->print() <<endl;
-//QQQ
+      if(unit_->isTraced())
+      {
+  cout << unit_->print()<<" harvests " << answer << " "
+ << resourceType_->print() << " at "<<  unit_->getLocation()->print() <<endl;
+      }
+
   unit_->addReport(
     new BinaryMessage(harvestReporter, unit_,
     new ItemElement(resourceType_,added)) );

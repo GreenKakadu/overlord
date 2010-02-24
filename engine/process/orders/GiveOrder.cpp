@@ -89,7 +89,10 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
                              // and  GIVE to UNIT NUM of ITEM   
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
-
+if(unit->isTraced())
+{
+  cout << unit->print()<< " shoild GIVE "<<endl;
+}
   UnitEntity * recipient   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 
   ItemRule * item          =  dynamic_cast<ItemRule *>(parameters[1]);
@@ -115,7 +118,10 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
     }
 
   int kept =   getIntegerParameter(parameters,3);
-
+// if(unit->isTraced())
+// {
+//   cout << unit->print()<< " shoild GIVE "<< given <<" "<<item->print()<< " to "<< recipient->print()<<endl;
+// }
   OrderLine * orderId = entity->getCurrentOrder();
 
 

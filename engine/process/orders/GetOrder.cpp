@@ -87,7 +87,10 @@ ORDER_STATUS GetOrder::process (Entity * entity, ParameterList &parameters)
   if(donor == 0)
   {
     location          =  dynamic_cast<LocationEntity *>(parameters[0]);
-    assert(location);
+    if(location== 0) //This means that parameters[0] is unit that actually not exist
+    {
+      return FAILURE;
+    }
   }
     int toGet;
   // If number of items omitted try to get item tag as second parameter

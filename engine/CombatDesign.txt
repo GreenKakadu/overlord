@@ -1,0 +1,169 @@
+How combat processing is done:
+
+
+
+Players:
+
+CombatManager (CM)
+CombatEngine (CE)
+CombatOrderProcessor (COP)
+
+Data they play with:
+
+CombatRequest (GuardingRequest, PillagingRequest)
+BattleInstance
+BattleField
+CombatOrderLine (COLine)
+
+
+
+CombatManager (CM) resolves all combat requests and also orders that may cause combat (pillage, guard) and determines how many combats will happen at location, which units will participate in combat and on which side.
+
+CombatEngine (CE) Processes one single combat.
+Consists from pre-processor, round processor and post-processor
+
+++> NB! Currently there is a mess with CE. It is a static object the same for all combats. CE is set in 
+BasicCombatRequest. It should be redone: CE to be separaeted to static engine and non-static BattleProcessor. Temporary solution: CE should have reports vector and to create new report for each battle. Then clean them all.
+
+
+pre-processor
+ It determines tactical bonuces,
+
+Round processor
+	round pre-processing
+		clear flags
+		update orders
+		plan orders
+		calculate initiative for this round
+
+	round processing
+		for each initiative try to process action and movement orders (separated lists)
+
+	round post-processing
+		determine combat end conditions
+		moves enchantment counters
+
+
+
+post-processor
+	deals with dying units
+	distributes loot and titles
+	gives experience
+
+CombatOrderProcessor (COP) processes combat orders for single BattleInstance
+
+
+Order processing.
+
+Combar Order generation
+
+Combat Orders processing complicated by the fact that sometimes these orders should be generated on-the-fly.
+Normally entity may have:
+	- Explicit combat orders (move, use [item], apply [skill]...)
+	- Implicit combat behavior defined in combat settings (charge, fire, [item], [skill]...)
+	- Default combat behavior - that's what entity will do if it can't follow explicit and implicit orders (for instance if order was to use spell and it is out of mana). (melee, parry)
+
+implicit and default combat orders should be translated into Explicit combat orders
+
+
+Sequence of order processing.
+
+Initiative
+
+Order processing is done according to initiative. Battle instances have initiative parameter, that defines which instance acts first (more - better). Initiative of BattleInstance is defined by it's stats and side modifiers (spells, commander skills). In addition to that some combat orders have intristic initiative modifiers - for instance Parry has initiative modifier -2, (that means that unit with Parry order needs some time to prepare it's defence and if it will be attacked by faster units they may catch it unprepared.) As a result each order has some initiative value.
+
+Now combat round  processing is divided to initiative segments. Highest initiative segment - this is initiative of the order with highest initiative walue selected between orders of all units participating in current round. Then for each initiative segment (in decreasing order) CE tries to processes all orders for all instances. No order may be processed before initiative segment becomes equal to the initiative value of this order.
+
+Combat orders are divided to movement orders amd Action orders that are processed separatelly. At each round normally only one movement order and one action order may be executed.
+
+All combat orders are divided to sequentual and non-sequential
+Sequential are Overlord Combat style orders that are processed strictly in sequence, i.e. if current order can't be processed at current initiative it will wait for initiative.
+Example:
+PARRY (init -2) <-- processed
+MELEE (init 0)
+ Allied Guards[U520] strike 2 times against Stealth Infiltrator[U411] for 3
+damage slaying all.
+
+implicit and default orders are Sequential
+
+Non-Sequential are Overlord non-Combat style orders that are processed according to initiative, i.e. if current order can't be processed at current initiative processor will try next order in the list.
+Example:
+PARRY (init -2)<-- processed if melee targets are nor available
+MELEE (init 0)<-- processed if melee targets are available
+
+non-sequental orders are intended to be used with explicit orders for defining complex behavior.
+
+Combat Order processing in current initiative segment is done by CombatOrderProcessor (COP)::process
+
+First of all, if order's initiative is below current initiative segment, order can't be processed. If this is sequental order COP will wait for lower initiative segment and will not try to process next orders in the list, but if this is Non-Sequential order, then COP will skip it and will try to process next order in the list.
+
+Then COP  checks conditions ('+' and '-' - not used for sequential orders)
+and tries to process order by calling CombatOrderLine (COLine)::process
+deal with order processing consequences by calling (COP)::processOrderResults
+
+Now it's a time to explain the  diference between orders and actions.
+
+The order is an instruction for order processor that may be processed or not depending on the situation. Duiring execution Order normally translated into  some action or sequence of actions to be done when executing.
+
+Orders are:
+	Advance
+	Apply
+	Charge
+	Fire
+	Flee
+	Flank
+	Melee
+	Move
+	Parry
+	Ranged
+	Retreat
+	Stand
+	Support
+	Sweep
+	Use
+
+Actions are some actions that may be performed by entities duiring combat.
+Entities duiring combat may move and/or attack or perform some actions.
+Entities Movement is not considered an action and processed by BattleField::moveEntity() method.
+
+Some combat ations actually last longer than one initiative segment (example is multi-hit attacks, that are defined in such way that hits next to the first should be inflicted at lower initiative value). This doesn't fit well into current combat model and implemented as a hack: there are isProcessingRepeatingOrder flag may be set on Entity. If such flag is active no orders will be checked and RepeatingOrder will be executed (if possible)
+
+Actions are:
+ Melee (melee attack)
+ Ranged (ranged attack)
+ Special (APPLY <skill> or USE <item>)
+
+ special actions are normally result of using APPLY <skill> or USE <item>. SkillRule or ItemRule in this case will have CombatActionStrategy field pointing to some specific CombatAction that should be performed when this skil/item invoked.
+
+ Before action may be executed the list of possible target should be determined. This is done while processing order (because if no target available, action is not possible and order can't be executed).
+ Then action is executed by calling CombatAction::makeAttack method
+
+virtual ::makeAttack   Performs attacks (generally by calling virtual ::attack method of actual CombatAction) against all potential targets untill all of them are dead or maximum hits is reached. For special (non-melee/ranged) actions it should be overwritten by specific method.
+
+
+::attack calls actual method for single target attack resolution (such as meleeAttack, rangedAttack)
+
+Result of such single attack is returned in MeleeAttackElement structure.
+
+they are summarized in CombatActionStrategy::makeAttack and later may be used for generation reports like
+" Allied Guards[U520] strike 2 times against Stealth Infiltrator[U411] for 3
+damage slaying all."
+
+---------------------------------
+Instructions affecting behavior of Entities in combat may be taken from 2 sources:
+- Combat settings stored inside of Entity data (loaded into combatSettings_)
+- Combat orders stored in order file (loaded into 
+
+combatSettings_ - keep information about current combat settings. It is used for reports and saving. This information
+
+---------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------
+
+How System of Enchantments work?
+
+Players:
+EnchantmentRule - describes type of enchantment
+EnchantmentElement - contains type of enchantment and duration
+EnchantmentUsingStrategy - Using Enchantment skill produces Enchantment (EnchantmentElement)
+EnchantmentAttribute - contains all enchantments on entity.

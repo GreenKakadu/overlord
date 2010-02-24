@@ -14,167 +14,166 @@ extern bool testMode;
 //  Processes all possible ( at this phase) orders for Entity.
 // Each order processed only once
 OrderProcessor orderProcessor;
-bool  OrderProcessor::process(Entity * entity, ProcessingMode * processingMode)
+
+bool OrderProcessor::process(Entity * entity, ProcessingMode * processingMode)
 
 {
-  bool orderWasExecuted = false;
-  OrderIterator currentIterator ;
-  ORDER_STATUS result;
-  
-                                                     //For Debugging only
-//   if(entity->isTraced())                                 //For Debugging only
-//     {                                                    //For Debugging only
-//       cout<< "Processing orders for Entity " << entity->print() <<endl; //For Debugging only
-//     }                                                   //For Debugging only
+    bool orderWasExecuted = false;
+    OrderIterator currentIterator;
+    ORDER_STATUS result;
+
+    //For Debugging only
+    //   if(entity->isTraced())                                 //For Debugging only
+    //     {                                                    //For Debugging only
+    //       cout<< "Processing orders for Entity " << entity->print() <<endl; //For Debugging only
+    //     }                                                   //For Debugging only
 
 #ifdef TEST_MODE
- if(testMode) 	cout<< "Processing orders for Entity " << entity->print() <<endl;
+    if (testMode) cout << "Processing orders for Entity " << entity->print() << endl;
 #endif
 
-   for( currentIterator = (entity->getOrderList()).begin();
-	                      currentIterator != (entity->getOrderList()).end();)
-     {
-//        if(entity->isTraced())                                  //For Debugging only
-//         {                                                      //For Debugging only
-//           cout <<"[->"; (*currentIterator)->printOrderLine(cout); //For Debugging only
-//         }                                                     //For Debugging only
+    for (currentIterator = (entity->getOrderList()).begin();
+            currentIterator != (entity->getOrderList()).end();)
+    {
+        //        if(entity->isTraced())                                  //For Debugging only
+        //         {                                                      //For Debugging only
+        //           cout <<"[->"; (*currentIterator)->printOrderLine(cout); //For Debugging only
+        //         }                                                     //For Debugging only
 
-        if( (*currentIterator)->ifConditionLevel > 0)
-          {
-                  currentIterator++;
-                  continue;
-          }
-        if( (*currentIterator)->ifStatementLevel > 0)
-          {
-                  currentIterator++;
-                  continue;
-          }
-      result = (*currentIterator) ->process(processingMode,  entity);
-      if (result == SUSPENDED) // second pass needed
-        return true;
+        if ((*currentIterator)->ifConditionLevel > 0)
+        {
+            currentIterator++;
+            continue;
+        }
+        if ((*currentIterator)->ifStatementLevel > 0)
+        {
+            currentIterator++;
+            continue;
+        }
+        result = (*currentIterator) ->process(processingMode, entity);
+        if (result == SUSPENDED) // second pass needed
+            return true;
 
-      orderWasExecuted = processOrderResults(entity, result,currentIterator);
-     }// End of orders loop
- if(!orderWasExecuted)
-			; // process default order for this Entity(processingMode,this,cout)
-   return orderWasExecuted;
+        orderWasExecuted = processOrderResults(entity, result, currentIterator);
+    }// End of orders loop
+    if (!orderWasExecuted)
+    {
+        ; // process default order for this Entity(processingMode,this,cout)
+    }
+    return orderWasExecuted;
 }
-
-
-
 
 bool OrderProcessor::processOrderResults(Entity * entity, ORDER_STATUS result, OrderIterator & currentIterator)
 {
-  assert (result != SUSPENDED);
+    assert(result != SUSPENDED);
 
-  bool orderWasExecuted = false;
-  if((result == SUCCESS) || (result == IN_PROGRESS))
-  {
-    if ((*currentIterator)->isFullDayOrder())
-      {
-//     cout << "Full-day order "; (*currentIterator)->save(cout); cout <<endl;
-       entity->setLastOrder(*currentIterator);
-       entity->setFullDayOrderFlag();
-      }
-  }
+    bool orderWasExecuted = false;
+    if ((result == SUCCESS) || (result == IN_PROGRESS))
+    {
+        if ((*currentIterator)->isFullDayOrder())
+        {
+            //     cout << "Full-day order "; (*currentIterator)->save(cout); cout <<endl;
+            entity->setLastOrder(*currentIterator);
+            entity->setFullDayOrderFlag();
+        }
+    }
 
-  if(result != FAILURE )
-   {
-		orderWasExecuted = true;
-   }
+    if (result != FAILURE)
+    {
+        orderWasExecuted = true;
+    }
 
-  switch (result)
-  {
-	case SUCCESS:
-	  	{
+    switch (result)
+    {
+        case SUCCESS:
+        {
 #ifdef TEST_MODE
-   if(testMode) 	    cout << "==== Result of order processing is Success" << endl;
+            if (testMode) cout << "==== Result of order processing is Success" << endl;
 #endif
-	    	postProcessOrder(entity, result, currentIterator);
-              if((*currentIterator)->getCompletionFlag())
-	      		{
-		          //delete (*currentIterator);
-		    	currentIterator = (entity->getOrderList()).erase(currentIterator);
-			break;
-		  	}
-	    	if ((*currentIterator) -> repetitionCounter() > 1)
-	      				{
-         					(*currentIterator)->decrementRepetitionCounter()  ;
-									currentIterator++;
-				 					break;
-	      				}
+            postProcessOrder(entity, result, currentIterator);
+            if ((*currentIterator)->getCompletionFlag())
+            {
+                //delete (*currentIterator);
+                currentIterator = (entity->getOrderList()).erase(currentIterator);
+                break;
+            }
+            if ((*currentIterator) -> repetitionCounter() > 1)
+            {
+                (*currentIterator)->decrementRepetitionCounter();
+                currentIterator++;
+                break;
+            }
 
-	    	if ((*currentIterator)->isPermanent())
-	      				{
-									currentIterator++;
-				 					break;
-	      				}
-
-	    	else
-	      		{
-				    		 //delete (*currentIterator);
-		    		currentIterator =
-							(entity->getOrderList()).erase(currentIterator);
-		  	}
-		break;
-	  	}
-		case FAILURE:
-	  	{
+            if ((*currentIterator)->isPermanent())
+            {
+                currentIterator++;
+                break;
+            }
+            else
+            {
+                //delete (*currentIterator);
+                currentIterator =
+                        (entity->getOrderList()).erase(currentIterator);
+            }
+            break;
+        }
+        case FAILURE:
+        {
 #ifdef TEST_MODE
-   if(testMode) 	    cout << "==== Result of order processing is Failure" << endl;
+            if (testMode) cout << "==== Result of order processing is Failure" << endl;
 #endif
-			currentIterator++;
-	    		break;
-	  	}
-		case INVALID:
-	  	{
+            currentIterator++;
+            break;
+        }
+        case INVALID:
+        {
 #ifdef TEST_MODE
-   if(testMode) 	    cout << "==== Result of order processing is Invalid" << endl;
+            if (testMode) cout << "==== Result of order processing is Invalid" << endl;
 #endif
-	    				postProcessOrder(entity, result, currentIterator);
+            postProcessOrder(entity, result, currentIterator);
 
-				    	(*currentIterator) -> ~OrderLine();
-		    			currentIterator = (entity->getOrderList()).erase(currentIterator);
-	    				break;
-	  	}//end of INVALID case
-		case IN_PROGRESS:
-                {
+            (*currentIterator) -> ~OrderLine();
+            currentIterator = (entity->getOrderList()).erase(currentIterator);
+            break;
+        }//end of INVALID case
+        case IN_PROGRESS:
+        {
 #ifdef TEST_MODE
-   if(testMode) 	    cout << "==== Order is in progress" << endl;
+            if (testMode) cout << "==== Order is in progress" << endl;
 #endif
-//              if((*currentIterator)->getCompletionFlag())
-//	      				{
-//				    			  delete (*currentIterator);
-//		    					  currentIterator = orders_.erase(currentIterator);
-//				 					  break;
-//		  					}
+            //              if((*currentIterator)->getCompletionFlag())
+            //	      				{
+            //				    			  delete (*currentIterator);
+            //		    					  currentIterator = orders_.erase(currentIterator);
+            //				 					  break;
+            //		  					}
 
-                        if ((*currentIterator)->isPermanent())
-	      			{
-									currentIterator++;
-				 					break;
-	      			}
-	    		if ((*currentIterator) -> repetitionCounter() == 1)
-	      			{
-                                        // this is equal to SUCCESS:	
-                                  postProcessOrder(entity, SUCCESS, currentIterator); 
-                                  currentIterator = (entity->getOrderList()).erase(currentIterator);
-		  		}
-	    		if ((*currentIterator) -> repetitionCounter() > 1)
-	      				{
-         					(*currentIterator)->decrementRepetitionCounter()  ;
-									currentIterator++;
-				 					break;
-	      				}
+            if ((*currentIterator)->isPermanent())
+            {
+                currentIterator++;
+                break;
+            }
+            if ((*currentIterator) -> repetitionCounter() == 1)
+            {
+                // this is equal to SUCCESS:
+                postProcessOrder(entity, SUCCESS, currentIterator);
+                currentIterator = (entity->getOrderList()).erase(currentIterator);
+            }
+            if ((*currentIterator) -> repetitionCounter() > 1)
+            {
+                (*currentIterator)->decrementRepetitionCounter();
+                currentIterator++;
+                break;
+            }
 
-	    	break;
-                }
-			case SUSPENDED:
-			case WAITING: // Not used
-	    				break;
-	  //default:
-				}// End of result switch
-  return orderWasExecuted;
+            break;
+        }
+        case SUSPENDED:
+        case WAITING: // Not used
+            break;
+            //default:
+    }// End of result switch
+    return orderWasExecuted;
 }
 
 

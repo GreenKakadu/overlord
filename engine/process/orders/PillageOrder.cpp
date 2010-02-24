@@ -38,7 +38,8 @@ PillageOrder::PillageOrder(){
   "PILLAGE is a use of the combat skill and yields 1/20th of day of experience.\n";
 
     fullDayOrder_= true;
-  orderType_   = IMMEDIATE_ORDER;
+  orderType_   = REQUEST_ORDER;
+  //orderType_   = IMMEDIATE_ORDER;
 }
 
 STATUS PillageOrder::loadParameters(Parser * parser,

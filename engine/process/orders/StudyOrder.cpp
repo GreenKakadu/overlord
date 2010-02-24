@@ -20,6 +20,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "TeachingOffer.h"
+#include "conflicts/TeachingOffer.h"
 
 extern RulesCollection <SkillRule>     skills;
 extern ReportPattern * cannotStudyReporter;
@@ -95,10 +96,10 @@ ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
 		  unit->addReport(currentMessage,orderId,0 );
  		return INVALID;
     }
-     if(skill == skills["sboa"])
-     {
-       cout <<"sboa!"<<endl;
-     }
+ //    if(skill == skills["sboa"])
+ //   {
+ //      cout <<"sboa!"<<endl;
+ //    }
    int level;
    if(parameters.size() > 1)
       {
@@ -114,7 +115,10 @@ ORDER_STATUS StudyOrder::process (Entity * entity, ParameterList &parameters)
 		if(level > skill->getMaxLevel())
 			level = skill->getMaxLevel();
 	}
-
+   if(unit->isTraced())
+   {
+       cout<< unit->print()<<" studies "<<skill->print()<<endl;
+   }
 
  TeachingOffer * teacher;
  PROCESSING_STATE  state = unit->getCurrentOrder()->getProcessingState();
@@ -299,6 +303,10 @@ ORDER_STATUS StudyOrder::doProcess_(UnitEntity * unit, SkillRule * skill, int le
     unit->getCurrentOrder()->clearReportingFlag(TEACHER_REQUIRED_REPORT_FLAG);
 
     int cost = skill->getStudyCost(unit) * unit->getFiguresNumber();
+    if(unit->isTraced())
+    {
+        cout << unit->print()<<" pays "<<cost<< " for study ("<< skill->getStudyCost(unit)<<" and " << unit->getFiguresNumber()<<")"<<endl;
+    }
     unit->pay(cost);
 
    // if this order is not the order that was processed last day we may refrain from reporting

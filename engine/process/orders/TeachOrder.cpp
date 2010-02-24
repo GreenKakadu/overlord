@@ -51,9 +51,6 @@ TeachOrder::TeachOrder()
 STATUS TeachOrder::loadParameters(Parser * parser,
                             ParameterList &parameters, Entity * entity )
 {
-//   if(!entityIsUnit(entity))
-//            return IO_ERROR;
-
     if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
             return IO_ERROR;
 
@@ -79,12 +76,17 @@ ORDER_STATUS TeachOrder::process (Entity * entity, ParameterList &parameters)
 //		  unit->addReport( new UnaryMessage(cannotStudyReporter, unit->getRace()));
  		return INVALID;
     }
+//     if(teacher==units["U1200"])
+//     {
+//       cout<<"TeachOrder";
+//     }
   vector <Entity * > students;
  PROCESSING_STATE  state = entity->getCurrentOrder()->getProcessingState();
 
   switch(state)
    {
      case NORMAL_STATE:
+     {
         for (unsigned i=1; i< parameters.size(); ++i)
         {
           UnitEntity * newStudent = dynamic_cast< UnitEntity *>(parameters[i]);
@@ -95,12 +97,30 @@ ORDER_STATUS TeachOrder::process (Entity * entity, ParameterList &parameters)
               students.push_back(newStudent);
             }
         }
-            teacher->addTeachingOffer(new TeachingOffer(teacher, skill, students));
+        TeachingOffer * offer = new TeachingOffer(teacher, skill/*, students*/);
+        teacher->addTeachingDonorOffer(offer);
+        vector <Entity *>::iterator iter;
+	if(students.size() == 0)
+	{
+		teacher->getLocation()->addTeachingAcceptorOffer(offer);
+	}
+	else
+	{
+		for(iter = students.begin(); iter != students.end(); ++iter)
+		{
+			(*iter)->addTeachingAcceptorOffer(offer);
+		}
+	}
+
+            if(teacher->isTraced())
+            {
+                cout<<teacher->print()<<" offers teaching of "<<skill->print()<< " to "<<students.size()<<" students." <<endl;
+            }
             entity->getCurrentOrder()->setProcessingState (SUSPEND);
             teacher->getLocation()->setTeacherCounter(true);
             return SUSPENDED;
         break;
-
+     }
      case SUSPEND:
      if(teacher->checkTeachingConfirmation())
      {

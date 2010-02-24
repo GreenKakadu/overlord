@@ -17,31 +17,37 @@
 #include "LocationEntity.h"
 #include "SkillRule.h"
 
-TeachingOffer::TeachingOffer(TokenEntity * teacher, SkillRule * skill, vector <Entity *> &students)
+TeachingOffer::TeachingOffer(TokenEntity * teacher, SkillRule * skill/*, vector <Entity *> students*/)
 {
   teacher_ =  teacher;
   skill_   =  skill;
   level_   =  teacher_->getSkillLevel(skill_);
-  students_ =  students;
-  vector <Entity *>::iterator iter;
-	if(students_.size() == 0)
-	{
-		teacher->getLocation()->addTeachingOffer(this);
-	}
-	else
-	{
-		for(iter = students_.begin(); iter != students_.end(); ++iter)
-		{
-			(*iter)->addTeachingOffer(this);
-		}
-	}
+//  vector <Entity *>::iterator iter;
+//		for(iter = students.begin(); iter != students.end(); ++iter)//QAZ
+//		{
+//                    students_.push_back(*iter);
+//		}
+//students_ =  students;
+//	if(students_.size() == 0)
+//	{
+//		teacher->getLocation()->addTeachingAcceptorOffer(this);
+//	}
+//	else
+//	{
+//		for(iter = students_.begin(); iter != students_.end(); ++iter)
+//		{
+//			(*iter)->addTeachingAcceptorOffer(this);
+//		}
+//	}
+  //cout<< "Creating: (" << (int)this<<") "; reportOffer(cout);
+
 }
 
 
 
 TeachingOffer::~TeachingOffer()
 {
-
+  confirmedStudents_.clear();
 }
 
 
@@ -49,12 +55,13 @@ TeachingOffer::~TeachingOffer()
 ostream&  TeachingOffer::reportOffer(ostream& out) const
 {
  out << teacher_<< "Offers to teach "<< *skill_<< " on level "<< level_<<" to ";
- for(vector <Entity *>::const_iterator  iter =students_.begin();
-                              iter != students_.end(); ++iter)
- {
-   if(*iter)
-   out<< (*iter) <<" ";
- }
+// for(vector <Entity *>::const_iterator  iter =students_.begin();//QAZ
+//                              iter != students_.end(); ++iter)
+// {
+//   if(*iter)
+//   out<< (*iter) <<" ";
+//                          cout<< "Hop!"<<endl;//QAZ
+// }
   out<<endl;
   return out;
 }

@@ -87,6 +87,10 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
        unit->addReport( new UnaryMessage(unusableSkillReporter, parameters[0]));
  		  return INVALID;
     }
+ // if(skill == skills["ritu"])
+ //{
+ //cout << "UseOrder::process1 "<< skill->print()<<endl;
+ //}
 
 //  if(unit->isTraced())
 // {
@@ -107,6 +111,10 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
       else
         useCounter = par1->getValue();
     }
+//  if(skill == skills["ritu"])
+// {
+// cout << "UseOrder::useCounter "<<unit->print()<< " uses " << skill->print()<<useCounter <<endl;
+// }
 
   if(parameters.size() >2)
     {
@@ -117,7 +125,15 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
 //         return SUCCESS;
     }
    // check that entity may use skill (has enough resources ETC.)
+ if(unit->isTraced())
+ {
+ cout << "UseOrder is checked that "<<skill->print()<< " may be used " <<endl;
+ }
     USING_RESULT result = skill->mayBeUsedBy(unit);
+ if(unit->isTraced())
+ {
+ cout << "UseOrder just checked that "<<skill->print()<< " may be used " << (int)result<<endl;
+ }
 
  switch (result)
   {
@@ -187,6 +203,10 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
     (parameters[1])->clean();
      parameters[1] = unit->getTarget();
   }
+if(unit->isTraced())
+{
+cout << "UseOrder uses "<<skill->print()<<endl;
+}
   result = skill->use(unit,useCounter,unit->getCurrentOrder());
 
   if(parameters.size() > 1+ parameterOffset)
@@ -220,9 +240,18 @@ ORDER_STATUS UseOrder::process (Entity * entity, ParameterList &parameters)
       return FAILURE;
       break;
       }
-    case USING_OK:
-    case NO_RESOURCES:
+     case NO_RESOURCES:
     case NO_MANA:
+    {
+     if(!unit->getCurrentOrder()->getReportingFlag(NO_RESOURCE_REPORT_FLAG ))
+      {
+        skill->reportUse(result, unit);
+        unit->getCurrentOrder()->setReportingFlag(NO_RESOURCE_REPORT_FLAG );
+      }
+      return FAILURE;
+      break;
+    }
+    case USING_OK:
     case CONDITION_FAILURE:
     case WRONG_TARGET:
     case NO_TARGET:

@@ -78,11 +78,14 @@ ORDER_STATUS DropOrder::process (Entity * entity, ParameterList &parameters)
                 return FAILURE;
 
   int reallyDropped = toDrop;
-
+  
+  if(nextParameterIndex == 2)
+  {
   if (reallyDropped == 0)
     reallyDropped = unitItemPossesion - kept;
   if (reallyDropped + kept > unitItemPossesion)
     reallyDropped = unitItemPossesion - kept;
+  }
   if (reallyDropped <= 0)
     return FAILURE;
 

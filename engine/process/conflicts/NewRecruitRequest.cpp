@@ -123,6 +123,8 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
         cout << "Failed to add new unit \n";
         return;
       }
+    LocationEntity * location = unit_->getLocation();
+    location->setPopulation(location->getPopulation() -amount);
       targetUnit_->setRealEntity(newUnit);
        unit_->getFaction()->addUnit(newUnit);
        unit_->getLocation()->addUnit(newUnit);

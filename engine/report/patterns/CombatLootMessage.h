@@ -25,7 +25,8 @@ public:
  CombatLootMessage(vector <ItemElement> loot);
   void printReport(ReportPrinter &out) const;
   void clean(){}
-protected:
+  vector <AbstractData *>  aPrint();
+  protected:
 	vector <ItemElement> loot_;
 	~CombatLootMessage(){}
 

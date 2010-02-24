@@ -52,7 +52,17 @@ ORDER_STATUS SeeOrder::process (Entity * entity, ParameterList &parameters)
   UnitEntity * target   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 
 	if(target == 0)
-		return INVALID;
+        {
+          NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);
+          if (placeholder == 0)
+          {
+           return INVALID;
+          }
+          else
+          {
+            return FAILURE;
+          }
+        }
 
    if (!unit->maySee(target)) // Not In the same place or can't see
 	  return FAILURE;

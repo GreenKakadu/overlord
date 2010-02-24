@@ -24,7 +24,9 @@ public:
 			SimpleMessage  * next; //for use in operator new
   		ReportPattern * reporter_;
 	};
-protected:
+   inline ReportPattern * getPattern() {return reporter_;}
+       vector <AbstractData *>  aPrint();
+  protected:
 	~SimpleMessage(){}
 };
 
