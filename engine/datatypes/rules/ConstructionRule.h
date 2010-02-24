@@ -46,6 +46,7 @@ public:
         void finishConstruction(LocationEntity * location);
         void extractKnowledge (Entity * recipient, int parameter = 0);
         void printDescription(ReportPrinter & out);
+        vector <AbstractData *> aPrint();
   inline BasicCondition * getBuildCondition() const {return buildCondition_;}
   inline SkillCondition * getStaffCondition() const {return staffCondition_;}
   inline EntityStatistics * getStats()  {return &stats_;}
@@ -56,6 +57,7 @@ public:
   inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
+  inline int getEconomyBonus() const {return economyBonus_;};
          int getLearningBonus(SkillRule * skill);
          inline SkillElement * getBuildingSkill(){return buildingSkill_;};
   inline int getWeight() const {return weight_;}
@@ -82,6 +84,7 @@ public:
       /*const*/ string entityKeyword_ ;
       bool mobile_;
       bool isBattle_;
+      int economyBonus_;
       // Attributes
       SkillBonusComboAttribute skillBonuses_;
 //		  SkillBonusAttribute useBonuses_;

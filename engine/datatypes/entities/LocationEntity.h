@@ -38,6 +38,8 @@ class  BonusElement;
 class  BasicCombatManager;
 class WeatherRule;
 class SeasonRule;
+class EffectEntity;
+class EffectRule;
 
 class LocationEntity : public Entity  {
     public:
@@ -49,8 +51,17 @@ class LocationEntity : public Entity  {
       GameData * createInstanceOfSelf();
       void    preprocessData();
       void    postProcessData();
+      void      postPostProcessData();
       void    dailyUpdate();
+// Static configuration parameters for economic model
+      static const int migrationFactor;
+      static const int pillagingFactor;
+      static const int recoveryFactor;
+      static const int growthFactor;
+      static const int battleFactor;
+
   inline void setTerrain(TerrainRule * terrain) {terrain_ = terrain;}
+  void generateResourses();
 
   /** Adds Unit to location */
   void addUnit(UnitEntity * unit);
@@ -79,6 +90,7 @@ class LocationEntity : public Entity  {
   vector <ResourceElement *> & getResources(){return resources_;}
   /** Some resources may be unavailable */
   RationalNumber  getAvailableResource(ItemRule * item);
+  void setAvailableResource(ItemRule * item, int num);
   void addDailyConflictRequest(BasicCompetitiveRequest * request);
   void addMonthlyConflictRequest(BasicCompetitiveRequest * request);
   void addMarketRequest(MarketRequest * request);
@@ -105,13 +117,20 @@ class LocationEntity : public Entity  {
   inline int getWages()      const {return wages_;}
   inline int getTaxes()      const {return taxes_;}
   inline int getPopulation() const {return population_;}
+  inline void setPopulation(int value)  {population_ =value;}
+  inline int getPopulationExcess() const {return populationExcess_;}
   inline int getOptima()     const {return optima_;}
+  inline int getMigration()     const {return migration_;}
+  inline void setMigration(int value) { migration_ =value;}
          BasicExit *  findExit(LocationEntity * dest);
          BasicExit *  findExit(DirectionVariety * dir);
+         void addExit(BasicExit * exit);
 	inline int getX() const {return x_;}
 	inline int getY() const {return y_;}
+        inline vector <BasicExit *>&  getAllExits() {return   exits_;}
          void harvestResource(ItemRule * item, RationalNumber& num);
   RationalNumber  takeAvailableResource(ItemRule * item, RationalNumber amount);
+  void cleanResourses();
   //         BasicExit *  findExit(TerrainRule * dest);
          void setLegalOwner(FactionEntity * owner, LocationEntity * titleLocation);
          void setGuard(TokenEntity * guard);
@@ -126,6 +145,8 @@ class LocationEntity : public Entity  {
   inline int getTotalLand() const {return landTotal_;}
   inline bool isPillaged() const {return isPillaged_;}
   inline void setPillaged(bool status)  { isPillaged_ = status;}
+  void pillage();
+  void addBattle();
   inline int getFreeLand() const {return landFree_;}
           bool useLand(int landSize);
           void freeLand(int landSize);
@@ -139,7 +160,7 @@ class LocationEntity : public Entity  {
 // Teaching
 //    void addLocationTeachingOffer(TeachingOffer *offer);
 //    TeachingOffer * findLocationTeachingOffer(SkillRule  * skill, int level);
-    void cleanLocationTeachingOfers();
+//    void cleanLocationTeachingOfers();
 // Weather and seasons ========================================================
 	 WeatherRule * getWeather() const;
 	 void setWeather(WeatherRule * weather);
@@ -154,14 +175,20 @@ class LocationEntity : public Entity  {
           void deleteTitle(TitleRule * titleType);
           TitleElement * findTitle(TitleRule * titleType);
           void turnNpcGuards();
+// Effects ========================================================
+          void  addEffect(EffectEntity * effect);
+          void removeEffect(EffectEntity * effect);
+          EffectEntity * findEffect(EffectRule * rule);
     protected:
+    vector <TokenEntity *> visitors_;
     vector <UnitEntity *> units_;
     vector <UnitEntity *> unitsToRemove_;
     vector <UnitEntity *> unitsToAdd_;
     vector <ConstructionEntity *> constructions_;
     vector <ConstructionEntity *> constructionsToRemove_;
     vector <ConstructionEntity *> constructionsToAdd_;
-//    vector <TeachingOffer *> teachingOffers_;
+    vector <EffectEntity *> effects_;
+//    vector <TeachingOffer *> teachingAcceptorOffers_;
     BasicCombatManager * combatManager_;
     TitlesAttribute      titles_;
     OwnershipPolicy ownershipPolicy_;
@@ -180,6 +207,8 @@ class LocationEntity : public Entity  {
     int wages_;
     int entertainment_;
     int taxes_;
+    int populationExcess_;
+    int migration_;
     BasicConflict * dailyConflict_;
     BasicConflict * monthlyConflict_;
     MarketStrategy * market_;

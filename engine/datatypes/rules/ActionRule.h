@@ -32,7 +32,8 @@ public:
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
-      virtual ACTION_RESULT carryOut(Entity * entity);
+      vector <AbstractData *> aPrint();
+      virtual ACTION_RESULT carryOut(Entity * entity, AbstractData * parameter = 0, int value =0);
       inline GameData *  getTargetType() {return targetType_;}
 	protected:
        GameData * targetType_; // pointer to prototype

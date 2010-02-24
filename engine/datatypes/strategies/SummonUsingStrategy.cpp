@@ -24,6 +24,7 @@ SummonUsingStrategy       sampleSummonUsing       ("USING_SUMMON",       &sample
 extern ReportPattern * recruitMaxUnitSizeReporter;
 extern ReportPattern * recruitMixedRaceReporter;
 extern ReportPattern * recruitForeignUnitReporter;
+extern ReportPattern * startUseReporter;
 
 //extern ReportPattern * newSummonedReporter;
 //extern ReportPattern * summonerReporter;
@@ -241,8 +242,9 @@ USING_RESULT SummonUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
 {
 
     int effectiveProduction = 0;
+    bool newCycle = false;
 		USING_RESULT result =
-			produce(unit, skill, useRestrictionCounter, effectiveProduction,order);
+			produce(unit, skill, useRestrictionCounter, effectiveProduction,order,newCycle);
 		if (effectiveProduction == 0)
 		{
 			return result;
@@ -259,6 +261,10 @@ USING_RESULT SummonUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
           new TertiaryMessage(summoningReporter, unit,
           new RaceElement(summonedRace_,effectiveProduction), new StringData(newUnit->getTag()))
                   );
+          if(newCycle)
+          {
+            unit->addReport(new BinaryMessage(startUseReporter,unit,skill));
+          }
       unit->getLocation()->addReport(
       new TertiaryMessage(summoningReporter, unit,
       new RaceElement(summonedRace_,effectiveProduction), new StringData(newUnit->getTag()) /*newUnit*/)

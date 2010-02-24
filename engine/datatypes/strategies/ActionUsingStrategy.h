@@ -20,11 +20,11 @@ class ActionRule;
 class ActionUsingStrategy : public BasicProductionStrategy  {
 public: 
       ActionUsingStrategy ( const string & keyword, GameData * parent): BasicProductionStrategy(keyword, parent){}
-      ActionUsingStrategy ( const ActionUsingStrategy * prototype ): BasicProductionStrategy(prototype){productType_ =0;}
+      ActionUsingStrategy ( const ActionUsingStrategy * prototype );
 		 ~ActionUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT unitUse(UnitEntity * tokenEntity, SkillRule *, int &useCounter);
+      USING_RESULT unitUse(UnitEntity * tokenEntity, SkillRule *, int &useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill,OrderLine * order);
       void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       void extractKnowledge (Entity * recipient, int parameter = 0);
@@ -32,6 +32,7 @@ public:
 			BasicUsingStrategy * cloneSelf();
 private:
       ActionRule * productType_;
+      AbstractData * specificProduct_;
 };
 extern ActionUsingStrategy      sampleActionUsing;
 

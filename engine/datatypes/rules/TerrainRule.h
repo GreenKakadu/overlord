@@ -26,6 +26,7 @@ class  TerrainRule : public Rule
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
+      vector <AbstractData *> aPrint();
       virtual  int getTravelTime(MovementVariety * mode);
 //    virtual  bool mayMove(MovementVariety * mode, UnitEntity * unit); // For special terrains
       SkillRule * getLandWalk() const {return landWalk_;}

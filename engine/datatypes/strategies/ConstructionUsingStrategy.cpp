@@ -104,7 +104,7 @@ USING_RESULT ConstructionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * s
 {
 	// add production bonus
 	int bonus = calculateProductionBonus(unit,skill);
-	SkillUseElement * dailyUse = new SkillUseElement(skill,unit->getFiguresNumber() * (100 + bonus)/100, productionDays_);
+	SkillUseElement * dailyUse = new SkillUseElement(skill,RationalNumber(unit->getFiguresNumber() * (100 + bonus),100), productionDays_);
   ConstructionEntity * newBuilding;
   if(unit->addSkillUse(dailyUse) >= 1)
   {

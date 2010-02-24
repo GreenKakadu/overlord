@@ -54,6 +54,7 @@ ConstructionRule::ConstructionRule( const ConstructionRule * prototype ) : Rule(
  buildingSkill_ =0;
  isBattle_ = false;
  buildingParadigm_  = 0;
+ economyBonus_ =0;
 }
 
 ConstructionRule::~ConstructionRule(){}
@@ -154,6 +155,14 @@ ConstructionRule::initialize        ( Parser *parser )
 	  landUse_ = parser->getInteger();
 	  return OK;
 	}
+
+    if (parser->matchKeyword("ECONOMY"))
+	{
+            economyBonus_= parser->getInteger();
+            return OK;
+	}
+
+
   if (parser->matchKeyword("WEIGHT"))
 	{
 	  weight_ = parser->getInteger();
@@ -197,6 +206,7 @@ ConstructionRule::initialize        ( Parser *parser )
     stats_.initialize(parser);
     skillBonuses_.initialize(parser);
     movementBonuses_.initialize(parser);
+  Rule::initialize(parser);
 
       return OK;
 }
@@ -283,6 +293,7 @@ bool ConstructionRule::mayMove()
 
 void    ConstructionRule::extractKnowledge (Entity * recipient, int parameter)
 {
+  Rule::extractKnowledge(recipient);
   if(skill_)
   {
     if(recipient->addSkillKnowledge(skill_->getSkill(),skill_->getLevel()))
@@ -353,6 +364,12 @@ void ConstructionRule::printDescription(ReportPrinter & out)
    }
 
 	 skillBonuses_.report(out);
+}
+
+vector <AbstractData *> ConstructionRule::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
 }
 
 USING_RESULT ConstructionRule::startNewConstruction(UnitEntity * unit,ConstructionEntity *buildingOrShip, AbstractData * target)

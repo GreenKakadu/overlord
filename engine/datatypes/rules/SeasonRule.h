@@ -31,6 +31,7 @@ class  SeasonRule : public Rule
       virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
+      vector <AbstractData *> aPrint();
       WeatherRule * predictWeather();
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);

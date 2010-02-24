@@ -20,8 +20,8 @@
 #include "TitleRule.h"
 #include "LocationEntity.h"
 
-const int BattleField::RANK_SIZE;
-const int BattleField::FILE_SIZE;
+//const int BattleField::RANK_SIZE;
+//const int BattleField::FILE_SIZE;
 CombatRankVariety * frontCombatRank;
 CombatRankVariety * middleCombatRank;
 CombatRankVariety * rearCombatRank;

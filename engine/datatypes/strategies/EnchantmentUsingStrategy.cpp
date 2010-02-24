@@ -86,7 +86,75 @@ EnchantmentUsingStrategy::initialize        ( Parser *parser )
 USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
 					int & repetitionCounter,OrderLine * order)
 {
+   if(unit->isTraced())
+   {
+   //EnchantmentElement * enchant =  EnchantmentElement::createElement(productType_, effectiveProduction);
+        cout << "======unitUse======= repetitionCounter=" <<repetitionCounter<<endl;
+   }
    USING_RESULT result;
+// Production modifiers:
+ int effectiveProduction =0;
+ bool newCycle =false;
+ result = produce(unit, skill,repetitionCounter, effectiveProduction, order, newCycle);
+
+     if (effectiveProduction == 0)// Nothing was produced
+    {
+        return result;
+    }
+// print
+ // add enchants
+
+
+   // Determine target
+   TokenEntity * target;
+   if(productType_->getTargetType() == &targetTypeSelf)
+    target = unit;
+   else
+    target = dynamic_cast <TokenEntity *>(unit->getTarget());
+   if(!target) // definition of EnchantmentRule is wrong
+      {
+       cout << "Wrong definition of EnchantmentRule. Target is not a token"<<endl;
+       return WRONG_TARGET;
+      }
+   EnchantmentElement * enchant =  new EnchantmentElement(productType_, effectiveProduction);
+   if(unit->isTraced())
+   {
+   //EnchantmentElement * enchant =  EnchantmentElement::createElement(productType_, effectiveProduction);
+        cout << "=============" << enchant->print()<<endl;
+   }
+   // Operator new is not re-defined for EnchantmentElement,
+   // so actually object of type Element2<EnchantRule,int> is created;
+   // it's ok but it can't be printed.
+   EnchantmentElement  enchant2 = EnchantmentElement(productType_, effectiveProduction);
+    target->addEnchantment(enchant);  //
+
+      if(!unit->isSilent())
+        {
+//QQQ
+          unit->addReport(
+          new TertiaryMessage(privateEnchanterReporter, unit, target,
+         new StringData(enchant2.print()))
+                        );
+        }
+      if(!target->isSilent())
+        {
+//QQQ
+          target->addReport(
+          new TertiaryMessage(privateEnchantmentReporter, target, unit,
+          new StringData(enchant2.print()))
+                            );
+        }
+//      target->getLocation()->addReport(
+//      new BinaryMessage(publicEnchantmentReporter, unit, productType_
+//        /*, 0, observation condition*/);
+
+    return result;
+
+}
+
+USING_RESULT EnchantmentUsingStrategy::produce(UnitEntity * unit, SkillRule * skill, int & repetitionCounter, int & effectiveProduction, OrderLine * order, bool & newCycle)
+{
+    USING_RESULT result;
 // Production modifiers:
  int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
 
@@ -115,7 +183,7 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
     if( manaAvailable < cycleCounter)
         cycleCounter = manaAvailable;
 
-    int effectiveProduction = cycleCounter * productNumber_;
+    effectiveProduction = cycleCounter * productNumber_;
     if( (repetitionCounter != 0) && (effectiveProduction  >= repetitionCounter) ) // production will be finished now
       {
         effectiveProduction = repetitionCounter;
@@ -127,43 +195,15 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
 				}
          result = USING_COMPLETED;
         repetitionCounter = 0;
-      order->setCompletionFlag(true);
-
-   // Determine target
-   TokenEntity * target;
-   if(productType_->getTargetType() == &targetTypeSelf)
-    target = unit;
-   else
-    target = dynamic_cast <TokenEntity *>(unit->getTarget());
-   if(!target) // definition of EnchantmentRule is wrong
-      {
-       cout << "Wrong definition of EnchantmentRule. Target is not a token"<<endl;
-       return WRONG_TARGET;
+        order->setCompletionFlag(true);
       }
-    target->addEnchantment(new EnchantmentElement(productType_, effectiveProduction));  //
-      if(!unit->isSilent())
-        {
-//QQQ
-          unit->addReport(
-          new TertiaryMessage(privateEnchanterReporter, unit, target,
-          new EnchantmentElement(productType_,effectiveProduction))
-                  );
-        }
-      if(!target->isSilent())
-        {
-//QQQ
-          target->addReport(
-          new TertiaryMessage(privateEnchantmentReporter, target, unit,
-          new EnchantmentElement(productType_,effectiveProduction))
-                  );
-        }
-//      target->getLocation()->addReport(
-//      new BinaryMessage(publicEnchantmentReporter, unit, productType_
-//        /*, 0, observation condition*/);
-
-      }
-    else
+    else // Old cycle was finished and new started
     {
+                 if (unit->isTraced())
+      {
+          cout <<"== TRACING " <<unit->print()<<" Starting new cycle "
+            << " cycleCounter= " << cycleCounter<<endl;
+      }
       consumeResources(unit,cycleCounter-1);
       consumeMana(unit,cycleCounter-1);
 //      if(dailyUse->getDaysUsed() > 0)
@@ -175,8 +215,6 @@ USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * sk
     return result;
   }
 }
-
-
 
 USING_RESULT EnchantmentUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {

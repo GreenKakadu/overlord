@@ -106,6 +106,7 @@ public:
      EntityStatistics  getBasicStats();
      void disband();
      inline bool isPublic() {return public_;}
+     inline int getEconomyBonus()  {return getConstructionType()->getEconomyBonus();}
 
 // Later Construction Stats should be done more sophisticated 
 // and also depend on crew skills, enchants, weather etc.
@@ -116,6 +117,8 @@ public:
 	 inline  int 	getLife() const {return construction_->getStats()->getLife();}
 	 inline  int 	getDamage() const {return construction_->getStats()->getDamage();}
 	 inline  int 	getRangedDamage() const {return construction_->getStats()->getRangedDamage();}
+   int getObservationRating() const;
+   int getStealthRating();
 
 
     protected:

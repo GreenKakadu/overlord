@@ -186,7 +186,7 @@ if(missile < targetDefence)
 		}
 	int wounds = hitNums - correctedHits;
 	hitNums = correctedHits;
-
+combatReportFile  <<" ==> "<<wounds<<" hits were turned to wounds " <<endl;
 	// Convert wounds to hits
 	int currentWounds = target->getWounds();
 	int currentFigures = target->getFiguresNumber();
@@ -200,13 +200,15 @@ if(missile < targetDefence)
 		target->setWounds(currentFigures);
   	hitNums += (currentWounds + wounds - currentFigures);
 	}
+combatReportFile  <<" ==> "<<wounds<<" wounds were turned to hits" <<endl;
 }
 // ====== End of additional rule for wounds
 combatReportFile  <<"("<< hitNums<<")" <<endl;
 // === Distribute hits between figures
 
   int totalDamage = damage * hitNums;
-	int  figuresDied = target->sufferDamage(hitNums,totalDamage);
+combatReportFile  <<" ==> "<<totalDamage<<" damage " <<endl;
+	int  figuresDied = target->sufferDamage(hitNums,damage);
 
 
 	return MeleeAttackElement(target, numStrikes, totalDamage, figuresDied);

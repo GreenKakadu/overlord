@@ -40,7 +40,7 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
 
 //   cout << "==check== Can "<< unit->print()<< " learn " << skill->print()<<" ?\n";
 
-   if(skill->getRequirement(0))
+   if(!skill->isBasicSkill())
         return true;   //    This is not basic skill
    if(unit->getSkillPoints(skill))
         return true;   //unit already knows this skill
@@ -94,7 +94,7 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 	{
 		if(unit->isTraced())
 		{
-                  cerr << unit->printTag()<<" Can't study magic skill "<<skill->print()<<endl;
+                  //cerr << unit->printTag()<<" Can't study magic skill "<<skill->print()<<endl;
 		}
      	return CANNOT_STUDY_FAILURE;
 	}
@@ -102,7 +102,7 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
         {
           if(unit->isTraced())
           {
-            cerr << " Can't study Racial skill "<<skill->print()<<endl;
+           //cerr << " Can't study Racial skill "<<skill->print()<<endl;
           }
           return CANNOT_STUDY_FAILURE;
         }

@@ -27,8 +27,11 @@ VarietiesIterator iter;
    }
 
   if(errorReportEnabled)
- cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
- return 0 ;
+
+   cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName())
+           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+           << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
+   return 0 ;
 }
 GameData* BasicVarietiesCollection::findByIndex (const  long int index, bool errorReportEnabled)
 {

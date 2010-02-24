@@ -25,7 +25,7 @@ public:
 	 ~FactionPermissionElement(){}
    inline Rule *          getRule()      const      {return rule_;}
    inline FactionEntity * getFaction()    const     {return parameter1_;}
-   inline bool         getPermission()    const     {return parameter2_;}
+   inline bool         getPermission()    const     {if(parameter2_) return true; else return false;}
    inline bool         isValidElement() const {return (rule_ )&&(parameter1_); }
 	
 string print()

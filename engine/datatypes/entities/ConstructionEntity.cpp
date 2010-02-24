@@ -153,7 +153,9 @@ void      ConstructionEntity::save (ostream &out)
 int  ConstructionEntity::workToDo(ConstructionWorksVariety * buildingWorksType)
 {
     for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
-  {
+  {       
+        //if(this->isTraced())
+        //cout<< "++++>" <<print()<<":"<<(*iter)->getWorkType()->print()<<" vs. "<<buildingWorksType->print()<<endl;
     if((*iter)->getWorkType() == buildingWorksType)
     {
       return  (*iter)->getWorkAmount().roundUp();
@@ -166,8 +168,16 @@ int  ConstructionEntity::workToDo(ConstructionWorksVariety * buildingWorksType)
 
 bool ConstructionEntity::addBuildingWork(ConstructionWorksElement * buildingWorks)
 {
+      if(this->isTraced())
+      {
+          cout<< "Adding "<<buildingWorks->getWorkAmount()<< " of "<< buildingWorks->getWorkType()->print()<<" to "<<print()<<endl;
+      }
   for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
   {
+//      if(this->isTraced())
+//      {
+//          cout<< "Adding "<<buildingWorks->getWorkAmount()<< " of "<< buildingWorks->getWorkType()->print()<<" to "<<print()<<endl;
+//      }
     if((*iter)->getWorkType() == buildingWorks->getWorkType())
     {
       if((*iter)->getWorkAmount() > buildingWorks->getWorkAmount())
@@ -614,8 +624,9 @@ void ConstructionEntity::destroy()
   location->removeConstruction(this);
   // move all units otside
   for(UnitIterator iter = units_.begin();
-                                iter != units_.end(); /*++iter*/)
+                                iter != units_.end(); ++iter)
       {
+      cout<<"    Destroying "<<this->print()<< " : "<< (*iter)->print()<<endl;
         (*iter)->setContainingConstruction(0);
         (*iter)->recalculateStats();
         removeUnit(*iter);
@@ -973,6 +984,7 @@ return basicStats;
 // Destroy construction
 void ConstructionEntity::disband()
 {
+  isDisbanded_ = true;
 	destroy();
 }
 
@@ -980,7 +992,8 @@ void ConstructionEntity::disband()
 
 void ConstructionEntity::dailyUpdate()
 {
-   enchantments_.processExpiration(getFiguresNumber());
+    enchantments_.carryOutAllActions(this,0);
+   enchantments_.processExpiration(this,getFiguresNumber());
    TokenEntity::dailyUpdate();
 
 // if terrain is ocean or lake check swimming capacity
@@ -1021,4 +1034,18 @@ void ConstructionEntity::setDefaultCombatMovement()
 		defaultCombatMovement_ =
 					new CombatOrderLine( "stand", this);
 	}
+}
+
+
+
+int ConstructionEntity::getObservationRating() const
+{
+   return 0;
+}
+
+
+
+int ConstructionEntity::getStealthRating()
+{
+  return 0;
 }

@@ -24,6 +24,7 @@ class TitleRule : public Rule
       TitleRule (const string & keyword, GameData * parent ): Rule(keyword, parent){}
 			TitleRule (const TitleRule * prototype );
       void       printDescription(ReportPrinter & out);
+      vector <AbstractData *> aPrint();
       virtual    STATUS initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
 

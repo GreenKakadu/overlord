@@ -5,6 +5,7 @@
     copyright            : (C) 2002 by Alex Dribin
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
+#include "StringData.h"
 #include "ItemRule.h"
 #include "EquipmentSlotVariety.h"
 #include "SkillLevelElement.h"
@@ -32,6 +33,8 @@ ItemRule::ItemRule ( const ItemRule * prototype ) : Rule(prototype)
 		 live_ = false;
     numEquipSlotsRequired_  = 1;
 		combatAction_ = 0;
+		prospectSkill_ = 0;
+                isRegeneratingResource_ = true;
 }
 
 
@@ -45,161 +48,182 @@ GameData * ItemRule::createInstanceOfSelf()
 STATUS
 ItemRule::initialize        ( Parser *parser )
 {
-
-	
+  
+  
   if (parser->matchKeyword ("NAME") )
-    {
-      setName(parser->getText());
-      return OK;
-    }
+  {
+    setName(parser->getText());
+    return OK;
+  }
   if (parser->matchKeyword("DESCRIPTION"))
-    {
-      setDescription(parser->getText());
-      return OK;
-    }
+  {
+    setDescription(parser->getText());
+    return OK;
+  }
   if (parser->matchKeyword("PLURAL"))
-    {
-      pluralName_ = parser->getText();
-      return OK;
-    }
+  {
+    pluralName_ = parser->getText();
+    return OK;
+  }
   if (parser->matchKeyword("WEIGHT"))
-    {
-      weight_ = parser->getInteger();
-      return OK;
-    }
+  {
+    weight_ = parser->getInteger();
+    return OK;
+  }
   if (parser->matchKeyword("UNIQUE"))
-    {
-			unique_ = true;
-      return OK;
-    }
+  {
+    unique_ = true;
+    return OK;
+  }
   if (parser->matchKeyword("PRICE"))
-    {
-      price_ = parser->getInteger();
-      return OK;
-    }
+  {
+    price_ = parser->getInteger();
+    return OK;
+  }
   if (parser->matchKeyword("LIVE"))
-    {
-			live_ = true;
-      return OK;
-    }
+  {
+    live_ = true;
+    return OK;
+  }
+  if (parser->matchKeyword("NONREGENERATING"))
+  {
+        isRegeneratingResource_ = false;
+       return OK;
+  }
   if (parser->matchKeyword("CAPACITY"))
-    {
-      if(parser->matchInteger())
-				{
-					int index =  parser->getInteger();
-					capacity_[index]  = parser->getInteger();
-				}
-			else
-					{
-						string modeTag = parser->getWord();
-						if(movementModes.isValidTag(modeTag))
-							{
-								capacity_[modeTag]  = parser->getInteger();
-							}
-					}
-      return OK;
-    }
-  if (parser->matchKeyword("EQUIP_CAPACITY"))
-    {
-      if(parser->matchInteger())
-				{
-					int index =  parser->getInteger();
-					equipCapacity_[index]  = parser->getInteger();
-				}
-			else
-					{
-						string modeTag = parser->getWord();
-						if(movementModes.isValidTag(modeTag))
-							{
-								equipCapacity_[modeTag]  = parser->getInteger();
-							}                            
-					}
-      return OK;
-    }
-  if (parser->matchKeyword("EQUIP_CATEGORY"))
+  {
+    if(parser->matchInteger())
     {
       int index =  parser->getInteger();
-      if(index)
-				{
-					equipSlot_ = equipments[index - 1];
-				}
-			else
-					equipSlot_ = equipments[parser->getWord()];
-      return OK;
+      capacity_[index]  = parser->getInteger();
     }
-  if (parser->matchKeyword("EQUIP_CONDITION"))
+    else
     {
-      
-      equipCondition_ = dynamic_cast<BasicCondition *> (createByKeyword(parser->getWord()));
-      if(equipCondition_)
+      string modeTag = parser->getWord();
+      if(movementModes.isValidTag(modeTag))
       {
-        equipCondition_->initialize(parser) ;
-        equipCondition_->setSubject(this);
-        }
-      return OK;
+	capacity_[modeTag]  = parser->getInteger();
+      }
     }
-if (parser->matchKeyword("USE_SKILL"))
+    return OK;
+  }
+  if (parser->matchKeyword("EQUIP_CAPACITY"))
+  {
+    if(parser->matchInteger())
     {
-			SkillRule *skill = skills[parser->getWord()];
-			if (skill == 0)
-					return OK;
-			else
-					useSkill_ = new SkillLevelElement(skill,parser->getInteger());
-      return OK;
+      int index =  parser->getInteger();
+      equipCapacity_[index]  = parser->getInteger();
     }
-
-if (parser->matchKeyword("SPECIAL"))
+    else
     {
-			special_ = true;
-      return OK;
+      string modeTag = parser->getWord();
+      if(movementModes.isValidTag(modeTag))
+      {
+	equipCapacity_[modeTag]  = parser->getInteger();
+      }                            
     }
-
-	if (parser->matchKeyword ("COMBAT_USE") )
+    return OK;
+  }
+  if (parser->matchKeyword("EQUIP_CATEGORY"))
+  {
+    int index =  parser->getInteger();
+    if(index)
     {
-        string keyword = parser->getWord();
-       	GameData * temp =  prototypeManager->findInRegistry(keyword);
-			if(temp == 0)
-				{
-					cerr << "Unknown combat action " << keyword  << " for item " << print()<< endl;
-				}
-			else
-				{
-  				combatAction_ =
-           dynamic_cast<CombatActionStrategy *>(temp ->createInstanceOfSelf ());
-
-        }
-      return OK;
+      equipSlot_ = equipments[index - 1];
     }
-
-	if (parser->matchKeyword("COMBAT"))
+    else
+      equipSlot_ = equipments[parser->getWord()];
+    return OK;
+  }
+  if (parser->matchKeyword("EQUIP_CONDITION"))
+  {
+    
+    equipCondition_ = dynamic_cast<BasicCondition *> (createByKeyword(parser->getWord()));
+    if(equipCondition_)
     {
-			if(combatAction_ == 0)
-			{
-					cerr << "combat parameter "<< parser->getText()<< " defined before combat action  for item " << print()<< endl;
-
-      return OK;
-			}
-			combatAction_->initialize(parser);
-      return OK;
+      equipCondition_->initialize(parser) ;
+      equipCondition_->setSubject(this);
     }
-
-
-if (parser->matchKeyword("MAGIC"))
+    return OK;
+  }
+  if (parser->matchKeyword("USE_SKILL"))
+  {
+    SkillRule *skill = skills[parser->getWord()];
+    if (skill == 0)
+      return OK;
+    else
+      useSkill_ = new SkillLevelElement(skill,parser->getInteger());
+    return OK;
+  }
+  
+  if (parser->matchKeyword("PROSPECT_SKILL"))
+  {
+    SkillRule *skill = skills[parser->getWord()];
+    if (skill == 0)
+      return OK;
+    else
+      prospectSkill_ = new SkillLevelElement(skill,parser->getInteger());
+    return OK;
+  }
+  
+  if (parser->matchKeyword("SPECIAL"))
+  {
+    special_ = true;
+    return OK;
+  }
+  
+  if (parser->matchKeyword ("COMBAT_USE") )
+  {
+    string keyword = parser->getWord();
+    GameData * temp =  prototypeManager->findInRegistry(keyword);
+    if(temp == 0)
     {
-			magic_ = true;
+      cerr << "Unknown combat action " << keyword  << " for item " << print()<< endl;
+    }
+    else
+    {
+      combatAction_ =
+      dynamic_cast<CombatActionStrategy *>(temp ->createInstanceOfSelf ());
+      
+    }
+    return OK;
+  }
+  
+  if (parser->matchKeyword("COMBAT"))
+  {
+    if(combatAction_ == 0)
+    {
+      cerr << "combat parameter "<< parser->getText()<< " defined before combat action  for item " << print()<< endl;
+      
       return OK;
     }
-     stats.initialize(parser);
-		 skillBonuses_.initialize(parser);
+    combatAction_->initialize(parser);
+    return OK;
+  }
+  
+  
+  if (parser->matchKeyword("MAGIC"))
+  {
+    magic_ = true;
+    return OK;
+  }
 
-      return OK;
-
- }
+  stats.initialize(parser);
+  skillBonuses_.initialize(parser);
+  Rule::initialize(parser);
+  return OK;
+  
+}
 
 
 
 void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
 {
+//    if(this==items["dead"])
+//    {
+//        cout<<"extracting Knowledge for "<< recipient->print()<<" from "<<print()<<endl;
+//    }
+  Rule::extractKnowledge(recipient);
   if(useSkill_)
   {
     if(recipient->addSkillKnowledge(useSkill_->getSkill(),useSkill_->getLevel()))
@@ -302,3 +326,72 @@ int ItemRule::getStudyBonus(SkillRule * skill)
 {
   return skillBonuses_.getStudyBonus(skill);
 }
+
+
+
+vector <AbstractData *> ItemRule::aPrint()
+{
+  vector <AbstractData *> v;
+  v.push_back(this);
+  v.push_back(new StringData(": "));
+  if(weight_)
+  {
+    v.push_back(new StringData("weight "));
+    v.push_back(new IntegerData(weight_));
+    bool isFirst = true;
+    for(int i =0 ; i < movementModes.size(); ++i)
+    {
+      if(capacity_[i])
+      {
+        if(isFirst)
+        {
+          v.push_back(new StringData(", capacity: "));
+          isFirst = false;
+        }
+        else
+        {
+          v.push_back(new StringData(", "));
+        }
+
+        v.push_back(new IntegerData(capacity_[i]));
+        v.push_back(new StringData("/"));
+        v.push_back(new StringData((movementModes[i])->getName()));
+
+        if(equipCapacity_[i])
+        {
+          v.push_back(new StringData(" ("));
+          v.push_back(new IntegerData(equipCapacity_[i]));
+          v.push_back(new StringData(" while equiped)"));
+        }
+      }
+    }
+    v.push_back(new StringData(". "));
+  }
+  v.push_back(new StringData(getDescription()));
+
+  return v;
+}
+
+ 
+//     if(stats.getUpkeep())
+//       out << " Additional upkeep $" << stats.getUpkeep()<<" per item.";
+//   
+//     if(stats.getControlPoints())
+//       out << " Required control " << stats.getControlPoints()<<" per item.";
+//   
+//     if(equipCondition_)
+//   {
+//     out << " Equipped with "<< *equipCondition_<<".";
+//   }
+//   
+//     if(equipSlot_)
+//   {
+//     out << " Equipment category: " << equipSlot_->getName();
+//     if(numEquipSlotsRequired_ > 1)
+//       out << " ( requires "<< numEquipSlotsRequired_ << " "<< equipSlot_->getName() << " to equip )";
+//     out<<".";
+//   }
+//     if(!stats.empty())
+//   {
+//     out << " Equipment gives " << stats;
+//   }

@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
+#include "StringData.h"
 #include "SeasonRule.h"
 #include "SkillRule.h"
 #include "BonusElement.h"
@@ -56,7 +57,8 @@ SeasonRule::initialize        ( Parser *parser )
 	  return OK;
 	}
 		skillBonuses_.initialize(parser);
-      return OK;
+   Rule::initialize(parser);
+     return OK;
 
  }
 
@@ -68,6 +70,13 @@ void SeasonRule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";
 }
+
+vector <AbstractData *> SeasonRule::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
+
 
 
 extern int Roll_1Dx(int n);

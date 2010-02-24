@@ -52,12 +52,20 @@ bool BasicCombatRequest::isValid()
     return false;
   if(attacker_== 0)
     return false;
+//   if(attacker_->isTraced())
+//   {
+//     cout << " Attack: checking CombatRequest " << this->print();
+//   }
   if(defender_== 0)
     return false;
   if(!attacker_->isAlive())  // Dead
     return false;
   if(!defender_->isAlive())  // Dead
     return false;
+//   if(attacker_->isTraced())
+//   {
+//     cout <<" ->OK" <<endl;
+//   }
   return true;
 }
 

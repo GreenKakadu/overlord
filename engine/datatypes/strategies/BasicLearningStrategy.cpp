@@ -175,6 +175,10 @@ int BasicLearningStrategy::calculateLearningExperience(TokenEntity * tokenEntity
 int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, SkillRule * skill, TeachingOffer * teacher)
 {
  int exp = BasicLearningStrategy::expBase_; // normal base 100 points for a day,
+ if(unit->isTraced())
+ {
+   cout << "calculateUnitLearningExperience for "<<unit->print()<<endl;
+ }
  UnitEntity * leader;
  bool needsTeacher = skill->teacherRequired(unit);
  if( needsTeacher)
@@ -196,8 +200,12 @@ int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, S
    // 4. Stack leader bonus
    for (leader = unit->getLeader(); leader != 0; leader = leader->getLeader() )
     {
-      if (leader->hasSkillLevel(skill, unit->getSkillLevel(skill)))
+      if (leader->hasSkillLevel(skill, unit->getSkillLevel(skill)+1))
         {
+//  if(unit->isTraced())
+//  {
+//    cout << "Bonus from "<<leader->print()<<" for "<<skill->print() <<" " <<unit->getSkillLevel(skill) <<endl; 
+//  }
             exp += BasicLearningStrategy::leaderBonus_;
             break;
         }
@@ -209,7 +217,7 @@ int  BasicLearningStrategy::calculateUnitLearningExperience(UnitEntity * unit, S
    // 7. Item Bonus
    if(bonusItem_ != 0) // This for the case when bonus defined in skill data
    exp += (20 * bonusItem_->getEquipedNumber())/(unit->getFiguresNumber());
-	 exp += unit->getItemStudyBonus(skill);
+    exp += unit->getItemStudyBonus(skill);
    // 8. Teacher Bonus
    if(teacher != 0)
    exp += teacher->getTeachingBonus();

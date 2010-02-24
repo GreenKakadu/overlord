@@ -14,7 +14,9 @@
 #include "LocationEntity.h"
 #include "RulesCollection.h"
 #include "BinaryMessage.h"
+#include "DataManipulator.h"
 
+extern DataManipulator * dataManipulatorPtr;
 extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * privateActionReporter;
 extern ReportPattern * publicActionReporter;
@@ -27,6 +29,13 @@ GameData * ActionUsingStrategy::createInstanceOfSelf()
   return CREATE_INSTANCE<ActionUsingStrategy> (this);
 }
 
+ActionUsingStrategy::ActionUsingStrategy(const ActionUsingStrategy * prototype)
+        : BasicProductionStrategy(prototype)
+{
+    name_ = " Using Action";
+    productType_ = 0;
+    specificProduct_ = 0;
+}
 
 
 STATUS
@@ -44,6 +53,19 @@ ActionUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
 
+  if (parser->matchKeyword ("PARAMETER") )
+    {
+      string tag =parser->getParameter();
+      if(!tag.empty())
+      {
+        specificProduct_ = dataManipulatorPtr->findGameData(tag);
+      }
+      if(specificProduct_==0)
+      {
+         specificProduct_ = new StringData(tag);
+      }
+      return OK;
+    }
 
 
   if (parser->matchKeyword ("CONSUME") )
@@ -75,7 +97,6 @@ ActionUsingStrategy::initialize        ( Parser *parser )
 
 
 
-
 /*
  *
  */
@@ -83,10 +104,19 @@ ActionUsingStrategy::initialize        ( Parser *parser )
 
 
 USING_RESULT ActionUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
-					int &useCounter)
+					int &useCounter, OrderLine * )
 {
+    if(productType_==0)
+    {
+        cerr<<"Uninitialized ActionUsingStrategy for "<< getName()<<" resulting action undefined"<<endl;
+        return UNUSABLE;
+    }
 // Production modifiers:
 int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
+      if(unit->isTraced())
+      {
+        cout<<"<===ACTION== "<< getName()<<" "<<productType_->print()<< " "<<effectiveProductionRate <<endl;
+      }
 
 
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
@@ -100,8 +130,11 @@ int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
 
   else // The   production cycle is finished.
   {
-//cout<<"<===ACTION== "<< *productType_<<endl;
-     productType_->carryOut(unit);
+      if(unit->isTraced())
+      {
+    cout<<"<===ACTION== "<< getName()<<" "<<productType_->print()<<endl;
+      }
+     productType_->carryOut(unit,specificProduct_,productNumber_);
 
   }
 

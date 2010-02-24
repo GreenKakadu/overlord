@@ -116,7 +116,7 @@ STATUS currentResult = OK;
           return OK;
         }
 
-   currentResult = enchantments_.initialize(parser);
+  // currentResult = enchantments_.initialize(parser);
    if(currentResult != OK)
     return currentResult;
 
@@ -244,8 +244,7 @@ if (!isSilent())
 
 void Entity::addReport(ReportMessage * report,OrderLine *  orderId, BasicCondition * observationCriteria)
 {
-if (!isSilent())
-  publicReports_.push_back(ReportRecord(report, orderId, observationCriteria));
+  Entity::addReport(ReportRecord(report, orderId, observationCriteria));
 }
 /** No descriptions */
 
@@ -257,23 +256,25 @@ void Entity::dailyUpdate()
 }
 
 
-
 /*
  * Unit tries to obtain public reports from given entity
  */
 void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extractedReports)
 {
-//	cout << "Extracting Reports for [" <<tag_ <<"] " << unit->printTag()<< endl;
-   vector<ReportRecord >::iterator iter;
-  for ( iter = publicReports_.begin(); iter != publicReports_.end(); iter++)
+//    if (isTraced())
+//    {
+//        cout << "Extracting Reports for [" << tag_ << "] " << unit->printTag() << endl;
+//    }
+    vector<ReportRecord >::iterator iter;
+    for (iter = publicReports_.begin(); iter != publicReports_.end(); iter++)
     {
-       if( (*iter).observableBy(unit))
-			{
-//             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter).reportMessage->print(cout);
-            	extractedReports.push_back
-						(new ReportElement((*iter).reportMessage,this));
-			}
-	}
+        if ((*iter).observableBy(unit))
+        {
+            //             cout << "Report extracting by "<< unit->print()<<" =} "/*<< <<endl*/;(*iter).reportMessage->print(cout);
+            extractedReports.push_back
+                    (new ReportElement((*iter).reportMessage, this));
+        }
+    }
 }
 
 
@@ -315,7 +316,10 @@ void Entity::reportEvents(ReportPrinter &out)
 void Entity::finalizeReports()
 {
 //	for_each(publicReports_.begin(),publicReports_.end(),  )
+    if(isTraced())
+    {
 //cout << "Finalizing report for " <<printTag()<<endl;
+    }
 // It is possible that exist two or more duplicates of the same report
 // (results of multiple attempts of the execution of the same order)
 // the earlier one should be deleted
@@ -407,17 +411,43 @@ bool Entity::mayInterractTokenEntity(TokenEntity * tokenEntity)
 void Entity::clearTeachingOffers()
 {
 //  cout <<" -------------------- All Teching Offers cleared for "<< print()<<endl;
-  teachingOffers_.clear();
+  teachingAcceptorOffers_.clear();
+//  cout << *this << " clears all teachin offers"<<endl;
+}
+
+void Entity::cleanTeachingOffers()
+{
+//  cout <<" -------------------- All Teching Offers cleared for "<< print()<<endl;
+  teachingAcceptorOffers_.clear();
+  vector <TeachingOffer  *>::iterator iter;
+   for(iter = teachingDonorOffers_.begin(); iter != teachingDonorOffers_.end(); ++iter)
+    {
+	        // cout<< *this<<" deletes " << *(*iter) <<endl;
+        if(*iter)
+        {
+	delete (*iter);
+        }
+    }
+	teachingDonorOffers_.clear();
+
 //  cout << *this << " clears all teachin offers"<<endl;
 }
 
 
 
-void Entity::addTeachingOffer(TeachingOffer * offer)
+void Entity::addTeachingAcceptorOffer(TeachingOffer * offer)
 {
- // cout <<" -------------------- Teching Offer added for "<< print()<<endl;
- teachingOffers_.push_back(offer);
-// cout <<*offer << " added to "<< *this<<endl;
+// cout <<" -------------------- Teaching Offer: "<<*offer  <<" ( "<<(int)offer <<") added for "<< print()<<endl;
+ teachingAcceptorOffers_.push_back(offer);
+//cout <<*offer << " added to "<< *this<<endl;
+}
+
+
+void Entity::addTeachingDonorOffer(TeachingOffer * offer)
+{
+// cout <<" -------------------- Teaching Offer: "<<*offer  <<" ( "<<(int)offer <<") added for "<< print()<<endl;
+ teachingDonorOffers_.push_back(offer);
+//cout <<*offer << " added to "<< *this<<endl;
 }
 
 
@@ -431,13 +461,15 @@ int Entity::getSkillLevel(SkillRule  * const skill)
 
 TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
 {
-//  cout <<" -------------------- Looking for Teching Offer in "<< print()<<" here "<<teachingOffers_.size() <<" offers"<<endl;
+  //cout <<" -------------------- Looking for Teching Offer in "<< print()<<" here "<<teachingAcceptorOffers_.size() <<" offers"<<endl;
   vector <TeachingOffer  *>::iterator iter;
-  for(iter = teachingOffers_.begin(); iter != teachingOffers_.end(); ++iter)
+  for(iter = teachingAcceptorOffers_.begin(); iter != teachingAcceptorOffers_.end(); ++iter)
   {
-
+      //cout<< "Teching Offer: "<< (int)(*iter)<<endl;
     if((*iter)->getSkill() == skill && (*iter)->getLevel() >= level)
+    {
         return (*iter);
+    }
 
     }
  return 0;
@@ -448,7 +480,7 @@ TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
 bool Entity::checkTeachingConfirmation()
 {
   vector <TeachingOffer  *>::iterator iter;
-  for(iter = teachingOffers_.begin(); iter != teachingOffers_.end(); ++iter)
+  for(iter = teachingDonorOffers_.begin(); iter != teachingDonorOffers_.end(); ++iter)
   {
     if((*iter)->getTeacher() == this)
         return (*iter)->isConfirmed();

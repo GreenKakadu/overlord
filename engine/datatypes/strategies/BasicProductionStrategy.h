@@ -39,7 +39,7 @@ public:
       virtual STATUS initialize        ( Parser *parser );
       virtual USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       virtual USING_RESULT produce(UnitEntity * unit, SkillRule * skill,
-		 int & useRestrictionCounter, int & effectiveProduction,OrderLine * order);
+		 int & useRestrictionCounter, int & effectiveProduction,OrderLine * order, bool & newCycle);
       virtual void reportUse(USING_RESULT result, TokenEntity * unit);
       virtual void extractKnowledge (Entity * recipient, int parameter = 0);
       virtual int checkResourcesAvailability(TokenEntity * unit);

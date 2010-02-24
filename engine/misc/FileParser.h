@@ -28,6 +28,7 @@ public:
        bool      eof();
        void      setPosition         ( long int position);
        long int        getPosition();
+       string report();
 		STATUS status;
 protected:
 
@@ -35,6 +36,7 @@ private:
        ifstream *streamInput_;
        bool useAllocatedMemory_;
        int lineNumber_;
+       string filename_;
 };
 
 #endif

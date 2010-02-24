@@ -16,7 +16,7 @@
 #include "BinaryMessage.h"
 extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * productionReporter;
-
+extern ReportPattern * startUseReporter;
 
 CraftUsingStrategy        sampleCraftUsing        ("USING_CRAFT",        &sampleUsing);
 
@@ -25,6 +25,7 @@ CraftUsingStrategy::CraftUsingStrategy ( const CraftUsingStrategy * prototype ):
   productNumber_ = 1;
   productType_ =0;
 	mana_ = 0;
+  //cout <<"==0==>  CraftUsingStrategy created"<<endl;
 }
 
 
@@ -87,31 +88,39 @@ CraftUsingStrategy::initialize        ( Parser *parser )
 USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 
 					int & useRestrictionCounter,OrderLine * order)
 {
- //cout << unit->print()<<" "<<skill->print()<<" level " <<endl;
+    //cout << unit->print()<<" "<<skill->print()<<" level " <<endl;
     int effectiveProduction = 0;
-		USING_RESULT result =
-			produce(unit, skill, useRestrictionCounter, effectiveProduction,order);
-		if (effectiveProduction == 0)
-		{
-			return result;
-		}
-//  if (unit->isTraced())
-// {
-//       cout <<"== TRACING " <<unit->print()<< " ==> produces "<< effectiveProduction<< " of "<< productType_->print() <<"\n";
-// 
-// }
+    bool newCycle = false;
+    USING_RESULT result = produce(unit, skill, useRestrictionCounter,
+                                  effectiveProduction, order, newCycle);
+
+    if (effectiveProduction == 0)// Nothing was produced
+    {
+        return result;
+    }
+    if (unit->isTraced())
+    {
+        cout << "== TRACING " << unit->print() << " ==> produces "
+             << effectiveProduction << " of " << productType_->print() << "\n";
+
+    }
+
     unit->addToInventory(productType_, effectiveProduction);
-      if(!unit->isSilent())
+    if (!unit->isSilent())
+    {
+        //QQQ
+        unit->addReport(
+                new BinaryMessage(productionReporter, unit,
+                new ItemElement(productType_, effectiveProduction))
+                );
+        if (newCycle)
         {
-//QQQ
-          unit->addReport(
-          new BinaryMessage(productionReporter, unit,
-          new ItemElement(productType_,effectiveProduction))
-                  );
-      unit->getLocation()->addReport(
-      new BinaryMessage(productionReporter, unit,
-      new ItemElement(productType_,effectiveProduction))
-        /*, 0, observation condition*/);
+            unit->addReport(new BinaryMessage(startUseReporter, unit, skill));
+        }
+        unit->getLocation()->addReport(
+                new BinaryMessage(productionReporter, unit,
+                new ItemElement(productType_, effectiveProduction))
+                /*, 0, observation condition*/);
     }
     return result;
 }
@@ -231,3 +240,4 @@ BasicUsingStrategy * CraftUsingStrategy::cloneSelf()
  *copyOfSelf = *this;
  return copyOfSelf;
 }
+

@@ -69,7 +69,7 @@ int SkillBonusAttribute::getSkillBonus(SkillRule * skill)
   for( vector <BonusElement>::iterator iter = skillBonuses_.begin();
        iter != skillBonuses_.end(); ++iter)
        {
-          if(skill->isDescendFrom((*iter).getSkill(),1))
+          if(((*iter).getSkill() == skill)||(skill->isDescendFrom((*iter).getSkill(),1)))
           {
             currentBonus = (*iter).getBonusPoints();
             if   (bonus < currentBonus)
@@ -109,9 +109,9 @@ void SkillBonusAttribute::remove(BonusElement * data)
         {
 
           (*iter).setBonusPoints((*iter).getBonusPoints() -
-									 data->getBonusPoints()) ;
+					 data->getBonusPoints()) ;
 
-					if((*iter).getBonusPoints() == 0)
+	if((*iter).getBonusPoints() == 0)
           {
             skillBonuses_.erase(iter);
           }

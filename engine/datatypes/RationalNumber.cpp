@@ -13,6 +13,7 @@
  *                                                                                            *
  ***************************************************************************/
 #include "RationalNumber.h"
+#include <stdio.h>
 #include <iostream>
 #include "LineParser.h"
 using namespace std;

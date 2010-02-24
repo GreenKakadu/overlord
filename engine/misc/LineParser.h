@@ -39,6 +39,7 @@ public:
   virtual bool eof();
   virtual void setPosition( long int position );
   virtual long int getPosition();
+  virtual string report();
   void rewind( int shift );
   static const int INTEGER_LENGTH = 7;
   static const int LONG_INTEGER_LENGTH = 11;

@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "FileParser.h"
 extern bool testMode;
-
+extern string longtostr(long in);
 
 FileParser::FileParser()
 {
@@ -29,6 +29,7 @@ FileParser::FileParser (ifstream &input)
  useAllocatedMemory_ = false;
  status = OK;
  lineNumber_ = 0;
+ filename_ = "";
 }
 
 
@@ -47,6 +48,7 @@ FileParser::FileParser (const char * filename)
 			cerr << "Can't open file " << filename << endl;
 		}
 	lineNumber_ = 0;
+        filename_ = string(filename);
 }
 
 
@@ -65,8 +67,8 @@ if(*streamInput_)
 			cerr << "Can't open file " << filename << endl;
 		}
 	lineNumber_ = 0;
+        filename_ = filename;
 }
-
 
 
 FileParser::~FileParser ()
@@ -135,4 +137,8 @@ int       FileParser::getLineNumber()
 void      FileParser::setLineNumber(int num)
 {
 	lineNumber_ = num;
+}
+string FileParser::report()
+{
+   return filename_ + ":"+ longtostr(getLineNumber());
 }

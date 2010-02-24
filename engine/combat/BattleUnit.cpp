@@ -27,7 +27,15 @@ BattleUnit::~BattleUnit()
 
 bool BattleUnit::isAlive()
 {
-	return getLife();
+    int life =getLife();
+    if(life>0)
+    {
+	return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 

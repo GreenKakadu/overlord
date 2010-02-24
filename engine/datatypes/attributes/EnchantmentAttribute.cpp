@@ -17,6 +17,7 @@
 #include "RulesCollection.h"
 #include "EnchantmentRule.h"
 #include "EntityStatistics.h"
+#include "entities/Entity.h"
 
 extern RulesCollection <EnchantmentRule>    enchantments;
 extern ofstream combatReportFile;
@@ -73,6 +74,12 @@ void EnchantmentAttribute::save(ostream &out)
 
 ostream&  EnchantmentAttribute::report(ostream &out)
 {
+  for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();  ++iter)
+    {
+      //cout <<"----- Reportinging Enchantment "<< (*iter).getRule()->print() << " " << (*iter).getParameter1() << endl;
+      ((*iter).getRule())->report(out,(*iter).getParameter1());
+    }
   return out;
 }
 
@@ -80,16 +87,17 @@ ostream&  EnchantmentAttribute::report(ostream &out)
 
 void EnchantmentAttribute::add(EnchantmentElement * data)
 {
-      combatReportFile <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
+      //combatReportFile <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();  ++iter)
     {
-//      cout <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
+      //cout <<"----- Adding Enchantment "<< *(data->getRule()) << " " << data->getParameter1() << endl;
       if ( (*iter).getRule() == data->getRule() )
         {
-
+          if((*iter).getParameter1() != VERY_BIG_NUMBER) // Unexpiring enchant. Do not extend!
+          {
            (*iter).setParameter1((*iter).getParameter1() + data->getParameter1()) ;
-//            delete data;
+          }
             return;
         }
     }
@@ -212,24 +220,51 @@ int EnchantmentAttribute::getCapacity(MovementVariety * mode, int figuresNumber 
 
 
 
-void EnchantmentAttribute::processExpiration(int figuresNumber)
+void EnchantmentAttribute::processExpiration(Entity * entity,int figuresNumber)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
     iter != dataCollection_.end();)
     {
-//      cout <<"----- Expiration of Enchantment "<< *((*iter)->getRule()) << " " << (*iter)->getParameter1() << endl;
+//      cout <<"----- Expiration of Enchantment "<< *((*iter).getRule()) << " " << (*iter).getParameter1() << endl;
       if( (*iter).getParameter1() <= figuresNumber) // Enchantment expired and deleted
       {
-      combatReportFile <<"----- Enchantment "<< *((*iter).getRule()) << " expired " << endl;
-            //delete *iter ;
+            combatReportFile <<"----- Enchantment "<< *((*iter).getRule()) << " expired " << endl;
+            //cout <<"----- Enchantment "<< *((*iter).getRule()) << " expired " << endl;
+            // Trigger Expiration event may be implemented as adding another short enchant
+            if(entity)
+            {
+                (*iter).getRule()->processEnchantExpiration(entity);
+            }
             dataCollection_.erase(iter);
       }
       else
       {
+          if((*iter).getParameter1() != VERY_BIG_NUMBER) // VERY_BIG_NUMBER - means that enchant is permanent
+          {
          (*iter).setParameter1((*iter).getParameter1() - figuresNumber);
+          }
            ++iter;
       }
     }
+}
+void EnchantmentAttribute::carryOutAllActions(Entity * entity, int value)
+{
+  for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();++iter)
+    {
+      if(value==0)
+      {
+           (*iter).getRule()->carryOut(entity,(*iter).getParameter1());
+      }
+      else
+      {
+      (*iter).getRule()->carryOut(entity,value);
+      }
+      if(entity->isTraced())
+      {
+        cout <<"-----  Enchantment Action Carry out"<< ((*iter).getRule())->print()<< " " <<value << endl;
+      }
+  }
 }
 
 

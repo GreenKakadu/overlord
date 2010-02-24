@@ -30,6 +30,7 @@ extern int Roll_1Dx(int n);
 PickpocketActionRule     samplePickpocketActionRule =     PickpocketActionRule("PICKPOCKET_ACTION", &sampleAction);
 PickpocketActionRule::PickpocketActionRule ( const PickpocketActionRule * prototype ) : ActionRule(prototype)
 {
+    name_ = "Picking Pockets Action";
 }
 
 
@@ -41,7 +42,7 @@ GameData * PickpocketActionRule::createInstanceOfSelf()
 
 
 
-ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
+ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity, AbstractData * parameter,  int value)
 {
   TokenEntity * thief = dynamic_cast<TokenEntity *>(entity);
   assert(thief);
@@ -146,4 +147,5 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity)
     return     ACTION_SUCCESS;
   }
 
-}
+} 
+

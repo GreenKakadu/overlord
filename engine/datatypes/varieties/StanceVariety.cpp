@@ -19,7 +19,7 @@ StanceVariety *  alliedStance;
 StanceVariety *  friendlyStance;
 StanceVariety *  neutralStance;
 StanceVariety *  hostileStance;
-
+StanceVariety *  enemyStance;
 
 GameData * StanceVariety::createInstanceOfSelf()
 {

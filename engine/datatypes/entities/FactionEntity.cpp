@@ -548,6 +548,28 @@ void FactionEntity::saveReport()
 	         << getMaxControlPoints()<< endl;
    outfile <<  endl;
 
+//   outfile << "Combat units: " <<endl;
+//   long attackRating;
+//   long totalAttackRating=0;
+//   long defenceRating;
+//   long totalDefenceRating=0;
+//   long totalCombatRating;
+// for ( vector< UnitEntity *>::iterator unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
+//	{
+//            attackRating = (*unitIterator)->getAttackRating()/100;
+//            defenceRating =(*unitIterator)->getDefenceRating()/100;
+//            if(attackRating != 0 || defenceRating != 0 )
+//            {
+// 		outfile << (*unitIterator)->print()<<" AR: "<<attackRating
+//                        <<" DR: "<<defenceRating<<" ("
+//                        <<(*unitIterator)->getFiguresNumber()<<") "<<endl;
+//                totalAttackRating += attackRating;
+//                totalDefenceRating += defenceRating;
+//            }
+//	}
+//  totalCombatRating = (totalAttackRating * totalAttackRating);
+//  outfile << "Total Combat rating: " <<totalCombatRating<<" ("<<totalAttackRating <<"*"<< totalDefenceRating<<")" <<endl;
+
    outfile << "// Diplomacy  (Stances)" <<  endl <<  endl;
    outfile <<  "Default attitude is " <<defaultStance_->getName()<<  endl;
      if(!stances_.empty())
@@ -564,15 +586,16 @@ void FactionEntity::saveReport()
 
    outfile <<  endl << "// Global Events " <<  endl <<  endl;
    for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); /*reportIterator++*/)
-		 {
+  {
       if (  this == (*reportIterator)->getDestination())
-				    {
+	{
                (*reportIterator)->printReport(outfile);
+               extractedReports_.push_back(*reportIterator); // may cause beeng copied twice
               reportIterator = collectedReports_.erase(reportIterator);
-				    }
+	}
             else
               reportIterator++;
-		 }
+  }
 
    outfile <<  endl << "// Units " <<  endl <<  endl;
 
@@ -647,7 +670,29 @@ void FactionEntity::saveReport()
   outfile.close();
 }
 
-
+ vector <ReportElement *> FactionEntity::getEvents()
+{
+  if (extractedReports_.size() != 0)
+  {
+    return extractedReports_;
+  }
+  else
+  {
+   for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); /*reportIterator++*/)
+    {
+      if (  this == (*reportIterator)->getDestination())
+      {
+       extractedReports_.push_back(*reportIterator);
+      }
+      else
+      {
+       cout <<(*reportIterator)->getDestination()->print()<<endl;
+        reportIterator++;
+        }
+    }
+    return extractedReports_;
+  }
+}
 
 /*
  * Daily post-processing
@@ -1138,6 +1183,8 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
     {
       if((*collIter) == &skills) // this is a skill
          continue;
+      if((*collIter)->size()==0) //collection is empty
+         continue;
       isFirst = true;
       bool isReshowing = false;
       KnowledgeIterator iter;
@@ -1151,7 +1198,6 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
             iter = knowledge_.begin() + newKnowledge;
       for(; iter != knowledge_.end(); ++iter)
         {
-
           if((*iter)->isDescendantFrom((*((*collIter)->begin()))) )
             {
               if(isFirst)
@@ -1377,6 +1423,7 @@ void FactionEntity::calculateControlPoints()
      iter != loyalUnits_.end(); ++iter)
   {
     controlPoints_ += (*iter)->getControlPoints();
+    //cout<<(*iter)->print()<<" "<<(*iter)->getFiguresNumber()<<" "<<(*iter)->getRace()->print()<<" " <<(*iter)->getControlPoints()<<" CP"<<endl;
   }
 }
 

@@ -157,6 +157,10 @@ USING_RESULT BasicUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
 	int & useCounter,OrderLine * order)
 {
   // report Skill can't be used
+    if(unit->isTraced())
+    {
+        cout << "BasicUsingStrategy::unitUse"<<endl;
+    }
   return UNUSABLE;
 }
 

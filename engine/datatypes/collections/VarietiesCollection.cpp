@@ -39,7 +39,7 @@ VarietiesIterator iter;
    }
 
  cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
- return 0 ;
+    return 0 ;
 }
 
 

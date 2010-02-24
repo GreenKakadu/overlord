@@ -7,10 +7,10 @@
  ***************************************************************************/
 
 /***************************************************************************
- *                                                                                            *
- *   This program is free software; you can redistribute it and/or   *
- *  modify it under the terms of the BSD License.                       *
- *                                                                                            *
+ *                                                                         *
+ *   This program is free software; you can redistribute it and/or         *
+ *  modify it under the terms of the BSD License.                          *
+ *                                                                         *
  ***************************************************************************/
 
 #ifndef TOKEN_ENTITY_H
@@ -32,6 +32,7 @@ class ItemRule;
 class ReportPattern;
 class BasicExit;
 class TravelElement;
+class ResourceElement;
 class SkillUseElement;
 class ConstructionEntity;
 class ConstructionRule;
@@ -43,7 +44,8 @@ class BattleField;
 class MovementBonusElement;
 
 //class SkillElement;
-/**subclass of Entities that have physical appearence and may be located in the world
+/**subclass of Entities that have physical appearence 
+    and may be located in the world
   *@author Alex Dribin
   */
 typedef  Element3<TokenEntity,ItemRule *, int > SwapRequestElement;
@@ -61,32 +63,41 @@ public:
   void postProcessData();
   void postPostProcessData();
 	virtual inline BattleInstance * getBattleInstantiation() const
-	 																									{return battleInstance_;}
+	 	{return battleInstance_;}
 // Reporting ==============================================
          /** Return pointer to  Entity which keeps reports from this  */
          Entity *         getReportDestination();
    virtual void  privateReport(ReportPrinter &out);
    virtual void  printOrderTemplate(ReportPrinter &out);
-   virtual void    reportAppearence(FactionEntity * faction, ReportPrinter &out){}
-   virtual void    reportInventory(FactionEntity * faction, ReportPrinter &out){}
-   virtual void    reportSkills(FactionEntity * faction, ReportPrinter &out);
-   virtual void    reportFlags(ReportPrinter &out);
+   virtual void  reportAppearence(FactionEntity * faction, ReportPrinter &out){}
+   virtual void  reportInventory(FactionEntity * faction, ReportPrinter &out){}
+   virtual void  reportSkills(FactionEntity * faction, ReportPrinter &out);
+   virtual void  reportFlags(ReportPrinter &out);
+   virtual string  reportCombatSettings();
+   virtual string reportCombatTactics();
+    void addReport(ReportRecord report);
+   void addReport(ReportMessage * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
+    void processAttitude(ReportRecord report);
 // Data access methods ==============================================
    virtual LocationEntity * getGlobalLocation() const;
    inline virtual LocationEntity * getLocation() const{return location_;}
-   inline virtual void             setLocation(LocationEntity * location) {location_ = location;}
+   inline virtual void             setLocation(LocationEntity * location) 
+						    {location_ = location;}
    inline virtual FactionEntity *  getFaction() const{return faction_;}
-   inline virtual void             setFaction( FactionEntity * faction) {faction_ = faction;}
+   inline virtual void             setFaction( FactionEntity * faction) 
+						      {faction_ = faction;}
           virtual int              getWeight() {return 0;}
           virtual Rule *           getType() {return 0;}
           virtual bool             isOfType(Rule * type) {return false;}
-          virtual bool             isDisbanded();
+   inline virtual bool             isDisbanded(){ return isDisbanded_;}
                   bool             isUnaccessible() const;
                   bool             isBusy()  const;
    inline         AbstractData *   getTarget() const {return target_;}
                   void             setTarget(AbstractData * target);
-   inline         AbstractData *   getDefaultTarget() const{return defaultTarget_;}
-   inline         void             setDefaultTarget(AbstractData * target) {defaultTarget_ = target;}
+   inline         AbstractData *   getDefaultTarget() const
+						      {return defaultTarget_;}
+   inline         void             setDefaultTarget(AbstractData * target) 
+						     {defaultTarget_ = target;}
    inline virtual int              getObservation() const {return 0;}
    inline virtual int              getStealth() const {return 0;}
    inline virtual bool             isGuarding() const { return guarding_;}
@@ -94,7 +105,7 @@ public:
    inline         void             setGuarding(bool value){ guarding_ = value;}
 // Guard and Patrol merged in current implementation
    inline virtual bool             isPatrolling() const { return guarding_;}
-   inline         void             setPatrolling(bool value){ guarding_ = value;}
+   inline         void             setPatrolling(bool value){guarding_ = value;}
    inline virtual int              getControlPoints() const{return 0;}
    inline virtual int              getInitiative() const {return 0;}
 
@@ -106,7 +117,8 @@ public:
 	 inline virtual void             sufferDamage(int value)  {}
 
    inline virtual bool             isExposed() const {return false;}
-   inline virtual bool             mayGuard(bool enableReport = true)  const {return false;}
+   inline virtual bool             mayGuard(bool enableReport = true)  const 
+						  {return false;}
    inline virtual bool             isAlive()  const {return alive_;}
 	 inline EntityStatistics * getStats()  {return &stats;}
 	 virtual EntityStatistics  getBasicStats(){return stats;}
@@ -148,7 +160,7 @@ public:
         {return hasSkill(skill, skill->getLevelExperience(level));}
   inline  virtual bool hasSkill(SkillLevelElement * skill)
         {return hasSkill(skill->getSkill(),
-			skill->getSkill()->getLevelExperience(skill->getLevel()));}
+		skill->getSkill()->getLevelExperience(skill->getLevel()));}
 
   inline virtual bool hasSkill(SkillElement  * skill)
         {return hasSkill(skill->getSkill(), skill->getExpPoints());}
@@ -165,11 +177,12 @@ public:
    /** returns true when work comleted. Otherwise - false */
    virtual int addSkillUse(SkillUseElement * skillUse);
    virtual int addCumullativeSkillUse(SkillUseElement * skillUse,
-	 																int accumulationLimit);
+				      int accumulationLimit);
    virtual bool isCurrentlyUsingSkill(SkillRule * skill);
 // Movement ========================================================
-   virtual void  setEntityMoving(TravelElement * moving);
-   inline         bool             isMoving() const {return moving_;}
+   virtual void setEntityMoving(TravelElement * moving);
+   virtual void setEntityIndependentlyMoving(TravelElement * moving);
+   inline  bool isMoving() const {if(moving_) return true; else return false;}
    virtual bool moveAdvance();
    virtual void moveToLocation();
    virtual void moveToLocation(LocationEntity * newLocation);
@@ -180,40 +193,29 @@ public:
    bool retreat();
    virtual void movingGroupReport(ReportRecord report ){}
    static void marchAttackPostprocessing(TokenEntity * attacker,
-	 				 TokenEntity * defender,const BATTLE_RESULT  result);
+	 		TokenEntity * defender,const BATTLE_RESULT  result);
    void tryEnterLocation();
    int getMovementBonus(MovementVariety * mode){return 0;}
-	 void recalculateTravelTime();
-		MovementVariety * getReservedMode();
+   void recalculateTravelTime();
+   MovementVariety * getReservedMode();
 // Combat ========================================================
 	void checkCombatSetting(string combatOrderText);
-	 virtual  BattleInstance * createBattleInstantiation(BattleField * battleField);
-          bool combatStanceAtLeast(CombatStanceVariety * combatStance) const;
+        void clearCombatSettings();
+  virtual  BattleInstance * createBattleInstantiation(BattleField * battleField);
+   bool combatStanceAtLeast(CombatStanceVariety * combatStance) const;
    void setCombatMove(CombatMoveVariety * value);
-   inline void setCombatRank(CombatRankVariety * value)
-	 																	{combatTactics_.setCombatRank(value);}
-   inline void setCombatFile(CombatFileVariety * value)
-	 																	 {combatTactics_.setCombatFile(value);}
-   inline CombatMoveVariety * getCombatMove() const
-	 																	{return combatTactics_.getCombatMove();}
-   inline CombatRankVariety * getCombatRank() const
-	 																	{return combatTactics_.getCombatRank();}
-   inline CombatFileVariety * getCombatFile() const
-	 																	 {return combatTactics_.getCombatFile();}
-  inline void setCombatStance(CombatStanceVariety * value)
-	 																	 {combatTactics_.setCombatStance(value);}
-   inline CombatStanceVariety * getCombatStance()
-	 																	{return combatTactics_.getCombatStance();}
-   virtual int getAttackRating() const;
-   virtual int getDefenceRating() const;
+   inline void setCombatRank(CombatRankVariety * value) {combatTactics_.setCombatRank(value);}
+   inline void setCombatFile(CombatFileVariety * value) {combatTactics_.setCombatFile(value);}
+   inline CombatMoveVariety * getCombatMove() const    {return combatTactics_.getCombatMove();}
+   inline CombatRankVariety * getCombatRank() const    {return combatTactics_.getCombatRank();}
+   inline CombatFileVariety * getCombatFile() const    {return combatTactics_.getCombatFile();}
+   inline void setCombatStance(CombatStanceVariety * value) {combatTactics_.setCombatStance(value);}
+   inline CombatStanceVariety * getCombatStance()      {return combatTactics_.getCombatStance();}
    void addOrder(string newOrder);
 	 void clearOrders();
-  virtual inline vector < CombatOrderLine*> & getCombatOrderList()
-																			{return combatOrders_;}
-	 virtual inline vector <CombatOrderLine*> & getDefaultCombatOrders()
-	 								{return defaultCombatOrders_;}
-	 virtual inline CombatOrderLine* getDefaultCombatMovement()
-	 								{return defaultCombatMovement_;}
+  virtual inline vector < CombatOrderLine*> & getCombatOrderList() {return combatOrders_;}
+	 virtual inline vector <CombatOrderLine*> & getDefaultCombatOrders() {return defaultCombatOrders_;}
+	 virtual inline CombatOrderLine* getDefaultCombatMovement() {return defaultCombatMovement_;}
 	 virtual void setDefaultCombatMovement();	
 	 virtual inline int getLife() const {return 0;}
 	 void addCombatSetting(string combatOrderText);
@@ -224,6 +226,11 @@ public:
 	inline bool isFanatic() const {return fanatic_;}
 	inline void setFanatic(bool value){fanatic_ = value;}
 	virtual inline bool mayParticipateInCombat() const {return true;}
+// Ratings ========================================================
+   virtual int getAttackRating() const;
+   virtual int getDefenceRating() const;
+   virtual int getObservationRating() const;
+   virtual int getStealthRating();
 // Flags ========================================================
     void setAdvertising(bool value) {advertising_ = value;}
     void setAnnouncing(bool value) {announcing_ = value;}
@@ -237,8 +244,7 @@ public:
     ORDER_STATUS oath(FactionEntity * faction);
     virtual bool leaveStaying();
     virtual bool isAccepted(UnitEntity * unit){return false;}
-    BasicOrderSynchronizationRequest * hasOrderSyncRequest
-												(BasicOrderSynchronizationRequest * request);
+    BasicOrderSynchronizationRequest * hasOrderSyncRequest (BasicOrderSynchronizationRequest * request);
     void removeOrderSyncRequest(BasicOrderSynchronizationRequest * request);
     void addOrderSyncRequest(BasicOrderSynchronizationRequest * request);
     bool doneOrderSyncRequest(BasicOrderSynchronizationRequest * request);
@@ -246,61 +252,63 @@ public:
 // Bonuces ========================================================
         virtual int getProductionBonus(SkillRule * skill);
 // Other ========================================================
-          virtual void disband(){}
+   inline virtual void disband(){isDisbanded_ = true;}
           virtual void recalculateStats();
           virtual bool mayMove();
           virtual bool mayHoldTitles(){return false;}
           virtual int  calculateTotalWeight (int & weight);
           virtual void calculateTotalCapacity(int & capacity, int modeIndex);
           virtual void calculateTotalCapacityMode(int & capacity, MovementVariety * mode);
-          virtual int calculateMovementBonus(MovementVariety * mode);
-                  int calculateTravelTime(int time, MovementVariety * mode);
-									int calculateOverloading(int time, int weight, int capacity);
+          virtual int  calculateMovementBonus(MovementVariety * mode);
+                  int  calculateTravelTime(int time, MovementVariety * mode);
+		  int  calculateOverloading(int time, int weight, int capacity);
                   bool mayInterractTokenEntity(TokenEntity * tokenEntity);
                   bool mayObserveTokenEntity(TokenEntity * tokenEntity);
           virtual bool mayInterractFaction(FactionEntity * faction);
    inline TravelElement  * getTravelStatus() const {return moving_;}
    inline void  setTravelStatus(TravelElement  * status) {moving_ = status;}
-	 virtual string printComposition(){return string("");}
-	 virtual Rule * getComposition(){return 0;}// race or construction
-   bool takeLoot(vector <ItemElement> & items);
-   bool takeTransport(vector <ItemElement> & items, MovementVariety *mode);
-	 void explicitInitialization();
-         int countElementalMagicSkill();
+	  virtual string printComposition(){return string("");}
+	  virtual Rule * getComposition(){return 0;}// race or construction
+    bool takeLoot(vector <ItemElement> & items);
+    bool takeTransport(vector <ItemElement> & items, MovementVariety *mode);
+    void explicitInitialization();
+     int countElementalMagicSkill();
+    bool canProspect(ResourceElement * res);
 
-   protected:
-    LocationEntity * location_ ;
-    FactionEntity  * faction_;
-    TravelElement  * moving_;
+protected:
+    LocationEntity * location_;
+    FactionEntity * faction_;
+    TravelElement * moving_;
     bool isMoving_;
     int loyality_;
-		// Attributes
-  EntityStatistics stats;
-  SkillsAttribute      skills_;
-  InventoryAttribute inventory_;
-  vector <MovementBonusElement *> movementBonuses_;
-		// Attributes end
-  vector < UnitEntity *>      accepting_;
-  vector < SkillUseElement *> skillUse_;
-  vector <CombatOrderLine *> combatOrders_;
-  vector <CombatOrderLine *> defaultCombatOrders_;
-  CombatOrderLine * defaultCombatMovement_;
-  vector <string> combatSettings_;
-         AbstractData *  target_;
-         AbstractData *  defaultTarget_;
-         CombatTactics combatTactics_;
-         bool    alive_;
-         bool    guarding_;
-//         bool    patrolling_;
-         bool    passenger_;
-         bool 	 advertising_;
-         bool 	 announcing_;
-         bool 	 sharing_;
-         bool 	 withdrawingSupport_;
-	bool 	 fanatic_;
-    FactionEntity *    toOath_;
+    // Attributes
+    EntityStatistics stats;
+    SkillsAttribute skills_;
+    InventoryAttribute inventory_;
+    vector <MovementBonusElement *> movementBonuses_;
+    // Attributes end
+    vector < UnitEntity *> accepting_;
+    vector < SkillUseElement *> skillUse_;
+    vector <CombatOrderLine *> combatOrders_;
+    vector <CombatOrderLine *> defaultCombatOrders_;
+    CombatOrderLine * defaultCombatMovement_;
+    vector <string> combatSettings_;
+    AbstractData * target_;
+    AbstractData * defaultTarget_;
+    CombatTactics combatTactics_;
+    bool alive_;
+    bool isDisbanded_;
+    bool guarding_;
+    //         bool    patrolling_;
+    bool passenger_;
+    bool advertising_;
+    bool announcing_;
+    bool sharing_;
+    bool withdrawingSupport_;
+    bool fanatic_;
+    FactionEntity * toOath_;
     vector <BasicOrderSynchronizationRequest *> orderSyncRequests_;
-		BattleInstance * battleInstance_;
+    BattleInstance * battleInstance_;
 };
 extern TokenEntity         sampleTokenEntity;
 typedef vector <BasicOrderSynchronizationRequest *>::iterator  SyncRequestIterator;

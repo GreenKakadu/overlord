@@ -14,7 +14,7 @@
 #include "CombatEngine.h"
 #include "reporting.h"
 
-
+extern ReportPattern * combatUseReporter;
 
 UseCombatOrder * instantiateUseCombatOrder = new UseCombatOrder();
 //ReportPattern * combatParryReporter= new ReportPattern("combatParryReporter");
@@ -75,42 +75,42 @@ ORDER_STATUS UseCombatOrder::process (Entity * entity, ParameterList &parameters
 {
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
- ItemRule * item = dynamic_cast< ItemRule*>(parameters[0]);
-
+  ItemRule * item = dynamic_cast< ItemRule*>(parameters[0]);
+  
   if ( item == 0) // item doesn't exist but we don't want to let player to know that
-     {
- 		  return FAILURE;
-      }
-
-	if(!unit->hasItem(item))
-	{
-   return FAILURE;
-	}
-
-	CombatActionStrategy * combatAction = 	item->getCombatAction();
-	if(combatAction == 0)
-	{
-   return FAILURE;
-	}
-
-	combatReportFile<<entity<<" uses "<<item->print() <<endl;
-
-
+  {
+    return FAILURE;
+  }
+  
+  if(!unit->hasItem(item))
+  {
+    return FAILURE;
+  }
+  
+  CombatActionStrategy * combatAction = 	item->getCombatAction();
+  if(combatAction == 0)
+  {
+    return FAILURE;
+  }
+  
+  combatReportFile<<entity<<" uses "<<item->print() <<endl;
+  
+  
   BattleInstance * battleInstance = unit->getBattleInstantiation();
-	CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
-										->getCombatReport();
-
-
- 	vector <BattleTargetElement> potentialTargets =
-			 					combatAction->getPotentialTargets(battleInstance, report);
-	if(potentialTargets.empty()) // No targets. But already eported
-	{
-		return FAILURE;
-	}
-	battleInstance->setAffectingAction(combatAction);
-
-	combatAction->performAction(battleInstance, potentialTargets, report);
-
-	return SUCCESS;
+  CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
+  ->getCombatReport();
+  
+ report->add(new BinaryMessage(combatUseReporter, battleInstance->getOrigin(), item)); 
+  vector <BattleTargetElement> potentialTargets =
+  combatAction->getPotentialTargets(battleInstance, report);
+  if(potentialTargets.empty()) // No targets. But already eported
+  {
+    return FAILURE;
+  }
+  battleInstance->setAffectingAction(combatAction);
+  
+  combatAction->performAction(battleInstance, potentialTargets, report);
+  
+  return SUCCESS;
 }
 

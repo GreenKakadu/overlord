@@ -94,8 +94,10 @@ class Entity : public GameData
   inline void setSilent (bool value) { silent_ = value;}
   virtual bool mayInterract(UnitEntity * unit);
   virtual bool mayInterractTokenEntity(TokenEntity * tokenEntity);
-  virtual void addTeachingOffer(TeachingOffer * offer);
+  virtual void addTeachingAcceptorOffer(TeachingOffer * offer);
+  virtual void addTeachingDonorOffer(TeachingOffer * offer);
   virtual void clearTeachingOffers();
+  virtual void cleanTeachingOffers();
   virtual int  getSkillLevel(SkillRule  * const skill);
    virtual TeachingOffer * findTeachingOffer(SkillRule  * skill, int level);
    virtual bool checkTeachingConfirmation();
@@ -122,7 +124,8 @@ friend  ostream &operator << ( ostream &out, Entity * entity);
     vector <OrderLine *> orders_;
     vector <ReportRecord> publicReports_;
     vector <ReportElement *> collectedReports_;
-    vector <TeachingOffer  *> teachingOffers_;
+   vector <TeachingOffer  *> teachingDonorOffers_;
+   vector <TeachingOffer  *> teachingAcceptorOffers_;
 //    InternalPropertiesCollection<EffectElement *> effects_;
     EnchantmentAttribute  enchantments_;
     bool silent_;

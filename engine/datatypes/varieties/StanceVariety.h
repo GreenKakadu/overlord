@@ -40,6 +40,7 @@ extern StanceVariety *  alliedStance;
 extern StanceVariety *  friendlyStance;
 extern StanceVariety *  neutralStance;
 extern StanceVariety *  hostileStance;
+extern StanceVariety *  enemyStance;
 extern VarietiesCollection <StanceVariety>    stances;
 extern StanceVariety    sampleStance;
 #endif

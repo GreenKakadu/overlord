@@ -477,8 +477,9 @@ void CombatEngine::processRound(int round)
 // =====================================================================
 void CombatEngine::postProcessRound(int round)
 {
-		attackerSideEnchantments_.processExpiration();
-		defenderSideEnchantments_.processExpiration();
+		  //attackerSideEnchantments_.carryOutAllActions(this,1);
+                attackerSideEnchantments_.processExpiration(0);
+		defenderSideEnchantments_.processExpiration(0);
 
 		for(BattleIterator iter = attackers_->begin();
 	    iter != attackers_->end(); ++iter )
@@ -594,6 +595,7 @@ void CombatEngine::postProcess()
 	{
 	location_->addResource(deads, attackersCount_ - attackersAliveCount_ 
 					+ defendersCount_ - defendersAliveCount_);
+					cout << attackersCount_ - attackersAliveCount_ + defendersCount_ - defendersAliveCount_ << " Dead bodies were added to " <<location_->print()<<endl;
 	}
 
     BattleInstance * current;

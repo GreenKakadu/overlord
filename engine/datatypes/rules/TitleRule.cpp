@@ -7,6 +7,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include "IntegerData.h"
+#include "StringData.h"
 #include "TitleRule.h"
 #include "SkillCondition.h"
 #include "UnitEntity.h"
@@ -82,6 +83,7 @@ TitleRule::initialize        ( Parser *parser)
     }
 
 		skillBonuses_.initialize(parser);
+  Rule::initialize(parser);
 
   return OK;
 }
@@ -106,40 +108,52 @@ void TitleRule::printDescription(ReportPrinter & out)
             << "% faster.";*/
 }
 
+vector <AbstractData *> TitleRule::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
+
+
 
 bool TitleRule::contest(UnitEntity * titleHolder, UnitEntity * contender,
-                                                LocationEntity * location)
+		  LocationEntity * location)
 {
   SkillRule * skill = condition_->getSkill();
   int skillExp1 = titleHolder->getSkillPoints(skill) /100;
   int skillExp2 = contender->getSkillPoints(skill) /100;
   bool contestResult;
-
-
- if(titleHolder->getLocation() != location)
- {
-   contestResult = (skillExp2 *100 / skillExp1 >= 90);
-  }
- else
- {
-   contestResult = (skillExp2 *100 / skillExp1 > 110);
-  }
-
-  if(contestResult)
+  if(skillExp1 == 0)
   {
-  contender->addReport(new QuintenaryMessage(successContestTitleReporter,contender, titleHolder,
-        new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
-  titleHolder->addReport(new QuintenaryMessage(failedContestTitleReporter, titleHolder,contender,
-                      new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+    contestResult = true;
   }
   else
   {
-  contender->addReport(new QuintenaryMessage(failedContestTitleReporter,contender, titleHolder,
-        new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
-  titleHolder->addReport(new QuintenaryMessage(successContestTitleReporter, titleHolder,contender,
-                      new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+    
+    if(titleHolder->getLocation() != location)
+    {
+      contestResult = (skillExp2 *100 / skillExp1 >= 90);
+    }
+    else
+    {
+      contestResult = (skillExp2 *100 / skillExp1 >= 110);
+    }
   }
-
+  if(contestResult)
+  {
+    contender->addReport(new QuintenaryMessage(successContestTitleReporter,contender, titleHolder,
+				new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
+	titleHolder->addReport(new QuintenaryMessage(failedContestTitleReporter, titleHolder,contender,
+				new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+  }
+  else
+  {
+    contender->addReport(new QuintenaryMessage(failedContestTitleReporter,contender, titleHolder,
+				new IntegerData(skillExp2), skill, new IntegerData(skillExp1) ) );
+	titleHolder->addReport(new QuintenaryMessage(successContestTitleReporter, titleHolder,contender,
+				new IntegerData(skillExp1), skill, new IntegerData(skillExp2)  ) );
+  }
+  
   return  contestResult;
 }
 
@@ -232,6 +246,7 @@ int TitleRule::markTerritoryOwned(LocationEntity * start, UnitEntity * titleHold
 
 void    TitleRule::extractKnowledge (Entity * recipient, int parameter)
 {
+  Rule::extractKnowledge(recipient);
   if(condition_)
     condition_->extractKnowledge(recipient);
 

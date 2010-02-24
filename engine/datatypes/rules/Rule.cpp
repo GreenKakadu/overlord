@@ -8,8 +8,9 @@
 #include "Rule.h"
 #include "Entity.h"
 #include "BasicCondition.h"
+#include "DataManipulator.h"
 
-
+extern DataManipulator * dataManipulatorPtr;
 Rule::Rule ( const Rule * prototype ): GameData(prototype)
 {
 }
@@ -18,7 +19,21 @@ Rule::Rule ( const Rule * prototype ): GameData(prototype)
 STATUS
 Rule::initialize        ( Parser *parser )
 {
-      return OK;
+  if (parser->matchKeyword("KNOWLEDGE"))
+  {
+    Rule * data = dynamic_cast<Rule *>(dataManipulatorPtr->findGameData(parser->getWord()));
+    //Rule * data = dynamic_cast<Rule *>(createByKeyword(parser->getWord()));
+    if(data)
+    {
+        explicitKnowledge_.push_back(data);
+    }
+    else
+    {
+        cerr << "Unknown knowledge ignored"<<endl;
+    }
+    return OK;
+  }
+  return OK;
 }
 
 
@@ -39,9 +54,24 @@ void Rule::checkConditions(Entity * entity)
     }
 }
 
-
-void    Rule::extractKnowledge (Entity * recipient, int parameter)
+void Rule::extractKnowledge(Entity * recipient, int parameter)
 {
+    for (vector<Rule *>::iterator iter = explicitKnowledge_.begin();
+            iter != explicitKnowledge_.end(); ++iter)
+    {
+        // Skill knowledge should be added separatelly
+        SkillRule * skill = dynamic_cast<SkillRule *> (*iter);
+        if (skill)
+        {
+            if (recipient->addSkillKnowledge(skill,1))
+                (*iter)->extractKnowledge(recipient, 1);
+
+        } else
+        {
+            if (recipient->addKnowledge(*iter))
+                (*iter)->extractKnowledge(recipient, parameter);
+        }
+    }
 }
 
 
@@ -60,3 +90,8 @@ int Rule::getMovementBonus(MovementVariety * mode)
   return movementBonuses_.getMovementBonus(mode);
 }
 
+  vector <AbstractData *> Rule::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}

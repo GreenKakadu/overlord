@@ -57,6 +57,10 @@ SkillRule::SkillRule ( const SkillRule * prototype ) : Rule(prototype)
      learningParadigmGenerator_ =0;
      usingParadigmGenerator_=0;
      combatActionGenerator_=0;
+     isAnyoneCanUse_ = false;
+     isNoLearn_= false;
+     isNoExp_= false;
+     isBasic_ =false;
 }
 
 
@@ -210,6 +214,11 @@ SkillRule::initialize        ( Parser *parser )
       isCombat_ = true;
       return OK;
     }
+   if (parser->matchKeyword ("BASIC_SKILL") )
+    {
+      isBasic_ = true;
+      return OK;
+    }
    if (parser->matchKeyword ("MAGIC_SKILL") )
     {
       isMagic_ = true;
@@ -290,21 +299,24 @@ SkillRule::initialize        ( Parser *parser )
       return OK;
     }
 
-  if (parser->matchKeyword ("USING_PARADIGM") )
+    if (parser->matchKeyword("USING_PARADIGM"))
     {
         string keyword = parser->getWord();
-        usingParadigmGenerator_=  prototypeManager->findInRegistry(keyword);
-        if(usingParadigmGenerator_ == 0)
-				{
-					cerr << "Unknown using paradigm " << keyword  << " for skill " << print()<< endl;
-				}
-			else
-				{
-  				usingParadigm_[currentLevel_] =
-                                dynamic_cast<BasicUsingStrategy *>(usingParadigmGenerator_ ->createInstanceOfSelf ());
-//                                cout << print()<<" at level "<<currentLevel_ << " using keyword "<<usingParadigm_[currentLevel_]->getKeyword()<<" "<< usingParadigm_[currentLevel_]<<endl;
+//        if(keyword==string("USING_ACTION"))
+//        {
+//            cout << print()<< " is using action"<<endl;
+//        }
+        usingParadigmGenerator_ = prototypeManager->findInRegistry(keyword);
+        if (usingParadigmGenerator_ == 0)
+        {
+            cerr << "Unknown using paradigm " << keyword << " for skill " << print() << endl;
         }
-      return OK;
+        else
+        {
+            usingParadigm_[currentLevel_] =
+                    dynamic_cast<BasicUsingStrategy *> (usingParadigmGenerator_ ->createInstanceOfSelf());
+        }
+        return OK;
     }
 
   if (parser->matchKeyword ("TARGET") )
@@ -312,6 +324,25 @@ SkillRule::initialize        ( Parser *parser )
        targetType_ = createByKeyword(parser->getWord());
       return OK;
     }
+
+  if (parser->matchKeyword ("USE_ANYONE") )
+    {
+      isAnyoneCanUse_ = true;
+      return OK;
+    }
+
+  if (parser->matchKeyword ("NO_LEARN") )
+    {
+      isNoLearn_ = true;
+      return OK;
+    }
+
+  if (parser->matchKeyword ("NO_EXP") )
+    {
+      isNoExp_ = true;
+      return OK;
+    }
+
   if (parser->matchKeyword ("COMBAT_ACTION") )
     {
 //       if(this == skills["frai"])
@@ -374,6 +405,7 @@ SkillRule::initialize        ( Parser *parser )
 
 		skillBonuses_->initialize(parser);
 		movementBonuses_.initialize(parser);
+                Rule::initialize(parser);
 
 			return OK;
 
@@ -392,6 +424,14 @@ SkillElement * SkillRule::getMax()
 
 LEARNING_RESULT SkillRule::mayBeStudied(TokenEntity * tokenEntity)
 {
+    if(isNoLearn_)
+    {
+//        if(tokenEntity->isTraced())
+//        {
+//        cout << tokenEntity->print() <<" can't study " << this->print()<<endl;
+//        }
+        return CANNOT_STUDY_FAILURE;
+    }
   int nextLevel =  tokenEntity->getSkillLevel(this);
 //  if(nextLevel >6)
 //    cout << tokenEntity << " has " << tokenEntity->getSkillPoints(this)<< " of " <<print()<<endl;
@@ -421,7 +461,11 @@ int  SkillRule::calculateLearningExperience(TokenEntity * tokenEntity, TeachingO
 
 int  SkillRule::calculateUsingExperience(TokenEntity * tokenEntity)
 {
-  int nextLevel =  tokenEntity->getSkillLevel(this);
+    if(isNoExp_)
+    {
+        return 0;
+    }
+    int nextLevel =  tokenEntity->getSkillLevel(this);
   return usingParadigm_[nextLevel]->calculateUsingExperience(tokenEntity, this);
 }
 
@@ -438,6 +482,10 @@ void SkillRule::addLearningExperience(TokenEntity * tokenEntity, int exp)
 
 void SkillRule::addUsingExperience(TokenEntity * tokenEntity, int exp)
 {
+    if(isNoExp_)
+    {
+        return;
+    }
   int nextLevel = 0;
   SkillElement experience(this,exp);
   usingParadigm_[nextLevel]->addUsingExperience(tokenEntity,experience);
@@ -476,6 +524,7 @@ int SkillRule::getLevel(int expPoints)
 
 /*
  * Determines if current skill is in the tree growing from the given skill
+ *  Skill itself is not a Descend
  */
 bool SkillRule::isDescendFrom(SkillRule * root, int level)
 {
@@ -621,6 +670,10 @@ string SkillRule::printLevel(int level)
 
 USING_RESULT     SkillRule::mayBeUsedBy(TokenEntity * tokenEntity)
 {
+    if(isAnyoneCanUse_)
+    {
+        return USING_OK;
+    }
   int nextLevel =  tokenEntity->getSkillLevel(this);
   if(usingParadigm_[nextLevel])
     return usingParadigm_[nextLevel]->mayUse(tokenEntity, this);
@@ -643,7 +696,10 @@ USING_RESULT SkillRule::use(TokenEntity * tokenEntity, int & useCounter, OrderLi
 {
 
   int level =  tokenEntity->getSkillLevel(this);
-//  cout << tokenEntity->print()<<" "<<print()<<" level " <<level<<" "<<usingParadigm_[level]->getProductionDays()<<endl;
+  if(tokenEntity->isTraced())
+  {
+  cout << tokenEntity->print()<<" "<<print()<<" level " <<level<<" "<<usingParadigm_[level]->getProductionDays()<<endl;
+  }
    USING_RESULT result = usingParadigm_[level]->use(tokenEntity,this,useCounter,order);
    if( result == UNUSABLE)
    {
@@ -682,8 +738,10 @@ SkillRule * SkillRule::getBasicSkill()
   SkillRule * current= this;
     while(current)
     {
-      if (current->getRequirement(0) == 0)
+      if (current->isBasicSkill())
         return current;
+      if(current->getRequirement(0) == 0)
+        return 0;
       else
       current = current->getRequirement(0)->getSkill();
     }
@@ -692,10 +750,11 @@ SkillRule * SkillRule::getBasicSkill()
 
 
 
-void    SkillRule::extractKnowledge (Entity * recipient, int parameter)
+void    SkillRule::extractKnowledge (Entity * recipient, int level)
 {
+  Rule::extractKnowledge(recipient);
   vector <SkillLevelElement *>::iterator iter;
-  for(iter = derivatives_[parameter].begin(); iter != derivatives_[parameter].end(); iter++)
+  for(iter = derivatives_[level].begin(); iter != derivatives_[level].end(); iter++)
   {
     if(*iter)
     {
@@ -705,11 +764,11 @@ void    SkillRule::extractKnowledge (Entity * recipient, int parameter)
     }
     // No further extraction before skill learned
   }
-  assert(learningParadigm_[parameter]);
-  if(learningParadigm_[parameter])
-    learningParadigm_[parameter]->extractKnowledge(recipient);
-  if(usingParadigm_[parameter])
-    usingParadigm_[parameter]->extractKnowledge(recipient);
+  //assert(learningParadigm_[level]);
+  if(learningParadigm_[level])
+    learningParadigm_[level]->extractKnowledge(recipient);
+  if(usingParadigm_[level])
+    usingParadigm_[level]->extractKnowledge(recipient);
 }
 
 
@@ -725,7 +784,7 @@ void SkillRule::printSkillDescription(int level, ostream & out)
  BasicLearningStrategy * learningParadigm =  learningParadigm_ [level - 1];
  if(learningParadigm)
   {
-    if(studyCost_[level])
+    if(studyCost_[level]&&!isNoLearn_)
       out << " Requires " << expPoints_[level]/learningParadigm->getPointsPerDay() <<" days and $" <<studyCost_[level]<<"/day to reach the level. ";
     else
       out << " This skill cannot be studied.";
@@ -754,9 +813,10 @@ if(isElementalMagic_)
   {
     out << " Requires "<<    *(requirement_[level])   << " to learn.";
   }
-  else
-    if(level == 1)
+ if(isBasic_)
+ {
     out << " This is a basic skill.";
+ }
 
  if(learningParadigm)
   {
@@ -791,6 +851,14 @@ if(isElementalMagic_)
    {
      usingParadigm->printSkillDescription(out);
    }
+ if(this->isAnyoneCanUse_)
+ {
+     out << " Anyone can use this skill.";
+ }
+ if(this->isNoExp_)
+ {
+     out << " Using of this skill gives no experience.";
+ }
 
    if(!stats_[level].empty())
    {

@@ -22,7 +22,7 @@ class UnitEntity;
 
 class CraftUsingStrategy : public BasicProductionStrategy  {
 public: 
-      CraftUsingStrategy ( const string & keyword, GameData * parent): BasicProductionStrategy(keyword, parent){}
+      CraftUsingStrategy ( const string & keyword, GameData * parent): BasicProductionStrategy(keyword, parent){cout <<"===> "<<keyword<<" created"<<endl;}
       CraftUsingStrategy ( const CraftUsingStrategy * prototype );
 		 ~CraftUsingStrategy(){};
       GameData * createInstanceOfSelf();

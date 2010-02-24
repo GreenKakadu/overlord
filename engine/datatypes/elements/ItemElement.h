@@ -12,6 +12,8 @@
 #include <string>
 #include "Element.h"
 #include "ItemRule.h"
+#include "IntegerData.h"
+#include "StringData.h"
 
 
 using namespace std;
@@ -58,7 +60,15 @@ string print()
     else
       return longtostr(parameter1_) + " " + rule_->print();
 }
-
+    vector <AbstractData *> aPrint()
+{
+  vector <AbstractData *> v; 
+  v.push_back(new IntegerData(getParameter1())); 
+  v.push_back(new StringData(" "));
+  v.push_back(getRule()); 
+  return v;
+}    
+   
 /*
  * checks if it is possible to read Inventory Element from the input parser
  */

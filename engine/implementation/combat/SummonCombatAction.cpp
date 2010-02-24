@@ -8,6 +8,7 @@
 
 #include "SummonCombatAction.h"
 #include "TokenEntity.h"
+#include "RaceElement.h"
 #include "CombatEngine.h"
 #include "BattleInstance.h"
 #include "BattleField.h"
@@ -18,6 +19,7 @@
 extern int Roll_1Dx(int n);
 extern string longtostr(long u);
 extern ReportPattern * noTargetsReporter;
+extern ReportPattern * combatSummonReporter;
 
 SummonCombatAction     sampleCombatSummonAction     ("COMBAT_SUMMON",  &sampleCombatAction);
 
@@ -101,7 +103,7 @@ void		SummonCombatAction::performAction(BattleInstance * battleInstance, BattleT
   summonedEntity->preprocessData();
 	combatReportFile<< " ==SS==  "<<battleInstance->print()<< " Summoning "
 	<<entity_->getRace()->getName()	<<" "<<summonedEntity<<endl;
-
+      report->add(new BinaryMessage(combatSummonReporter, battleInstance->getOrigin(),  new RaceElement(entity_->getRace(), entity_->getFigures()))); 
   battleField->getCombatEngine()->addSummonedEntity(battleInstance,summonedEntity);
 	// now place it on field
 	if(randomPlace_)

@@ -18,6 +18,8 @@
 #include "EntityStatistics.h"
 #include "BasicCondition.h"
 #include "reporting.h"
+#include "UnitEntity.h"
+#include "RaceRule.h"
 extern ReportPattern * forgetReport;
 extern ReportPattern * skillLossReporter;
 
@@ -363,22 +365,27 @@ void SkillsAttribute::forgetSkill(SkillRule * skill, TokenEntity * entity)
 
 
 void SkillsAttribute::proportionallyDiluteAll(int oldNumber, int newNumber,
-			 TokenEntity * entity)
+			 UnitEntity * unit)
 {
 
   int oldLevel;
 
   // recalculate skills
+  // should take into account intristic skills
+  RaceRule * race = unit->getRace();
+  assert(race);
+
   SkillIterator iter;
 	for (iter = skills_.begin(); iter != skills_.end(); iter++)
 		{
       oldLevel = (*iter).getLevel();
-      (*iter).setExpPoints( ( (*iter).getExpPoints() * oldNumber )
+
+      (*iter).setExpPoints( ( (*iter).getExpPoints() * oldNumber + race->hasIntisticSkill((*iter).getSkill()) * newNumber)
 																										 / (newNumber));
       if( (*iter).getLevel() < oldLevel)
         {
-  	        entity->addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
-           (*iter).getSkill()->checkConditions(entity);
+  	        unit->addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
+           (*iter).getSkill()->checkConditions(unit);
         }
 		}
 }

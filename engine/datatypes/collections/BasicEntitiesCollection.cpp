@@ -44,7 +44,9 @@ GameData* BasicEntitiesCollection::findByTag (const string &tag, bool errorRepor
          return data_[index];
 
   if(errorReportEnabled)
-   cerr << "Error: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
+   cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName()) 
+           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+           << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
  return 0 ;
 }
 
@@ -187,13 +189,16 @@ long  BasicEntitiesCollection::getIndex (const string &tag, bool errorReportEnab
  if ( i == 0 ) // No digits were found.
     {
 			if(errorReportEnabled)
-     cerr << "Tag " << tag << " is invalid (no  digits)" <<endl;
+    cerr << "Tag [" << tag << "] is invalid (no  digits) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
+   // cerr << "Tag [" << tag << "] in collection " << this->getCollectionKeyword()<< " is invalid (no  digits)" <<endl;
+                        this->
  				status = IO_ERROR;
 				return 0;
     }
  if ( i >=  Parser::INTEGER_LENGTH  ) // More than maximum of digits were found.
     {
-      cerr << "Tag " << tag << " is invalid (too many digits)" <<endl;
+     			cerr << "Tag [" << tag << "] is invalid (too many digits) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
+      //cerr << "Tag " << tag << " is invalid (too many digits)" <<endl;
 				status = IO_ERROR;
 				return 0;
     }
@@ -248,7 +253,7 @@ string BasicEntitiesCollection::tagFromIndex(long int index)
 {
 		if(prefix_ == 0)
     {
-      return longtostr(index);
+      return collectionKeyword_.substr(0,1) + longtostr(index);
     }
 		else
     {

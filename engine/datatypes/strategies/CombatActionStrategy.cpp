@@ -52,11 +52,19 @@ CombatActionStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("TARGET") )
     {
 			target_ = combatTargets[parser->getWord()];
+                        if(target_==0)
+                        {
+                          cout << "Empty target in "<< parser->report()<<endl;
+                        }
       return OK;
     }
   if (parser->matchKeyword ("EFFECT") )
     {
 			action_ = fx_actions[parser->getWord()];
+                        if(action_==0)
+                        {
+                          cout << "Empty effect in "<< parser->report()<<endl;
+                        }
 			return OK;
     }
 

@@ -107,7 +107,7 @@ USING_RESULT HarvestUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill,
     bonus += (((*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())) /
 		unit->getFiguresNumber()) /100;
   }
-   request = request * (100 + bonus)/100;
+   request = (request * (100 + bonus))/100;
 
 
 

@@ -42,7 +42,7 @@ public:
    GuardingRequest * findGuardingRequest(TokenEntity  *guard);
    void addPatrolingRequest(GuardingRequest *patrol);
    void addPillageRequest(PillageRequest *pillage);
-   void removePillageRequest(TokenEntity *pillager);
+   void removePillageRequest(TokenEntity *pillager, bool isReporting = true);
    PillageRequest * findPillageRequest(TokenEntity  *pillager);
    void process();        // Guarding, patrolling Combat
    void processCombat(); // Determine combat participants

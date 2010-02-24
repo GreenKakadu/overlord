@@ -12,6 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include <stdlib.h>
 #include "EnchantmentElement.h"
 #include "EnchantmentRule.h"
 
@@ -26,6 +27,15 @@ EnchantmentElement  * EnchantmentElement::readElement (Parser * parser)
         return new EnchantmentElement(enchantment, number);
 }
 
+EnchantmentElement  * EnchantmentElement::createElement (EnchantmentRule * effect,int days)
+{
+  EnchantmentElement element = EnchantmentElement(effect,days);
+  void * ptr = malloc(sizeof(element));
+  EnchantmentElement * pElement = static_cast<EnchantmentElement *>(ptr);
+  memcpy(&element,pElement,sizeof(element));
+  return pElement;
+}
+
 
 
 //EnchantmentElement EnchantmentElement::readItemElement(Parser * parser)
@@ -37,5 +47,4 @@ EnchantmentElement  * EnchantmentElement::readElement (Parser * parser)
 //  else
 //        return  EnchantmentElement(enchantment, number);
 //}
-
 

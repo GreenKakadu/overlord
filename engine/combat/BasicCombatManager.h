@@ -33,6 +33,7 @@ public:
     virtual void addGuardingRequest(GuardingRequest *){}
     virtual void addPatrolingRequest(GuardingRequest *){}
     virtual void addPillageRequest(PillageRequest *){}
+    virtual void removePillageRequest(TokenEntity *, bool){}
 
 protected:
     BasicCombatEngine  * combatEngine_;

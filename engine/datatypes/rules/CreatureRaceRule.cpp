@@ -47,9 +47,5 @@ void CreatureRaceRule::printTypeSpecificDescription(ReportPrinter & out)
 
 LEARNING_RESULT CreatureRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 {
-		if(unit->isTraced())
-		{
-			cerr << " Can't study reature c "<<skill->print()<<endl;
-		}
    return CANNOT_STUDY_FAILURE;
 }

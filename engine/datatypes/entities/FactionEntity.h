@@ -97,8 +97,13 @@ class FactionEntity : public Entity  {
   bool stanceAtLeast(FactionEntity * faction, StanceVariety * stance);
   bool stanceAtLeast(TokenEntity * token, StanceVariety * stance);
   void setTemporaryFlag(unsigned long value, unsigned long mask) { temporaryFlags_= ((temporaryFlags_ & ~mask) | (value & mask));}
+  vector <ReportElement *> getEvents();
   inline unsigned long     getTemporaryFlag(unsigned long mask) const {return (temporaryFlags_ & mask);}
 	void addCombatReport(CombatReport * combatReport);
+        inline      vector<ItemElement> &     getFunds(){return funds_;}
+        inline      vector<StanceElement>&   getStances(){return stances_;}
+        inline vector<UnitEntity *>& getLoyalUnits(){return loyalUnits_;}
+        inline vector<ConstructionEntity *>& getLoyalConstructions(){return loyalConstructions_;}
 
     protected:
 
@@ -111,6 +116,7 @@ class FactionEntity : public Entity  {
   bool allSkillsToReshow_;
   vector<SkillLevelElement> skillsToReshow_;
 	vector<CombatReport *> combatReports_;
+        vector <ReportElement *> extractedReports_;
   string email_;
   string password_;
 	StanceVariety * defaultStance_;

@@ -541,3 +541,7 @@ long int  Parser::getPosition()
 {
   return 0;
 }
+string Parser::report()
+{
+   return string(input_);
+}

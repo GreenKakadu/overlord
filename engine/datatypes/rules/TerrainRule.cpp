@@ -5,6 +5,7 @@
     copyright            : (C) 2001 by Alex Dribin
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
+#include "StringData.h"
 #include "TerrainRule.h"
 #include "SkillRule.h"
 #include "GameConfig.h"
@@ -89,6 +90,7 @@ TerrainRule::initialize        ( Parser *parser )
     }
 		skillBonuses_.initialize(parser);
 		movementBonuses_.initialize(parser);
+  Rule::initialize(parser);
       return OK;
 
  }
@@ -113,6 +115,13 @@ void TerrainRule::printDescription(ReportPrinter & out)
     if(! buildEnabled_) out << " Construction of buildings  is not allowed here.";
 }
 
+vector <AbstractData *> TerrainRule::aPrint()
+{
+  vector <AbstractData *> v;
+  v.push_back(this);
+  v.push_back(new StringData(": " + getDescription() + "."));
+  return v;
+}
 
 
 int TerrainRule::getProductionBonusValue(SkillRule * skill)

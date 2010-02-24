@@ -179,7 +179,7 @@ combatReportFile  <<" final hits: "<< hitNums <<endl;
 // === Distribute hits between figures
 }
   int totalDamage = damage * hitNums;
-	int  figuresDied = target->sufferDamage(hitNums,totalDamage);
+	int  figuresDied = target->sufferDamage(hitNums,damage);
 
 
 	return MeleeAttackElement(target, numStrikes, totalDamage, figuresDied);

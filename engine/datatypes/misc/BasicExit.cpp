@@ -10,6 +10,8 @@
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
 #include "WeatherRule.h"
+#include "StringData.h"
+#include "IntegerData.h"
 //extern MovementVariety * walkingMode;
 
 
@@ -76,7 +78,49 @@ void BasicExit::produceReport(ReportPrinter & out)
 
 }
 
+/*
+ * aPrint is a function that performs print() in a form convinient for interpretaion in GUI application 
+ */   
+  vector <AbstractData *> BasicExit::aPrint()
+{
+  vector <AbstractData *> out;
+  //StringData * s1 = new StringData("Exit");
+  out.push_back(new StringData("Exit "));
+  out.push_back(dir_);
+  //StringData * s2 = new StringData("to");
+  out.push_back(new StringData(" to "));
+  out.push_back(destination_);
+  out.push_back(new StringData(" ("));
+  out.push_back(destination_->getTerrain());
+  out.push_back(new StringData(") "));
+  int days=0;
+  bool firstMode= true;
+  for(int i=0; i < movementModes.size(); i++)
+  {
+    days =  getTravelTime(movementModes[i]);
+    if( days )
+    {
+      if(firstMode)
+      {
+        out.push_back(new IntegerData(days));
+        out.push_back(new StringData(" days of "));
+        out.push_back(movementModes[i]);
+      }
+      else
+      {
+        out.push_back(new StringData(", "));
+        out.push_back(new IntegerData(days));
+        out.push_back(new StringData(" of "));
+        out.push_back(movementModes[i]);
+      }
+      firstMode = false;
+    }
 
+  }
+  out.push_back(new StringData("."));
+ 
+  return out;
+}
 
 /*
  *

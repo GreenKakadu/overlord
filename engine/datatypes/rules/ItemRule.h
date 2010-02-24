@@ -27,6 +27,7 @@ public:
       GameData * createInstanceOfSelf();
   inline string getPluralName() const{return pluralName_;}
     void printDescription(ReportPrinter & out);
+    vector <AbstractData *> aPrint();
   inline EquipmentSlotVariety * getEquipSlot() const {return equipSlot_ ;}
   /** gets nimber of equipement slots item demands to be equiped */
   inline int getNumEquipSlotsRequired() const {return numEquipSlotsRequired_;}
@@ -45,6 +46,8 @@ public:
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
 	inline bool isUnique() {return unique_;}
+	inline SkillLevelElement * getProspectSkill(){return prospectSkill_;}
+        inline bool isRegeneratingResource(){return isRegeneratingResource_;}
     protected:
 	  string pluralName_;
 	  EquipmentSlotVariety * equipSlot_;
@@ -53,10 +56,12 @@ public:
 		int price_ ;
 		BasicCondition * equipCondition_;
 		SkillLevelElement *useSkill_;
+		SkillLevelElement *prospectSkill_;
 		bool unique_;
 		bool special_;
 		bool magic_;
 		bool live_;
+                bool isRegeneratingResource_;
 		MovementMode<int> capacity_;
     MovementMode<int> equipCapacity_;
     EntityStatistics stats;

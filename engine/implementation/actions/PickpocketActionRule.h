@@ -30,7 +30,7 @@ public:
 //      virtual STATUS     initialize      ( Parser *parser);
       GameData * createInstanceOfSelf();
 //      void printDescription(ReportPrinter & out);
-      ACTION_RESULT carryOut(Entity * entity);
+      ACTION_RESULT carryOut(Entity * entity,  AbstractData * parameter,  int value=0);
 };
-
+extern PickpocketActionRule     samplePickpocketActionRule;
 #endif

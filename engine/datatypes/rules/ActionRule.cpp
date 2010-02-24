@@ -15,6 +15,7 @@
 #include "ActionRule.h"
 #include "PrototypeManager.h"
 #include "GameConfig.h"
+#include "StringData.h"
 
 //RulesCollection <ActionRule>    fx_actions(new DataStorageHandler(gameConfig.getFx_actionsFile()));
 RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions.rules"));
@@ -35,23 +36,23 @@ GameData * ActionRule::createInstanceOfSelf()
 STATUS
 ActionRule::initialize        ( Parser *parser )
 {
-  GameData::initialize(parser);
+    GameData::initialize(parser);
 
-  targetType_ =  prototypeManager->findInRegistry("UNIT");
+    targetType_ = prototypeManager->findInRegistry("UNIT");
 
 
-  if (parser->matchKeyword("TARGET"))
+    if (parser->matchKeyword("TARGET"))
     {
-      string targetName = parser->getText();
-      targetType_ =  prototypeManager->findInRegistry(targetName);
-			if( targetType_== 0)
-				{
-					cerr << "Unknown target type " <<  targetName << " for action " << print()<< endl;
-				}
+        string targetName = parser->getText();
+        targetType_ = prototypeManager->findInRegistry(targetName);
+        if (targetType_ == 0)
+        {
+            cerr << "Unknown target type " << targetName << " for action " << print() << endl;
+        }
 
-      return OK;
+        return OK;
     }
-  return OK;
+    return OK;
 }
 
 
@@ -63,8 +64,15 @@ void ActionRule::printDescription(ReportPrinter & out)
 
 
 
-ACTION_RESULT ActionRule::carryOut(Entity * entity)
+ACTION_RESULT ActionRule::carryOut(Entity * entity, AbstractData * parameter, int value)
 {
   return     ACTION_FAILURE;
 
+}
+vector <AbstractData *> ActionRule::aPrint()
+{
+  vector <AbstractData *> v;
+  v.push_back(this);
+  v.push_back(new StringData(getDescription()));
+  return v;
 }

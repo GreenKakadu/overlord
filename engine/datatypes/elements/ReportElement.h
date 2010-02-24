@@ -31,6 +31,11 @@ public:
         }
   inline ReportMessage * getRecord() const {return rule_;}
 	inline Entity *        getDestination() const {return parameter1_;}
+        vector <AbstractData *>  aPrint()
+        {
+          return rule_->aPrint();
+        }
+
 private:
     void save(ostream & ){} // disabled
 

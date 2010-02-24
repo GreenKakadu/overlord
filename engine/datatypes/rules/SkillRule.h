@@ -39,6 +39,7 @@ public:
       inline   void   setDescription(const string  &description, int level)
 						{ description_[currentLevel_] = description;}
       void printSkillDescription(int level, ostream & out);
+      //vector <AbstractData *> aPrintSkill(int level);
       SkillElement * getMax();
       LEARNING_RESULT mayBeStudied(TokenEntity * unit);
       USING_RESULT     mayBeUsedBy(TokenEntity * unit);
@@ -82,6 +83,7 @@ public:
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
           bool isRacialEnabled(RaceRule * race);
+          inline bool isBasicSkill(){return isBasic_;}
     protected:
 		SkillBonusComboAttribute  * skillBonuses_;// implemented as pointer
 		                                          // to avoid type definition loop
@@ -109,6 +111,11 @@ public:
     bool isElementalMagic_;
     GameData * targetType_;
 //    int targetDistance
+    //===========================================================
+    bool isBasic_;
+    bool isAnyoneCanUse_;
+    bool isNoLearn_;
+    bool isNoExp_;
     private:
 };
 extern SkillRule      sampleSkill;

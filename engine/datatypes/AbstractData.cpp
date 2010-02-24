@@ -7,3 +7,9 @@
  ***************************************************************************/
 #include "AbstractData.h"
 
+ vector <AbstractData *> AbstractData::aPrint()
+{
+  vector <AbstractData *> v; 
+  v.push_back(this); 
+  return v;
+}

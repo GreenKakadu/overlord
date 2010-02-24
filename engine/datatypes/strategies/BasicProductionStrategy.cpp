@@ -22,6 +22,7 @@
 #include "ToolUseElement.h"
 #include "BinaryMessage.h"
 extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * startUseReporter;
 extern ReportPattern * productionReporter;
 extern GameData  targetTypeSelf;
 //extern const int VERY_BIG_NUMBER;
@@ -63,78 +64,102 @@ void BasicProductionStrategy::reportUse(USING_RESULT result, TokenEntity * unit)
 {
 }
 
-
-
 USING_RESULT BasicProductionStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill)
 {
-/** We may be in the middle of production. Then we anyway may continue.*/
-/** Otherwise we'll need resources */
+    /** We may be in the middle of production. Then we anyway may continue.*/
+    /** Otherwise we'll need resources */
 
- if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
-  {
-		if(checkManaAvailability(unit) == 0)
-      {
-        return NO_MANA;
-      }
+    if (!unit->isCurrentlyUsingSkill(skill)) // beginning of production cycle
+    {
+        if (unit->isTraced())
+        {
+            cout << "== TRACING " << unit->print() << " starting new production cycle.\n";
 
-// if (unit->isTraced())
-// {
-//       cout <<"== TRACING " <<unit->print()<<" unitMayUse calls for resourse check.\n";
-// 
-// }
-		if(checkResourcesAvailability(unit) == 0)
-      {
-        return NO_RESOURCES;
-      }
-     else
-     {
-        consumeResources(unit,1);
-        consumeMana(unit,1);
-        return  USING_OK;
-     }
-  }
-    return  USING_OK;
+        }
+        if (checkManaAvailability(unit) == 0) {
+            return NO_MANA;
+        }
+
+        // if (unit->isTraced())
+        // {
+        //       cout <<"== TRACING " <<unit->print()<<" unitMayUse calls for resourse check for "<<skill->printTag() <<"\n";
+        //       for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+        //       {
+        // 	cout << (*iter)->getItemNumber()<<" "<<(*iter)->getItemType()->printTag()<<" | ";
+        //       }
+        //       cout << endl;
+        // }
+        if (checkResourcesAvailability(unit) == 0)
+        {
+            return NO_RESOURCES;
+        }
+        else
+        {
+            consumeResources(unit, 1);
+            consumeMana(unit, 1);
+            if (getEffectiveProductionRate(unit, skill) < productionDays_)// Production will not be finished today
+            {
+                unit->addReport(new BinaryMessage(startUseReporter, unit, skill));
+            }
+            return USING_OK;
+        }
+    }
+    return USING_OK;
 }
-
 
 int BasicProductionStrategy::checkResourcesAvailability(TokenEntity * unit)
 {
-  int currentProductionCycles;
-  int maxProductionCycles = VERY_BIG_NUMBER;  // very big number
-// if (unit->isTraced())
-// {
-//       cout <<"== TRACING " <<unit->print()<<" resourse check.\n";
-// 
-// }
-  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    int currentProductionCycles;
+    int maxProductionCycles = VERY_BIG_NUMBER; // very big number
+    if (unit->isTraced())
     {
-      currentProductionCycles = unit->hasItem((*iter)->getItemType()) /(*iter)->getItemNumber();
-// if (unit->isTraced())
-// {
-//       cout <<"== TRACING " <<unit->print()<<" has "<< unit->hasItem((*iter)->getItemType())<< " ==> required for production "<<(*iter)->getItemNumber()<<" of "<< (*iter)->getItemType()->printTag()<<"\n";
-// 
-// }
-      if(currentProductionCycles == 0)
-        return 0;
-      if(iter == resources_.begin())
-         maxProductionCycles = currentProductionCycles;
-      else
-      {
-        if ( currentProductionCycles < maxProductionCycles)
-           maxProductionCycles = currentProductionCycles;
-      }
+        cout << "== TRACING " << unit->print() << " resourse check.\n";
+
     }
-   return  maxProductionCycles;
+    for (vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+        currentProductionCycles = unit->hasItem((*iter)->getItemType()) / (*iter)->getItemNumber();
+        if (unit->isTraced())
+        {
+            cout << "== TRACING " << unit->print() << " has " << unit->hasItem((*iter)->getItemType()) << " of " << (*iter)->getItemType()->printTag() << " ==> required for production " << (*iter)->getItemNumber() << "\n";
+
+        }
+        if (currentProductionCycles == 0)
+            return 0;
+        if (iter == resources_.begin())
+            maxProductionCycles = currentProductionCycles;
+        else
+        {
+            if (currentProductionCycles < maxProductionCycles)
+                maxProductionCycles = currentProductionCycles;
+        }
+    }
+    return maxProductionCycles;
 }
 
 
 
 bool BasicProductionStrategy::consumeResources(TokenEntity * unit, int numCycles)
 {
+
   for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
     {
+if (unit->isTraced())
+{
+      cout <<"== TRACING " <<unit->print()<<" consuming "<< (*iter)->getItemNumber() * numCycles<<" of " << (*iter)->getItemType()->printTag();
+}
       if((*iter)->getItemNumber() * numCycles != unit->takeFromInventory ((*iter)->getItemType(),(*iter)->getItemNumber() * numCycles ))
-          return false;
+      {
+if (unit->isTraced())
+{
+      cout << "numCycles: "<<numCycles<<"  FAILURE"<<endl;
+}
+      return false;
+      }
+if (unit->isTraced())
+{
+      cout << " SUCCESS"<<endl;
+}
     }
       return true;
 }
@@ -188,6 +213,11 @@ USING_RESULT  BasicProductionStrategy::checkTarget(UnitEntity * unit, GameData *
 
   //  or some GameData (Entity or rule)  check
   GameData * dataTarget = dynamic_cast<GameData *>(target);
+  if(dataTarget ==0)
+  {
+     // cout<<"Error for "<<unit->print()<<" targeting "<<targetType->print()<<endl;
+    return WRONG_TARGET;
+  }
   assert(dataTarget);
   if(dataTarget->isDescendantFrom(targetType))
     return USING_OK;
@@ -201,12 +231,14 @@ RationalNumber BasicProductionStrategy::getEffectiveProductionRate(UnitEntity * 
 {
   vector <ToolUseElement *>::iterator iter;
 	int bonus = calculateProductionBonus(unit,skill);
-  RationalNumber effectiveProductionRate = unit->getFiguresNumber() * (100 + bonus)/100;
+  RationalNumber effectiveProductionRate (unit->getFiguresNumber() *(100 + bonus),100);
+
 
 // Tools accelerate production
   for(iter = tools_.begin(); iter != tools_.end();iter++)
   {
-    effectiveProductionRate =  effectiveProductionRate + (*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
+    RationalNumber toolBonus((*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType()),100);
+    effectiveProductionRate =  effectiveProductionRate + toolBonus;//(*iter)->getBonus() * unit->hasEquiped( (*iter)->getItemType())/100;
   }
 	return effectiveProductionRate;
 }
@@ -216,7 +248,7 @@ RationalNumber BasicProductionStrategy::getEffectiveProductionRate(UnitEntity * 
 
 // process production, consume resources if nescessary
 // 1 portion of resources is consumed during a call of BasicProductionStrategy::unitMayUse
-USING_RESULT BasicProductionStrategy::produce(UnitEntity * unit, SkillRule * skill, int & useRestrictionCounter, int & effectiveProduction, OrderLine * order)
+USING_RESULT BasicProductionStrategy::produce(UnitEntity * unit, SkillRule * skill, int & useRestrictionCounter, int & effectiveProduction, OrderLine * order, bool & newCycle)
 {
   if(useRestrictionCounter < 0)  // former restriction counter already expired 
     return CANNOT_USE;
@@ -229,56 +261,92 @@ USING_RESULT BasicProductionStrategy::produce(UnitEntity * unit, SkillRule * ski
   SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
 
   int cycleCounter  = unit->addSkillUse(dailyUse);
-  if(cycleCounter == 0) // In the middle of the production cycle
+
+ if(cycleCounter == 0) // In the middle of the production cycle
   {
 		 return USING_IN_PROGRESS;
   }
 
   else // The old  production cycle is finished. Do we want to start new?
   {
-   int resourcesAvailable = checkResourcesAvailability(unit);
+    if (unit->isTraced())
+  {
+      cout <<"== TRACING " <<unit->print()<<" The old  production cycle is finished. Do we want to start new?\n";
+  }
+    int resourcesAvailable = checkResourcesAvailability(unit);
     int manaAvailable = checkManaAvailability(unit);
 
- if (unit->isTraced())
-{
+  if (unit->isTraced())
+  {
       cout <<"== TRACING " <<unit->print()<<" cycleCounter= "<<cycleCounter<<" produce calls for resourse check. "<<resourcesAvailable<<" available\n";
-
-}
-
-    if( resourcesAvailable  < cycleCounter -1) // 1 resource was already consumed
+  }
+    if(resourcesAvailable == 0)
+    {
+            if (unit->isTraced())
+    {
+      cout <<"== TRACING " <<unit->print()<<" The old  production cycle is finished. No Resources\n";
+    }
+      effectiveProduction = cycleCounter * productNumber_;
+      return NO_RESOURCES;
+    }
+   if(manaAvailable == 0)
+    {
+      effectiveProduction = cycleCounter * productNumber_;
+      result = NO_MANA;
+            if (unit->isTraced())
+        {
+            cout <<"== TRACING " <<unit->print()<<" The old  production cycle is finished. No Mana\n";
+        }
+      return NO_MANA;//?
+    }
+    
+    if( resourcesAvailable  < cycleCounter) 
         cycleCounter = resourcesAvailable;
 
-    if( manaAvailable < cycleCounter - 1)
+    if( manaAvailable < cycleCounter)
         cycleCounter = manaAvailable;
+    
+
 
     effectiveProduction = cycleCounter * productNumber_;
-if (unit->isTraced())
-{
-      cout <<"== TRACING " <<unit->print()<< " ==> produces "<< productNumber_<<" ->"<<effectiveProduction <<"   resourses: "<<resourcesAvailable <<" restr= "<< useRestrictionCounter<<"\n";
-
-}
+  if (unit->isTraced())
+  {
+      cout <<"== TRACING " <<unit->print()<< " ==> producing "<< productNumber_<<" ->"<<effectiveProduction <<"   resourses: "<<resourcesAvailable <<" restr= "<< useRestrictionCounter<<"\n";
+  }
 
     if( (useRestrictionCounter > 0) && (effectiveProduction  >= useRestrictionCounter) ) // limited number of new cycles
       {
         effectiveProduction = useRestrictionCounter;
-        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
+        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;// ??? why?
         if(cycleCounter >1)
-				{
-			    consumeMana(unit,cycleCounter-1);
-          consumeResources(unit,cycleCounter-1);
-
-				}
-         result = USING_COMPLETED;
+		{
+		  consumeMana(unit,cycleCounter);
+		  consumeResources(unit,cycleCounter);
+		}
+             if (unit->isTraced())
+  {
+      cout <<"== TRACING " <<unit->print()<<" Number of items to produce is limited to "
+        << effectiveProduction<< " cycleCounter= " << cycleCounter<<" no new cycle"<<endl;
+  }
+           result = USING_COMPLETED;
         useRestrictionCounter = -1;
         order->setCompletionFlag(true);
       }
 
     else
     {
-	consumeMana(unit,cycleCounter-1);
-        consumeResources(unit,cycleCounter-1);
+             if (unit->isTraced())
+  {
+      cout <<"== TRACING " <<unit->print()<<" Starting new cycle "
+        << " cycleCounter= " << cycleCounter<<endl;
+  }
         if(dailyUse->getDaysUsed() > 0)
+        {
+	consumeMana(unit,cycleCounter);
+        consumeResources(unit,cycleCounter);
+        newCycle = true;
         unit->addSkillUse(dailyUse);
+        }
         if( useRestrictionCounter != 0)
           useRestrictionCounter = useRestrictionCounter - effectiveProduction;
         result = USING_IN_PROGRESS;

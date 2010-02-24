@@ -13,6 +13,7 @@
 #include "CombatReport.h"
 #include "CombatEngine.h"
 #include "reporting.h"
+extern ReportPattern * combatApplyReporter;
 
 
 ApplyCombatOrder * instantiateApplyCombatOrder = new ApplyCombatOrder();
@@ -104,9 +105,9 @@ ORDER_STATUS ApplyCombatOrder::process (Entity * entity, ParameterList &paramete
 	CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
 										->getCombatReport();
 
-
+report->add(new BinaryMessage(combatApplyReporter, battleInstance->getOrigin(), skill)); 
  	vector <BattleTargetElement> potentialTargets =
-			 					combatAction->getPotentialTargets(battleInstance, report);
+	combatAction->getPotentialTargets(battleInstance, report);
 	if(potentialTargets.empty()) // No targets.  But already eported
 	{
 		return FAILURE;

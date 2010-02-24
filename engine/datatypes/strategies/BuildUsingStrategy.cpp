@@ -31,6 +31,7 @@ extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
 extern ReportPattern * constructionWorksCompletedReporter;
 extern ReportPattern * notEnoughResourcesReporter;
+extern ReportPattern * constructionWorksAddedReporter;
 
 BuildUsingStrategy        sampleBuildUsing        ("USING_BUILD",        &sampleUsing);
 
@@ -117,85 +118,105 @@ void BuildUsingStrategy::reportUse(USING_RESULT result, TokenEntity * tokenEntit
 
 
 // Production modifiers:
-USING_RESULT BuildUsingStrategy::build(UnitEntity * unit, SkillRule * skill, ConstructionEntity * construction )
+
+USING_RESULT BuildUsingStrategy::build(UnitEntity * unit, SkillRule * skill, ConstructionEntity * construction)
 {
+    int effectiveProductionRate = getEffectiveProductionRate(unit, skill).getValue();
+    int workToDo = construction->workToDo(constructionWorkProduced_);
+    if (workToDo == 0) //cannot aply this skill to this building. May be because it is already done.
+    {
+        return CANNOT_USE;
+    }
 
 
 
-  int effectiveProductionRate = getEffectiveProductionRate(unit,skill).getValue();
-  int workToDo = construction->workToDo(constructionWorkProduced_);
-  if(workToDo ==0) //cannot aply this skill to this building. May be because it is already done.
-   {
-     return CANNOT_USE;
-   }
+    SkillUseElement * dailyUse = new SkillUseElement(skill, effectiveProductionRate, productionDays_);
 
-
-
-  SkillUseElement * dailyUse = new SkillUseElement(skill,effectiveProductionRate,productionDays_);
-
-  int cycleCounter  = unit->addSkillUse(dailyUse);
-  if(cycleCounter == 0) // In the middle of the production cycle
-  {
-     return USING_IN_PROGRESS;
-  }
-
-  else // The old  production cycle is finished. Do we want to start new?
-  {
-    int resourcesAvailable = checkResourcesAvailability(unit);
-    int manaAvailable = checkManaAvailability(unit);
-
-    if( resourcesAvailable < cycleCounter)
-        cycleCounter = resourcesAvailable;
-    if( manaAvailable < cycleCounter)
-        cycleCounter = manaAvailable;
-    int effectiveProduction = cycleCounter * productNumber_;
-    if( effectiveProduction  >= workToDo) // building will be finished today
-      {
-        effectiveProduction = workToDo;
-        cycleCounter = (effectiveProduction + productNumber_ -1)/ productNumber_;
-        if(cycleCounter >1)
-				{
-          consumeResources(unit,cycleCounter-1);
-          consumeMana(unit,cycleCounter-1);
-				}
-
-        if (construction->addBuildingWork(
-                new ConstructionWorksElement(constructionWorkProduced_,
-                                                effectiveProduction)))
-            {
-              construction->buildingCompleted();
-              unit->getLocation()->addReport(
-                  new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
-                              new StringData(construction->printTag())));
-              // private
-              unit->addReport(
-                              new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
-                  new StringData(construction->printTag())));
-             }
-            else // May be this Building is not finished yet but this sort of works is already finished.
-            {
-             // private report
-              unit->addReport(
-                              new BinaryMessage(constructionWorksCompletedReporter,  new StringData(constructionWorkProduced_->getPluralName()),
-                  new StringData(construction->printTag())));
-            }
-        return USING_COMPLETED;
-      }
-    else
-      {
-        consumeResources(unit,cycleCounter-1);
-        consumeMana(unit,cycleCounter-1);
-        if(dailyUse->getDaysUsed() > 0)
-          {
-            unit->addSkillUse(dailyUse);
-            consumeResources(unit,1); // new cycle started
-            consumeMana(unit,cycleCounter-1);
-            }
-        construction->addBuildingWork(
-                new ConstructionWorksElement(constructionWorkProduced_,
-                                                effectiveProduction));
+    int cycleCounter = unit->addSkillUse(dailyUse);
+    if (cycleCounter == 0) // In the middle of the production cycle
+    {
         return USING_IN_PROGRESS;
-      }
+    }
+    else // The old  production cycle is finished. Do we want to start new?
+    {
+        int resourcesAvailable = checkResourcesAvailability(unit);
+        int manaAvailable = checkManaAvailability(unit);
+
+        if (resourcesAvailable == 0)
+        {
+            if (unit->isTraced())
+            {
+                cout << "== TRACING " << unit->print() << " The old  production cycle is finished. No Resources\n";
+            }
+            effectiveProductionRate = cycleCounter * productNumber_;
+            return NO_RESOURCES;
+        }
+
+        if (manaAvailable == 0)
+        {
+            effectiveProductionRate = cycleCounter * productNumber_;
+            if (unit->isTraced())
+            {
+                cout << "== TRACING " << unit->print() << " The old  production cycle is finished. No Mana\n";
+            }
+            return NO_MANA; //?
+        }
+
+        if (resourcesAvailable < cycleCounter)
+            cycleCounter = resourcesAvailable;
+        if (manaAvailable < cycleCounter)
+            cycleCounter = manaAvailable;
+
+        int effectiveProduction = cycleCounter * productNumber_;
+        if (effectiveProduction >= workToDo) // building will be finished today
+        {
+            effectiveProduction = workToDo;
+            cycleCounter = (effectiveProduction + productNumber_ - 1) / productNumber_;
+            if (cycleCounter > 1)
+            {
+                consumeResources(unit, cycleCounter);
+                consumeMana(unit, cycleCounter);
+            }
+
+            if (construction->addBuildingWork(
+                    new ConstructionWorksElement(constructionWorkProduced_,
+                    effectiveProduction)))
+            {
+                construction->buildingCompleted();
+                unit->getLocation()->addReport(
+                        new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
+                        new StringData(construction->printTag())));
+                // private
+                unit->addReport(
+                        new BinaryMessage(buidingFinishedReporter, construction->getConstructionType(),
+                        new StringData(construction->printTag())));
+            } else // May be this Building is not finished yet but this sort of works is already finished.
+            {
+                // private report
+                unit->addReport(
+                        new BinaryMessage(constructionWorksCompletedReporter, new StringData(constructionWorkProduced_->getPluralName()),
+                        new StringData(construction->printTag())));
+            }
+            //order->setCompletionFlag(true);
+            return USING_COMPLETED;
+        } else
+        {
+            consumeResources(unit, cycleCounter);
+            consumeMana(unit, cycleCounter);
+            unit->addReport(
+                    new BinaryMessage(constructionWorksAddedReporter, new StringData(constructionWorkProduced_->getPluralName()),
+                    new StringData(construction->printTag())));
+            if (dailyUse->getDaysUsed() > 0)
+            {
+                unit->addSkillUse(dailyUse);
+                consumeResources(unit, 1); // new cycle started
+                consumeMana(unit, cycleCounter);
+            }
+            construction->addBuildingWork(
+                    new ConstructionWorksElement(constructionWorkProduced_,
+                    effectiveProduction));
+            return USING_IN_PROGRESS;
+        }
     }
 }
 
@@ -302,7 +323,8 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
     if(construction->isCompleted())
         return  WRONG_TARGET;
 
-    if(!construction->getConstructionType()-> getResourceRequirement(constructionWorkProduced_))
+//    if(!construction->getConstructionType()-> getResourceRequirement(constructionWorkProduced_))
+    if(!construction->workToDo(constructionWorkProduced_))
         return  WRONG_TARGET;
 
 
@@ -318,8 +340,8 @@ USING_RESULT BuildUsingStrategy::unitMayUse(UnitEntity * unit, SkillRule * skill
       }
      else
      {
-        consumeResources(unit,1);
-        consumeMana(unit,1);
+//        consumeResources(unit,1);
+//        consumeMana(unit,1);
         return  USING_OK;
      }
   }

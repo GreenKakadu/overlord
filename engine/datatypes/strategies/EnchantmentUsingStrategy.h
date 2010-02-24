@@ -31,6 +31,9 @@ public:
       STATUS initialize        ( Parser *parser );
       USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
+      USING_RESULT produce(UnitEntity * unit, SkillRule * skill,
+                    int & repetitionCounter, int & effectiveProduction,
+                    OrderLine * order, bool & newCycle);
       void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       void extractKnowledge (Entity * recipient, int parameter = 0);
       void printSkillDescription(ostream & out);

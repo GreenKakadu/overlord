@@ -16,6 +16,8 @@
 #include "EntitiesCollection.h"
 #include "EffectEntity.h"
 #include "PrototypeManager.h"
+#include "StringData.h"
+#include "ActionRule.h"
 
 extern EntitiesCollection <EffectEntity>   effects;
 EnchantmentRule    sampleEnchantment    ("FX_EFFECT",&sampleGameData);
@@ -25,6 +27,9 @@ EnchantmentRule::EnchantmentRule ( const EnchantmentRule * prototype ) : Rule(pr
 {
   effectKeyword_ = "FX_EFFECT";
   targetType_ =  0;
+  action_ =0;
+  isHidden_ = false;
+  reportPrefix_= "Enchanted by ";
 }
 
 
@@ -47,39 +52,53 @@ EnchantmentRule::initialize        ( Parser *parser )
       return OK;
     }
 
-  if (parser->matchKeyword("TARGET"))
+    if (parser->matchKeyword("TARGET"))
     {
-      string targetName = parser->getText();
-      targetType_ =  prototypeManager->findInRegistry(targetName);
-			if( targetType_== 0)
-				{
-					cerr << "Unknown target type " <<  targetName << " for enchantment " << print()<< endl;
-				}
+        string targetName = parser->getText();
+        targetType_ = prototypeManager->findInRegistry(targetName);
+        if (targetType_ == 0)
+        {
+            cerr << "Unknown target type " << targetName << " for enchantment " << print() << endl;
+        }
 
-      return OK;
+        return OK;
     }
 
 
-  if (parser->matchKeyword("CAPACITY"))
+    if (parser->matchKeyword("CAPACITY"))
     {
-      if(parser->matchInteger())
-				{
-					int index =  parser->getInteger();
-					capacity_[index]  = parser->getInteger();
-				}
-			else
-					{
-						string modeTag = parser->getWord();
-						if(movementModes.isValidTag(modeTag))
-							{
-								capacity_[modeTag]  = parser->getInteger();
-							}
-					}
+        if (parser->matchInteger())
+        {
+            int index = parser->getInteger();
+            capacity_[index] = parser->getInteger();
+        } else
+        {
+            string modeTag = parser->getWord();
+            if (movementModes.isValidTag(modeTag))
+            {
+                capacity_[modeTag] = parser->getInteger();
+            }
+        }
+        return OK;
+    }
+  if (parser->matchKeyword ("FX_ACTION") )
+    {
+      action_ = fx_actions[parser->getWord()];
+      return OK;
+    }
+  if (parser->matchKeyword ("HIDDEN") )
+    {
+      isHidden_ = true;
+      return OK;
+    }
+  if (parser->matchKeyword ("REPORT_PREFIX") )
+    {
+      reportPrefix_ = parser->getText();
       return OK;
     }
 
-		movementBonuses_.initialize(parser);
-		skillBonuses_.initialize(parser);
+    movementBonuses_.initialize(parser);
+    skillBonuses_.initialize(parser);
       return OK;
 
 }
@@ -93,12 +112,33 @@ void EnchantmentRule::printDescription(ReportPrinter & out)
 
 
 // Not used
-USING_RESULT EnchantmentRule::carryOut(Entity * entity)
+USING_RESULT EnchantmentRule::carryOut(Entity * entity, int value)
 {
-  return     UNUSABLE;
+    if(!action_)
+    {
+        return     UNUSABLE;
+    }
+    else
+    {
+        ACTION_RESULT result = action_->carryOut(entity, 0,value);
+        switch(result)
+        {
+            case ACTION_SUCCESS:
+            {
+                return USING_OK;
+            }
+            default:
+                return CANNOT_USE;
+        }
+    }
 
 }
 
+vector <AbstractData *> EnchantmentRule::aPrint()
+{
+  vector <AbstractData *> v;
+  return v;
+}
 
 // Not used
 EffectEntity * EnchantmentRule::createEffect(Entity * target)
@@ -138,4 +178,31 @@ int EnchantmentRule::getLearningBonus(SkillRule * skill)
 int EnchantmentRule::getStudyBonus(SkillRule * skill)
 {
   return skillBonuses_.getStudyBonus(skill);
+}
+
+
+void EnchantmentRule::report(ostream &out, int value)
+{
+
+    if(value < 1)
+        return;
+    if(isHidden_)
+        return;
+    if(value == VERY_BIG_NUMBER)
+    {
+            out<<reportPrefix_<<this->getName()<<". ";
+    }
+    if(value == 1)
+    {
+            out<<reportPrefix_<< value<<" "<< getName()<<". ";
+    }
+    else
+    {
+            out<<reportPrefix_<< value<<" "<< getPluralName()<<". ";
+    }
+}
+
+void EnchantmentRule::processEnchantExpiration(Entity * entity)
+{
+            cout <<"----- Enchantment "<< print()<<" on "<<entity->print() << " expired " << endl;
 }

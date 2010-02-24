@@ -82,8 +82,8 @@ void       CombatTactics::save (ostream &out)
 
 string CombatTactics::print()
 {
-  return (stance_)->getName() + (rank_)->getName() + (file_)->getName() +
-(move_)->getName();
+  return (stance_)->getName() + " "+(rank_)->getName() + " "
+          + (file_)->getName() + " " + (move_)->getName();
 }
 
 

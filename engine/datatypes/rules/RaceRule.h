@@ -36,6 +36,7 @@ public:
   inline string getPluralName() const{return pluralName_;}
           void   setPluralName(const string name);
   virtual void printDescription(ReportPrinter & out);
+  vector <AbstractData *> aPrint();
   virtual void printTypeSpecificDescription(ReportPrinter & out){}
   inline   int getWeight() const {return weight_;}
 	inline  void setWeight(int weight) {weight_ = weight;}
@@ -50,6 +51,7 @@ public:
   virtual bool mayTrade();
   virtual bool mayHoldTitles(){return false;}
   virtual bool mayTransferFigures();
+  inline int getControlPointsFraction(){return controlPointsFraction_;}
    vector< EquipSlot *>& getAllEquipmentSlots();
   /** Amounts of efforts teacher should spend in order to teach this student. */
   virtual int getLearningCapacity();
@@ -57,6 +59,8 @@ public:
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
+         vector< SkillElement> * getIntristicSkills(){return  &intristicSkills_ ;}
+         int hasIntisticSkill(SkillRule * skill);
 	protected:
     vector< EquipSlot *> equipmentSlots_;
     vector< SkillElement> intristicSkills_;

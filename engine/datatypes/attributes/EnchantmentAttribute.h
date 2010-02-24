@@ -35,7 +35,8 @@ public:
   void remove(EnchantmentElement * data);
   void removeAll();
   void addStats(EntityStatistics * stats, int figuresNumber );
-  void processExpiration(int figuresNumber = 1 );
+  void processExpiration(Entity * entity, int figuresNumber = 1 );
+  void carryOutAllActions(Entity * entity, int value);
   int getCapacity(int modeIndex, int figuresNumber );
   int getCapacity(MovementVariety * mode, int figuresNumber );
          int getProductionBonus(SkillRule * skill);

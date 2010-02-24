@@ -399,7 +399,16 @@ int InventoryAttribute::getStudyBonus(SkillRule * skill)
         iter != inventory_.end(); ++iter)
         {
          bonus += ((*iter).getItemType()->getStudyBonus(skill) *
-				           (*iter).getItemNumber()) / entity_->getFiguresNumber();
+		(*iter).getItemNumber()) / entity_->getFiguresNumber();
+         if(entity_->isTraced())
+         {
+             int b = (((*iter).getItemType()->getStudyBonus(skill) *
+		(*iter).getItemNumber()) / entity_->getFiguresNumber());
+                cout<< entity_->print()<<" gets "
+                     << ((*iter).getItemType()->getStudyBonus(skill))
+                     <<" bonus from "<<(*iter).getItemType()->print()
+                     << " total: " <<b<<endl;
+         }
         }
   return bonus;
 }
@@ -527,44 +536,44 @@ int InventoryAttribute::equipedInSlot(EquipmentSlotVariety * slot)
 
 void InventoryAttribute::updateSlotEquipement(EquipmentSlotVariety * slot, vector < InventoryElement > & unequiped, int equipMax)
 {
-	int currentEquip;
+  int currentEquip;
   int unequippedNum;
- for (InventoryIterator iter = inventory_.begin();
-                          iter != inventory_.end(); ++iter)
-   {
-	    if( (*iter).getItemType()-> getEquipSlot() != slot)
-				continue;
-			currentEquip = (*iter).getEquipedNumber() *
-					 (*iter).getItemType()-> getNumEquipSlotsRequired();
-
-			if(equipMax == 0)  // no more slots
-         {
-            unequippedNum = currentEquip / ((*iter).getItemType()->
-								 getNumEquipSlotsRequired());
-            (*iter).setEquipedNumber(0);
-            if(unequippedNum)
-              {
-                unequiped.push_back(InventoryElement(
-									 (*iter).getItemType() , unequippedNum ) ) ;
-              }
-
-         }
-
-			if(currentEquip <= equipMax) // enough space
-					{
-						equipMax -= currentEquip;
-					}
-			else // not enough space for all. only part will be equiped
-					{
-						(*iter).setEquipedNumber (equipMax/ (*iter).getItemType()->
-									 getNumEquipSlotsRequired());
-            unequippedNum = (currentEquip - equipMax) /
-									 ((*iter).getItemType()-> getNumEquipSlotsRequired());
-						equipMax = 0 ;
-            unequiped.push_back(InventoryElement(
-									 (*iter).getItemType() , unequippedNum ) ) ;
-					}
-
-	}
-
+  for (InventoryIterator iter = inventory_.begin();
+  iter != inventory_.end(); ++iter)
+  {
+    if( (*iter).getItemType()-> getEquipSlot() != slot)
+      continue;
+    currentEquip = (*iter).getEquipedNumber() *
+    (*iter).getItemType()-> getNumEquipSlotsRequired();
+    
+    if(equipMax == 0)  // no more slots
+    {
+      unequippedNum = currentEquip / ((*iter).getItemType()->
+      getNumEquipSlotsRequired());
+      (*iter).setEquipedNumber(0);
+      if(unequippedNum)
+      {
+	unequiped.push_back(InventoryElement(
+	(*iter).getItemType() , unequippedNum ) ) ;
+      }
+      
+    }
+    
+    if(currentEquip <= equipMax) // enough space
+    {
+      equipMax -= currentEquip;
+    }
+    else // not enough space for all. only part will be equiped
+    {
+      (*iter).setEquipedNumber (equipMax/ (*iter).getItemType()->
+      getNumEquipSlotsRequired());
+      unequippedNum = (currentEquip - equipMax) /
+      ((*iter).getItemType()-> getNumEquipSlotsRequired());
+      equipMax = 0 ;
+      unequiped.push_back(InventoryElement(
+      (*iter).getItemType() , unequippedNum ) ) ;
+    }
+    
+  }
+  
 }

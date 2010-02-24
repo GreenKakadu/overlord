@@ -139,7 +139,8 @@ void BattleInstance::postProcess()
       fleeAway();
     }	
   }
-  enchantments_.processExpiration();
+//  enchantments_.carryOutAllActions(this,1); //BattleEnchantment
+  enchantments_.processExpiration(0);
 	affectingAction_ = 0;
 	recalculateStats();
 }
@@ -481,43 +482,50 @@ void BattleInstance::planRoundOrders()
 // Returns number of killed figures.
 int BattleInstance::sufferDamage(int hits, int damage, DAMAGE_TYPE type)
 {
-combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
-	if(hits <= 0)
-		return 0;
-	if(damage <= 0)
-		return 0;
-
-//combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
-
-	int overkill = 0; // calculated for possible future use
-	int figuresDied = 0;
-	for (int i = 0; i <hits; ++i)
-	{
-		if(figures_.empty())
-		{
-			overkill += damage;
-			continue;
-		}
-		int randomIndex = Roll_1Dx(figures_.size());
-		int currentLife = figures_[randomIndex];
-		if(currentLife > damage)
-				figures_[randomIndex] -= damage;
-		else
-			{
-				overkill += damage - figures_[randomIndex];
-				figures_.erase(figures_.begin() +randomIndex);
-				figuresDied ++;
-			}
-	}
- if(figuresDied)
- {
- 	lossFigures(figuresDied);
- }
- if(figures_.empty())
- {
-	destroy();
- }
-	return figuresDied;
+  combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
+  
+  
+  if(hits <= 0)
+    return 0;
+  if(damage <= 0)
+    return 0;
+  combatReportFile  <<"--- Life ---"<<endl;
+  for (int i = 0; i <figures_.size(); ++i)
+  {
+    combatReportFile  <<figures_[i]<<endl;
+  }
+  combatReportFile  <<"--- Life End ---"<<endl;
+  //combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
+  
+  int overkill = 0; // calculated for possible future use
+  int figuresDied = 0;
+  for (int i = 0; i <hits; ++i)
+  {
+    if(figures_.empty())
+    {
+      overkill += damage;
+      continue;
+    }
+    int randomIndex = Roll_1Dx(figures_.size());
+    int currentLife = figures_[randomIndex];
+    if(currentLife > damage)
+      figures_[randomIndex] -= damage;
+    else
+    {
+      overkill += damage - figures_[randomIndex];
+      figures_.erase(figures_.begin() +randomIndex);
+      figuresDied ++;
+    }
+  }
+  if(figuresDied)
+  {
+    lossFigures(figuresDied);
+  }
+  if(figures_.empty())
+  {
+    destroy();
+  }
+  return figuresDied;
 }
 
 
@@ -544,7 +552,7 @@ void BattleInstance::lossFigures(int figuresDied)
 	if(!isFanatic())
 	{
 		if(isAttacker())
-  		combat->addAttackerLoss(figuresDied);
+  		combat->addAttackerLoss(figuresDied); 
 		else
   		combat->addDefenderLoss(figuresDied);
 	}
@@ -707,7 +715,7 @@ void BattleInstance::addSideEnchantment(EnchantmentElement * data, bool targetSi
 }
 
 
-
+// How do you remove permanent enchantments?
 void BattleInstance::removeSideEnchantment(EnchantmentElement * data, bool targetSide)
 {
 	// attacker casting on the same side or defender on the opposote

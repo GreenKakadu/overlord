@@ -21,6 +21,7 @@ class EntityStatistics {
 public:
 	EntityStatistics();
 	~EntityStatistics(){}
+
   STATUS initialize(Parser * parser);
   inline int getInitiative() const {return initiative_;}
   inline int getMelee() const {return melee_;}
@@ -36,6 +37,7 @@ public:
   inline int getControlPoints() const {return controlPoints_;}
   inline int getStealth() const {return stealth_;}
   inline int getObservation() const {return observation_;}
+  void scaleControlPoints(int num, int factor);
 
   inline void modifyInitiative(int initiative) {initiative_ += initiative;}
   inline void modifyMelee(int melee) {melee_ += melee;}

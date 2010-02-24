@@ -23,28 +23,44 @@
   */
 class FactionEntity;
 class LocationEntity;
+class EffectRule;
 
 class EffectEntity : public TokenEntity  {
 public: 
       EffectEntity (const string & keyword, Entity * parent ) : TokenEntity(keyword, parent){}
-      EffectEntity ( const EffectEntity * prototype );
+      EffectEntity ( const EffectEntity * prototype);
 	   ~EffectEntity();
-      STATUS  initialize      ( Parser *parser );
-       void      save (ostream &out);
-      GameData * createInstanceOfSelf();
-       void     preprocessData();
-       void     postProcessData();
-       void      produceFactionReport (FactionEntity * faction, ReportPrinter &out);
-       void      publicReport (int observation, ReportPrinter &out);
-       void      privateReport (ReportPrinter &out);
-       void     reportAppearence(FactionEntity * faction, ReportPrinter &out);
-       void     reportInventory(FactionEntity * faction, ReportPrinter &out);
-inline void     setTarget(Entity * target){ target_ = target;}
-inline Entity * getTarget()const { return target_;}
+      virtual STATUS  initialize      ( Parser *parser );
+       virtual void      save (ostream &out);
+      virtual GameData * createInstanceOfSelf();
+       virtual void     preprocessData();
+       virtual void     postProcessData();
+       virtual void     dailyPreProcess();
+       virtual void      produceFactionReport (FactionEntity * faction, ReportPrinter &out);
+       virtual void      publicReport (int observation, ReportPrinter &out);
+       virtual void      privateReport (ReportPrinter &out);
+       virtual void     reportAppearence(FactionEntity * faction, ReportPrinter &out);
+       virtual void     reportInventory(FactionEntity * faction, ReportPrinter &out);
+       virtual void terminate();
+       virtual string publicReport();
+inline virtual void     setTarget(Entity * target){ target_ = target;}
+inline virtual Entity * getTarget()const { return target_;}
+inline void setEffectType(EffectRule * effectType){effectType_ = effectType;}
+inline EffectRule * getEffectType(){return effectType_;}
+inline int  getEffectStrength(){return strength_;}
+inline void setEffectStrength(int strength){strength_ = strength;}
+inline int  getEffectExpiration(){return expiration_;}
+inline void setEffectExpiration(int expiration){expiration_ = expiration;}
+
 	protected:
        Entity * target_;
+       EffectRule * effectType_;
+        int expiration_;
+        int strength_;
 };
+
 #include "EntitiesCollection.h"
 extern EntitiesCollection  <EffectEntity>   effects;
-
+extern EffectEntity         sampleEffectEntity;
+typedef vector <EffectEntity *>::iterator EffectIterator;
 #endif

@@ -69,7 +69,7 @@ public:
 				 void forgetSkill(SkillRule * skill, TokenEntity * entity);
          void  addStats(EntityStatistics * stats);
 				 void proportionallyDiluteAll(int oldNumber, int newNumber,
-				 		 TokenEntity * entity);
+				 		 UnitEntity * entity);
 
 
 		protected:

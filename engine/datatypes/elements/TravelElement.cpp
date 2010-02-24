@@ -52,7 +52,12 @@ TravelElement *    TravelElement::readElement( Parser *parser)
   int totalTravelTime = parser->getInteger();
   if(totalTravelTime == 0)
       return 0;
-  bool marching = parser->getInteger();    
+   bool marching =false;
+  if(parser->getInteger())
+  {
+      marching =true;
+  }
+
   return (new TravelElement(movingMode,origin,destination,
   time, totalTravelTime,marching));
 }

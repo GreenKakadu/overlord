@@ -155,7 +155,18 @@ STATUS EntityStatistics::initialize(Parser * parser)
       return OK;
 }
 
-
+void EntityStatistics::scaleControlPoints(int num, int factor)
+{
+    int cp = controlPoints_ * num;
+    if(cp % factor ==0)
+    {
+        controlPoints_ = cp / factor;
+    }
+    else
+    {
+        controlPoints_ = (cp / factor) + 1;
+    }
+}
 
 
 /*

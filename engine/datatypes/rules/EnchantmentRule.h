@@ -24,6 +24,7 @@
   *@author Alex Dribin
   */
 class EffectEntity;
+class ActionRule;
 
 class EnchantmentRule : public Rule  {
 public: 
@@ -34,7 +35,9 @@ public:
       inline string getPluralName() const{return pluralName_;}
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
-      USING_RESULT carryOut(Entity * entity);
+      vector <AbstractData *> aPrint();
+      USING_RESULT carryOut(Entity * entity, int value =0);
+      void processEnchantExpiration(Entity * entity);
       EffectEntity * createEffect(Entity * target) ;
       inline  EntityStatistics * getStats()  {return &stats_;}
       inline int getCapacity(int modeIndex)  {return capacity_[modeIndex];}
@@ -43,7 +46,7 @@ public:
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
-
+    virtual void report(ostream &out, int value);
 	protected:
 	    string pluralName_;
 		  MovementMode<int> capacity_;
@@ -51,6 +54,9 @@ public:
       string effectKeyword_;
       GameData * targetType_; // pointer to prototype
 			SkillBonusComboAttribute skillBonuses_;
+      ActionRule * action_;
+      bool isHidden_;
+      string reportPrefix_;
 };
 
 extern RulesCollection <EnchantmentRule>   enchantments;

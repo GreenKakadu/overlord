@@ -10,6 +10,7 @@
 #ifndef ABSTRACT_DATA_H
 #define ABSTRACT_DATA_H
 #include <string>
+#include <vector>
 #include <iostream>
 /**Abstract data class provides homogeneous interface for  using
    itnegers, strings and game objects as report and order parameters
@@ -21,6 +22,11 @@ class AbstractData {
 public: 
 	virtual ~AbstractData(){}
   virtual string print(){return "";}
+/*
+ * aPrint is a function that performs print() in a form convinient for interpretaion in GUI application 
+ *  as a sequence of  AbstractData tokens.
+ */ 
+        virtual vector <AbstractData *> aPrint();
 	AbstractData(){}
    virtual void saveAsParameter (ostream &){}
    virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.

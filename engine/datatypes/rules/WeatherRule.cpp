@@ -5,6 +5,7 @@
     copyright            : (C) 2005 by Alex Dribin
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
+#include "StringData.h"
 #include "WeatherRule.h"
 #include "SkillRule.h"
 #include "BonusElement.h"
@@ -39,7 +40,8 @@ WeatherRule::initialize        ( Parser *parser )
   GameData::initialize(parser);
 		movementBonuses_.initialize(parser);
 		skillBonuses_.initialize(parser);
-      return OK;
+   Rule::initialize(parser);
+     return OK;
 
  }
 
@@ -74,4 +76,12 @@ int WeatherRule::getLearningBonus(SkillRule * skill)
 int WeatherRule::getStudyBonus(SkillRule * skill)
 {
   return skillBonuses_.getStudyBonus(skill);
+}
+  
+vector <AbstractData *> WeatherRule::aPrint()
+{
+  vector <AbstractData *> v;
+  v.push_back(this);
+  v.push_back(new StringData(": " + getDescription() + "."));
+  return v;
 }
