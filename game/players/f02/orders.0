@@ -1,0 +1,28 @@
+GAME f02 pswd2 alpha
+UNIT U201
+@ teach  void
+UNIT U202
+@ teach  fire
+UNIT U203
+@ teach  airs
+UNIT U204
+@ teach  eart
+UNIT U205
+@ teach  wate
+UNIT U206
+@ teach  necr
+UNIT U212
+#@ claim shrf
+UNIT U213
+#@ claim shrf
+UNIT U221
+@ GUARD
+UNIT U222
+@ GUARD
+UNIT U223
+@ SETTING silent
+@ GUARD
+UNIT U224
+@ SETTING silent
+@ GUARD
+END

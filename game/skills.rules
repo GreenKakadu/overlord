@@ -1,0 +1,6097 @@
+# Overlord skills data
+# Ver 0.3.5 29.12.2008
+# -------- Generic configuration parameters ---
+# ITEM - (string): tag of a new skill
+# NAME - (string): name for reports
+# DESCRIPTION - (string): text for knowledge report
+#
+# COMBAT_SKILL -  combat skill flag
+# MAGIC_SKILL -  magic skill flag
+# BASIC_SKILL - basic skill flag
+# LEVEL - (int): - number of experience points (study days * 100) needed to reach this level
+									all parameters after "LEVEL" will relate to all levels after that
+									but later they may be overwrititten on the next levels
+# REQUIRES- (skill tag) (int):  skill and it's level required to start learning.
+# CAPACITY - [movement mode tag] (int): capacity added by possesing skill
+# STUDY_COST- (int):  price of one day studying
+# LEARNING_PARADIGM - defines rules for learning skill
+# USING_PARADIGM - degines
+# TARGET
+
+# WEIGHT - (int): weight
+# PRICE - (int): formal price
+# CAPACITY - [movement mode tag] (int): capacity added by possesing item
+# EQUIP_CAPACITY [movement mode tag] (int): capacity added by equipping item
+# EQUIP_CATEGORY (int) or (equipment slot tag): equipment slot
+# EQUIP_CONDITION (condition keyword) ... : defines condition for equipment
+# 								SKILL_CONDITION (skill tag) (int): skill and level
+
+# USE_SKILL - (skill tag) (int): defines skill and it's level for learning scrolls
+# COMBAT_ACTION - ( combat action tag): defines use in combat
+# SPECIAL -  special item flag
+# UNIQUE -  unique item flag
+# LIVE -  live item flag
+# MAGIC -  magic item flag
+# -------- Stats ---
+# MELEE - (int) : attack rating modificator
+# INITIATIVE - (int): initiative modificator (more - better)
+# DEFENSE - (int): defence rating modificator
+# DAMAGE - (int): modificator
+# DAMAGE_TYPE (int): or {AIR; EARTH; FIRE; VOID; WATER;} defines damage type
+# MISSILE - (int): ranged attack rating modificator
+# HITS - (int): number of hits modificator
+# LIFE - (int): hit points modificator - NB: Do not use for combat actions - use effects
+# MANA - (int): maximum mana modificator
+# UPKEEP - (int): upkeep modificator
+# CONTROL - (int): control points modificator
+# STEALTH - (int): stealth modificator
+# OBSERVATION - (int): observation modificator
+
+
+# -------- Bonuses ---
+# STUDY_BONUS (skill tag) (int): skill and bonus in % to speed of learning
+# LEARNING_LEVEL_BONUS (skill tag) (int): skill and bonus to maximum level
+# USE_BONUS (skill tag) (int): skill and bonus in % to effect of using
+# MOVE_BONUS (movement mode tag) (int): movement bonus in % and mode it applies
+
+# --------- Skill Use Types -----------
+# USING_CRAFT
+# USING_HARVEST
+# USING_CONSTRUCTION
+# USING_BUILD
+# USING_ENCHANT
+# USING_SUMMON
+
+# ---COMBAT_ACTION
+# MELEE
+# RANGED
+COMBAT_SUMMON
+COMBAT_ENCHANT
+
+# --------- Skill Learning  Types -----------
+# LEARNING_NORMAL
+# LEARNING_MAGIC can be learned only by leaders <not implemented>
+# LEARNING_ELEMENTAL_MAGIC can be learned only if sertain magecraft level is gained
+# LEARNING_CREATURE - only creatures can learn
+
+# --------- Special cases  -----------
+
+# USE_ANYONE - Anyone can use this skill. No need to study.
+# NO_EXP - Using of this skill grants no experience
+# NO_LEARN - Skill can't be learned
+
+KEYWORD  SKILL 999
+
+
+
+# =======================  Scouting =======================================
+SKILL obse
+NAME observation
+DESCRIPTION How to stand back, and really look at things
+STUDY_COST 2
+REQUIRES scou
+COMBAT_SKILL
+BASIC_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+LEVEL 6000
+OBSERVATION 1
+WISDOM rvod
+LEVEL 18000
+DESCRIPTION Better observation
+OBSERVATION 2
+LEVEL 36000
+DESCRIPTION Even better observation. 3 observation levels higher than a unit's stealth will disclose that unit's faction
+OBSERVATION 3
+LEVEL 60000
+DESCRIPTION Eagle's sight and absolute discernement
+OBSERVATION 4
+
+SKILL scou
+NAME scouting
+DESCRIPTION The basic exploration skill, allowing a follower unit to move on its own
+STUDY_COST 1
+LEVEL 3000
+WISDOM rair
+LEVEL 9000
+DESCRIPTION The advanced exploration skill
+OBSERVATION 1
+LEVEL 18000
+DESCRIPTION Highly advanced exploration skill. Long practice of the outdoors gives that scout an advantage
+STEALTH 1
+LEVEL 30000
+DESCRIPTION Exceptional exploration skill. The skilled scout may reconnoiter an adjacent location without having to enter it
+TARGET LOCATION NEAR
+PRODUCES evtsigh 10
+
+SKILL plwk
+NAME plainswalk
+DESCRIPTION The knowledge of the wide plains, their resources, and how to survive there
+STUDY_COST 1
+REQUIRES scou
+LEARNING_PARADIGM LEARNING_NORMAL
+USING_PARADIGM USING_CRAFT
+PRODUCES food 10
+LEVEL 3000
+CAPACITY 1 10
+LEVEL 9000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 7
+CAPACITY 1 20
+LEVEL 18000
+DESCRIPTION Even better capacities, and even more faster living out of the land
+PRODUCES food 5
+CAPACITY 1 25
+
+SKILL hiwk
+NAME hillswalk
+DESCRIPTION The knowledge of the rolling hills, their resources, and how to survive there
+STUDY_COST 1
+REQUIRES scou
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 10
+CAPACITY 0 10
+LEVEL 9000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 7
+CAPACITY 0 12
+LEVEL 18000
+DESCRIPTION Even better capacities, and even more faster living out of the land
+PRODUCES food 5
+CAPACITY 0 14
+LEVEL 30000
+DESCRIPTION Even better capacities, and even more faster living out of the land
+PRODUCES food 4
+CAPACITY 0 16
+
+SKILL mnwk
+NAME mountainwalk
+DESCRIPTION The knowledge of the mountain, finding safe path even in the worst of the weather and the slickest of ices
+STUDY_COST 1
+REQUIRES hiwk 3
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 20
+LEVEL 9000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 15
+LEVEL 18000
+DESCRIPTION The highest mountaineers can live off the barest of the mountains
+PRODUCES food 10
+
+SKILL fowk
+NAME forestwalk
+DESCRIPTION The knowledge of the deep forest, the fauna, the resources and how to survive there
+STUDY_COST 1
+REQUIRES scou
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 10
+OBSERVATION 1
+WISDOM rvod
+LEVEL 18000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 7
+OBSERVATION 2
+LEVEL 36000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 4
+LEVEL 60000
+
+SKILL dewk
+NAME desertwalk
+DESCRIPTION The knowledge of the hot desert, and how to survive its arid climates
+STUDY_COST 1
+REQUIRES scou
+USING_PARADIGM USING_CRAFT
+PRODUCES food 15
+LEVEL  3000
+CAPACITY 0 20
+LEVEL 9000
+DESCRIPTION Better capacities, and faster living out of the land
+PRODUCES food 10
+CAPACITY 0 30
+LEVEL 18000
+DESCRIPTION For those of this level, the desert has become a friend rather than an enemy
+CAPACITY 0 40
+PRODUCES food 7
+
+SKILL swwk
+NAME swampwalk
+DESCRIPTION The knowledge of the dank swamps, their peculiar flora, and how to survive there
+STUDY_COST 1
+REQUIRES scou
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 15
+STEALTH 1
+WISDOM rvod
+LEVEL 18000
+DESCRIPTION More knowledge from swamps, and how to hide in their maze
+PRODUCES food 10
+STEALTH 2
+LEVEL 36000
+DESCRIPTION Lifetime knowledge from swamps, and how to cover oneself in their maze
+PRODUCES food 5
+STEALTH 3
+
+SKILL icwk
+NAME icewalk
+DESCRIPTION The knowledge of the icy terrains, tundra and desolate icefields, their peculiar climate, how to find buried herbs and roots, and how to survive there
+STUDY_COST 1
+REQUIRES scou 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 20
+LEVEL 9000
+DESCRIPTION At this level, a skilled scout spends less time for survival
+PRODUCES food 10
+LEVEL 18000
+DESCRIPTION At this level, survival in these climes becomes almost easy
+PRODUCES food 7
+
+SKILL ambu
+NAME ambush
+DESCRIPTION How to surprise ennemies on the battlefield, and put them at a disadvantage
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES scou
+LEVEL  6000
+LEVEL 18000
+OBSERVATION 1
+DESCRIPTION At this level, the confusion increases, and each enemy unit may shuffle one rank as well as one file
+LEVEL 36000
+DESCRIPTION At this level, great confusion reigns, and each enemy unit may be on any file, and shuffle one rank
+LEVEL 60000
+DESCRIPTION At this level, total confusion reigns, and each enemy unit may be on any file and any rank
+
+SKILL stea
+NAME stealth
+DESCRIPTION How to hide and dissimule oneself from sight
+STUDY_COST 2
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES scou
+LEVEL  6000
+STEALTH 1
+WISDOM rvod
+LEVEL 18000
+DESCRIPTION How to hide and dissimule oneself more efficiently
+STEALTH 2
+LEVEL 36000
+DESCRIPTION How to stay in the shadows and not be noticed
+STEALTH 3
+LEVEL 60000
+DESCRIPTION Stealth like this is reserved to legendary characters
+STEALTH 4
+LEVEL 90000
+DESCRIPTION No one ever reached this stealth level in recorded history
+STEALTH 5
+
+SKILL ppoc
+NAME pick pockets
+DESCRIPTION The skilled thief will pick someone's pockets. One object will be picked at random, tending to the smallest and most expensive. Stealing an item has a chance of success of 5% per stealth factor, minus 3% per unit of weight. Equipped items are considered last and suffer a penalty of 20% chance. If the attempt fails, the target will notice the thief with a 10% per observation level chance
+REQUIRES stea 2
+COMBAT_SKILL
+STUDY_COST 2
+LEARNING_PARADIGM LEARNING_NORMAL
+USING_PARADIGM USING_ACTION
+LEVEL  12000
+STUDENT LEADER
+STEALTH 1
+TARGET UNIT LOCAL
+PRODUCES evtppoc 5
+LEVEL 36000
+DESCRIPTION At this level, the skilled thief will lift objects with more ease. The steal has 6% chance per stealth, minus 2% per unit of weight
+PRODUCES evtppoc 4
+LEVEL 72000
+DESCRIPTION At this level, the outstanding thief will have 6% chance per stealth factor, minus 1% per unit of weight
+PRODUCES evtppoc 3
+
+SKILL assa
+NAME assasinate
+DESCRIPTION The secret and dark art of the assassin. Success chances of assassination attempt will depend on stealth and the level in assassination skill of assassine vs. total observation of victim and all it's allies. If attempt is successful and assassin's stealth as high enougth to be unseen by victim's allies assassine will escape unnoticed. Otherwise it has some chance to be captured and executed by victim's allies. If attempt failures assasine will be allways captured if he may be seen and has some chance to escape otherwise.
+REQUIRES stea 2
+COMBAT_SKILL
+LEVEL  9000
+STUDENT LEADER
+STUDY_COST 2
+LEARNING_PARADIGM LEARNING_NORMAL
+USING_PARADIGM USING_ACTION
+TARGET UNIT LOCAL
+PRODUCES evtassa 10
+LEVEL 18000
+DESCRIPTION At this level, assassinations yield a better chance of success (6% per stealth difference), +2 in tactics and the event takes less time to plan
+STEALTH 1
+PRODUCES evtassa 8
+LEVEL 36000
+DESCRIPTION At this level, assassinations yield a better chance of success (7% per stealth difference), +3 in tactics and take less time to put in motion
+PRODUCES evtassa 6
+
+# ======================== Combat ==========================
+
+SKILL cmbt
+NAME combat
+DESCRIPTION The basic combat training for troops, officers and generals
+STUDY_COST 1
+LEARNING_PARADIGM LEARNING_NORMAL
+COMBAT_SKILL
+BASIC_SKILL
+LEVEL  3000
+WISDOM hcom
+MELEE 1
+DEFENSE 1
+LEVEL 9000
+DESCRIPTION Advanced combat training
+MELEE 2
+DEFENSE 2
+LEVEL 18000
+DESCRIPTION Veteran combat experience
+MELEE 3
+DEFENSE 3
+LEVEL 30000
+DESCRIPTION Heroic combat experience
+MELEE 4
+DEFENSE 4
+LEVEL 45000
+DESCRIPTION Legendary combat proficiency
+MELEE 5
+DEFENSE 5
+LEVEL 63000
+DESCRIPTION Unnatural combat proficiency
+MELEE 6
+DEFENSE 6
+LEVEL 84000
+DESCRIPTION Godlike combat proficiency
+MELEE 7
+DEFENSE 7
+
+SKILL blde
+NAME blades
+DESCRIPTION The art of wielding bladed weapons
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+WISDOM hcom
+REQUIRES cmbt
+LEVEL  3000
+MELEE 1
+DEFENSE 1
+LEVEL 9000
+DESCRIPTION Advanced blades wielding
+MELEE 2
+DEFENSE 2
+LEVEL 18000
+DESCRIPTION Veteran blades wielding, for better blades
+MELEE 3
+DEFENSE 3
+LEVEL 30000
+DESCRIPTION Heroic blades wielding
+MELEE 4
+DEFENSE 4
+LEVEL 45000
+DESCRIPTION Legendary blades wielding
+MELEE 5
+DEFENSE 5
+LEVEL 63000
+DESCRIPTION God-like skill with bladed weapons
+MELEE 6
+DEFENSE 6
+
+SKILL mele
+NAME melee
+DESCRIPTION The art of using blunted weapons as an effective means of attack
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES cmbt
+LEVEL  3000
+WISDOM hcom
+MELEE 1
+LEVEL 9000
+DESCRIPTION The knowledge how to wield blunt weapons to best effect
+MELEE 2
+LEVEL 18000
+DESCRIPTION The art of hitting just there
+MELEE 3
+LEVEL 30000
+DESCRIPTION The art of striking where it hurts the most
+MELEE 4
+LEVEL 45000
+DESCRIPTION Legendary prowess
+MELEE 5
+LEVEL 63000
+DESCRIPTION God-like prowess
+MELEE 6
+
+SKILL arch
+NAME archery
+DESCRIPTION The art of using bows to attack at safe distances
+STUDY_COST 1
+WISDOM hcom
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES cmbt
+LEVEL  3000
+MISSILE 1
+LEVEL 9000
+DESCRIPTION Advanced bow skills, for longbow uses
+MISSILE 2
+LEVEL 18000
+MISSILE 3
+DESCRIPTION Expert bow skills, for compound bow uses
+LEVEL 30000
+MISSILE 4
+DESCRIPTION Supreme bow skills, for the legendary archery
+LEVEL 45000
+MISSILE 5
+DESCRIPTION Perfect bow skills
+LEVEL 63000
+MISSILE 6
+HITS 2
+DESCRIPTION Inhumanely supreme skills
+
+SKILL mark
+NAME marksmanship
+DESCRIPTION The best archers can target a unit farther on the battlefield. Use of this skill requires the equipment of: longbow [lbow]
+STUDY_COST 1
+WISDOM hcom
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES arch 3
+MISSILE 1
+LEVEL  6000
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 3
+COMBAT BONUS RANGED_DAMAGE 4
+LEVEL 18000
+MISSILE 2
+DESCRIPTION This level improves slightly the archer prowess
+LEVEL 36000
+MISSILE 3
+DESCRIPTION This level improves a little the archer's aim
+LEVEL 60000
+MISSILE 4
+DESCRIPTION This level allows a high level of prowess with a bow
+LEVEL 90000
+MISSILE 5
+DESCRIPTION This level allows a gigantic level of prowess with a bow
+
+SKILL tgld
+NAME target the leader
+DESCRIPTION With a skill above the normal, the best of the archers can select a leader out of the enemy units. Use of this skill requires the equipment of: compound bow [cbow]
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+WISDOM hcom
+REQUIRES mark 2
+LEVEL  9000
+STUDENT LEADER
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING_LEADER
+COMBAT RANGE 2
+COMBAT BONUS RANGED_DAMAGE 5
+LEVEL 27000
+DESCRIPTION At this level of skill, the arrow is delivered more accurately
+MISSILE 1
+LEVEL 54000
+DESCRIPTION At this level of skill, the arrow is delivered more forecefully
+COMBAT BONUS DAMAGE 6
+LEVEL 90000
+DESCRIPTION The very best archers will fire at a longer range
+COMBAT RANGE 3
+LEVEL 135000
+DESCRIPTION A superior skill in targetting leaders will help the strike
+MISSILE 2
+
+SKILL parr
+NAME parry
+DESCRIPTION The art of using shields and moving with armors
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES cmbt
+LEVEL  3000
+WISDOM hcom
+DEFENSE 1
+LEVEL 9000
+DESCRIPTION The best shields for the best effect
+DEFENSE 2
+LEVEL 18000
+DESCRIPTION Advanced shields
+DEFENSE 3
+LEVEL 30000
+DESCRIPTION Advanced armors
+DEFENSE 4
+LEVEL 45000
+DESCRIPTION Instinctive movements to avoid hits
+DEFENSE 5
+LEVEL 63000
+DESCRIPTION Ingrained movements to avoid hits
+DEFENSE 6
+
+SKILL mane
+NAME maneuvers
+DESCRIPTION The basic discipline, and the formations on the battlefield
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES cmbt
+WISDOM hcom
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION Moving on the battlefield for the best effects
+INITIATIVE 1
+LEVEL 18000
+DESCRIPTION Best movement on the battlefield for elite units
+INITIATIVE 2
+LEVEL 30000
+DESCRIPTION Heroic-level movement skills for the best units
+INITIATIVE 3
+LEVEL 45000
+DESCRIPTION These units can be move to the best places before anyone can react
+INITIATIVE 4
+LEVEL 63000
+DESCRIPTION Out of this world experience
+INITIATIVE 5
+
+SKILL cava
+NAME cavalry maneuvers
+DESCRIPTION The cavalry operations
+STUDY_COST 1
+WISDOM hcom
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES mane 2
+LEVEL  6000
+CAPACITY 1 10
+LEVEL 18000
+DESCRIPTION Advanced cavalry maneuvers
+CAPACITY 1 20
+LEVEL 36000
+DESCRIPTION High level cavalry. It is required for special high level mounts
+CAPACITY 1 30
+LEVEL 60000
+DESCRIPTION Heroic level cavalry
+CAPACITY 1 40
+
+SKILL tact
+NAME tactics
+DESCRIPTION The art of the tactician
+STUDY_COST 5
+REQUIRES cmbt
+LEVEL  6000
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+STUDENT LEADER
+WISDOM hcom
+LEVEL 18000
+DESCRIPTION Advanced tactical studies
+INITIATIVE 1
+LEVEL 36000
+DESCRIPTION Long tactical experience
+OBSERVATION 1
+LEVEL 60000
+INITIATIVE 2
+DESCRIPTION Veteran tactical experience
+LEVEL 90000
+INITIATIVE 2
+DESCRIPTION Legendary tactical experience
+OBSERVATION 2
+
+SKILL stra
+NAME strategy
+DESCRIPTION The art of preparing a battle, and not merely conduct it. Strategy provides a tactician advantage for the entire duration of the battle, raising initiative for all units on its side by one
+STUDY_COST 10
+REQUIRES tact 3
+LEVEL  12000
+WISDOM hcom
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+STUDENT LEADER
+LEVEL 36000
+DESCRIPTION A better strategist provides an initiative bonus of 2 for all units on his side during the battle
+LEVEL 72000
+DESCRIPTION The old and experienced strategist provides an additional initiative of 3 for all its allies during a battle
+LEVEL 120000
+DESCRIPTION Legendary strategists provided incredible bonus to their allies, raising their initiative by 4 for a whole battle
+LEVEL 180000
+DESCRIPTION Absolute strategists provided incredible powers, raising initiative by 5 for all the battle
+LEVEL 252000
+
+SKILL mart
+NAME martial arts
+DESCRIPTION The martial arts, or how to fight with one's own weapons. Additional levels increase the base damage and amount of hits in combat
+STUDY_COST 1
+WISDOM hcom
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+REQUIRES cmbt 2
+LEVEL  3000
+DEFENSE 1
+LEVEL 9000
+DESCRIPTION Advanced martial arts, or how to use one's body as a weapon
+MELEE 1
+DAMAGE 1
+LEVEL 18000
+DESCRIPTION Expert martial arts, or how to use one's body as a weapon
+DAMAGE 2
+HITS 2
+LEVEL 30000
+DESCRIPTION Heroic martial arts, or how to use one's body as a weapon
+INITIATIVE 1
+DAMAGE 3
+LEVEL 45000
+DESCRIPTION Legendary martial arts, or how to use one's body as a weapon
+DEFENSE 2
+DAMAGE 4
+LEVEL 63000
+DESCRIPTION God-like martial arts, or the art of using an enemy's body as a weapon
+HITS 3
+
+SKILL fana
+NAME fanaticism
+DESCRIPTION Fanatics are willing to fight to the death for a cause. Fanatic units casualties are not counted for rout, nor are checked for morale. Fanatic units always die if their side of the battle loses
+STUDY_COST 1
+COMBAT_SKILL
+LEARNING_PARADIGM LEARNING_NORMAL
+WISDOM hcom
+REQUIRES cmbt 2
+LEVEL  9000
+LEVEL 27000
+INITIATIVE -1
+MELEE 1
+DEFENSE -1
+DESCRIPTION Higher levels of fanaticism will make fighters concentrate on offense over defense
+LEVEL 54000
+DAMAGE 1
+INITIATIVE -2
+DEFENSE -2
+DESCRIPTION Higher levels of fanaticism will have more savage fighters
+LEVEL 90000
+DESCRIPTION Absolute fanatics, in their single-mindedness, will do anything for their leader
+MELEE 2
+MISSILE 1
+INITIATIVE -3
+
+# ========================== Digging  ===============================
+
+SKILL digg
+NAME digging
+DESCRIPTION The art of digging minerals from the earth
+BASIC_SKILL
+STUDY_COST 1
+USING_PARADIGM USING_HARVEST
+LEVEL  3000
+WISDOM reat
+HARVEST ston 1
+PRODUCES ston 6
+TOOL pick
+LEVEL 9000
+DESCRIPTION Faster digging
+HARVEST ston 2
+LEVEL 18000
+DESCRIPTION The knowledge of all the stone's fault lines and a trained eye makes these units the best diggers ever
+HARVEST ston 3
+LEVEL 30000
+DESCRIPTION At this level, the earth itself opens up to reveal its stony bones to the experts
+HARVEST ston 4
+
+SKILL mini
+NAME iron mining
+DESCRIPTION The art of extracting and smelting iron ores
+STUDY_COST 1
+REQUIRES digg
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST iron 1
+PRODUCES iron 6
+TOOL pick
+LEVEL 9000
+DESCRIPTION The art of selecting the best iron ores
+HARVEST iron 2
+LEVEL 18000
+DESCRIPTION The art of finding the most productive iron veins
+HARVEST iron 3
+LEVEL 30000
+DESCRIPTION This skill lets you rip the iron from its earthen bowels
+
+SKILL aext
+NAME adamantium extraction
+DESCRIPTION Long thought to be purely magical, the rare adamantium exists in very small veins in magically-impregnated areas
+REQUIRES mini 3
+LEVEL  6000
+STUDY_COST 1
+STUDENT LEADER
+USING_PARADIGM USING_HARVEST
+HARVEST adam 1
+PRODUCES adam 30
+LEVEL 18000
+DESCRIPTION At this level, adamantium is extracted a trifle faster, but still require back-breaking work
+PRODUCES adam 25
+
+SKILL smin
+NAME silver mining
+DESCRIPTION The art of extracting and purifying silver ores. Silver is visible only if you know how to find it
+STUDY_COST 1
+REQUIRES mini
+LEVEL  6000
+USING_PARADIGM USING_HARVEST
+HARVEST silv 1
+PRODUCES silv 10
+TOOL pick
+LEVEL 18000
+DESCRIPTION Faster silver extraction
+HARVEST silv 2
+LEVEL 36000
+DESCRIPTION Silver processing
+HARVEST silv 3
+
+SKILL gmin
+NAME gold mining
+DESCRIPTION The art of extracting and refining the small slivers of gold from ores. Gold is visible only if you know how to find it
+STUDY_COST 1
+REQUIRES smin
+LEVEL  12000
+USING_PARADIGM USING_HARVEST
+HARVEST gold 1
+PRODUCES gold 20
+TOOL pick
+LEVEL 36000
+DESCRIPTION The very skilled gold finder will not only harvest gold faster, but will also find more where others expect less. Level 2 miners can harvest twice as much gold as indicated
+PRODUCES gold 10
+LEVEL 72000
+DESCRIPTION The best miners know how to strike rich veins and work only the best mineral lodes. Level 3 miners can harvest three times the amount of gold reported
+PRODUCES gold 7
+
+SKILL gsch
+NAME gem searching
+DESCRIPTION The art of finding and extracting precious gemstones from their earth preserves. Gems are visible only if you know how to find them
+STUDY_COST 1
+REQUIRES digg 2
+LEVEL  6000
+USING_PARADIGM USING_HARVEST
+HARVEST gems 1
+PRODUCES gems 30
+TOOL pick
+LEVEL 18000
+DESCRIPTION At this level, lifting a gem from its earthen coffin is a lot easier
+HARVEST gems 2
+LEVEL 36000
+DESCRIPTION At this level, many gems can be lifted in less time
+HARVEST gems 3
+
+SKILL dgra
+NAME dig granite
+DESCRIPTION Granite requires more skill to extract
+STUDY_COST 1
+REQUIRES digg 2
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST gran 1
+PRODUCES gran 6
+TOOL pick
+LEVEL 9000
+DESCRIPTION At this level, granite is faster to extract from the quarry
+HARVEST gran 2
+LEVEL 18000
+DESCRIPTION At this level, granite is easier to cut out of the earth
+HARVEST gran 3
+
+SKILL stcu
+NAME stone cutting
+DESCRIPTION Skilled artisans will cut stones in perfect shapes
+STUDY_COST 1
+REQUIRES digg 2
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME gran 1
+PRODUCES kstn 30
+LEVEL 18000
+DESCRIPTION Experience makes an artisan faster
+PRODUCES kstn 15
+LEVEL 36000
+DESCRIPTION A long familiarity with stones allows one to cut things faster
+PRODUCES kstn 10
+
+# ========================== Forestry  ===============================
+
+SKILL fore
+NAME forestry
+DESCRIPTION The art of the trees, the forests, and the woods
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION Deep knowledge of the flora, from trees to herbs
+LEVEL 18000
+DESCRIPTION Expert knowledge of the flora, from trees to herbs
+
+SKILL herb
+NAME herbalist
+DESCRIPTION The knowledge of the herbs, and their magics
+STUDY_COST 1
+WISDOM rwat
+REQUIRES fore
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST hrbs 1
+PRODUCES hrbs 10
+LEVEL 9000
+DESCRIPTION Advanced herb knowledge
+HARVEST hrbs 2
+LEVEL 18000
+DESCRIPTION Expert herb knowledge
+HARVEST hrbs 3
+LEVEL 30000
+DESCRIPTION Total herb knowledge
+HARVEST hrbs 4
+
+SKILL fman
+NAME find mandrake
+DESCRIPTION The mandrake root is valued above all for high-level magics, but hard to spot. Only skilled units may spot a mandrake in an area
+STUDY_COST 1
+REQUIRES herb 3
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST mand 1
+PRODUCES mand 20
+LEVEL 9000
+DESCRIPTION At this level, the skilled herbalist is more assured when pulling out mandrake roots
+HARVEST mand 2
+
+SKILL lumb
+NAME lumberjack
+DESCRIPTION The art of selecting, falling and cutting a tree for its durable wood
+STUDY_COST 1
+WISDOM rwat
+REQUIRES fore
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST wood 1
+PRODUCES wood 5
+TOOL saws
+LEVEL 9000
+DESCRIPTION At this level, lumberjack fall and strip a tree in record time
+HARVEST wood 2
+LEVEL 18000
+DESCRIPTION At this level, lumberjack works like none other
+HARVEST wood 3
+LEVEL 30000
+DESCRIPTION The best lumberjacks must be restrained, lest they turn a forest into a desert
+HARVEST wood 4
+
+SKILL febe
+NAME find ebene
+DESCRIPTION The art of working that noblest of trees
+STUDY_COST 1
+REQUIRES lumb 2
+LEVEL  6000
+USING_PARADIGM USING_HARVEST
+HARVEST eben 1
+PRODUCES eben 7
+TOOL saws
+LEVEL 18000
+DESCRIPTION At this level, more ebene is harvested by each worker
+HARVEST eben 2
+LEVEL 36000
+DESCRIPTION At this level, evene is easier to cut
+HARVEST eben 3
+
+SKILL hunt
+NAME hunting
+DESCRIPTION The art of hunting wild animals for their hides
+STUDY_COST 1
+REQUIRES fore
+WISDOM rwat
+LEVEL  3000
+USING_PARADIGM USING_HARVEST
+HARVEST hide 1
+PRODUCES hide 10
+LEVEL 9000
+DESCRIPTION At this level, the trapper catches more animals each day
+HARVEST hide 2
+LEVEL 18000
+DESCRIPTION At this level, the trapper will catch many more kind of animals
+HARVEST hide 3
+
+SKILL skin
+NAME skinning
+DESCRIPTION Even the most common animals can make fine hides if you know how to work them
+STUDY_COST 1
+REQUIRES hunt
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME catt 1
+PRODUCES hide 30
+MULTIPLE 8
+LEVEL 18000
+DESCRIPTION At this level, the skinner knows how to cut skin just right
+PRODUCES hide 20
+MULTIPLE 10
+LEVEL 36000
+DESCRIPTION The lifetime-experienced skinners can use even the most unlikely folds of skin
+PRODUCES hide 15
+MULTIPLE 12
+
+# ========================== Beast Mastery  ===============================
+
+SKILL beas
+NAME beast mastery
+DESCRIPTION The art of training, domesticating and raising all kind of animals
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION The art of training, domesticating and raising exotic animals
+LEVEL 18000
+DESCRIPTION The art of training, domesticating and raising savage creatures
+LEVEL 36000
+DESCRIPTION The art of training, domesticating and raising the most difficult beasts
+
+SKILL hors
+NAME horse breaking
+DESCRIPTION The art of taming wild horses to use as mounts
+STUDY_COST 1
+REQUIRES beas
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST hrse 1
+PRODUCES hrse 30
+LEVEL 9000
+DESCRIPTION At this level, wild horses are easier to break into the mold
+HARVEST hrse 2
+LEVEL 18000
+DESCRIPTION At this level, the horse catcher can get three times more horses than a beginner
+HARVEST hrse 3
+LEVEL 30000
+DESCRIPTION At this level, it would look like to an outsider that the horses are coming on their own accord
+HARVEST hrse 4
+
+SKILL trhr
+NAME train horses
+DESCRIPTION Horses make poor mounts in war, unless they are trained to avoid mistakes
+STUDY_COST 1
+REQUIRES hors
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME hrse 1
+CONSUME hide 3
+CONSUME iron 1
+PRODUCES whrs 30
+LEVEL 18000
+DESCRIPTION At this level, a horse can be war-broken in shorter time
+PRODUCES whrs 15
+LEVEL 36000
+DESCRIPTION At this level, a horse can be war-broken in a very fast time
+PRODUCES whrs 10
+
+SKILL tmou
+NAME train mounts
+DESCRIPTION Even when you think that training is not possible anymore, it is
+STUDY_COST 1
+REQUIRES trhr
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME whrs 1
+PRODUCES wmnt 30
+LEVEL 18000
+DESCRIPTION At this level, the distinguishing trainer spots immediately what requires correction in a horse's training
+PRODUCES wmnt 20
+LEVEL 36000
+DESCRIPTION At this level, the training can be achieved in short time
+PRODUCES wmnt 10
+
+SKILL pack
+NAME pack training
+DESCRIPTION The art of raising pack animals for the long caravans of trade merchants
+STUDY_COST 1
+REQUIRES beas
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_CRAFT
+CONSUME hrse 1
+CONSUME catt 1
+PRODUCES mule 30
+MULTIPLE 2
+LEVEL 9000
+DESCRIPTION At this level, breeding mules is a lot easier
+PRODUCES mule 20
+LEVEL 18000
+DESCRIPTION At this level, breeding mules is very fast
+PRODUCES mule 15
+
+SKILL cpeg
+NAME catch pegasi
+DESCRIPTION The art of finding and taming those elusives creatures of the air. Pegasi are visible only if you know how to find them
+STUDY_COST 1
+REQUIRES beas 2
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST pega 1
+PRODUCES pega 30
+LEVEL 9000
+DESCRIPTION Familiarity with pegasi means that you can tame them more quickly
+HARVEST pega 2
+LEVEL 18000
+DESCRIPTION With a lot of skills, one can approach the pegasi and tame them while doing something else 
+HARVEST pega 3
+LEVEL 30000
+DESCRIPTION Someone with that level of familiarity can find any pegasus anywhere
+HARVEST pega 4
+
+SKILL bpeg
+NAME breed pegasus
+DESCRIPTION Breeding pegasi is very hard and time-consuming
+STUDY_COST 1
+REQUIRES cpeg 3
+LEVEL  12000
+USING_PARADIGM USING_CRAFT
+CONSUME pega 1
+CONSUME hrse 1
+PRODUCES pega 60
+MULTIPLE 2
+LEVEL 36000
+DESCRIPTION High skills make a tiny difference in the successful breeding of the winged beasts
+PRODUCES pega 50
+LEVEL 72000
+DESCRIPTION Higher skills make no difference in the successful breeding of the winged beasts
+
+
+SKILL cseh
+NAME catch sea horses
+DESCRIPTION The art of finding and taming those water mounts. Sea horses are visible only if you know how to find them
+STUDY_COST 1
+REQUIRES beas 2
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST seah 1
+PRODUCES seah 30
+LEVEL 9000
+DESCRIPTION Familiarity with sea horses means that you can find them more quickly
+HARVEST seah 2
+LEVEL 27000
+DESCRIPTION At this level, one can rally sea horses faster
+HARVEST seah 3
+
+SKILL thou
+NAME train hunting hounds
+DESCRIPTION The art of finding and training hunting hounds. Hunting hounds are visible only if you know how find them, and sometime roam forests and plains
+STUDY_COST 1
+REQUIRES beas 2
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST houn 1
+PRODUCES houn 30
+LEVEL 9000
+HARVEST houn 2
+DESCRIPTION At this level, hunting hounds are tamed with more ease
+LEVEL 18000
+HARVEST houn 3
+DESCRIPTION At this level, hunting hounds will submit to their master's will
+LEVEL 30000
+HARVEST houn 4
+DESCRIPTION At this level, hunting hounds will flock their master's call
+
+# ========================== Agriculture ===============================
+
+SKILL agri
+NAME agriculture
+DESCRIPTION The skills that make wheat, corn, and beasts
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION The skills that make wheat, corn, and beasts
+LEVEL 18000
+DESCRIPTION The skills that make wheat, corn, and beasts
+LEVEL 30000
+DESCRIPTION The skills that make wheat, corn, and beasts
+
+SKILL farm
+NAME farming
+DESCRIPTION The art of growing good grain, to be ground into flour and made into bread
+STUDY_COST 1
+REQUIRES agri
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST grai 1
+PRODUCES grai 30
+TOOL plow
+LEVEL 9000
+DESCRIPTION Skilled farmers harvest more grain per year
+HARVEST grai 2
+LEVEL 18000
+HARVEST grai 3
+DESCRIPTION The best farming hands work any terrain
+LEVEL 30000
+HARVEST grai 4
+DESCRIPTION The expert farmer will harvest under any weather
+
+SKILL ranc
+NAME cattle ranching
+DESCRIPTION The art of catching the roaming cattle, to slaughter for food
+STUDY_COST 1
+REQUIRES agri
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST catt 1
+PRODUCES catt 30
+LEVEL 9000
+DESCRIPTION At this level, cattle are easy to harvest
+HARVEST catt 2
+LEVEL 27000
+DESCRIPTION At this level, cattles are grouped with great skill and rarely escape
+HARVEST catt 3
+LEVEL 48000
+DESCRIPTION The most skilled ranchers will manage cattles with great ease
+HARVEST catt 4
+
+SKILL fbbu
+NAME find beasts of burden
+DESCRIPTION It is possible to find out cattle suited to make beasts of burden rather than foodstock. For 3 cattles available locally, one beast of burden may located
+REQUIRES ranc 2
+LEVEL  6000
+STUDY_COST 1
+USING_PARADIGM USING_HARVEST
+HARVEST catt 3
+PRODUCES mule 90
+LEVEL 18000
+DESCRIPTION At this level, one beast of burden may be found for each 2 cattle available locally
+HARVEST catt 2
+PRODUCES mule 60
+LEVEL 36000
+DESCRIPTION At this level, two beasts of burden may be found for each 3 cattle available locally
+HARVEST catt 3
+PRODUCES mule 90
+MULTIPLE 2
+
+# ========================== Cooking  ===============================
+
+SKILL cook
+NAME cooking
+DESCRIPTION The art of the table
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION It is rumored that an advanced cook can make splendid food out of nothing or almost
+LEVEL 18000
+DESCRIPTION At this level, a cook can prepare food out of the bark of the trees
+CONSUME wood 1
+TOOL ckry
+USING_PARADIGM USING_CRAFT
+PRODUCES food 10
+MULTIPLE 3
+LEVEL 30000
+DESCRIPTION The best cooks make miracles out of the basest materials
+PRODUCES food 8
+MULTIPLE 4
+
+SKILL butc
+NAME butchery
+DESCRIPTION Slaughtering cattle for their food
+STUDY_COST 1
+REQUIRES cook
+LEVEL  3000
+TOOL ckry
+USING_PARADIGM USING_CRAFT
+CONSUME catt 1
+PRODUCES food 30
+MULTIPLE 12
+LEVEL 9000
+DESCRIPTION Expert butchers can scrape meat from even the unlikeliest parts of the beast
+PRODUCES food 30
+MULTIPLE 15
+LEVEL 18000
+DESCRIPTION Slaughtering cattle at this level is more efficient
+PRODUCES food 25
+MULTIPLE 15
+LEVEL 30000
+DESCRIPTION Master butchers can quarter a beast's parts in a record time
+PRODUCES food 20
+
+
+SKILL hskn
+NAME horse skinning
+DESCRIPTION Slaughtering horses for food, in case of emergency
+STUDY_COST 1
+REQUIRES butc
+LEVEL  3000
+TOOL ckry
+USING_PARADIGM USING_CRAFT
+CONSUME hrse 1
+PRODUCES food 15
+MULTIPLE 4
+LEVEL 9000
+DESCRIPTION It takes a lot of skills to convert all horses parts into food suitable for consumption
+MULTIPLE 5
+PRODUCES food 10
+LEVEL 18000
+DESCRIPTION At this level, little progress is made
+PRODUCES food 9
+
+SKILL salt
+NAME salting
+DESCRIPTION Skinning and salting fish for human consumption
+STUDY_COST 1
+REQUIRES cook
+LEVEL  3000
+TOOL ckry
+USING_PARADIGM USING_CRAFT
+CONSUME fish 10
+PRODUCES food 30
+MULTIPLE 12
+LEVEL 9000
+DESCRIPTION At this level, losses from fish skinning are less pronounced
+MULTIPLE 15
+LEVEL 18000
+DESCRIPTION At this level, the fishes are skinned faster
+PRODUCES food 25
+LEVEL 30000
+DESCRIPTION At this level the fishes are skinned faster
+PRODUCES food 20
+
+
+
+SKILL bake
+NAME baker
+DESCRIPTION Cooking grain flour into sturdy and durable bread
+STUDY_COST 1
+REQUIRES cook
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+TOOL ckry
+CONSUME grai 1
+PRODUCES food 30
+MULTIPLE 10
+LEVEL 9000
+DESCRIPTION At this level, the baker knows exactly how much flour can be used for the best bread
+PRODUCES food 20
+MULTIPLE 10
+LEVEL 18000
+DESCRIPTION The best baker produces many delicacies daily
+PRODUCES food 20
+MULTIPLE 12
+LEVEL 30000
+DESCRIPTION Bakery doesn't progress much beyond this point
+PRODUCES food 15
+MULTIPLE 12
+
+
+SKILL soup
+NAME make herbal soup
+DESCRIPTION A very skilled cook can make a filling soup out of herbs
+STUDY_COST 1
+REQUIRES cook 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+TOOL ckry
+CONSUME hrbs 1
+PRODUCES food 8
+LEVEL 9000
+DESCRIPTION At this level, the cook make better soups out of more variety of herbs
+PRODUCES food 10
+MULTIPLE 2
+LEVEL 18000
+DESCRIPTION At this level, the soups are more diverse and palatable
+PRODUCES food 12
+MULTIPLE 3
+
+# ========================== Artisan  ===============================
+
+SKILL arti
+NAME artisan
+DESCRIPTION The art of building tools and various sundry items for daily use
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION Advanced artisanship, enabling the skilled craftsman to make finer items
+LEVEL 18000
+DESCRIPTION Expert artisanship
+LEVEL 30000
+DESCRIPTION Legendary artisanship
+
+SKILL aamu
+NAME assemble amulet
+DESCRIPTION The art of making amulet out of components
+STUDY_COST 1
+REQUIRES arti 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hrbs 1
+CONSUME hide 1
+CONSUME silv 1
+PRODUCES amul 10
+TOOL jham
+LEVEL 9000
+DESCRIPTION A skilled artisan will take less time to produce an amulet
+PRODUCES amul 5
+LEVEL 18000
+DESCRIPTION A highly skilled artisan will make many amulets
+PRODUCES amul 4
+
+SKILL firn
+NAME forge iron ring
+DESCRIPTION The art of shaping a small piece of iron into rings
+STUDY_COST 1
+REQUIRES arti 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 1
+PRODUCES irng 20
+MULTIPLE 2
+TOOL jham
+LEVEL 9000
+DESCRIPTION At this level, rings are made faster
+PRODUCES irng 10
+LEVEL 18000
+DESCRIPTION At this level, ring making becomes an industry
+PRODUCES irng 7
+
+SKILL crsr
+NAME craft silver ring
+DESCRIPTION The art of hammering silver into a pleasant ring
+STUDY_COST 1
+REQUIRES firn
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME silv 1
+PRODUCES srng 30
+TOOL jham
+LEVEL 18000
+DESCRIPTION At this level, rings are made faster
+PRODUCES srng 15
+LEVEL 36000
+DESCRIPTION At this level, the ring is hammered with ease
+PRODUCES srng 10
+
+SKILL mgrn
+NAME make gold ring
+DESCRIPTION The art of creating a gold ring, fitted with the most beautiful stone
+STUDY_COST 1
+REQUIRES crsr
+LEVEL  9000
+USING_PARADIGM USING_CRAFT
+CONSUME gold 1
+PRODUCES grng 40
+TOOL jham
+LEVEL 27000
+DESCRIPTION At this level, a gold ring is faster to mold
+PRODUCES grng 20
+LEVEL 54000
+DESCRIPTION At this level, a gold ring is faster to fit
+PRODUCES grng 13
+
+SKILL mint
+NAME mint
+DESCRIPTION The mark of the true trader is the imperial grant of making money
+STUDY_COST 3
+REQUIRES arti 2
+LEVEL 9000
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+CONSUME silv 1
+CONSUME gold 1
+PRODUCES coin 5
+MULTIPLE 250
+LEVEL 27000
+DESCRIPTION Experienced minters will work faster and with less losses
+PRODUCES coin 4
+MULTIPLE 275
+LEVEL 54000
+DESCRIPTION After a lifetime of experienced, minting becomes an art
+PRODUCES coin 3
+MULTIPLE 300
+
+SKILL tolc
+NAME toolcraft
+DESCRIPTION The art of making tools for the artisan's craft
+REQUIRES arti
+STUDY_COST 1
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 2
+CONSUME iron 1
+PRODUCES tool 15
+#TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, it takes less time to produce a tool
+PRODUCES tool 8
+LEVEL 18000
+DESCRIPTION At this level, a tool is even faster to assemble
+PRODUCES tool 5
+LEVEL 30000
+DESCRIPTION At this level, a tool is even faster to assemble
+PRODUCES tool 4
+
+SKILL mmtl
+NAME make miner tools
+DESCRIPTION Making tools for mining
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+CONSUME iron 1
+PRODUCES pick 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a pick is assembled faster
+PRODUCES pick 5
+LEVEL 18000
+DESCRIPTION At this level, it takes a lot less time to make a pick
+PRODUCES pick 3
+LEVEL 30000
+DESCRIPTION At this level, it takes a lot less time to make a pick
+PRODUCES pick 2
+
+SKILL bplw
+NAME beat plows
+DESCRIPTION Making tools for fields
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+CONSUME iron 1
+PRODUCES plow 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a plow is assembled faster
+PRODUCES plow 5
+LEVEL 18000
+DESCRIPTION At this level, it takes a lot less time to make a plow
+PRODUCES plow 3
+LEVEL 30000
+DESCRIPTION At this level, it takes a lot less time to make a plow
+PRODUCES plow 2
+
+SKILL fham
+NAME forge hammers
+DESCRIPTION Making tools for smithcrafts
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+CONSUME iron 1
+PRODUCES hamm 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a hammer is assembled faster
+PRODUCES hamm 5
+LEVEL 18000
+DESCRIPTION At this level, it takes a lot less time to make a hammer
+PRODUCES hamm 3
+LEVEL 30000
+DESCRIPTION At this level, it takes a lot less time to make a hammer
+PRODUCES hamm 2
+
+SKILL rsaw
+NAME rig saw
+DESCRIPTION Making tools for lumberjacks
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+CONSUME iron 1
+PRODUCES saws 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a saw is made faster
+PRODUCES saws 5
+LEVEL 18000
+DESCRIPTION At this level, a saw is made faster
+PRODUCES saws 3
+LEVEL 30000
+DESCRIPTION At this level, a saw is made faster
+PRODUCES saws 2
+
+SKILL mckr
+NAME design cookery
+DESCRIPTION Making cooking implements for suppliers
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+CONSUME iron 1
+PRODUCES ckry 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a set of cooking knives is dressed faster
+PRODUCES ckry 5
+LEVEL 18000
+DESCRIPTION At this level, a set of meat cleavers is fashioned faster
+PRODUCES ckry 3
+LEVEL 30000
+DESCRIPTION At this level, a set of cooking pots is made faster
+PRODUCES ckry 2
+
+SKILL banv
+NAME build anvils
+DESCRIPTION Making workbenches for armormakers
+STUDY_COST 1
+REQUIRES tolc
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 2
+CONSUME iron 1
+PRODUCES anvi 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, an anvil is dressed faster
+PRODUCES anvi 5
+LEVEL 18000
+DESCRIPTION At this level, it takes a lot less time to make an anvil
+PRODUCES anvi 3
+LEVEL 30000
+DESCRIPTION At this level, it takes a lot less time to make an anvil
+PRODUCES anvi 2
+
+SKILL mjha
+NAME make jeweler's hammer
+DESCRIPTION Making tools for jewelers
+STUDY_COST 1
+REQUIRES tolc 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+PRODUCES jham 10
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, a tool takes less time to assemble
+PRODUCES jham 5
+LEVEL 18000
+DESCRIPTION At this level, these small hammers are made in record time
+PRODUCES jham 3
+
+SKILL whee
+NAME wheelcraft
+DESCRIPTION The art of making heeled contraptions, for caravans
+STUDY_COST 1
+REQUIRES arti
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hrse 1
+CONSUME wood 8
+CONSUME iron 2
+PRODUCES wago 30
+TOOL tool
+LEVEL 9000
+DESCRIPTION At this level, wagons are produced twice faster
+PRODUCES wago 15
+LEVEL 18000
+DESCRIPTION At this level, wagons are produced thrice faster
+PRODUCES wago 10
+LEVEL 30000
+DESCRIPTION At this level, wagons are produced four times faster
+PRODUCES wago 8
+
+# ========================== Seamanship  ===============================
+
+SKILL seas
+NAME seamanship
+DESCRIPTION The skills of the sea
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION Advanced skills of the sea
+LEVEL 18000
+DESCRIPTION Longtimer skills of the sea
+CAPACITY 3 10
+LEVEL 30000
+DESCRIPTION Legendary skills of the sea
+CAPACITY 3 20
+
+SKILL sail
+NAME sailing
+DESCRIPTION The basic skill for sailing boats
+STUDY_COST 1
+REQUIRES seas
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION Advanced sailing over the seas
+LEVEL 18000
+DESCRIPTION Long-timer sailing over the seas
+CAPACITY 3 10
+
+SKILL fshn
+NAME fishing
+DESCRIPTION Harvesting fishes from seas, rivers and lakes
+STUDY_COST 1
+REQUIRES seas
+LEVEL  3000
+WISDOM rwat
+USING_PARADIGM USING_HARVEST
+HARVEST fish 1
+PRODUCES fish 3
+LEVEL 9000
+DESCRIPTION A more skilled fisherman will catch more fish a day
+HARVEST fish 1
+PRODUCES fish 2
+LEVEL 18000
+DESCRIPTION The best fishermen know their way around any sea
+HARVEST fish 2
+PRODUCES fish 3
+CAPACITY 3 20
+LEVEL 30000
+DESCRIPTION This capacity for fishing is positively prodigious
+HARVEST fish 1
+PRODUCES fish 1
+CAPACITY 3 30
+LEVEL 45000
+DESCRIPTION This capacity for fishing is absolutely extraodinary
+HARVEST fish 4
+PRODUCES fish 3
+CAPACITY 3 40
+# LEVEL 63000
+# DESCRIPTION This capacity for fishing is totally out of this world
+# HARVEST fish 7
+# CAPACITY 3 25
+# LEVEL 84000
+# DESCRIPTION This capacity for fishing is awesome
+# HARVEST fish 8
+# CAPACITY 3 30
+# LEVEL 108000
+# DESCRIPTION This capacity for fishing is out of any human limits
+# HARVEST fish 9
+# CAPACITY 3 35
+# LEVEL 135000
+# DESCRIPTION This capacity for fishing is absolutely irreachable
+# HARVEST fish 10
+# CAPACITY 3 40
+# LEVEL 165000
+# DESCRIPTION This capacity for fishing is surnatural
+# HARVEST fish 11
+# CAPACITY 3 45
+# LEVEL 198000
+
+# ========================== Building  ===============================
+
+SKILL buil
+NAME building
+DESCRIPTION The arts of construction, from ramshackle buildings to the finest palaces
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION The advanced arts of construction
+LEVEL 18000
+DESCRIPTION The expertise in construction
+LEVEL 30000
+DESCRIPTION The knowledge to build wonders
+LEVEL 45000
+DESCRIPTION The total mastery of the art of building
+
+SKILL cove
+NAME cover
+DESCRIPTION This allows a builder to use the humblest materials as construction elements
+STUDY_COST 1
+REQUIRES buil
+LEVEL  2000
+USING_PARADIGM USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME hide 1
+PRODUCES hidewk 10
+LEVEL 9000
+DESCRIPTION At this level, it takes only 5 days to stretch the hide over the frames
+PRODUCES hidewk 5
+LEVEL 27000
+DESCRIPTION At this level, hides are put in place faster
+PRODUCES hidewk 4
+
+SKILL carp
+NAME carpentry
+DESCRIPTION The art of raising logs, build superstructures and cover woodden buildings. It takes 10 days at this level to advance the construction
+STUDY_COST 1
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+REQUIRES buil
+CONSUME wood 1
+PRODUCES woodwk 10
+LEVEL 9000
+DESCRIPTION At this level, it takes only 5 days to pose boards
+PRODUCES woodwk 5
+LEVEL 27000
+DESCRIPTION At this level, boards are placed much faster
+PRODUCES woodwk 4
+
+SKILL fram
+NAME framers
+DESCRIPTION Skilled carpenters can use ebene to put down framework. Using ebene, one can place more wood frames than with the basic wood
+STUDY_COST 1
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+REQUIRES carp 2
+CONSUME eben 1
+PRODUCES woodwk 6
+MULTIPLE 2
+LEVEL 9000
+DESCRIPTION At this level, it takes less time to put ebene frames in place
+PRODUCES woodwk 4
+LEVEL 18000
+DESCRIPTION At this level, the same amount of wood yields more work
+MULTIPLE 3
+
+SKILL maso
+NAME masonry
+DESCRIPTION The art of squaring stones, raising walls and firming buildings. It takes 10 days at this level to advance the construction
+STUDY_COST 1
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+REQUIRES buil
+CONSUME ston 1
+PRODUCES stonwk 10
+LEVEL 9000
+DESCRIPTION Skilled masons take only 6 days to cut and place stones in buildings
+PRODUCES stonwk 6
+LEVEL 18000
+DESCRIPTION Highly skilled masons work even faster
+PRODUCES stonwk 4
+
+SKILL rsto
+NAME raise stones
+DESCRIPTION Some buildings require a specific attention and very carefully prepared stones
+STUDY_COST 1
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+REQUIRES maso 2
+CONSUME kstn 1
+PRODUCES kstnwk 10
+LEVEL 9000
+DESCRIPTION At this level, the specialised masons will work faster with the prepared stones
+PRODUCES kstnwk 7
+LEVEL 18000
+DESCRIPTION At this level, stone raising is done in less time
+PRODUCES kstnwk 5
+
+SKILL ship
+NAME shipcraft
+DESCRIPTION The art of assembling wood to make small boats
+STUDY_COST 1
+REQUIRES buil
+LEVEL  3000
+USING_PARADIGM  USING_CONSTRUCTION
+CONSUME wood 30
+PRODUCES fshi 120
+LEVEL 9000
+DESCRIPTION More skilled shipcrafts make boats faster
+PRODUCES fshi 60
+LEVEL 18000
+DESCRIPTION Highly skilled shipcrafts make boats faster
+PRODUCES fshi 40
+
+SKILL ashp
+NAME assemble ships
+DESCRIPTION The art of building a sturdy boat for the seas
+STUDY_COST 1
+REQUIRES ship
+LEVEL  6000
+USING_PARADIGM  USING_CONSTRUCTION
+CONSUME wood 120
+PRODUCES lgbt 500
+LEVEL 18000
+DESCRIPTION At this level, a ship is produced in less time and with less stringent quality control
+RECONSUME
+CONSUME wood 100
+PRODUCES lgbt 300
+LEVEL 36000
+DESCRIPTION At this level, the production of a ship takes relatively few time
+PRODUCES lgbt 225
+
+SKILL bboa
+NAME build boats
+DESCRIPTION The art of making large trading boats
+STUDY_COST 1
+REQUIRES ashp
+LEVEL  9000
+USING_PARADIGM  USING_CONSTRUCTION
+CONSUME wood 250
+CONSUME iron 10
+PRODUCES gall 1000
+LEVEL 27000
+DESCRIPTION At this level, a galleon's building will require less time and produce less waste
+RECONSUME
+CONSUME wood 220
+CONSUME iron 10
+PRODUCES gall 700
+LEVEL 54000
+DESCRIPTION At this level, the galleon is built a little faster
+RECONSUME
+CONSUME wood 200
+CONSUME iron 10
+PRODUCES gall 550
+
+SKILL ltri
+NAME launch trireme
+DESCRIPTION The art of making war ships
+STUDY_COST 1
+REQUIRES ashp
+LEVEL  9000
+USING_PARADIGM  USING_CONSTRUCTION
+CONSUME wood 80
+CONSUME iron 20
+PRODUCES trir 250
+LEVEL 27000
+DESCRIPTION At this level, the triremes can be built faster
+PRODUCES trir 200
+LEVEL 54000
+DESCRIPTION At this level, the triremes are easier to build
+PRODUCES trir 150
+
+SKILL pwga
+NAME prepare war galley
+DESCRIPTION The skilled boat builders will take a longboat, fit it with protections and artifices, and make a ship that reign supreme on the seas
+STUDY_COST 1
+REQUIRES ltri 2
+LEVEL  6000
+USING_PARADIGM  USING_CONSTRUCTION
+UPGRADE lgbt 
+CONSUME hshd 20
+CONSUME iron 30
+PRODUCES wgal 30
+LEVEL 18000
+DESCRIPTION At this level, preparations for war are faster
+PRODUCES wgal 20
+LEVEL 36000
+DESCRIPTION At this level, a war galley will be readied in a record times
+PRODUCES wgal 15
+
+SKILL sieg
+NAME siegecraft
+DESCRIPTION The art of building fortifications, machicoulis and other military artifice. Half of a military structure's stonework must be fulfilled with siegecraft. It takes 10 days at this level to advance the construction
+STUDY_COST 1
+REQUIRES buil
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME ston 1
+PRODUCES fortwk 10
+LEVEL 9000
+DESCRIPTION Skilled fortifiers take only 7 days to place fortifications
+PRODUCES fortwk 7
+LEVEL 27000
+DESCRIPTION Highly skilled engineers will know the inside and out of fortifications
+PRODUCES fortwk 5
+
+SKILL ftfy
+NAME fortify
+DESCRIPTION The best material for fortifications is granite, whose sturdiness allows to make strong fortifications will less efforts. It takes 8 days at this level to advance the construction
+STUDY_COST 1
+REQUIRES sieg
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME gran 1
+PRODUCES fortwk 7
+LEVEL 9000
+DESCRIPTION Fortifications take a little less time when experienced builders work on them
+PRODUCES fortwk 5
+LEVEL 27000
+DESCRIPTION The erection of fortifications by specialists take a short time
+PRODUCES fortwk 4
+
+SKILL fiti
+NAME fit irons
+DESCRIPTION The art of forging and placing iron reinforcements, required by many buildings. It takes 10 days at this level to place iron fittings
+STUDY_COST 1
+REQUIRES buil 2
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME iron 1
+PRODUCES ironwk 10
+LEVEL 9000
+DESCRIPTION At this level, iron fittings take 5 days only
+PRODUCES ironwk 5
+LEVEL 18000
+DESCRIPTION At this level, iron fittings take 3 days only
+PRODUCES ironwk 3
+
+SKILL deco
+NAME decorate building
+DESCRIPTION The art of making signs and the like on prosperous buildings
+STUDY_COST 1
+REQUIRES fiti 1
+LEVEL  3000
+USING_PARADIGM  USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME silv 1
+PRODUCES silvwk 10
+LEVEL 9000
+DESCRIPTION Experience in decoration allows one to make signs faster
+PRODUCES silvwk 5
+LEVEL 18000
+DESCRIPTION The best decorator never spend much time on a sign
+PRODUCES silvwk 3
+
+SKILL btax
+NAME build tax office
+DESCRIPTION The Tax Office [taxo] require 30 wood, 30 stone and 15 keystones before being dedicated.
+STUDY_COST 1
+REQUIRES buil 3
+LEVEL  3000
+STUDENT LEADER
+USING_PARADIGM  USING_CONSTRUCTION
+TARGET CONSTRUCTION LOCAL
+CONSUME gold 1
+PRODUCES taxo 15
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is never possible to speed up any administration project
+
+SKILL stfr
+NAME stone frames
+DESCRIPTION It takes a lot of skill, but dedicated builders may replace wood in a building's construction by stone frames
+STUDY_COST 1
+REQUIRES buil 3
+LEVEL  3000
+USING_PARADIGM USING_BUILD
+TARGET CONSTRUCTION LOCAL
+CONSUME ston 1
+PRODUCES woodwk 15
+LEVEL 9000
+PRODUCES woodwk 12
+DESCRIPTION Higher skill allows a marginal improvement in the quality of these works
+LEVEL 18000
+PRODUCES woodwk 10
+DESCRIPTION Higher skill allows a marginal improvement in the quality of these works
+
+SKILL bwal
+NAME build walls
+DESCRIPTION The first massive undertaking to be built is the protecting wall (target is [wall]). A protecting wall also requires 50 keystones and 200 fortifications, and provide +3 defense, +2 initiative, +1 missile to units inside it. All units defending behind a protecting wall will be considered fanatics
+STUDY_COST 1
+REQUIRES buil 4
+LEVEL  6000
+USING_PARADIGM USING_BUILD
+TARGET CONSTRUCTION LOCAL
+STUDENT LEADER
+CONSUME gran 1
+PRODUCES evtblwl 30
+LEVEL 18000
+DESCRIPTION At this level, the foundation of the wall are easier to create
+PRODUCES evtblwl 15
+
+SKILL bpfm
+NAME build platforms
+DESCRIPTION Platforms built into trees (target is [plfm]) provide advanced protection to their users. Tree platforms require 100 hides and 250 wood structures in addition to the base frame. A tree platform gives a bonus equivalent to flying to all defenders on it, except for movement
+STUDY_COST 1
+REQUIRES buil 4
+LEVEL  6000
+USING_PARADIGM USING_BUILD
+TARGET CONSTRUCTION LOCAL
+STUDENT LEADER
+CONSUME eben 1
+PRODUCES evtblpf 30
+LEVEL 18000
+DESCRIPTION At this level, the builders have more ease with the construction methods, and can prepare the single frame in half the time
+PRODUCES evtblpf 15
+
+# ========================== Weaponsmith ===============================
+
+SKILL weap
+NAME weaponsmith
+DESCRIPTION The art of making weapons
+BASIC_SKILL
+STUDY_COST 1
+LEVEL  3000
+WISDOM rfir
+USING_PARADIGM USING_CRAFT
+CONSUME wood 1
+PRODUCES club 10
+LEVEL 9000
+DESCRIPTION The art of making finer weapons
+PRODUCES club 5
+LEVEL 18000
+DESCRIPTION Lifetime skillcraft
+PRODUCES club 3
+LEVEL 30000
+DESCRIPTION Legendary weaponsmithy
+PRODUCES club 2
+
+SKILL blsm
+NAME bladesmith
+DESCRIPTION The art of making edged weapons
+STUDY_COST 1
+REQUIRES weap
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 5
+PRODUCES swrd 30
+TOOL hamm
+LEVEL 9000
+DESCRIPTION At this level a weaponsmith makes swords by the dozen
+PRODUCES swrd 15
+LEVEL 18000
+DESCRIPTION At this level a weaponsmith makes swords in large quantities
+PRODUCES swrd 10
+
+SKILL lbld
+NAME line blade with silver
+DESCRIPTION Adds an extra edge to normal blades
+STUDY_COST 1
+REQUIRES blsm 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME swrd 2
+CONSUME silv 1
+PRODUCES sswd 30
+MULTIPLE 2
+LEVEL 9000
+DESCRIPTION At this level, finishing a blade takes less silver
+RECONSUME
+CONSUME swrd 3
+CONSUME silv 1
+PRODUCES sswd 20
+MULTIPLE 3
+LEVEL 18000
+DESCRIPTION At this level, a blade requires less work to prepare
+PRODUCES sswd 15
+
+SKILL fabl
+NAME forge adamantium blades
+DESCRIPTION It takes skill to use adamantium instead of iron to make a blade
+STUDY_COST 1
+REQUIRES blsm 2
+LEVEL  3000
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+CONSUME adam 4
+PRODUCES aswd 30
+LEVEL 9000
+DESCRIPTION At this level, the bladesmith progress is marginally faster
+PRODUCES aswd 22
+LEVEL 18000
+DESCRIPTION At this level, the forging is done in a reasonable time
+PRODUCES aswd 15
+
+SKILL flsw
+NAME forge legendary swords
+DESCRIPTION The most legendary of the bladesmiths will create swords of legend out of the noblest admantium. If the next order in the list is a NAME order prefixed by a '-' conditional, that name will be used as the name of the sword. Duplicate names are not allowed
+REQUIRES fabl 2
+STUDY_COST 3
+LEVEL  6000
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+CONSUME adam 3
+CONSUME silv 1
+CONSUME gold 1
+CONSUME gems 1
+PRODUCES legswrd 60
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION The forging of a legendary sword cannot be hastened
+
+SKILL axsm
+NAME axesmith
+DESCRIPTION The art of making battle axes
+STUDY_COST 1
+REQUIRES weap
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 3
+CONSUME wood 2
+PRODUCES baxe 30
+TOOL hamm
+LEVEL 9000
+DESCRIPTION At this level, an axe is made in record time
+PRODUCES baxe 15
+LEVEL 18000
+DESCRIPTION At this level, an axe head takes very few efforts to fit
+PRODUCES baxe 10
+
+SKILL mqax
+NAME make quality axes
+DESCRIPTION Making fine quality axes
+STUDY_COST 1
+REQUIRES axsm
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 3
+CONSUME eben 2
+PRODUCES qaxe 30
+TOOL hamm
+LEVEL 9000
+DESCRIPTION At this level, an axe is completed in a jiffy
+PRODUCES qaxe 15
+LEVEL 18000
+DESCRIPTION The most experienced axe makers have high productivity
+PRODUCES qaxe 10
+
+SKILL hmsm
+NAME hammersmith
+DESCRIPTION The art of making war hammers
+STUDY_COST 1
+REQUIRES weap
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 4
+CONSUME wood 1
+PRODUCES wham 30
+TOOL hamm
+LEVEL 9000
+DESCRIPTION At this level, a hammer's head fits in a jiffy
+PRODUCES wham 15
+LEVEL 18000
+DESCRIPTION A higher level allows the making of a hammer with more ease
+PRODUCES wham 10
+
+SKILL stsm
+NAME staffsmith
+DESCRIPTION The art of making fighting staffs, for the skilled fighter
+STUDY_COST 1
+REQUIRES weap
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 3
+PRODUCES staf 20
+LEVEL 9000
+DESCRIPTION At this level, a staff is much more easier to make
+RECONSUME
+CONSUME wood 2
+PRODUCES staf 15
+LEVEL 18000
+DESCRIPTION At this level, a staff is produced faster
+PRODUCES staf 10
+LEVEL 30000
+DESCRIPTION This level of experience allows a master carver to produce and balance staffs faster
+PRODUCES staf 8
+
+SKILL bowy
+NAME bowyer
+DESCRIPTION The art of the bow
+STUDY_COST 1
+REQUIRES weap
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 5
+PRODUCES lbow 20
+LEVEL 9000
+DESCRIPTION At this level, a bow is produced in half the time
+PRODUCES lbow 10
+LEVEL 18000
+DESCRIPTION At this level, a bow is produced in a third of the time
+PRODUCES lbow 7
+
+SKILL sxbw
+NAME string crossbows
+DESCRIPTION The art of the crossbow
+STUDY_COST 1
+REQUIRES bowy
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 4
+CONSUME iron 1
+PRODUCES xbow 20
+TOOL hamm
+LEVEL 18000
+DESCRIPTION At this level, crossbow production starts to streamline
+PRODUCES xbow 10
+LEVEL 36000
+DESCRIPTION At this level, crossbow production is faster
+PRODUCES xbow 7
+
+SKILL acbw
+NAME assemble compound bows
+DESCRIPTION How to make the best bows a human can use
+STUDY_COST 1
+REQUIRES bowy 2
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME eben 3
+PRODUCES cbow 30
+LEVEL 18000
+DESCRIPTION At this level, less ebene is required to make a compound bow
+RECONSUME
+CONSUME eben 2
+CONSUME wood 1
+PRODUCES cbow 25
+LEVEL 36000
+DESCRIPTION At this level, the time required for the merging of soft and hard woods is less
+PRODUCES cbow 15
+
+SKILL mmgc
+NAME make main gauche
+DESCRIPTION From a small piece of iron, the forger will make a fine weapon for the expert fighters
+STUDY_COST 1
+REQUIRES weap 2
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 1
+PRODUCES gauc 10
+LEVEL 9000
+DESCRIPTION At this level, the blade is produced faster
+PRODUCES gauc 7
+LEVEL 18000
+DESCRIPTION Long experience allows one to make this small blade in a short time
+PRODUCES gauc 5
+
+# ========================== Armory ===============================
+
+SKILL armo
+NAME armory
+DESCRIPTION The art of making armors and protection for troops
+BASIC_SKILL
+STUDY_COST 1
+WISDOM rfir
+LEVEL  3000
+LEVEL 9000
+DESCRIPTION The art of making finer armors and shields
+LEVEL 18000
+DESCRIPTION Lifetime skill expertise
+LEVEL 30000
+DESCRIPTION Legendary skill expertise
+#LEVEL 45000
+#DESCRIPTION Super-Legendary skill expertise
+
+SKILL leat
+NAME leathers
+DESCRIPTION The art of making studded, reinforced leather armors
+STUDY_COST 1
+REQUIRES armo
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hide 3
+PRODUCES leat 20
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level, a basic protection is manufactured in less time
+PRODUCES leat 10
+LEVEL 18000
+DESCRIPTION Long experience in fitting leather in thick protection makes for faster work
+PRODUCES leat 7
+LEVEL 30000
+DESCRIPTION Highly skilled leatherworkers make these basic armors very fast
+PRODUCES leat 5
+
+SKILL stch
+NAME string chain armors
+DESCRIPTION The art of making chain mails
+STUDY_COST 1
+REQUIRES leat
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME hide 1
+CONSUME iron 6
+PRODUCES chai 30
+TOOL anvi
+LEVEL 18000
+DESCRIPTION At this level, chains are easier to assemble over the framework
+PRODUCES chai 15
+LEVEL 36000
+DESCRIPTION At this level, chain mails seem to assemble themselves
+PRODUCES chai 10
+
+SKILL wplt
+NAME weld plates
+DESCRIPTION The art of making plate armors
+STUDY_COST 1
+REQUIRES stch
+LEVEL  9000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 8
+PRODUCES plat 40
+TOOL anvi
+LEVEL 27000
+DESCRIPTION At this level, an armorer takes less time to complete a set of armor
+PRODUCES plat 20
+LEVEL 54000
+DESCRIPTION At this level, an armorer takes less time to complete a set of armor
+PRODUCES plat 13
+
+SKILL marm
+NAME make adamantium armors
+DESCRIPTION It takes skill to use adamantium instead of iron to make a suit of armor
+STUDY_COST 1
+REQUIRES wplt 2
+LEVEL  6000
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+CONSUME adam 6
+PRODUCES aplt 30
+TOOL anvi
+LEVEL 12000
+DESCRIPTION At this level, armors are made in fewer time
+PRODUCES aplt 20
+LEVEL 24000
+DESCRIPTION At this level, armors are made with more ease
+PRODUCES aplt 15
+
+SKILL helm
+NAME helmsman
+DESCRIPTION The art of making coifs and head protections
+STUDY_COST 1
+REQUIRES armo
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hide 1
+CONSUME iron 1
+PRODUCES coif 20
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level, a skilled helmsman will form a coif faster
+PRODUCES coif 10
+LEVEL 18000
+DESCRIPTION At this level, the coif takes less time to make
+PRODUCES coif 7
+
+SKILL fhlm
+NAME fit helms
+DESCRIPTION Helms offer full head protection
+STUDY_COST 1
+REQUIRES helm
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 2
+PRODUCES hlmt 20
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level, a skilled helmsman will hammer a helmet faster
+PRODUCES hlmt 10
+LEVEL 18000
+DESCRIPTION At this level, the helmet takes less time to make
+PRODUCES hlmt 7
+
+SKILL aahl
+NAME assemble adamantine helms
+DESCRIPTION It takes skill to use adamantium instead of iron to make a helmet
+STUDY_COST 1
+REQUIRES helm 2
+LEVEL  3000
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+CONSUME adam 1
+CONSUME iron 1
+PRODUCES ahlm 20
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level, a helmet takes less time
+PRODUCES ahlm 13
+LEVEL 18000
+DESCRIPTION At this level, the adamantium require even less time to work
+PRODUCES ahlm 10
+
+SKILL shsm
+NAME shieldsmith
+DESCRIPTION The art of making shields
+STUDY_COST 1
+REQUIRES armo
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hide 1
+CONSUME wood 2
+PRODUCES hshd 20
+TOOL anvi
+LEVEL 9000
+DESCRIPTION Easy are the shield for the experienced shieldsmith
+PRODUCES hshd 10
+LEVEL 18000
+DESCRIPTION Long experience in stretching hide over wood makes for faster work
+PRODUCES hshd 7
+
+SKILL mtsh
+NAME make tower shields
+DESCRIPTION Tower shields require more attention
+STUDY_COST 1
+REQUIRES shsm
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME wood 3
+CONSUME iron 1
+PRODUCES tshd 25
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level of experience, the shieldsmith balances tower shields with ease
+PRODUCES tshd 13
+LEVEL 18000
+DESCRIPTION With a long experience, shieldsmiths may make tower shield in a time that baffles their apprentices
+PRODUCES tshd 8
+
+SKILL mgsh
+NAME make great shields
+DESCRIPTION Pure metal shields are the best made out of normal items
+STUDY_COST 1
+REQUIRES mtsh
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+CONSUME iron 3
+PRODUCES gshd 30
+TOOL anvi
+LEVEL 18000
+DESCRIPTION At this level, a great shield is made faster
+PRODUCES gshd 15
+LEVEL 36000
+DESCRIPTION A long experience allows one to make great shields in a short time
+PRODUCES gshd 10
+
+SKILL fash
+NAME forge adamantium shields
+DESCRIPTION It takes skill to use adamantium instead of iron to make a shield
+STUDY_COST 1
+REQUIRES mgsh 2
+LEVEL  6000
+USING_PARADIGM USING_CRAFT
+TOOL anvi
+STUDENT LEADER
+CONSUME adam 2
+PRODUCES ashd 30
+LEVEL 12000
+DESCRIPTION With a lot of experience comes sureness in the art
+PRODUCES ashd 20
+
+SKILL sclo
+NAME stitch cloaks
+DESCRIPTION The art of making camouflaged cloaks
+STUDY_COST 1
+REQUIRES armo 3
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+CONSUME hide 4
+PRODUCES cclo 15
+TOOL anvi
+LEVEL 9000
+DESCRIPTION At this level, the cloaks are made faster
+PRODUCES cclo 8
+LEVEL 18000
+DESCRIPTION At this level, the cloaks require less work
+PRODUCES cclo 5
+
+# ========================== Magecraft  ===============================
+
+SKILL mage
+NAME magecraft
+DESCRIPTION The basic magic skill. Knowledge of 1st level allows to study one element
+BASIC_SKILL
+STUDY_COST 3
+MAGIC_SKILL
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+LEVEL  3000
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced magic abilities. Knowledge of 2nd level allows to study a second element
+MANA 2
+LEVEL 18000
+DESCRIPTION Experienced magics. Knowledge of 3rd level allows to study a third element
+MANA 3
+LEVEL 30000
+DESCRIPTION Talented magics. Knowledge of 4th level allows to study a fourth element
+MANA 4
+LEVEL 45000
+DESCRIPTION Magic mastery. Knowledge of 5th level allows to study all five elements
+MANA 5
+LEVEL 63000
+DESCRIPTION Arcane magics. Open up the way for the arch-magi spells
+MANA 6
+LEVEL 99999
+DESCRIPTION It is not possible to grow beyond 6th level in magecraft
+STUDY_COST 0
+
+SKILL mgry
+NAME magery
+DESCRIPTION The arch-mage skill. All arch-mage spells require you to have the appropriate symbol at hand to study. Mages with magery always know what magical skills other mages have
+STUDY_COST 10
+# LEARNING_PARADIGM LEARNING_MAGIC
+MAGIC_SKILL
+STUDENT LEADER
+LEVEL  6000
+MANA 1
+OBSERVATION 1
+REQUIRES mage 6
+USING_PARADIGM USING_CRAFT
+CONSUME mand 1
+CONSUME msto 1
+CONSUME adam 1
+PRODUCES msym 30
+FX 97
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to gain proficiency in magery
+
+SKILL medi
+NAME meditation
+DESCRIPTION Meditation allows the mage to regain mana faster, and supercharge before major magics
+MAGIC_SKILL
+STUDY_COST 3
+LEVEL  3000
+REQUIRES mage
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_ACTION
+TARGET SELF
+CONSUME hrbs 1
+PRODUCES evtritu 1
+LEVEL 9000
+DESCRIPTION At this level, the mage gains mana faster than ever
+MANA 2
+MULTIPLE 2
+LEVEL 18000
+DESCRIPTION At this level, the mage regains mana at a fantastic rate
+MANA 3
+MULTIPLE 3
+
+SKILL ritu
+NAME ritual
+DESCRIPTION By joining in a ritual, the mage lends its mana to the focus of a major spell
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES medi
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_ACTION
+USE_MANA 1
+TARGET UNIT LOCAL
+PRODUCES evtritu 1
+LEVEL 18000
+DESCRIPTION At this level, a mage transfers double amount of mana per day
+RECONSUME
+USE_MANA 2
+PRODUCES evtritu 1
+MULTIPLE 2
+
+SKILL mkky
+NAME make mage keys
+DESCRIPTION Creates a mage key out of precious metals
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES mage 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+CONSUME silv 1
+USE_MANA 10
+PRODUCES mkey 15
+LEVEL 9000
+DESCRIPTION At this level, creating a mage key is a lot easier
+PRODUCES mkey 8
+MANA 2
+
+SKILL ctow
+NAME consecrate magical tower
+DESCRIPTION Only a mage can put the finishing touch to a mage tower. Proper tradition has it that the key is the last element added to a mage guild
+STUDY_COST 1
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES mkky
+USING_PARADIGM USING_CONSTRUCTION
+TARGET CONSTRUCTION LOCAL
+CONSUME mkey 1
+PRODUCES mtow 1
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION No further progress is possible in consecrate tower
+
+SKILL dmci
+NAME draw mage circle
+DESCRIPTION The skilled mage knows how to draw a protective circle. Some higher magics may only be attempted inside a mage's circle. Select a mage circle [mcir] as target
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES mage 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CONSTRUCTION
+STUDENT LEADER
+MANA 1
+CONSUME gems 4
+USE_MANA 20
+TARGET CONSTRUCTION LOCAL
+PRODUCES mcir 20
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION Further progress in circle drawing is not possible
+
+SKILL esto
+NAME enchant stone
+DESCRIPTION The skilled mage have to manufacture its own components out of mundane items prior to great spells
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES mage 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+CONSUME gems 1
+USE_MANA 5
+PRODUCES msto 5
+LEVEL 18000
+DESCRIPTION At this level, a mage imbues a gem with mystical properties a lot faster
+PRODUCES msto 3
+MANA 2
+
+SKILL elwk
+NAME elementwalk
+DESCRIPTION High level mages know all about planes, and how to dwell within them
+STUDY_COST 1
+# LEARNING_PARADIGM LEARNING_MAGIC
+REQUIRES mage 4
+MAGIC_SKILL
+LEVEL  3000
+USING_PARADIGM USING_CRAFT
+PRODUCES food 5
+MANA 1
+OBSERVATION 1
+WISDOM rvod
+LEVEL 9000
+DESCRIPTION The mage may drawn from the planes around him faster
+PRODUCES food 3
+MANA 2
+OBSERVATION 2
+
+#========================== Water ==================================
+
+SKILL wate
+NAME water magics
+DESCRIPTION The element of Water relates to healing, production activities and the seas
+STUDY_COST 3
+LEVEL  3000
+WISDOM rwat
+REQUIRES mage
+# LEARNING_PARADIGM LEARNING_MAGIC
+ELEMENTAL_MAGIC_SKILL
+STUDENT LEADER
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced Water mastery
+MANA 2
+LEVEL 18000
+DESCRIPTION Deeper Water mysteries
+MANA 3
+LEVEL 30000
+DESCRIPTION Water arcana. An arch-mage in water always gauge all water-related skills of its fellow mages
+MANA 4
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to go beyond 4th level in a magic skill
+
+SKILL wwal
+NAME water walking
+DESCRIPTION The caster can walk over the waters
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES wate
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_ENCHANT
+USE_MANA 1
+GRANTS effswim 1
+MULTIPLE 4
+LEVEL 9000
+DESCRIPTION At this level, the caster may sustain its walking for longer durations
+MANA 2
+MULTIPLE 8
+
+SKILL sshr
+NAME mutate sea horse
+DESCRIPTION The caster may change a normal horse into a sea horse, a water-bound mount
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES wwal
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME hrse 1
+PRODUCES seah 15
+LEVEL 18000
+DESCRIPTION At this level, the water mage may change a horse in half of the time
+MANA 2
+PRODUCES seah 8
+
+SKILL wbot
+NAME water boots
+DESCRIPTION The caster will fashion a magical pair of boots out of hides
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES sshr
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 8
+CONSUME hide 1
+PRODUCES fbot 10
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, the boots are formed faster
+PRODUCES fbot 5
+
+SKILL mshp
+NAME magic ship
+DESCRIPTION The caster will enchant a boat, making it self-supporting
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES sshr
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CONSTRUCTION
+USE_MANA 15
+UPGRADE lgbt 1
+PRODUCES mlbt 30
+LEVEL 27000
+DESCRIPTION AT this level, a magic ship is made faster
+MANA 2
+PRODUCES mlbt 15
+
+SKILL mgal
+NAME magical galley
+DESCRIPTION The caster will enchant a trireme, allowing him to control it by mind alone
+MAGIC_SKILL
+STUDY_COST 3
+LEVEL  9000
+REQUIRES mshp
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CONSTRUCTION
+USE_MANA 15
+UPGRADE  trir 1
+PRODUCES mgal 30
+LEVEL 27000
+DESCRIPTION At this level, enchantment becomes a lot easier
+PRODUCES mgal 15
+
+SKILL msip
+NAME mageship
+DESCRIPTION The caster will create a small, light ship out of nothing
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES mshp
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CONSTRUCTION
+USE_MANA 25
+PRODUCES mshi 40
+LEVEL 36000
+DESCRIPTION At this level, the ship is condensed out of less than nothing
+PRODUCES mshi 20
+MANA 2
+
+
+SKILL hpot
+NAME mix potions of healing
+DESCRIPTION The caster may use his knowledge of chemicals to create potions of healing, to be used in battle against wounds
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES wate
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 2
+CONSUME hrbs 1
+PRODUCES poth 2
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, the mage fills potions like party cocktails glasses
+PRODUCES poth 1
+LEVEL 18000
+DESCRIPTION Lifetime experience in brewing potions allow the mage to produce more than a potion a day
+RECONSUME
+USE_MANA 6
+CONSUME hrbs 3
+PRODUCES poth 2
+MULTIPLE 3
+
+SKILL eaml
+NAME enchant amulet of life
+DESCRIPTION The caster can enchant an amulet, making it into an amulet of life
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES hpot
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 8
+CONSUME amul 1
+PRODUCES amli 30
+LEVEL 18000
+DESCRIPTION At this level, enchanting an amulet of life becomes easier
+PRODUCES amli 15
+
+SKILL eawb
+NAME enchant amulet of water blessing
+DESCRIPTION The caster uses his knowledge of the flows of water to empower resistance to an amulet
+MAGIC_SKILL
+STUDY_COST 3
+LEVEL  6000
+REQUIRES eaml
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amwb 15
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, the amulet is blessed faster
+PRODUCES amwb 8
+
+
+SKILL hail
+NAME hailstones
+DESCRIPTION The mage casting this spell creates a rain of hailstones. All units will experience -1 to their melee, and -3 to their missile statistics
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES eaml
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+CONSUME hrbs 1
+COMBAT_ACTION COMBAT_ENCHANT
+COMBAT TARGET BATTLEFIELD_TARGET_ALL
+COMBAT RANGE 4
+GRANTS effhail 1
+LEVEL 18000
+MANA 2
+COMBAT RANGE 5
+DESCRIPTION At this level, the created fog can be manifested farther, and lasts for five rounds
+
+SKILL clon
+NAME Call horse
+DESCRIPTION The caster summons horse[hrse] for riding. The newly summoned horse is not equipped
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES wate
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+PRODUCES hrse 20
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, the horse is summoned in less time
+PRODUCES hrse 10
+
+
+SKILL cloc
+NAME Enchant horse
+DESCRIPTION The caster enchants his horse into warhorse[whrs]. The newly summoned warhorse is not equipped.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES clon
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+TARGET UNIT LOCAL
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 20
+CONSUME hrse 1
+PRODUCES whrs 20
+LEVEL 27000
+DESCRIPTION The energies are better employed at this level to speed up the growth of the replica
+PRODUCES whrs 10
+MANA 2
+
+SKILL chou
+NAME call hunting hounds
+DESCRIPTION The caster invokes powers, and calls forth hunting hounds to serve him
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES clon
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 5
+PRODUCES houn 5
+LEVEL 27000
+DESCRIPTION At this level, more hounds answer the call
+MANA 2
+PRODUCES houn 8
+MULTIPLE 2
+
+
+SKILL cgwf
+NAME Call Grey Wolf
+DESCRIPTION The caster summons the grey wolf to serve him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES chou
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 8
+SUMMONS gwol 15
+TARGET UNIT LOCAL
+LEVEL 27000
+MANA 2
+SUMMONS gwol 8
+DESCRIPTION At this level, the beasts are summoned faster
+
+SKILL cpum
+NAME Call Puma
+DESCRIPTION The caster summons the Puma to serve him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES chou
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 8
+SUMMONS puma 15
+TARGET UNIT LOCAL
+LEVEL 27000
+MANA 2
+SUMMONS puma 8
+DESCRIPTION At this level, the beasts are summoned faster
+
+SKILL cleo
+NAME Call Lion
+DESCRIPTION The caster summons the Lion to serve him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES cpum
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 10
+SUMMONS lion 15
+TARGET UNIT LOCAL
+LEVEL 27000
+MANA 2
+SUMMONS lion 8
+DESCRIPTION At this level, the beasts are summoned faster
+
+
+SKILL crtl
+NAME Call Rattlesnake
+DESCRIPTION The caster summons the Rattlesnake to serve him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES chou
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 8
+SUMMONS snak 15
+TARGET UNIT LOCAL
+LEVEL 27000
+MANA 2
+SUMMONS snak 8
+DESCRIPTION At this level, the beasts are summoned faster
+
+SKILL slwe
+NAME summon lesser water elemental
+DESCRIPTION The caster tries to summon a water elemental from the elemental planes into the world. The targeted unit must consist of lesser water elementals, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES wate
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA  8
+CONSUME fish 1
+TARGET UNIT LOCAL
+SUMMONS lwel 10
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, water elementals are summoned in greater numbers
+SUMMONS lwel  5
+
+SKILL stkl
+NAME summon tangle kelp
+DESCRIPTION The caster tries to summon a mass of animated kelp from the elemental planes into the world. The targeted unit must consist of tangle kelp, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES slwe
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 8
+CONSUME fish 1
+TARGET UNIT LOCAL
+SUMMONS kelp 10
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, familiarity with kelps allow the mage to animate one in five days
+SUMMONS kelp 5
+
+SKILL swpo
+NAME summon whirlpool
+DESCRIPTION The caster tries to summon a living, animated whirpool from the elemental planes into the world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES stkl
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 15
+CONSUME fish 1
+TARGET UNIT LOCAL
+SUMMONS wpol 15
+LEVEL 27000
+MANA 2
+DESCRIPTION Experience with whirlpools allows one to summon these easier
+SUMMONS wpol 8
+
+SKILL smwe
+NAME summon major water elemental
+DESCRIPTION The caster tries to summon a major water elemental from the elemental planes' forces. The targeted unit must be a new unit, and the caster must stand on a water location, or a location adjacent to one
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES swpo
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 20
+CONSUME fish 1
+CONSUME msto 1
+TARGET UNIT LOCAL
+SUMMONS mwel 20
+LEVEL 36000
+DESCRIPTION At this level, a major water elemental is summoned more easily
+MANA 2
+SUMMONS mwel 8
+
+
+SKILL slis
+NAME summon living island
+DESCRIPTION The best water summoner may summon living islands, immense creatures of the sea. The targeted unit must be a new unit, and the caster must stand on a water location, or a location adjacent to one
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES smwe
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 20
+CONSUME fish 50
+TARGET UNIT LOCAL
+SUMMONS lvis 30
+LEVEL 36000
+DESCRIPTION At this level, a living island will form in less time than expected
+SUMMONS lvis 15
+MANA 2
+
+SKILL blif
+NAME boon of life
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES wate 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+DESCRIPTION Attuning itself to the element of water causes a mage to preserve its own life
+MANA -3
+LIFE 5
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to increase further the boon of life
+
+SKILL erwa
+NAME enchant ring of water
+DESCRIPTION The caster uses his knowledge of water's energies to enchant a magical ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES wate 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 18
+CONSUME srng 1
+PRODUCES rwat 30
+LEVEL 18000
+MANA 2
+PRODUCES rwat 15
+DESCRIPTION Higher levels allow water to flow into a ring in less time than usual
+
+SKILL swav
+NAME standing waves
+DESCRIPTION The experienced water mage may walk unencumbered upon the surface of the water without even requiring concentration
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES erwa
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+CAPACITY 3 80
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to improve on the standing waves
+
+SKILL erph
+NAME enchant ring of phases
+DESCRIPTION An arch-mage in water skills may use a suitably enchanted ring to change phase and become incredibly hard to hit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES wate 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 30
+CONSUME grng 1
+CONSUME msto 1
+PRODUCES rphs 40
+LEVEL 36000
+DESCRIPTION At this level, the ring can be made a little faster
+PRODUCES rphs 30
+MANA 2
+
+SKILL icin
+NAME Icing
+DESCRIPTION Covers target with ice decreasing it's riding capacity
+STUDY_COST 3
+LEVEL  3000
+REQUIRES wate 2
+#LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+CONSUME mana 5
+PRODUCES evticin 10
+MULTIPLE 30
+LEVEL  6000
+REQUIRES airs 1
+PRODUCES evticin 80
+MULTIPLE 45
+
+SKILL iceb
+NAME Ice bolt
+DESCRIPTION In combat hits multiple opponents with shard of ice. At the same time 
+STUDY_COST 3
+LEVEL  3000
+REQUIRES icin 2
+#LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+CONSUME mana 6
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 4
+COMBAT MISSILE 10
+COMBAT DAMAGE 10
+COMBAT HITS 5
+COMBAT BONUS LIFE 10
+COMBAT BONUS DEFENCE 10
+COMBAT BONUS INITIATIVE -3
+COMBAT DAMAGE_TYPE 3
+LEVEL  90000
+
+#=========================== void =========================================
+
+SKILL void
+NAME void magics
+DESCRIPTION The element of the Void relates to magic itself, gaining arcane knowledge and death
+STUDY_COST 3
+LEVEL  3000
+WISDOM rvod
+REQUIRES mage
+# LEARNING_PARADIGM LEARNING_MAGIC
+ELEMENTAL_MAGIC_SKILL
+STUDENT LEADER
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced Void mastery
+MANA 2
+LEVEL 18000
+DESCRIPTION Deeper Void mysteries
+MANA 3
+LEVEL 30000
+DESCRIPTION Void arcana. An arch-mage in void always gauge all void-related skills of its fellow mages
+MANA 4
+FX 69
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to go beyond 4th level in a magic skill
+
+
+SKILL raur
+NAME read auras
+DESCRIPTION The mage skilled in aura reading may detect a unit's faction as if he had two observation levels higher
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES void
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+OBSERVATION 2
+LEVEL 9000
+DESCRIPTION At this level, the detection of the faction proceed as if the mage had three observation levels higher
+MANA 2
+OBSERVATION 3
+LEVEL 18000
+DESCRIPTION At this level, the detection of the faction proceed as if the mage had four observation levels higher
+MANA 3
+OBSERVATION 4
+
+
+SKILL idre
+NAME inspire dread
+DESCRIPTION The mage skilled in inspiring unnatural dread from his simple presence behaves in combat as if he was 4 stealth levels higher, thus avoiding being targeted by units if possible
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES void
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+STEALTH 4
+LEVEL 18000
+DESCRIPTION At this level, the aura of dread spreads further, and mage enjoys 5 stealth levels of bonus, avoiding all but the most perceptive of opponents
+MANA 2
+STEALTH 5
+LEVEL 36000
+DESCRIPTION Altough it is difficult to attain this level, the dread is more pronounced, and the mage enjoys 7 levels of stealth in battle, ensuring that no one will attack him unless it cannot do otherwise
+MANA 3
+
+SKILL eriv
+NAME enchant ring of invisibility
+DESCRIPTION The mage uses his knowledge of void to create this ring that imparts non-beingness upon its wearer
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES idre
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 8
+CONSUME irng 1
+PRODUCES rtiv 15
+LEVEL 9000
+DESCRIPTION The mage is used to imbuing invisibility to rings, creating them faster and with less energy
+MANA 2
+PRODUCES rtiv 8
+LEVEL 18000
+DESCRIPTION The mage has a long experience into the shadows and the invisible
+MANA 3
+PRODUCES rtiv 5
+
+SKILL tsig
+NAME true sight
+DESCRIPTION The mage calls upon all its ressources and temporarily increases its observation capacities, but is left drained
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES eriv
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+GRANTS efftsig 1
+MULTIPLE 3
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, the mage can sustain the true sight for a longer duration
+MULTIPLE 5
+LEVEL 18000
+
+SKILL mash
+NAME make amulet of shadows
+DESCRIPTION The skilled mage knows how to infuse the essence of shadows into a simple plain amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES eriv 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amsh 15
+LEVEL 18000
+DESCRIPTION At this level, the shadows are bound faster
+MANA 2
+PRODUCES amsh 8
+LEVEL 36000
+
+SKILL ides
+NAME instill despair
+DESCRIPTION The mage will cause despair in units. The effect of fanaticism is negated and units suffer a penalty in initiative. Target may be in an adjacent location
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES mash
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+TARGET UNIT
+GRANTS effdes4 1
+MULTIPLE 5
+LEVEL 18000
+DESCRIPTION At this level, the despair produced is more pronounced
+MULTIPLE 9
+MANA 2
+LEVEL 36000
+
+SKILL edsh
+NAME enchant dark shield
+DESCRIPTION Using the essence of the void, the caster imbues a shield with the power to absorb blows
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES ides
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME tshd 1
+PRODUCES dshd 15
+LEVEL 18000
+DESCRIPTION At this level, the shield may be altered more quickly
+MANA 2
+PRODUCES dshd 8
+LEVEL 36000
+MANA 3
+PRODUCES dshd 5
+DESCRIPTION At this level, long experience with the process yields faster enchantments
+
+SKILL estf
+NAME enchant staff
+DESCRIPTION Using the essence of the void, the caster imbues a simple wooden staff with flexibility and durability
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES ides
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME staf 1
+PRODUCES stfv 15
+LEVEL 18000
+DESCRIPTION With long experience, the enchanter may make a staff in a short time with less energy
+PRODUCES stfv 8
+MANA 2
+
+SKILL eavb
+NAME enchant amulet of void blessing
+DESCRIPTION The caster uses his knowledge of the infinities of void to empower resistance to an amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES estf
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amvb 15
+LEVEL 18000
+DESCRIPTION At this level, the blessing is quicker
+MANA 2
+PRODUCES amvb 8
+LEVEL 36000
+
+SKILL slve
+NAME summon lesser void elemental
+DESCRIPTION The caster tries to summon a void elemental from the elemental planes into the world. The targeted unit must consist of lesser void elementals, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES void
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 8
+CONSUME iron 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS lvel 10
+LEVEL 27000
+DESCRIPTION At this level, experience with elementals allow the mage to shape void elementals in five days
+SUMMONS lvel  5
+MANA 2
+LEVEL 54000
+DESCRIPTION At this level, an elemental is shaped in a third of the usual time
+MANA 3
+SUMMONS lvel  3
+
+SKILL sdcl
+NAME summon dark clouds
+DESCRIPTION The caster tries to summon a dark cloud from the elemental planes into this world. The targeted unit must consist of dark clouds, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES slve
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME iron 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS dcld  15
+LEVEL 27000
+DESCRIPTION At this level, experience with clouds allow the mage to generate them in eight days
+SUMMONS dcld 8
+MANA 2
+LEVEL 54000
+DESCRIPTION At this level, experience with clouds allow the mage to form one in a third of the usual time
+SUMMONS dcld  5
+MANA 3
+
+SKILL swsp
+NAME summon will o' wisps
+DESCRIPTION The caster tries to summon a will o' the wisp from the elemental planes into this world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES sdcl
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 15
+CONSUME msto 1
+CONSUME hrbs 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS wisp  20
+LEVEL 36000
+DESCRIPTION At this level, experience with wisps allow the mage to create one in less time
+MANA 2
+SUMMONS wisp 10
+LEVEL 72000
+DESCRIPTION At this level, experience with wisps allow the mage to summon one faster
+SUMMONS wisp  7
+MANA 3
+
+SKILL swra
+NAME summon wraith
+DESCRIPTION The caster tries to summon a wraith from the elemental planes into this world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES swsp
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 20
+CONSUME msto 1
+CONSUME hrbs 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS wrai 30
+LEVEL 36000
+DESCRIPTION At this level, experience with wraith allow the mage to materialize one in less time
+MANA 2
+SUMMONS wrai 15
+LEVEL 72000
+DESCRIPTION At this level, a long familiarity with wraith allow to draw one from its elemental abode quickly
+MANA 3
+SUMMONS wrai 10
+
+SKILL sspc
+NAME summon spectre
+DESCRIPTION The caster tries to summon a spectre from the elemental planes into this world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES swra
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 20
+CONSUME msto 1
+CONSUME mand 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS spec 30
+LEVEL 36000
+DESCRIPTION At this level, experience with spectres allow the mage to raise one in less time
+MANA 2
+SUMMONS spec 15
+LEVEL 72000
+
+SKILL svdr
+NAME summon void drake
+DESCRIPTION The caster tries to summon a void drake from the elemental planes into this world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES swra
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 50
+CONSUME msto 1
+CONSUME mand 1
+CONSUME eben 1
+CONSUME gold 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS vdra 60
+LEVEL 36000
+DESCRIPTION At this level, the summoning is marginally faster
+SUMMONS vdra 45
+MANA 2
+LEVEL 72000
+
+SKILL necr
+NAME necromancy
+DESCRIPTION Necromancy is a sub-skill of the void, and not generally available. It is the base art of controlling undead
+LEVEL  6000
+REQUIRES void
+STUDY_COST 3
+MAGIC_SKILL
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_HARVEST
+HARVEST dead 1
+STUDENT LEADER
+MANA 1
+SPECIALIST
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION Further progress in the base skill is not possible
+
+
+SKILL rzom
+NAME raise zombies
+DESCRIPTION The art of raising the dead from their graves. Raise Zombies may be used at any battle site, and produces loyal zombie fighters from the fallen soldiers. Each turn, 20% of the soldier corpses decay and are no longer raisable. The target must be a unit of zombie fighters, or a new unit
+LEVEL  6000
+REQUIRES necr
+STUDY_COST 3
+MAGIC_SKILL
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+USE_MANA 2
+CONSUME dead 1
+SUMMONS zomb 1
+LEVEL 18000
+MANA 2
+DESCRIPTION The expert necromancer raises more zombies during the month
+SUMMONS zomb 2
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to raise more than two zombies a day
+
+SKILL dbon
+NAME dig out bones
+DESCRIPTION Dig bones out of the graves to be used for necromantic arts
+LEVEL  6000
+REQUIRES rzom
+STUDY_COST 3
+MAGIC_SKILL
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_HARVEST
+STUDENT LEADER
+MANA 1
+TARGET UNIT LOCAL
+USE_MANA 2
+HARVEST bone 1
+LEVEL 18000
+MANA 2
+DESCRIPTION The expert necromancer digs more bones during the month
+HARVEST bone 2
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to raise more bones
+
+SKILL rske
+NAME raise skeletons
+DESCRIPTION The art of raising the dead from their graves. Raise skeletons may be used at any battle site, and produces bony skeleton fighters from the fallen and decayed corpses of soldiers. The target must be a unit of skeletons, or a new unit
+LEVEL  6000
+REQUIRES dbon
+STUDY_COST 3
+MAGIC_SKILL
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+TARGET UNIT LOCAL
+USE_MANA 2
+CONSUME bone 1
+SUMMONS skel 1
+LEVEL 18000
+MANA 2
+DESCRIPTION The expert necromancer raises more skeletons during the month
+SUMMONS skel 2
+LEVEL 36000
+DESCRIPTION At higher levels, skeletons are raised in short times
+SUMMONS skel 4
+MANA 3
+
+SKILL fors
+NAME form of shadows
+DESCRIPTION The caster uses his mastery of the void to transform itself into a gaseous and insubstantial shape
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES void 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+SPECIALIST 
+USE_MANA 1
+GRANTS efffors 1
+MULTIPLE 4
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, the generated effects last a lot longer
+MULTIPLE 7
+LEVEL 36000
+MANA 3
+DESCRIPTION At this level, the mage slips into a form of shadows with greater ease
+MULTIPLE 10
+
+
+SKILL ervo
+NAME enchant ring of void
+DESCRIPTION The caster uses his knowledge of void's energies to enchant a magical ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES void 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 18
+CONSUME srng 1
+PRODUCES rvod 30
+LEVEL 27000
+DESCRIPTION Long practice will speed up ring making
+MANA 2
+PRODUCES rvod 15
+LEVEL 54000
+MANA 3
+DESCRIPTION This ring is produced in a short time
+PRODUCES rvod 10
+
+
+
+SKILL erpo
+NAME enchant ring of power
+DESCRIPTION The cast may bind the highest energies of the void into an extremely powerful magic ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES void 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 30
+CONSUME grng 1
+CONSUME msto 1
+PRODUCES rpow 40
+LEVEL 36000
+DESCRIPTION At this level, the ring can be made a little faster
+PRODUCES rpow 30
+MANA 2
+LEVEL 72000
+
+
+#=============================== Fire ===========================
+SKILL fire
+NAME fire magics
+DESCRIPTION The element of the Fire relates to battle, destructive magics and predisposes to magical alteration
+STUDY_COST 3
+LEVEL  3000
+WISDOM rfir
+REQUIRES mage
+#LEARNING_PARADIGM LEARNING_MAGIC
+ELEMENTAL_MAGIC_SKILL
+STUDENT LEADER
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced Fire mastery
+MANA 2
+LEVEL 18000
+DESCRIPTION Deeper Fire mysteries
+MANA 3
+LEVEL 30000
+DESCRIPTION Fire arcana. An arch-mage in fire always gauge all fire-related skills of its fellow mages
+MANA 4
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to go beyond 4th level in a magic skill
+
+SKILL efwd
+NAME enchant fire wand
+DESCRIPTION The mage uses his knowledged of pyrotechnics to create a wand shooting fire
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES fire
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 6
+CONSUME staf 1
+PRODUCES wfir 8
+LEVEL 18000
+DESCRIPTION At this level, a wand can be enchanted in a lot less time
+MANA 2
+PRODUCES wfir 4
+
+SKILL eafb
+NAME enchant amulet of fire blessing
+DESCRIPTION The caster uses his knowledge of the energies of fire to empower resistance to an amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES efwd
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amfb 15
+LEVEL 18000
+DESCRIPTION Long experience in the craft allows the skilled enchanter to make a proper amulet faster
+PRODUCES amfb 8
+MANA 2
+
+SKILL fstd
+NAME fire steed
+DESCRIPTION Mastery of the fire's currents allow the mage to mutate a horse into a fearsome fire-snorting creature, fast, and deadly
+STUDY_COST 3
+MAGIC_SKILL
+WISDOM rwat
+LEVEL  3000
+REQUIRES eafb
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 9
+CONSUME hrse 1
+PRODUCES fste 15
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, a horse may be mutated in half the time
+PRODUCES fste 8
+LEVEL 18000
+MANA 3
+DESCRIPTION At this level, a horse may be mutated in a third of the time
+PRODUCES fste 5
+
+
+SKILL ftch
+NAME fire touch
+DESCRIPTION During combat, the caster may inflict severe fire damage to his foes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES fire
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT MELEE 10
+COMBAT BONUS LIFE 10
+COMBAT BONUS INITIATIVE 3
+COMBAT BONUS HITS 4
+COMBAT DAMAGE_TYPE 3
+COMBAT BONUS DAMAGE 3
+LEVEL 9000
+DESCRIPTION At this level, the touch is more painful than ever
+MANA 2
+COMBAT MELEE 11
+COMBAT BONUS HITS 5
+COMBAT BONUS DAMAGE 5
+LEVEL 18000
+DESCRIPTION At high levels, the touch causes a lot of harm
+MANA 3
+COMBAT MELEE 12
+COMBAT BONUS HITS 6
+COMBAT BONUS DAMAGE 6
+
+SKILL ffrm
+NAME fire form
+DESCRIPTION During combat, the mage mutates itself into a living man-shaped flame. Living flame is immune to ranged attacks and all figures striking the flame face a melee strike in return. The mage suffers one hit per unit of weight carried and one per item equipped. The mage may also strike normally
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES ftch
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 5
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 5
+COMBAT BONUS DEFENSE 5
+COMBAT BONUS INITIATIVE 4
+COMBAT BONUS DAMAGE 4
+COMBAT DAMAGE_TYPE 3
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, the flame burns hotter
+COMBAT BONUS MELEE 6
+COMBAT BONUS DEFENSE 6
+COMBAT BONUS DAMAGE 6
+
+SKILL ftrw
+NAME fire throw
+DESCRIPTION During combat, the caster may hurl fire upon his foes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES ftch
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+COMBAT MISSILE 4
+COMBAT BONUS LIFE 10
+COMBAT BONUS INITIATIVE 2
+COMBAT BONUS HITS 4
+COMBAT DAMAGE_TYPE 3
+COMBAT RANGED_DAMAGE 3
+LEVEL 18000
+DESCRIPTION At this level, the mage may throws bigger flames upon his ennemies
+MANA 2
+COMBAT MISSILE 5
+COMBAT BONUS HITS 5
+COMBAT DAMAGE 5
+
+SKILL iswd
+NAME inflame sword
+DESCRIPTION The caster concentrates the flow of elemental fire on a sword's edge
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES ftrw
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 9
+CONSUME swrd 1
+PRODUCES fswd 15
+LEVEL 18000
+DESCRIPTION At this level, the flame flows faster into the sword's point
+MANA 2
+PRODUCES fswd 8
+
+SKILL frai
+NAME fire rain
+DESCRIPTION During combat, the caster may rain fire upon his foes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES ftrw
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 7
+COMBAT MISSILE 4
+COMBAT BONUS LIFE 10
+COMBAT BONUS INITIATIVE 3
+COMBAT BONUS HITS 4
+COMBAT DAMAGE_TYPE 3
+COMBAT RANGED_DAMAGE 4
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, the fire rain falls harder
+COMBAT MISSILE 5
+COMBAT BONUS HITS 5
+
+SKILL fbal
+NAME fire ball
+DESCRIPTION This rolling ball of concentrated fire does damage on all units in front of the caster
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES frai
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 4
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 5
+COMBAT MISSILE 6
+COMBAT BONUS INITIATIVE 1
+COMBAT HITS 20
+COMBAT DAMAGE_TYPE 3
+COMBAT RANGED_DAMAGE 5
+LEVEL 36000
+DESCRIPTION At this level, the fireball produced is larger
+COMBAT DAMAGE 6
+COMBAT HITS 25
+COMBAT MISSILE 7
+MANA 2
+
+SKILL fwal
+NAME fire wall
+DESCRIPTION This potent spell creates a moving wall of fire on the same location as the mage, which then moves forward, burning all ennemies in its passage
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES frai
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_COMBAT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+COMBAT_ACTION COMBAT_SUMMON
+COMBAT TARGET BATTLEFIELD_TARGET_ALL
+SUMMONS firewal
+LEVEL 36000
+MANA 2
+DESCRIPTION At this level, it takes less mana to create a fire wall
+RECONSUME
+USE_MANA 7
+
+SKILL itos
+NAME transmute iron to silver
+DESCRIPTION The basics of the alchemy, enabling the mage to extract purified precious metal from base iron
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES fire
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 3
+CONSUME iron 1
+PRODUCES silv 4
+LEVEL 18000
+DESCRIPTION At this level, making silver is almost instinctive
+MANA 2
+RECONSUME
+USE_MANA 2
+CONSUME iron 1
+PRODUCES silv 3
+
+SKILL itog
+NAME transmute iron to gold
+DESCRIPTION The aim of the alchemical arts, or so it's said, enabling the mage to create pure gold out of mundane iron
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES itos
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 5
+CONSUME iron 1
+PRODUCES gold 5
+LEVEL 27000
+DESCRIPTION At this level, the expert alchemist may make as many gold as he needs
+MANA 2
+RECONSUME
+USE_MANA 3
+CONSUME iron 1
+PRODUCES gold 3
+
+SKILL mxad
+NAME mix adamantium
+DESCRIPTION Admantium does not occur in nature, yes is the best metal there is. Used instead of iron by highly skilled armorers and weaponsmiths, it makes weapons that are almost magical in durability and weight
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES itog
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+CONSUME iron 1
+CONSUME silv 1
+CONSUME gold 1
+PRODUCES adam 3
+LEVEL 36000
+DESCRIPTION At this level, the skilled mage has less losses during the metal alteration
+MANA 2
+PRODUCES adam 5
+MULTIPLE 2
+
+SKILL carb
+NAME carbonise
+DESCRIPTION With the right cooker, a skilled alchemist may convert the most common of material into the most sought one
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES itog
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME wood 2
+PRODUCES gems 15
+LEVEL 27000
+MANA 2
+DESCRIPTION With more experience, a more careful cooking will produce more gems
+RECONSUME
+USE_MANA 15
+CONSUME wood 3
+PRODUCES gems 20
+MULTIPLE 2
+
+SKILL hrdw
+NAME harden wood
+DESCRIPTION A skilled alchemist will consume slowly wood in scented oils and herbs, until only the hardest core remains, leaving an acceptable equivalent to better woods
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES carb
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME wood 5
+CONSUME hrbs 2
+PRODUCES eben 15
+LEVEL 18000
+DESCRIPTION At this level, the soft parts are burned away faster
+PRODUCES eben 8
+MANA 2
+
+SKILL blnd
+NAME blind
+DESCRIPTION The caster may inflict a severe blindness to a unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES fire
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+TARGET UNIT LOCAL
+USE_MANA 2
+CONSUME hrbs 1
+GRANTS effblnd 1
+MULTIPLE 3
+LEVEL 9000
+DESCRIPTION At this level, the mage makes blindness last longer
+MULTIPLE 6
+MANA 2
+
+SKILL ersi
+NAME enchant ring of true sight
+DESCRIPTION The mage uses his knowledge of fire to create this ring whose light can only be seen by its wearer. It shows the shadows around all living beings
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES blnd
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 8
+CONSUME irng 1
+PRODUCES rtsi 15
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, a minor ring is enchanted in half time
+PRODUCES rtsi 8
+
+
+SKILL eara
+NAME enchant amulet of radiance
+DESCRIPTION Infused with fire energies, this amulet is much sought after
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES ersi
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amra 15
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, an amulet is infused in less time
+PRODUCES amra 8
+
+SKILL molp
+NAME molten plate
+DESCRIPTION A properly prepared armor can melt without damaging its wearer
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES eara
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 20
+CONSUME plat 1
+PRODUCES mpla 30
+LEVEL 27000
+DESCRIPTION At this level, the fire mage takes less time to prepare the armor
+PRODUCES mpla 15
+MANA 2
+
+SKILL slfe
+NAME summon lesser fire elemental
+DESCRIPTION The caster tries to summon a fire elemental from the elemental planes into the world. The targeted unit must consist of lesser fire elementals, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES fire
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 8
+CONSUME iron 1
+TARGET UNIT LOCAL
+SUMMONS lfel 10
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, experience with elementals allow the mage to pop fire elementals in five days
+SUMMONS lfel 5
+
+SKILL sfsp
+NAME summon fire sprite
+DESCRIPTION The caster tries to summon a fire sprite from the elemental planes into the world. The targeted unit must consist of fire sprites, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES slfe
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 8
+CONSUME iron 1
+TARGET UNIT LOCAL
+SUMMONS fspr 10
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, experience with fire sprites allow the mage to summon them in five days
+SUMMONS fspr  5
+
+SKILL scer
+NAME summon cerberus
+DESCRIPTION The caster tries to summon a cerberus from the lower planes. The targeted unit must be a new unit. A Cerberus is a dog-shaped creature, undistinguishable externally from a normal beast, but can fight with fire-based strikes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES sfsp
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 15
+CONSUME iron 1
+CONSUME msto 1
+TARGET UNIT LOCAL
+SUMMONS cerb 20
+LEVEL 36000
+DESCRIPTION At this level, experience with cerberi allow the mage to summon them in ten days
+MANA 2
+SUMMONS cerb 10
+
+SKILL sbal
+NAME summon balrog
+DESCRIPTION The caster tries to summon a balrog from the elemental plane of fire. The targeted unit must be an existing unit whose figures are sacrificed, and the spell will succeed with an increasing chance depending on the total skill days of the unit. A Balrog wields many shapes, depending on its humors, and fights either with magic or brute burning force. A mage must stand inside a mage circle before attempting to summon a balrog
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  18000
+REQUIRES scer
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 30
+CONSUME iron 1
+CONSUME msto 1
+CONSUME catt 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS balr 30
+LEVEL 54000
+DESCRIPTION With more experience, the summoning may proceed with a greater chance of success and faster
+MANA 2
+SUMMONS balr 20
+
+SKILL slav
+NAME summon lava elemental
+DESCRIPTION The caster tries to summon a lava elemental from the fire-blossoming earth. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES scer
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 15
+CONSUME msto 1
+CONSUME gems 1
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS lave 20
+LEVEL 36000
+DESCRIPTION At this level, experience with lava elementals allow the mage to summon them in ten days
+MANA 2
+SUMMONS lave 10
+
+SKILL sfdr
+NAME summon fire dragon
+DESCRIPTION The caster tries to summon a fire dragon from its native elemental planes. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  15000
+REQUIRES slav
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 25
+CONSUME adam 1
+CONSUME msto 1
+CONSUME catt 5
+TARGET UNIT LOCAL
+USING_PARADIGM USING_SUMMON
+SUMMONS fdrg 30
+LEVEL 45000
+DESCRIPTION At this level, experience with fire dragons allow the summoning to be done faster
+MANA 2
+SUMMONS fdrg 20
+
+SKILL pilf
+NAME pillar of fire
+DESCRIPTION The caster creates a pillar of fire at a random location on the battlefield. Each pillar of fire will move at random each turn, inflicting fire damage to some enemies
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES fire 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_COMBAT
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 6
+COMBAT_ACTION COMBAT_SUMMON
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+SUMMONS fpillar
+LEVEL 27000
+DESCRIPTION With experience, the mage may invoke a pillar of fire with less drain on its power
+RECONSUME
+USE_MANA 5
+MANA 2
+
+
+SKILL liqf
+NAME liquid fire
+DESCRIPTION From this invocation, the mage causes fire to run thru the veins of its followers, enhancing their combat prowess
+REQUIRES pilf
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 3
+TARGET UNIT LOCAL
+GRANTS effliqf 1
+MULTIPLE 2
+LEVEL 27000
+DESCRIPTION At this level, the fire courses longer
+MANA 2
+MULTIPLE 3
+
+SKILL enhw
+NAME enhance work
+DESCRIPTION The mage may concentrate on units working with fire, facilitating their work. The targeted unit will produce 1 additional work day for each 2 when using a skill derived from weaponsmith. Targeted leaders enjoy a doubling of their work
+REQUIRES liqf
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_ENCHANT 
+USE_MANA 1
+TARGET UNIT LOCAL
+PRODUCES effenhw 1
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, the speed at which a unit works is doubled, and leaders have a triple speed when using a weapon making skill
+
+SKILL erfi
+NAME enchant ring of fire
+DESCRIPTION The caster uses his knowledge of fire's energy to enchant a magical ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES fire 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 18
+CONSUME srng 1
+PRODUCES rfir 30
+LEVEL 18000
+DESCRIPTION At this level, the energy is bound faster
+MANA 2
+PRODUCES rfir 15
+
+SKILL fbls
+NAME fire blessing
+DESCRIPTION The caster will infuse its life energies into all allied units.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES erfi
+# LEARNING_PARADIGM LEARNING_MAGIC
+COMBAT_ACTION COMBAT_ENCHANT
+GRANTS efffbls 1
+STUDENT LEADER
+MANA 1
+USE_MANA 15
+COMBAT TARGET BATTLEFIELD_TARGET_OWN_SIDE
+LEVEL 36000
+DESCRIPTION Long proficiency in using the blessing of fire leave the mage less drained. The caster may act again on the next round
+MANA 2
+GRANTS efffbls2 1
+USE_MANA 10
+
+
+SKILL erdo
+NAME enchant ring of domination
+DESCRIPTION The caster may bind the highest energies of the fire into a crown shaped gold ring with immense power
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES fire 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 30
+CONSUME grng 1
+CONSUME msto 1
+PRODUCES rdom 40
+LEVEL 36000
+DESCRIPTION At this level, the ring can be made a little faster
+PRODUCES rdom 30
+MANA 2
+
+
+
+#=========================== Earth ====================================
+
+SKILL eart
+NAME earth magics
+DESCRIPTION The element of the Earth relates to growth, nature and animals
+STUDY_COST 3
+LEVEL  3000
+WISDOM reat
+REQUIRES mage
+# LEARNING_PARADIGM LEARNING_MAGIC
+ELEMENTAL_MAGIC_SKILL
+STUDENT LEADER
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced Earth mastery
+MANA 2
+LEVEL 18000
+DESCRIPTION Deeper Earth mysteries
+MANA 3
+LEVEL 30000
+DESCRIPTION Earth arcana. An arch-mage in earth always gauge all earth-related skills of its fellow mages
+MANA 4
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to go beyond 4th level in a magic skill
+
+SKILL ppst
+NAME permanent post
+DESCRIPTION The creation of a permanent post allows a mage to get a report on a location, even if no unit remains in it
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES eart
+SPECIALIST
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 5
+CONSUME gran 1
+SUMMONS ppos 3
+LEVEL 9000
+DESCRIPTION With some experience, a permanent post can be established in a short time
+SUMMONS ppos 2
+MANA 2
+
+
+SKILL mhor
+NAME mutate horse
+DESCRIPTION Mastery of the earth's animals allow the mage to mutate a horse into a sturdy beast, slow, but almost invulnerable
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+WISDOM rwat
+REQUIRES eart
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 9
+CONSUME hrse 1
+PRODUCES shrs 15
+LEVEL 9000
+DESCRIPTION At this level, a horse may be mutated in half the time
+PRODUCES shrs 8
+
+SKILL cmou
+NAME call forth mount
+DESCRIPTION Mastery of the earth life allows the mage to call forth a mount. Stone horse will come to his call
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES mhor
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 15
+PRODUCES shrs 20
+LEVEL 9000
+MANA 2
+PRODUCES shrs 15 
+DESCRIPTION At this level it takes less time to call mount.
+
+SKILL cele
+NAME Call Elephant
+DESCRIPTION The caster summons the Elephant to serve him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES cmou
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_SUMMON
+USE_MANA 12
+SUMMONS elep 15
+TARGET UNIT LOCAL
+LEVEL 27000
+MANA 2
+SUMMONS elep 8
+DESCRIPTION At this level, the beasts are summoned faster
+
+
+SKILL sboa
+NAME strength of the boar
+DESCRIPTION During combat, the caster calls upon the spirit of the boar and may inflict multiple hits to his foes and resist punishment
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES eart
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_COMBAT
+STUDENT LEADER
+MANA 1
+COMBAT_ACTION COMBAT_ENCHANT
+GRANTS effsboa 1
+SECONDARY_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+USE_MANA 2
+LEVEL 9000
+DESCRIPTION At this level, the caster hits more often, and stronger
+MANA 2
+GRANTS effsboa2 1
+LEVEL 18000
+DESCRIPTION At this level, the caster hits more often, and stronger
+GRANTS effsboa3 1
+MANA 3
+
+SKILL scal
+NAME stone scales
+DESCRIPTION During combat, the caster may harden his skin into a set of interlocking scales, protecting him against most damage. The protection lasts five combat rounds.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES sboa 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+COMBAT_ACTION COMBAT_ENCHANT
+GRANTS effssca 1
+MULTIPLE 5
+SECONDARY_ACTION MELEE
+USE_MANA 3
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+LEVEL 18000
+DESCRIPTION At this level, the scales are more tightly drawn, and lasts longer
+MANA 2
+GRANTS effssca2 1
+MULTIPLE 7
+
+
+SKILL erst
+NAME enchant ring of strength
+DESCRIPTION The caster uses his knowledge of earth's strength to enchant a lesser ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES sboa
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 8
+CONSUME irng 1
+PRODUCES rtst 15
+LEVEL 9000
+DESCRIPTION At this level, a ring is easier to enchant
+MANA 2
+PRODUCES rtst 8
+LEVEL 27000
+DESCRIPTION At this level, the strength is transferred to the ring a lot faster. Familiarity with the process also imbues some of a ring's benefits directly to the mage
+PRODUCES rtst 6
+CAPACITY 0 15
+DAMAGE 1
+LIFE 2
+
+SKILL eaeb
+NAME enchant amulet of earth blessing
+DESCRIPTION The caster uses his knowledge of the flows of earth to empower resistance to an amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES erst
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 10
+CONSUME amul 1
+PRODUCES ameb 15
+LEVEL 18000
+DESCRIPTION Familiarity with the earth allows a mage to enchant an amulet in half the time
+MANA 2
+PRODUCES ameb 8
+
+SKILL sbul
+NAME strength of the bull
+DESCRIPTION During combat, the caster calls upon the spirit of the bull and may rush thru his foes, causing disruption and damage
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES sboa
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 4
+COMBAT BONUS LIFE 15
+COMBAT BONUS INITIATIVE 1
+COMBAT BONUS HITS 9
+COMBAT DAMAGE 5
+COMBAT DAMAGE_TYPE 2
+LEVEL 9000
+DESCRIPTION At this level, the caster hits more often, and stronger
+MANA 2
+COMBAT BONUS MELEE 6
+COMBAT BONUS HITS 12
+
+SKILL eham
+NAME enchant war hammer
+DESCRIPTION The caster uses his knowledge of earth's strength to empower a war hammer
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES sbul
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 9
+CONSUME wham 1
+PRODUCES mwam 15
+LEVEL 18000
+DESCRIPTION At this level, a mage may enchant more hammers at a time
+MANA 2
+PRODUCES mwam 8
+
+SKILL stox
+NAME strength of the ox
+DESCRIPTION During combat, the caster may crush his foes by calling upon the spirit of the ox, powerful, ruthless and fast
+MAGIC_SKILL
+STUDY_COST 3
+LEVEL  3000
+REQUIRES sbul
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 5
+COMBAT BONUS LIFE 15
+COMBAT BONUS INITIATIVE 1
+COMBAT BONUS HITS 6
+COMBAT DAMAGE 12
+COMBAT DAMAGE_TYPE 2
+LEVEL 9000
+DESCRIPTION At this level, the caster hits more forcefully
+MANA 2
+COMBAT BONUS MELEE 6
+COMBAT BONUS HITS 8
+
+SKILL epla
+NAME earthen plate
+DESCRIPTION The caster may imbue the earth's permanency to an armor
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES stox
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 20
+CONSUME plat 1
+PRODUCES plea 30
+LEVEL 27000
+DESCRIPTION At this level, the plate is enchanted faster
+MANA 2
+PRODUCES plea 15
+
+SKILL stel
+NAME strength of the elephant
+DESCRIPTION During combat, the caster calls upon the spirit of the elephant and may trample and flatten his foes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES stox
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 5
+COMBAT BONUS DEFENSE 5
+COMBAT BONUS LIFE 20
+COMBAT BONUS INITIATIVE -1
+COMBAT BONUS HITS 4
+COMBAT DAMAGE 30
+COMBAT DAMAGE_TYPE 2
+LEVEL 27000
+DESCRIPTION At this level, the caster seems even more heavy
+MANA 2
+COMBAT BONUS MELEE 6
+COMBAT BONUS HITS 5
+COMBAT DAMAGE 50
+
+SKILL sgrp
+NAME stone grasp
+DESCRIPTION During combat, the caster fights with increased force, inclicting deadly damage
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES eart
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 10
+COMBAT BONUS DAMAGE 10
+COMBAT BONUS INITIATIVE 1
+COMBAT HITS 2
+COMBAT DAMAGE_TYPE 2
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, the mage hits more often
+COMBAT HITS 4
+COMBAT BONUS MELEE 11
+
+
+SKILL shai
+NAME stone hail
+DESCRIPTION During combat, the caster throws large stones, crushing his enemies from afar
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES sgrp
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+CONSUME ston 1
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 4
+COMBAT MISSILE 8
+COMBAT RANGED_DAMAGE 15
+COMBAT HITS 5
+COMBAT BONUS INITIATIVE -1
+COMBAT DAMAGE_TYPE 2
+LEVEL 9000
+DESCRIPTION At this level, the mage creates more stones and throws them further
+MANA 2
+COMBAT RANGE 5
+COMBAT HITS 7
+
+
+SKILL shed
+NAME stone heads
+DESCRIPTION During combat, the caster may causes slow down the tought processes of all its opponents. All enemy units that have not yet acted suffer a penalty in initiative of -2
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES shai
+# LEARNING_PARADIGM LEARNING_MAGIC
+COMBAT_ACTION COMBAT_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 7
+COMBAT BONUS INITIATIVE 3
+GRANTS effdes2 1
+MULTIPLE 5
+LEVEL 18000
+DESCRIPTION At this level, the opponent penalty is 4 in initiative
+MANA 2
+COMBAT BONUS INITIATIVE 4
+
+
+
+SKILL stog
+NAME stone to granite
+DESCRIPTION Transmute mundane stone blocks into sturdy granite
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES eart
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CRAFT
+USE_MANA 4
+CONSUME ston 1
+PRODUCES gran 5
+LEVEL 18000
+MANA 2
+DESCRIPTION Familiarity with this stone allows the caster to create granite from afar
+
+SKILL stft
+NAME stone fortress
+DESCRIPTION The mage invokes the greater powers of earth, transmuting and multiplying stones into an entire fortress. The stone fortress harvests 60 stones from the area, and works best if the area has at least that amount. Use produces: 1 fortress [fort] in 30 days
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES stog
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_CONSTRUCTION
+USE_MANA 20
+CONSUME ston 60
+PRODUCES fort 30
+LEVEL 36000
+DESCRIPTION At this level, the raising of the fortress requires less time, and less stones too
+PRODUCES fort 25
+MANA 2
+
+
+
+SKILL shft
+NAME shift earth
+DESCRIPTION The mage causes earth itself to alter, improving unfinished structures. Each day spent shifting earth is equivalent to a full month work of a level 2 mason
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES stog
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_BUILD
+USE_MANA 1
+TARGET CONSTRUCTION LOCAL
+PRODUCES stonwk 1
+MULTIPLE 6
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, a day of work produces almost a month work of a level 3 mason
+MULTIPLE 10
+
+SKILL slee
+NAME summon lesser earth elemental
+DESCRIPTION The caster tries to summon an earth elemental from the elemental planes into the world. The targeted unit must consist of lesser earth elementals, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES eart
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+USE_MANA  8
+STUDENT LEADER
+MANA 1
+CONSUME ston 1
+TARGET UNIT LOCAL
+SUMMONS leel 10
+LEVEL 27000
+DESCRIPTION At this level, any lesser elemental is summoned more quickly
+MANA 2
+SUMMONS leel 5
+
+SKILL shom
+NAME summon homunculi
+DESCRIPTION The caster tries to summon an homunculus from the earth itself. The targeted unit must consist of homunculi, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES slee
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+USE_MANA  8
+STUDENT LEADER
+MANA 1
+CONSUME ston 1
+TARGET UNIT LOCAL
+SUMMONS homu 15
+LEVEL 27000
+MANA 2
+DESCRIPTION The skilled summoner will create homunculi faster than the beginner
+SUMMONS homu 8
+
+SKILL sgol
+NAME summon golem
+DESCRIPTION The caster tries to summon a golem from the earth itself. The targeted unit must consist of golems, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES shom
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+USE_MANA  20
+STUDENT LEADER
+MANA 1
+CONSUME gran 1
+TARGET UNIT LOCAL
+SUMMONS gole 30
+LEVEL 36000
+MANA 2
+DESCRIPTION The skilled summoner may shape golems a lot faster
+SUMMONS gole  20
+
+SKILL sgia
+NAME summon giant
+DESCRIPTION The caster tries to summon a giant from the earth itself. The targeted unit must consist of earth giants, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES sgol
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_SUMMON
+USE_MANA  20
+MANA 1
+CONSUME gran 1
+CONSUME msto 1
+TARGET UNIT LOCAL
+SUMMONS egia 30
+LEVEL 36000
+MANA 2
+DESCRIPTION The skilled summoner may call giants a lot faster
+SUMMONS egia  20
+
+SKILL swrm
+NAME summon worm
+DESCRIPTION The caster calls for a deep worm. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  15000
+REQUIRES sgia
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_SUMMON
+USE_MANA  30
+MANA 1
+CONSUME kstn 1
+CONSUME mand 1
+TARGET UNIT LOCAL
+SUMMONS dwor 30
+LEVEL 45000
+MANA 2
+DESCRIPTION The skilled summoner may call a worm somewhat faster
+SUMMONS dwor  20
+
+SKILL stfi
+NAME stone fists
+DESCRIPTION This enchantment causes men's fist to become has hard as stone
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES eart 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+SPECIALIST
+TARGET UNIT LOCAL
+USE_MANA 1
+GRANTS effstfi 1
+MULTIPLE 2
+LEVEL 18000
+MANA 2
+DESCRIPTION At this level, a mages cause the fists to remain as hard as stone for longer durations
+MULTIPLE 4
+
+SKILL petr
+NAME petrify
+DESCRIPTION The caster may inflict paralysis upon a unit, preventing that unit from moving
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES eart 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+TARGET UNIT LOCAL
+USE_MANA 2
+GRANTS effpetr 1
+MULTIPLE 4
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, the paralysis is more pronounced
+MULTIPLE 7
+
+SKILL chel
+NAME call for help
+DESCRIPTION The surrounded caster will call forth a unit of protecting beasts to help him in battle. Five lions will come, and remain with him on the battlefield.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES petr
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM USING_COMBAT
+USE_MANA 10
+COMBAT_ACTION COMBAT_SUMMON
+COMBAT TARGET BATTLEFIELD_TARGET_ALL
+SUMMONS pbea 5
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+
+LEVEL 27000
+MANA 2
+SUMMONS lion 10
+DESCRIPTION At this level ten protecting beasts may be summoned
+
+
+SKILL eret
+NAME enchant ring of earth
+DESCRIPTION The caster uses his knowledge of earth's strength to enchant a magical ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES eart 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 18
+CONSUME srng 1
+PRODUCES reat 30
+LEVEL 18000
+DESCRIPTION At this level, a ring is strengthened in less time
+PRODUCES reat 15
+MANA 2
+
+
+
+SKILL ermi
+NAME enchant ring of might
+DESCRIPTION The cast may bind the highest energies of the earth into a gold ring shaped like a large diamond and infused with massive amounts of power
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES eart 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 30
+CONSUME grng 1
+CONSUME msto 1
+PRODUCES rmig 40
+LEVEL 36000
+DESCRIPTION At this level, the ring can be made a little faster
+PRODUCES rmig 30
+MANA 2
+
+#=========================== Air magic ===========================
+
+SKILL airs
+NAME air magics
+DESCRIPTION The element of the Air relates to movement, life, creatures and knowledge
+STUDY_COST 3
+REQUIRES mage
+LEVEL  3000
+WISDOM rair
+# LEARNING_PARADIGM LEARNING_MAGIC
+ELEMENTAL_MAGIC_SKILL
+STUDENT LEADER
+MANA 1
+LEVEL 9000
+DESCRIPTION Advanced Air mastery
+MANA 2
+LEVEL 18000
+DESCRIPTION Deeper Air mysteries
+MANA 3
+LEVEL 30000
+DESCRIPTION Air arcana. An arch-mage in air always gauge all air-related skills of its fellow mages
+MANA 4
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to go beyond 4th level in a magic skill
+
+SKILL sped
+NAME speed of the wind
+DESCRIPTION The caster can use the speed of the wind and move a running speed for a while
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES airs
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+GRANTS effride 1
+MULTIPLE 2
+LEVEL 9000
+DESCRIPTION At this level, the caster can moves with less effort
+MANA 2
+MULTIPLE 4
+
+
+SKILL cwnd
+NAME counter winds
+DESCRIPTION The caster uses his mastery of the winds to produce gusts of winds. All missile attacks toward his side of the battlefield suffer a -1 missile penalty.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES sped
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+COMBAT_ACTION COMBAT_ENCHANT
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSITE_SIDE
+USE_MANA 4
+GRANTS effcwnd1 1
+MULTIPLE 50
+LEVEL 18000
+DESCRIPTION At this level, the opposing missile penalty is -2
+GRANTS effcwnd2 1
+MANA 2
+
+SKILL fwnd
+NAME Favourable wind
+DESCRIPTION The caster uses his mastery of the winds to produce gusts of winds.  All missile attacks toward opposing side of the battlefield get a +1 missile bonus
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES cwnd
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 4
+COMBAT_ACTION COMBAT_ENCHANT
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSITE_SIDE
+USE_MANA 4
+GRANTS efffwnd1 1
+MULTIPLE 50
+LEVEL 18000
+DESCRIPTION At this level, the opposing missile penalty is -2 while the attacks are still at +1 to missile
+MANA 2
+GRANTS efffwnd2 1
+
+SKILL ewag
+NAME enchant wagon
+DESCRIPTION Creates a wagon that moves at riding speeds on its own. 
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES airs
+USING_PARADIGM USING_CRAFT
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 6
+CONSUME wago 1
+PRODUCES mwag 20
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, a wagon's enchantment is faster.
+PRODUCES mwag 10
+
+SKILL aarm
+NAME airy armor
+DESCRIPTION From a simple and heavy armor, creates an airy, lightweight armor who enhances it's wearers prowess
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES ewag
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 9
+CONSUME chai 1
+PRODUCES amai 15
+LEVEL 18000
+MANA 2
+PRODUCES amai 8
+DESCRIPTION At this level, an armor evaporates in half the time
+
+SKILL eaab
+NAME enchant amulet of air blessing
+DESCRIPTION The caster uses his knowledge of the open air to empower resistance to an amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES aarm
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amab 15
+LEVEL 18000
+PRODUCES amab 8
+MANA 2
+DESCRIPTION At this level, the amulet aquires its properties a lot faster
+
+SKILL erlv
+NAME enchant ring of levitation
+DESCRIPTION The mage uses his knowledge of air to create this ring who is so light, its wearer can fly
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES aarm
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 8
+CONSUME irng 1
+PRODUCES rlev 15
+LEVEL 9000
+MANA 2
+DESCRIPTION At this level, a minor ring is enchanted in half time
+PRODUCES rlev 8
+
+SKILL eams
+NAME enchant amulet of speed
+DESCRIPTION The mage uses his knowledge of the air to create this amulet
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES erlv
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_CRAFT
+MANA 1
+USE_MANA 10
+CONSUME amul 1
+PRODUCES amsp 15
+LEVEL 27000
+DESCRIPTION The amulet can be magicked faster
+PRODUCES amsp 8
+MANA 2
+
+SKILL levi
+NAME levitate
+DESCRIPTION The mage will start levitating over the battlefield, gaining all advantages of a flying unit in battle.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES eams
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USE_MANA 2
+COMBAT_ACTION COMBAT_ENCHANT
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+GRANTS efflevt 1
+LEVEL 999999
+STUDY_COST 0
+DESCRIPTION It is not possible to gain further proficiency in levitate
+
+SKILL mbal
+NAME make baloon
+DESCRIPTION The mage uses his knowledge of the air to create a hot hair baloon
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES erlv
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+MANA 1
+USING_PARADIGM  USING_CONSTRUCTION
+CONSUME hide 20
+CONSUME wood 10
+PRODUCES mong 30
+LEVEL 27000
+DESCRIPTION At this level, the baloon is inflated faster
+MANA 2
+PRODUCES mong 15
+
+SKILL rmor
+NAME raise morale
+DESCRIPTION The caster magically raises the morale of troops, bolstering their confidence prior to battle. The troop will attack straight and true
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES airs
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+TARGET UNIT LOCAL
+GRANTS effini2 1
+MULTIPLE 4
+LEVEL 9000
+DESCRIPTION At this level, morale is increased for a longer time
+MANA 2
+MULTIPLE 8
+
+
+SKILL lspd
+NAME lightning speed
+DESCRIPTION The caster alters a unit, increasing its reflexes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES rmor
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+TARGET UNIT LOCAL
+GRANTS effmele 1
+MULTIPLE 4
+LEVEL 18000
+DESCRIPTION At this level, reflexes are increased for a longer time
+MANA 2
+MULTIPLE 7
+
+SKILL taim
+NAME true aim
+DESCRIPTION The caster alters a unit, increasing its reflexes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES lspd
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+TARGET UNIT LOCAL
+GRANTS effmiss 1
+MULTIPLE 4
+LEVEL 18000
+DESCRIPTION At this level, reflexes are increased for a longer time
+MANA 2
+MULTIPLE 7
+
+SKILL mrun
+NAME make run
+DESCRIPTION The caster alters a unit, increasing its reflexes
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  6000
+REQUIRES taim
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+TARGET UNIT LOCAL
+GRANTS effdefe 1
+MULTIPLE 4
+LEVEL 18000
+DESCRIPTION At this level, reflexes are increased for a longer time
+MANA 2
+MULTIPLE 7
+
+SKILL gwin
+NAME gust of wind
+DESCRIPTION Using its mastery of the wind, the unit will pushes sand or grit into the eyes of an enemy side.  This will result in -2 penalty on ranged attacks
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES mrun
+# LEARNING_PARADIGM LEARNING_MAGIC
+COMBAT_ACTION COMBAT_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 3
+COMBAT_ACTION COMBAT_ENCHANT
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSITE_SIDE
+COMBAT INITIATIVE 2
+GRANTS effcwnd2 1
+LEVEL  27000
+GRANTS effcwnd3 1
+DESCRIPTION At this level wind is stonger. Penalty -3
+MANA 2
+
+
+SKILL slae
+NAME summon lesser air elemental
+DESCRIPTION The caster tries to summon an air elemental from the elemental planes into the world. The targeted unit must consist of lesser air elementals, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES airs
+# LEARNING_PARADIGM LEARNING_MAGIC
+STUDENT LEADER
+USING_PARADIGM USING_SUMMON
+MANA 1
+USE_MANA 8
+CONSUME hrse 1
+TARGET UNIT LOCAL
+SUMMONS lael 10
+LEVEL 27000
+DESCRIPTION At this level, an elemental is easier to summon
+MANA 2
+SUMMONS lael  5
+LEVEL 54000
+
+SKILL sfae
+NAME summon faerie
+DESCRIPTION The caster tries to summon a faerie from the elemental planes of air into the world. The targeted unit must consist of faeries, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES slae
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 8
+CONSUME hrse 1
+TARGET UNIT LOCAL
+SUMMONS faer 10
+LEVEL 27000
+DESCRIPTION Familiarity with the faerie's realm allows the caster to summon more faeries to his or her help
+MANA 2
+SUMMONS faer  5
+LEVEL 54000
+
+SKILL swhi
+NAME summon whirlwind
+DESCRIPTION The caster tries to summon a whirlwind from the elemental planes of air into the world. The targeted unit must consist of whirlwinds, or be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES sfae
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME hrse 1
+CONSUME msto 1
+TARGET UNIT LOCAL
+SUMMONS whir 15
+LEVEL 36000
+DESCRIPTION At this level, the whirlwind is created much faster
+MANA 2
+SUMMONS whir 8
+LEVEL 72000
+
+SKILL smae
+NAME summon major air elemental
+DESCRIPTION The caster tries to summon a major air elemental from the elemental planes of air into the world. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES swhi
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME pega 1
+TARGET UNIT LOCAL
+SUMMONS mael 20
+LEVEL 36000
+DESCRIPTION At this level, the major air elemental is created much faster
+MANA 2
+SUMMONS mael  12
+LEVEL 72000
+
+SKILL sdji
+NAME summon djinni
+DESCRIPTION The caster tries to bind a djinn to its service. The targeted unit must be a new unit
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES smae
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+USE_MANA 10
+CONSUME pega 1
+CONSUME msto 1
+TARGET UNIT LOCAL
+SUMMONS djin 30
+LEVEL 36000
+DESCRIPTION At this level, experience with djinni allow the mage to bind one in less time
+MANA 2
+SUMMONS djin 15
+LEVEL 72000
+
+SKILL stkn
+NAME summon thunder knight
+DESCRIPTION The caster invokes the powers lying in the storms, creating a thunder knight. The target unit must be a leader of your faction, which is metamorphosed into a thunder knight. The newly formed knight retains its existing skills, but, as a creature, cannot learn new ones
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES smae
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_SUMMON
+STUDENT LEADER
+MANA 1
+SPECIALIST
+USE_MANA 20
+CONSUME gems 2
+CONSUME hrbs 2
+TARGET UNIT LOCAL
+SUMMONS tkng 30
+LEVEL 36000
+DESCRIPTION Long experience with the transformation of thunder knights allows one to perform the deed in a shorter time
+MANA 2
+SUMMONS tkng 20
+LEVEL 72000
+
+
+
+SKILL flig
+NAME flight
+DESCRIPTION The caster may cause any unit to fly unless it is too loaded
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  3000
+REQUIRES airs 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_ENCHANT
+STUDENT LEADER
+MANA 1
+TARGET UNIT LOCAL
+USE_MANA 2
+GRANTS effflig 1
+MULTIPLE 4
+LEVEL 9000
+DESCRIPTION At this level, the mage produces longer flight effects
+MANA 2
+MULTIPLE 8
+LEVEL 18000
+
+SKILL eash
+NAME enchant air ship
+DESCRIPTION The caster will transform a simple sailing vessel into a magical airborne ship
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES flig
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM  USING_CONSTRUCTION
+STUDENT LEADER
+MANA 1
+USE_MANA 25
+UPGRADE lgbt 1
+CONSUME msto 1
+PRODUCES flsh 30
+LEVEL 27000
+MANA 2
+PRODUCES flsh 15
+DESCRIPTION Enchanting a ship takes less time at this level
+
+SKILL lift
+NAME lift spirits
+DESCRIPTION The mage lifts the spirits of all units in the same battle as himself, causing all allied units to gain an initiative bonus of 3 for this round
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES eash
+# LEARNING_PARADIGM LEARNING_MAGIC
+COMBAT_ACTION COMBAT_ENCHANT
+STUDENT LEADER
+MANA 1
+USE_MANA 4
+GRANTS effini3 1
+COMBAT BONUS INITIATIVE 3
+COMBAT TARGET BATTLEFIELD_TARGET_OWN_SIDE
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, the bonus is a random 3 to 6 for the round
+
+
+SKILL erai
+NAME enchant ring of air
+DESCRIPTION The caster uses his knowledge of air's currents to enchant a magical ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  9000
+REQUIRES airs 2
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 18
+CONSUME srng 1
+PRODUCES rair 30
+LEVEL 27000
+MANA 2
+DESCRIPTION At this level, an elemental ring is produced much faster
+PRODUCES rair 20
+
+
+SKILL ermv
+NAME enchant ring of movement
+DESCRIPTION The caster may bind the highest energies of the air into a slick gold ring
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES airs 3
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_CRAFT
+STUDENT LEADER
+MANA 1
+USE_MANA 30
+CONSUME grng 1
+CONSUME msto 1
+PRODUCES rmov 40
+LEVEL 36000
+DESCRIPTION At this level, the ring can be made a little faster
+PRODUCES rmov 30
+MANA 2
+LEVEL 72000
+
+SKILL angd
+NAME angel of death
+DESCRIPTION The caster will invoke a powerful angel of death, flying wings that destroy all they encounter. The Angel of death lasts only 4 rounds on the battlefield, but will attack enemy leaders first
+STUDY_COST 3
+MAGIC_SKILL
+REQUIRES airs 3
+LEVEL  12000
+SPECIALIST
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_COMBAT
+STUDENT LEADER
+MANA 1
+USE_MANA 20
+CONSUME gems 1
+COMBAT_ACTION COMBAT_SUMMON
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+SUMMONS dtangel
+FX 87
+LEVEL 24000
+DESCRIPTION With experience, the mage may summon an angel of death with less mana
+RECONSUME
+USE_MANA 15
+CONSUME gems 1
+MANA 2
+
+SKILL ianc
+NAME invoke ancestors
+DESCRIPTION The Shaman will invoke the revered spirits of the ancestors by this ceremony, bringing back blessing upon the warriors prior to battle. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME grai 1
+TARGET UNIT LOCAL
+GRANTS effini3 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
+CONSUME hrbs 1
+GRANTS effini3 8
+MULTIPLE 12
+LEVEL 18000
+DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
+CONSUME catt 1
+GRANTS effini3 6
+MULTIPLE 15
+
+SKILL wpai
+NAME war paints
+DESCRIPTION The Shaman will paint the warriors prior to battle with mystic symbols to enhance their courage and make true their aim. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME iron 1
+TARGET UNIT LOCAL
+GRANTS effmele 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION At this level, the paints are more terrible, and yields more fearsome warriors
+RECONSUME
+CONSUME silv 1
+GRANTS effmele 8
+MULTIPLE 12
+
+SKILL bles
+NAME totem blessings
+DESCRIPTION The Shaman will invoke totemic powers, blessing warriors prior to a battle, and making them tougher in face of the ennemy. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME hide 1
+TARGET UNIT LOCAL
+GRANTS effbles 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION At this level, blessing are more effective
+RECONSUME
+CONSUME hide 2
+GRANTS effbles 8
+MULTIPLE 12
+
+SKILL rsac
+NAME ritual sacrifices
+DESCRIPTION The Shaman will perform this ceremony to infuse warriors with the strength of the totem prior to battle. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME catt 1
+TARGET UNIT LOCAL
+GRANTS effstre 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
+CONSUME mule 1
+GRANTS effstre 8
+MULTIPLE 12
+LEVEL 18000
+DESCRIPTION At this level, the ceremony is more grandiose, and yields more effects
+CONSUME hrse 1
+GRANTS effstre 6
+MULTIPLE 15
+
+SKILL spiw
+NAME spirits of the winds
+DESCRIPTION The Shaman will confer speed abilities to fast runners, making them run as fast as the fastest horse. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME hrbs 1
+TARGET UNIT LOCAL
+GRANTS effride 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION At this level, the shaman's powers are more effective, and last longer
+CONSUME grai 1
+GRANTS effride 8
+MULTIPLE 12
+LEVEL 18000
+DESCRIPTION At this level, the shaman's powers are more effective, and last longer
+CONSUME houn 1
+GRANTS effride 6
+MULTIPLE 15
+
+SKILL rocf
+NAME rock faces
+DESCRIPTION The Shaman will call upon the spirits of the rocks, making warriors stand still as rocks, and tough as one. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME ston 1
+TARGET UNIT LOCAL
+GRANTS effdefe 10
+MULTIPLE 10
+LEVEL 12000
+RECONSUME
+CONSUME gran 1
+DESCRIPTION A more elaborate ceremony proffers lasting benefits
+GRANTS effdefe 8
+MULTIPLE 12
+
+SKILL drew
+NAME dream walking
+DESCRIPTION The Shaman will walk the paths of the dreams, looking at an adjacent area from its vantage point beyond the reality. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME hrbs 1
+TARGET LOCATION NEAR
+PRODUCES evtsigh 5
+LEVEL 12000
+DESCRIPTION A long experience in dream walking allows the Shaman to gain dreams in a single night or two
+PRODUCES evtsigh 2
+LEVEL 18000
+DESCRIPTION The most experienced shamans will walk in their dreams every night, gaining in knowledge and power
+PRODUCES evtsigh 1
+
+SKILL bers
+NAME berserker
+DESCRIPTION The Shaman infuses the great blood fever in the hearts of the warriors, so that they may fight without regard to their defense. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME eben 1
+TARGET UNIT LOCAL
+GRANTS effbers 10
+MULTIPLE 10
+LEVEL 12000
+
+SKILL egra
+NAME even grace
+DESCRIPTION Race-specific skill that allows to elves wear elven armor and wield elven weapons. 
+NO_LEARN
+LEVEL  1000
+
+SKILL dwen
+NAME dwarven endurance
+DESCRIPTION Race-specific skill that allows to dwarves wear dwarven armor and wield dwarven weapons. 
+NO_LEARN
+LEVEL  1000
+
+SKILL rwav
+NAME ride the waves
+DESCRIPTION The Shaman bless the sailors prior to their traversee, ensuring that the ship will move smoothly. This is a shaman skill. Mana-capable leaders cannot use shaman skills
+STUDY_COST 1
+LEVEL  6000
+SPECIALIST
+STUDENT LEADER
+USING_PARADIGM USING_ENCHANT
+CONSUME fish 1
+TARGET UNIT LOCAL
+GRANTS effseam 10
+MULTIPLE 10
+LEVEL 12000
+DESCRIPTION Invoking more powerful spirits allow a shaman to bless sailors prior to their travels across the waters
+RECONSUME
+CONSUME fish 2
+GRANTS effseam 8
+MULTIPLE 12
+
+SKILL pgaz
+NAME petrifying gaze
+DESCRIPTION This creature-only skill allows the creature to turn an ennemy into stone, instantaneously slaying it. The skill can slay 10 men per turn
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  6000
+COMBAT_ACTION MELEE
+COMBAT RANGE 3
+COMBAT MELEE 100
+COMBAT DAMAGE 500
+COMBAT HITS 10
+COMBAT DAMAGE_TYPE 2
+LEVEL 18000
+DESCRIPTION At this level, the creature can slay 20 men per turn
+COMBAT HITS 20
+
+SKILL fhit
+NAME fire attack
+DESCRIPTION This creature-only skill allows the creature to do fire-based attacks
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  3000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 3
+COMBAT BONUS DAMAGE 4
+COMBAT DAMAGE_TYPE 3
+LEVEL 9000
+DESCRIPTION At this level, the creature 's attacks are more effective
+COMBAT BONUS MELEE 4
+COMBAT BONUS DAMAGE 8
+
+SKILL smth
+NAME smother
+DESCRIPTION This creature-only skill allows the creature to do air-based attacks
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  3000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 3
+COMBAT BONUS DAMAGE 4
+COMBAT DAMAGE_TYPE 1
+LEVEL 9000
+
+SKILL pldr
+NAME pick the leader
+DESCRIPTION This discerning move selects a leader of out the crowd to attack
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  3000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING_LEADER
+COMBAT RANGE 1
+LEVEL 9000
+
+SKILL engu
+NAME engulf
+DESCRIPTION This creature-only skill allows the attacker to engulf its target in fiery death
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  2000
+COMBAT_ACTION MELEE
+COMBAT RANGE 1
+COMBAT BONUS MELEE 20
+COMBAT BONUS DAMAGE 50
+COMBAT DAMAGE_TYPE 3
+LEVEL 9999999
+DESCRIPTION Further progress in engulf is not possible
+
+SKILL grop
+NAME grope
+DESCRIPTION This basic attack allows a zombie to grab and maim his opponent
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  2000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 1
+COMBAT BONUS DAMAGE 2
+LEVEL 999999
+DESCRIPTION Further progress in grope is not possible
+
+SKILL reac
+NAME reach
+DESCRIPTION This basic attack allows a ranged attack without a material projectile
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  2000
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+COMBAT BONUS RANGED_DAMAGE 1
+LEVEL 999999
+DESCRIPTION Further progress in reach is not possible
+
+SKILL wcal
+NAME wraith call
+DESCRIPTION wraith's call  will frighten to death
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  6000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+COMBAT BONUS MELEE 4
+COMBAT DAMAGE_TYPE 4
+COMBAT DAMAGE 30
+LEVEL 999999
+DESCRIPTION Further progress in wraith call is not possible
+
+SKILL funn
+NAME wind funnel
+DESCRIPTION This smothering wind attack covers a wide range of men
+LEARNING_PARADIGM LEARNING_CREATURE
+LEVEL  2000
+COMBAT_ACTION MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT MELEE 10
+COMBAT HITS 30
+COMBAT DAMAGE 1
+COMBAT DAMAGE_TYPE 1
+LEVEL 4000
+DESCRIPTION Stronger winds will cause more effects
+COMBAT BONUS INITIATIVE 2
+COMBAT MELEE 9
+COMBAT DAMAGE 2
+LEVEL 8000
+DESCRIPTION Tornado-like winds will affect more people
+COMBAT MELEE 8
+COMBAT HITS 40
+LEVEL 16000
+
+
+SKILL fbre
+NAME fire breath
+DESCRIPTION The ability to breathe fire causes many widows after a battle
+LEVEL  3000
+LEARNING_PARADIGM LEARNING_CREATURE
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+COMBAT MISSILE 10
+COMBAT RANGED_DAMAGE 10
+COMBAT HITS 10
+COMBAT INITIATIVE 3
+COMBAT DAMAGE_TYPE 3
+LEVEL 6000
+DESCRIPTION Older, more experienced creatures may concentrate their breath for more devastating effects
+COMBAT MISSILE 11
+COMBAT DAMAGE 11
+COMBAT INITIATIVE 4
+
+SKILL lblt
+NAME lightning bolt
+DESCRIPTION The powers of the storm allows some creatures to call lightning on their enemies
+LEVEL  3000
+LEARNING_PARADIGM LEARNING_CREATURE
+COMBAT_ACTION RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 7
+COMBAT MISSILE 30
+COMBAT RANGED_DAMAGE 25
+COMBAT DAMAGE_TYPE 1
+LEVEL 9000
+
+
+SKILL skxx
+NAME skxx
+DESCRIPTION skxx
+LEVEL  2000
+LEARNING_PARADIGM LEARNING_CREATURE
+PRODUCES evtskxx 30
+LEVEL 999999
+DESCRIPTION skxx2
+
+
+SKILL sgar
+NAME Summon Guards
+DESCRIPTION This spell summons group of guards on the same location as the mage to protect him.
+STUDY_COST 3
+MAGIC_SKILL
+LEVEL  12000
+REQUIRES mage
+# LEARNING_PARADIGM LEARNING_MAGIC
+USING_PARADIGM USING_COMBAT
+STUDENT LEADER
+MANA 1
+USE_MANA 1
+COMBAT_ACTION COMBAT_SUMMON
+COMBAT TARGET BATTLEFIELD_TARGET_ALL
+SUMMONS man 10
+NAME Magic Guards
+ITEM leat 10 10
+ITEM swrd 10 10
+ITEM plat 10 10
+ITEM hlmt 10 10
+#SKILL blde 3000
+#SKILL parr 3000
+#SKILL cmbt 3000
+COMBAT_TACTICS attack middle center charge
+#COMBAT_ORDER
+#LEVEL 36000
+#MANA 2
+#DESCRIPTION At this level, it summons more guards
+#RECONSUME
+#USE_MANA 1
+#SUMMONS man 20
+
+SKILL bury
+NAME Bury dead bodies
+DESCRIPTION Bury dead bodies in order to prevent plague
+USING_PARADIGM USING_ACTION
+TARGET UNIT LOCAL
+#TARGET LOCATION LOCAL
+PRODUCES evtbury 20
+MULTIPLE 20
+LEVEL  3000
+USE_ANYONE
+NO_EXP
+NO_LEARN
+
+

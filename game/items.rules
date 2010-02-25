@@ -1,0 +1,1470 @@
+# Overlord Item definitions
+# Ver 0.4.4 Alpha  Dec 29 2008
+
+# -------- Generic configuration parameters ---
+# ITEM - (string): tag of a new item
+# NAME - (string): name for reports
+# PLURAL - (string): plural form of a name
+# DESCRIPTION - (string): text for knowledge report
+#
+# WEIGHT - (int): weight
+# PRICE - (int): formal price
+# CAPACITY - [movement mode tag] (int): capacity added by possesing item
+# EQUIP_CAPACITY [movement mode tag] (int): capacity added by equipping item
+# EQUIP_CATEGORY (int) or (equipment slot tag): equipment slot
+# EQUIP_CONDITION (condition keyword) ... : defines condition for equipment
+# SKILL_CONDITION (skill tag) (int): skill and level
+
+# USE_SKILL - (skill tag) (int): defines skill and it's level for learning scrolls
+# PROSPECT_SKILL(skill tag) (int): defines skill and it's level for observing hidden resources
+# COMBAT_USE - ( combat action tag): defines use in combat
+# SPECIAL - (0/1): special item flag
+# UNIQUE - (0/1): unique item flag
+# LIVE - (0/1): live item flag
+# MAGIC - (0/1): magic item flag
+# -------- Stats ---
+# MELEE - (int) : attack rating modificator
+# INITIATIVE - (int): initiative modificator (more - better)
+# DEFENSE - (int): defence rating modificator
+# DAMAGE - (int): modificator
+# DAMAGE_TYPE (int): or {AIR; EARTH; FIRE; VOID; WATER;} defines damage type
+# MISSILE - (int): ranged attack rating modificator
+# HITS - (int): number of hits modificator
+# LIFE - (int): hit points modificator
+# MANA - (int): maximum mana modificator
+# UPKEEP - (int): upkeep modificator
+# CONTROL - (int): control points modificator
+# STEALTH - (int): stealth modificator
+# OBSERVATION - (int): observation modificator
+# -------- Bonuses ---
+# STUDY_BONUS (skill tag) (int): skill and bonus in % to speed of learning
+# LEARNING_LEVEL_BONUS (skill tag) (int): skill and bonus to maximum level
+# USE_BONUS (skill tag) (int): skill and bonus in % to effect of using
+# MOVE_BONUS (movement mode tag) (int): movement bonus in % and mode it applies
+
+KEYWORD ITEM
+
+ITEM coin
+NAME coin
+PLURAL coins
+DESCRIPTION The monetary unit
+
+ITEM mana
+NAME mana
+PLURAL mana
+DESCRIPTION The magical power unit. Cannot be given or gotten. Its tag is [mana]
+
+ITEM msym
+NAME mystical symbol
+PLURAL mystical symbols
+UNIQUE
+WEIGHT 1
+DESCRIPTION The symbol of the arch-mage. Possession of the mystical symbol is a requirement for the most advanced spells
+
+
+ITEM ston
+NAME stone
+PLURAL stones
+DESCRIPTION A cubit of stones, cut and ready for construction
+TOKEN 6
+PRICE 13
+WEIGHT 20
+
+ITEM gran
+NAME granite
+PLURAL granite
+DESCRIPTION Granite is the best stone there is. Skilled masons can use granite to produce military buildings faster
+TOKEN 6
+PRICE 34
+WEIGHT 20
+
+ITEM kstn
+NAME keystone
+PLURAL keystones
+DESCRIPTION Keystones are stone reworked by skilled craftsmen into perfect shapes
+PRICE 120
+WEIGHT 20
+
+ITEM iron
+NAME iron
+PLURAL iron
+DESCRIPTION A set of refined iron ingots, ready for plying and forging into useful items
+TOKEN 6
+PRICE 21
+WEIGHT 8
+
+ITEM silv
+NAME silver
+PLURAL silver
+DESCRIPTION A set of small silver ingots, ready to be worked into beautiful and luxurious items, or sold for weight
+TOKEN 10
+PRICE 70
+WEIGHT 3
+HIDDEN
+PROSPECT_SKILL smin 1 #6000
+
+ITEM gold
+NAME gold
+PLURAL gold
+DESCRIPTION An ingot of the noblest and most sought of the metals. Gold serves as money, can be crafted into jewelry, and used for other enhancements
+TOKEN 20
+PRICE 260
+WEIGHT 1
+HIDDEN
+PROSPECT_SKILL gmin 1 #12000
+
+ITEM adam
+NAME adamantium
+PLURAL adamantium
+DESCRIPTION An ingot of adamantium, weighing next to nothing, yet hardesr than iron, sharper than silver, and more precious than gold
+TOKEN 30
+PRICE 400
+WEIGHT 1
+HIDDEN
+PROSPECT_SKILL aext 1 #6000
+
+ITEM gems
+NAME gem
+PLURAL gems
+DESCRIPTION A precious gemstone, highly sought for its worth, beauty, and durability
+TOKEN 30
+PRICE 440
+HIDDEN
+PROSPECT_SKILL gsch 1 #6000
+
+ITEM hrbs
+NAME herbs
+PLURAL herbs
+DESCRIPTION Magical herbs, for potions, rituals and as an ingredient for other activities
+TOKEN 10
+LIVE
+PRICE 24
+WEIGHT 1
+
+ITEM mand
+NAME mandrake root
+PLURAL mandrake roots
+DESCRIPTION The elusive mandrake is found mostly in swamps, and only by the skilled herbalist
+TOKEN 20
+PRICE 580
+LIVE
+WEIGHT 1
+HIDDEN
+PROSPECT_SKILL fman 1 #3000
+
+ITEM hide
+NAME hide
+PLURAL hides
+DESCRIPTION The skinned and prepared pelts of animals, for luxury or just clothing
+TOKEN 10
+PRICE 24
+LIVE
+WEIGHT 1
+
+ITEM wood
+NAME wood
+PLURAL wood
+DESCRIPTION Felled, cut and without bothersome twigs, a set of wood logs
+TOKEN 5
+PRICE 12
+LIVE
+WEIGHT 20
+
+ITEM eben
+NAME ebene
+PLURAL ebene
+DESCRIPTION This black, hard wood is only found in the deepest forests
+TOKEN 7
+LIVE
+PRICE 65
+WEIGHT 20
+HIDDEN
+PROSPECT_SKILL febe 1 #6000
+
+ITEM hrse
+NAME horse
+PLURAL horses
+DESCRIPTION The basic mount, suited for fast riding, and light pack duty; but not combat trained and hinders the rider in battle
+WEIGHT 100
+CAPACITY 0 120
+CAPACITY 1 95
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+INITIATIVE 3
+MELEE -1
+DEFENSE -1
+PRICE 105
+LIVE
+TOKEN 30
+
+ITEM whrs
+NAME war horse
+PLURAL war horses
+DESCRIPTION The basic mounts for war, suited and equipped, trained to assist the rider in battle letting him act faster and defend better
+WEIGHT 120
+CAPACITY 0 130
+CAPACITY 1 90
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mane 1
+INITIATIVE 2
+DEFENSE 1
+PRICE 290
+LIVE
+
+ITEM wmnt
+NAME war mount
+PLURAL war mounts
+DESCRIPTION The mounts for the elite cavalry, these ferocious mounts greatly increase the riders speed in combat, as well as work to increase the rider's attack and defense
+WEIGHT 120
+CAPACITY 0 120
+CAPACITY 1 90
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION cava 1
+INITIATIVE 3
+MELEE 1
+DEFENSE 1
+PRICE 380
+LIVE
+
+ITEM pega
+NAME pegasus
+PLURAL pegasi
+DESCRIPTION This delicate-looking winged beauty adds its own skills to the natural flying advantage. Pegasi are highly sought after for both transportation and as battle mounts
+WEIGHT 90
+CAPACITY 2 50
+EQUIP_CAPACITY 2 210
+EQUIP_CATEGORY 2
+INITIATIVE 3
+TOKEN 30
+PRICE 360
+LIVE
+HIDDEN
+PROSPECT_SKILL cpeg 1 #3000
+
+ITEM shah
+NAME shadow horse
+PLURAL shadow horses
+DESCRIPTION This rare spectral mount is frightening to look at by those who can see it, and allows its user to move unobserved thru shadows
+WEIGHT 100
+CAPACITY 0 120
+CAPACITY 1 95
+EQUIP_CAPACITY 0 120
+EQUIP_CAPACITY 1 200
+EQUIP_CATEGORY 2
+INITIATIVE 2
+STEALTH 2
+PRICE 500
+LIFE 1
+LIVE
+
+ITEM fste
+NAME fire steed
+PLURAL fire steeds
+DESCRIPTION These flaming mounts are infused with the power of fire, and can be directed to attack their foes with scorching fire damage
+WEIGHT 100
+CAPACITY 0 100
+CAPACITY 1 80
+EQUIP_CAPACITY 0 100
+EQUIP_CAPACITY 1 250
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mane 2
+INITIATIVE 3
+MELEE -1
+COMBAT_USE MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT MELEE 15
+COMBAT DAMAGE 10
+COMBAT DAMAGE_TYPE 3
+PRICE 500
+LIVE
+
+ITEM shrs
+NAME stone horse
+PLURAL stone horses
+DESCRIPTION Infused with the power of earth, these heavy beasts allow one to concentrate on battle
+WEIGHT 400
+CAPACITY 0 500
+EQUIP_CAPACITY 0 500
+EQUIP_CATEGORY 2
+INITIATIVE 0
+DEFENSE 1
+PRICE 500
+LIVE
+
+ITEM seah
+NAME sea horse
+PLURAL sea horses
+DESCRIPTION The basic aquatic mount, all scaly and bobbing among the waves
+WEIGHT 100
+CAPACITY 3 95
+EQUIP_CAPACITY 3 200
+EQUIP_CATEGORY 2
+INITIATIVE 3
+MELEE -1
+DEFENSE -1
+LIVE
+TOKEN 30
+PRICE 250
+HIDDEN
+PROSPECT_SKILL cseh 1 #3000
+
+ITEM houn
+NAME hunting hound
+PLURAL hunting hounds
+DESCRIPTION A simple beast, loyal to their masters, these dogs will give their owners a slight speed edge in battle as well as adding their damage to their master's with snapping jaws and sharp teeth
+WEIGHT 10
+CAPACITY 0 10
+EQUIP_CAPACITY 0 11
+EQUIP_CAPACITY 1 10
+EQUIP_CATEGORY 13
+EQUIP_MAX 2
+UPKEEP 2
+INITIATIVE 1
+DAMAGE 1
+LIVE
+PRICE 85
+TOKEN 30
+HIDDEN
+PROSPECT_SKILL thou 1 #3000
+
+ITEM catt
+NAME cattle
+PLURAL cattle
+DESCRIPTION The basic food animal
+WEIGHT 300
+CAPACITY 0 299
+EQUIP_CAPACITY 0 299
+EQUIP_CATEGORY 1
+LIVE
+PRICE 80
+TOKEN 30
+
+ITEM mule
+NAME mule
+PLURAL mules
+DESCRIPTION The pack animal per excellence, docile and suited for long caravan duty
+WEIGHT 80
+CAPACITY 0 150
+PRICE 130
+LIVE
+
+ITEM food
+NAME food
+PLURAL food
+DESCRIPTION Emergency rations, to be used to feed your harassed troops when they can't buy their own
+WEIGHT 1
+PRICE 10
+EQUIP_CATEGORY 1
+
+ITEM fish
+NAME fish
+PLURAL fishes
+DESCRIPTION The basic staple of the sea, rivers and lakes
+WEIGHT 2
+TOKEN 10
+LIVE
+PRICE 34
+EQUIP_CATEGORY 1
+
+ITEM grai
+NAME grain
+PLURAL grain
+DESCRIPTION Harvested and grounded grain
+WEIGHT 8
+TOKEN 30
+PRICE 80
+LIVE
+EQUIP_CATEGORY 1
+
+ITEM tool
+NAME tool
+PLURAL tools
+DESCRIPTION Tools speed up the skills of artisans, and reduce by 33% the time required to ply their craft
+WEIGHT 1
+PRICE 85
+EQUIP_CATEGORY 3
+
+ITEM plow
+NAME plow
+PLURAL plows
+DESCRIPTION The plow is used by farmers to prepare fields. It reduces by 33% the time required to harvest or plant grain
+WEIGHT 4
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION farm 1
+INITIATIVE -1
+PRICE 65
+
+ITEM pick
+NAME pickaxe
+PLURAL pickaxes
+DESCRIPTION The pickaxe is used by diggers to accelerate their craft. It reduces by 33% the time required to dig stones or metals, precious or not
+WEIGHT 1
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION digg 1
+MELEE 2
+INITIATIVE -1
+PRICE 65
+
+ITEM jham
+NAME jeweler hammer
+PLURAL jeweler hammers
+DESCRIPTION The essential tool in jewelry. It reduces by 33% the time required to produce rings or amulets
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION arti 2
+INITIATIVE -1
+PRICE 50
+
+ITEM hamm
+NAME hammer
+PLURAL hammers
+DESCRIPTION The hammer is used by weapon makers to speed up the work on their products. It reduces by 33% the time required to make weapons that require iron
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION weap 1
+MELEE 2
+INITIATIVE -1
+PRICE 65
+
+ITEM anvi
+NAME anvil
+PLURAL anvils
+DESCRIPTION The anvil is used by armor makers to speed up the work in their trade. It reduces by 33% the time required to make armors that require iron or hide
+WEIGHT 30
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION armo 1
+DEFENSE 2
+INITIATIVE -2
+PRICE 65
+
+ITEM saws
+NAME saw
+PLURAL saws
+DESCRIPTION The saw is used by woodsmen to speed up the work on trees. It reduces by 33% the time required to fall and prepare wood
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION lumb 1
+DAMAGE 1
+INITIATIVE -2
+PRICE 65
+
+ITEM ckry
+NAME cookery
+PLURAL cookery
+DESCRIPTION The various implements used to prepare all kinds of food. It reduces by 33% the time required to make most food rations, except the most basic ones harvested directly from the land
+WEIGHT 5
+EQUIP_CATEGORY 3
+EQUIP_CONDITION SKILL_CONDITION cook 1
+DAMAGE 1
+INITIATIVE -2
+PRICE 65
+
+ITEM fbot
+NAME floating boots
+PLURAL floating boots
+DESCRIPTION This magical contraption looks like a normal pair of boots, but allow walking on the water. In combat, these boots magically enhance their wearer's abilities both by heavy protection of the feet and increasing attack ability through fancy footwork
+WEIGHT 1
+EQUIP_CAPACITY 3 100
+EQUIP_CATEGORY 10
+MELEE 2
+DEFENSE 3
+PRICE 800
+
+ITEM club
+NAME club
+PLURAL clubs
+DESCRIPTION The simplest weapon, a large carved woodpiece meant for bonking enemies on the head
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+MELEE 1
+DAMAGE 1
+PRICE 33
+
+ITEM gauc
+NAME main gauche
+WEIGHT 2
+DESCRIPTION The small swordlike weapon of choice for the expert swordsman, the main gauche complements the primary weapon allowing its user an extra attack in combat
+PRICE 63
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION blde 3
+MELEE 2
+HITS 1
+
+ITEM swrd
+NAME sword
+PLURAL swords
+DESCRIPTION The basic edged weapon for infantry
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+MELEE 3
+DEFENSE 2
+DAMAGE 2
+PRICE 200
+
+ITEM sswd
+NAME silver sword
+PLURAL silver swords
+DESCRIPTION This shiny weapon has an extra edge, greatly increasing its owner's combat effectiveness
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 2
+MELEE 4
+DEFENSE 2
+DAMAGE 3
+PRICE 325
+
+ITEM aswd
+NAME adamantine sword
+PLURAL adamantine swords
+DESCRIPTION The rarest of swords, they are lightweight, and unbreakable weapons, surpassed only by magical weaponry
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+INITIATIVE 1
+MELEE 5
+DEFENSE 4
+DAMAGE 6
+PRICE 1800
+SPECIAL
+
+ITEM legswrd
+NAME legendary sword
+PLURAL legendary swords
+DESCRIPTION A legendary sword is a unique item, with a unique name, requiring outstanding leaders as owners. Each sword made will have a specific name and a specific tag
+TYPE 2
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+SPECIAL
+
+ITEM fswd
+NAME flaming sword
+PLURAL flaming swords
+DESCRIPTION Imbued with the essence of fire, this weapon damages enemies with flames
+WEIGHT 4
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+DEFENSE 2
+COMBAT_USE MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 4
+COMBAT BONUS INITIATIVE 1
+COMBAT DAMAGE_TYPE 3
+COMBAT DAMAGE 6
+COMBAT BONUS HITS 1
+PRICE 1066
+SPECIAL
+
+ITEM baxe
+NAME battle axe
+PLURAL battle axes
+DESCRIPTION The heavy bladed weapons for agressive fighting, designed for slicing and dicing enemies
+WEIGHT 7
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 1
+MELEE 3
+DEFENSE 1
+DAMAGE 3
+PRICE 170
+
+ITEM qaxe
+NAME quality axe
+PLURAL quality axes
+DESCRIPTION Those lighter weapons make devastating use under skilled fighter's hands, designed for better slicing and dicing
+WEIGHT 6
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION blde 2
+MELEE 3
+DEFENSE 2
+INITIATIVE 1
+DAMAGE 3
+PRICE 280
+
+ITEM wham
+NAME war hammer
+PLURAL war hammers
+DESCRIPTION The blunt weapons for straight one-on-one massacre, designed for breaking armor and bones
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+MELEE 4
+DAMAGE 4
+PRICE 185
+
+ITEM dwam
+NAME dwarven war hammer
+PLURAL dwarven war hammers
+DESCRIPTION The blunt weapons for straight one-on-one massacre, designed for breaking armor and bones
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION dwen 1
+MELEE 5
+DAMAGE 5
+PRICE 185
+
+ITEM mwam
+NAME magical war hammer
+PLURAL magical war hammers
+DESCRIPTION This weapon was empowered by the strength of the earth itself, smashing almost anything it comes into contact with
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+COMBAT_USE MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS MELEE 6
+COMBAT BONUS INITIATIVE 1
+COMBAT DAMAGE_TYPE 2
+COMBAT DAMAGE 7
+COMBAT BONUS HITS 1
+PRICE 1000
+SPECIAL
+
+ITEM staf
+NAME fighting staff
+PLURAL fighting staffs
+DESCRIPTION This long wooden staff is a blunt but effective weapon for the skilled martial artist
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mart 1
+MELEE 3
+DEFENSE 2
+INITIATIVE 1
+DAMAGE 1
+PRICE 85
+
+ITEM stfv
+NAME staff of void
+PLURAL staves of void
+DESCRIPTION This dark, long staff seems to move of its own accord, giving the martial artist great speed in combat
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mart 1
+MELEE 4
+DEFENSE 2
+INITIATIVE 4
+DAMAGE 2
+PRICE 720
+SPECIAL
+
+ITEM xbow
+NAME crossbow
+PLURAL crossbows
+DESCRIPTION The great equalizer, simple to master, terribly effective, but slow to use. A unit will RELOAD after using a crossbow
+WEIGHT 7
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch
+MISSILE 6
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+RANGED_DAMAGE 5
+PRICE 130
+
+ITEM lbow
+NAME longbow
+PLURAL longbows
+DESCRIPTION The basic bow for trained archers
+WEIGHT 5
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch 2
+MISSILE 3
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+RANGED_DAMAGE 4
+PRICE 100
+
+ITEM cbow
+NAME compound bow
+PLURAL compound bows
+DESCRIPTION A very good bow for skilled archery, also the weapon required for more advanced archery skills
+WEIGHT 8
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION arch 3
+MISSILE 6
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 3
+RANGED_DAMAGE 6
+PRICE 285
+
+ITEM ebow
+NAME elven bow
+PLURAL elven bows
+DESCRIPTION  The bow for elite archery, also the weapon required for more advanced archery skills
+WEIGHT 5
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION egra 1
+MISSILE 9
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 3
+RANGED_DAMAGE 8
+PRICE 1000
+
+ITEM leat
+NAME leather jerkin
+PLURAL leather jerkins
+DESCRIPTION The basic protection for troops
+WEIGHT 5
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION cmbt
+DEFENSE 1
+PRICE 115
+
+ITEM chai
+NAME chain mail
+PLURAL chain mail
+DESCRIPTION Good and sturdy armor, heavy and slowing the wearer a bit, but deflecting more attacks and allowing him to take more damage
+WEIGHT 10
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 2
+INITIATIVE -1
+LIFE 1
+PRICE 260
+
+ITEM amai
+NAME airy mail
+PLURAL airy mails
+DESCRIPTION This armor weights almost nothing, and may be used with great efficiency allowing a speedier attack and a strong defense
+WEIGHT 1
+EQUIP_CATEGORY 6
+DEFENSE 2
+INITIATIVE 1
+PRICE 1120
+SPECIAL
+
+ITEM plat
+NAME plate mail
+PLURAL plate mail
+DESCRIPTION The best armor widely known, heavy and cumbersome, but deflects and withstands much damage
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 4
+INITIATIVE -2
+LIFE 2
+PRICE 350
+
+ITEM aplt
+NAME adamantium plate
+PLURAL adamantium plates
+DESCRIPTION This classy, light armor is almost unbreakable, allowing speedier attacks, deflecting many strikes and giving its wearer a hardiness that intimidates the opposition
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 6
+LIFE 2
+INITIATIVE 1
+PRICE 2700
+SPECIAL
+
+ITEM emih
+NAME elven mithril coat
+PLURAL elven mithril coats
+DESCRIPTION Thin, light but very strong
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION egra 1
+DEFENSE 6
+LIFE 2
+INITIATIVE 1
+PRICE 2700
+SPECIAL
+
+ITEM dmih
+NAME dwarven mithril coat
+PLURAL dwarven mithril coats
+DESCRIPTION Thin, light but very strong
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION dwen 1
+DEFENSE 6
+LIFE 2
+INITIATIVE 1
+PRICE 2700
+SPECIAL
+
+
+ITEM plea
+NAME earth plate
+PLURAL earth plates
+DESCRIPTION Imbued with the strength of earth itself, this heavy magical armor slows its user, but offers +3 protection against any elemental damage along with excellent deflective properties
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 6
+INITIATIVE -1
+LIFE 2
+PRICE 1460
+SPECIAL
+
+ITEM mpla
+NAME molten plate
+PLURAL molten plates
+DESCRIPTION This heavy armor has been kept magically at fusion point giving it extreme deflective properties, and offers +2 protection against fire damage by draining life power from its wearer
+WEIGHT 15
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 7
+DAMAGE 2
+INITIATIVE -1
+LIFE -1
+PRICE 1500
+SPECIAL
+
+ITEM cclo
+NAME camouflage cloak
+PLURAL camouflage cloaks
+DESCRIPTION This brown and grey cloak looks dirty, but camouflages its wearer handily adding to defense and stealth
+WEIGHT 5
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+DEFENSE 1
+STEALTH 2
+PRICE 250
+
+ITEM coif
+NAME coif
+PLURAL coifs
+DESCRIPTION The basic head protection made from the hides of animals
+WEIGHT 4
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+DEFENSE 2
+INITIATIVE -1
+PRICE 90
+
+ITEM hlmt
+NAME helmet
+PLURAL helmets
+DESCRIPTION The full head protection created with protective iron
+WEIGHT 3
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 3
+INITIATIVE -1
+PRICE 100
+
+ITEM ahlm
+NAME adamantium helm
+PLURAL adamantium helms
+DESCRIPTION Good looking, lightweight and almost unbreakable, this rare helmet is usually worn by elite troops
+WEIGHT 1
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 5
+INITIATIVE 1
+PRICE 575
+SPECIAL
+
+ITEM ehlm
+NAME elven helm
+PLURAL elven helms
+DESCRIPTION Lightweight and almost unbreakable, this rare helmet is usually worn by elven troops
+WEIGHT 1
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION egra 1
+DEFENSE 5
+INITIATIVE 1
+PRICE 575
+SPECIAL
+
+ITEM dhlm
+NAME dwarven helm
+PLURAL dwarven helms
+DESCRIPTION Lightweight and almost unbreakable, this rare helmet is usually worn by dwarven troops
+WEIGHT 1
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION dwen 1
+DEFENSE 5
+INITIATIVE 1
+PRICE 575
+SPECIAL
+
+ITEM hlsp
+NAME helm of speed
+PLURAL helms of speed
+DESCRIPTION This golden helmet has magical wings on its temples allowing its wearer to move obscenely fast in combat, sometimes twice as fast as opponents
+WEIGHT 4
+EQUIP_CATEGORY 7
+EQUIP_CONDITION SKILL_CONDITION cmbt 1
+INITIATIVE 3
+DEFENSE 2
+HITS 2
+SPECIAL
+
+ITEM hcom
+NAME helm of commandment
+PLURAL helms of commandment
+DESCRIPTION The very symbol of commandment, this rare helm adds 20% speed to the study of all skills derived from combat.
+WEIGHT 1
+EQUIP_CATEGORY 7
+DEFENSE 5
+INITIATIVE 1
+STUDY_BONUS cmbt 20
+SPECIAL
+
+ITEM hshd
+NAME hide shield
+PLURAL hide shields
+DESCRIPTION The basic shield made from the tough skins of animals
+WEIGHT 5
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 2
+INITIATIVE -1
+PRICE 95
+
+ITEM tshd
+NAME tower shield
+PLURAL tower shields
+DESCRIPTION The shield for real fighters, made with sturdy materials
+WEIGHT 7
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 1
+PRICE 125
+
+ITEM dshd
+NAME dark shield
+PLURAL dark shields
+DESCRIPTION Drawn from the very essence of void, this magical shield is blacker than black, and absords the enemy's blows before failing his owner
+WEIGHT 7
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 1
+MELEE 1
+LIFE 5
+PRICE 860
+SPECIAL
+
+ITEM gshd
+NAME great shield
+PLURAL great shields
+DESCRIPTION Almost the best shield craftsmen ever produced... heavy, but covering a large area and protecting its user by deflecting enemy blows
+WEIGHT 9
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 3
+DEFENSE 2
+PRICE 170
+
+ITEM ashd
+NAME adamantium shield
+PLURAL admantium shields
+DESCRIPTION This classy looking shield is obviously of the highest quality. It is lightweight and unbreakable, absorbing enemy blows and deflecting even the most devastating hits
+WEIGHT 1
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 2
+DEFENSE 3
+LIFE 1
+INITIATIVE 1
+PRICE 1050
+SPECIAL
+
+ITEM wago
+NAME wagon
+PLURAL wagons
+DESCRIPTION The basic moving contraption, with a horse, platform and storage space for caravans
+WEIGHT 250
+EQUIP_CATEGORY 2
+EQUIP_CAPACITY 0 800
+INITIATIVE -1
+DEFENSE 1
+MELEE -1
+PRICE 320
+
+ITEM amul
+NAME amulet
+PLURAL amulets
+DESCRIPTION Made by jewellers from silver and gems, an amulet is considered a sign of luck, even if it is not magical. Amulets can be enchanted by mages to yield minor to extremely powerful effects to the wearer
+EQUIP_CATEGORY 11
+PRICE 150
+
+ITEM irng
+NAME iron ring
+PLURAL iron rings
+DESCRIPTION Made by jewellers from iron and worked upon, the ring is hard to distinguish from silver rings, except to the trained eye. Iron rings can be enchanted by mages to yield minor effects to the wearer
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 80
+
+ITEM srng
+NAME silver ring
+PLURAL silver rings
+DESCRIPTION Made by jewellers from silver, this ring indicates wealth and birth right. Silver rings can be enchanted by mages to yield powerful effects to the wearer
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 160
+
+ITEM grng
+NAME gold ring
+PLURAL gold rings
+DESCRIPTION Made by the best jewellers from gold and gems, that ring is the true sign of the highest nobility and power. Gold rings can be enchanted by mages to yield extremely powerful effects to the wearer
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 400
+
+ITEM msto
+NAME mystic stone
+PLURAL mystic stones
+WEIGHT 1
+DESCRIPTION Enchanted out of ordinary gems by powerful mages, these mystic stones are required components of very high level spells
+PRICE 1150
+
+ITEM mwag
+NAME magic wagon
+PLURAL magic wagons
+DESCRIPTION An enchanted wagon that moves without horses, but as fast as one
+WEIGHT 250
+EQUIP_CATEGORY 2
+EQUIP_CAPACITY 0 800
+EQUIP_CAPACITY 1 800
+DEFENSE 1
+MELEE -1
+PRICE 1320
+
+ITEM poth
+NAME potion of healing
+PLURAL potions of healing
+DESCRIPTION The potion of healing enables its users to survive a wound that would otherwise be fatal
+EQUIP_CATEGORY 13
+LIFE 3
+PRICE 160
+
+
+ITEM wfir
+NAME wand of fire
+PLURAL wands of fire
+DESCRIPTION Used as a distance weapon, from the wand of fire gushes forth an small fireball, exploding into enemy ranks and burning many foes
+WEIGHT 1
+EQUIP_CATEGORY 5
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 2
+COMBAT MISSILE 5
+COMBAT BONUS INITIATIVE 3
+COMBAT BONUS HITS 4
+COMBAT DAMAGE_TYPE 3
+RANGED_DAMAGE 5
+PRICE 420
+SPECIAL
+
+ITEM amli
+NAME amulet of life
+PLURAL amulets of life
+DESCRIPTION The glowing magical amulet of life is in the shape of a heart and emits an invisible shield that surrounds the wearer, enabling it to survive many wounds that would be otherwise fatal
+EQUIP_CATEGORY 11
+LIFE 25
+PRICE 900
+
+ITEM amsh
+NAME amulet of shadows
+PLURAL amulets of shadows
+DESCRIPTION This dark amulet is blacker than black, circular in shape and enshrouds its wearer with a darkness that makes it harder to see
+EQUIP_CATEGORY 11
+STEALTH 4
+PRICE 1450
+
+ITEM amsp
+NAME amulet of speed
+PLURAL amulets of speed
+DESCRIPTION The amulet of speed hangs like two flapping wings on its wearer's chest, giving running capacity to its wearer, and enhancing its initiative on the battlefield
+EQUIP_CATEGORY 11
+EQUIP_CAPACITY 1 90
+INITIATIVE 3
+PRICE 1100
+
+ITEM amra
+NAME amulet of radiance
+PLURAL amulets of radiance
+DESCRIPTION This radiant amulet appears bright to everyone, hanging in the shape of the sun on its wearer's chest. The amulet of radiance brings light to otherwise hidden areas and creatures, shining like a spotlight on whatever the wearer looks at, but also drawing much attention
+EQUIP_CATEGORY 11
+OBSERVATION 3
+STEALTH -3
+PRICE 666
+
+ITEM amab
+NAME amulet of air blessing
+PLURAL amulets of air blessing
+DESCRIPTION The amulet of air blessing floats like the wind on the wearer's chest, allowing faster learning and using of air magic.
+EQUIP_CATEGORY 11
+STUDY_BONUS airs 20
+USE_BONUS airs 20
+PRICE 1000
+
+ITEM ameb
+NAME amulet of earth blessing
+PLURAL amulets of earth blessing
+DESCRIPTION The amulet of earth blessing hangs like a clod of dirt on the wearer's chest, allowing faster learning and using of earth magic
+STUDY_BONUS eart 20
+USE_BONUS eart 20
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amfb
+NAME amulet of fire blessing
+PLURAL amulets of fire blessing
+DESCRIPTION The amulet of fire blessing hangs like a burning torch on the wearer's chest, allowing faster learning and using of fire magic
+STUDY_BONUS fire 20
+USE_BONUS fire 20
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amvb
+NAME amulet of void blessing
+PLURAL amulets of void blessing
+DESCRIPTION The amulet of void blessing hangs like a dark stone on the wearer's chest, allowing faster learning and using of void magic
+STUDY_BONUS void 20
+USE_BONUS void 20
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM amwb
+NAME amulet of water blessing
+PLURAL amulets of water blessing
+DESCRIPTION The amulet of water blessing hangs in the shape of a water drop on the wearer's chest, allowing faster learning and using of water magic
+STUDY_BONUS wate 20
+USE_BONUS wate 20
+EQUIP_CATEGORY 11
+PRICE 1000
+
+ITEM rtsi
+NAME ring of true sight
+PLURAL rings of true sight
+DESCRIPTION The ring of true sight sits in the shape of an eye on its wearer's chest, enabling its wearer to penetrate many deceptions without drawing attention to itself
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+OBSERVATION 3
+PRICE 720
+
+ITEM rtst
+NAME ring of strength
+PLURAL rings of strength
+DESCRIPTION The ring of strength is shaped like a little fist, and increases its wearer's stamina by large proportions by allowing it to carry larger loads, hit harder in combat and endure more damage
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 0 30
+DAMAGE 1
+LIFE 5
+PRICE 720
+
+ITEM rtiv
+NAME ring of minor invisibility
+PLURAL rings of minor invisibility
+DESCRIPTION The ring of minor invisibility is tiny and hard to see. It enables its wearer to disappear from sight
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+STEALTH 2
+PRICE 770
+
+ITEM rlev
+NAME ring of levitation
+PLURAL rings of levitation
+DESCRIPTION The ring of levitation is shaped like a feather, and allows the wearer to fly, as long as he doesn't carry much
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 2 72
+PRICE 1000
+
+ITEM rair
+NAME ring of air
+PLURAL rings of air
+DESCRIPTION The bright white ring of air symbolizes air magics. A wearer of the ring of air will gain 5% speed to all air magic studies and 20% speed to all skills derived from scouting
+STUDY_BONUS airs 5
+USE_BONUS scou 20
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM reat
+NAME ring of earth
+PLURAL rings of earth
+DESCRIPTION The dark brown ring of earth symbolizes earth magics. A wearer of the ring of earth will gain 5% speed to all earth magic studies and 20% speed to all skills derived from digging
+STUDY_BONUS eart 5
+USE_BONUS digg 20
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rfir
+NAME ring of fire
+PLURAL rings of fire
+DESCRIPTION The orange and red ring of fire symbolizes fire magics. A wearer of the ring of fire will gain 5% speed to all fire magic studies and 20% speed to all skills derived from weaponsmith or armory
+STUDY_BONUS fire 5
+USE_BONUS weap 20
+USE_BONUS armo 20
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rvod
+NAME ring of void
+PLURAL rings of void
+DESCRIPTION The black ring of void symbolizes void magics. A wearer of the ring of void will gain 5% speed to all void magic studies and 20% speed to use of all void skills.
+STUDY_BONUS void 5
+USE_BONUS void 20
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rwat
+NAME ring of water
+PLURAL rings of water
+DESCRIPTION The blue ring of water symbolizes water magics. A wearer of the ring of water will gain 5% speed to all water magic studies and 20% speed to all agricultural skills.
+STUDY_BONUS wate 5
+USE_BONUS agri 20
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 1360
+
+ITEM rmov
+NAME ring of movement
+PLURAL rings of movement
+DESCRIPTION The slick ring of movement seems to shift from finger to finger on the wearer's hand when not looking, and allows its wearer to find its way anywhere, and faster than lightning. Only a single figure may use this ring. Once a selected destination has been targeted, the mage will move toward that destination using the fastest way, ignoring any restriction, and moving at the rate of one location per day if it is capable of walking normally. Any unit stacked beneath the user will be left behind
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CONDITION SKILL_CONDITION mage 1
+FX 127
+PRICE 5100
+
+ITEM rmig
+NAME ring of might
+PLURAL rings of might
+DESCRIPTION The very rare, and very devastating ring of might grants incredible superhuman fighting abilities and endurance, but prevents its wearer from using magic. Shaped like a large diamond, this ring symbolizes intimidation, power, tenacity and brute force.
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CAPACITY 0 1000
+MANA -200
+DEFENSE 20
+LIFE 60
+COMBAT_USE MELEE
+COMBAT DAMAGE 60
+COMBAT MELEE 20
+COMBAT RANGE 1
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT DAMAGE_TYPE 2
+PRICE 5100
+
+ITEM rdom
+NAME ring of domination
+PLURAL rings of domination
+DESCRIPTION The ring of domination grants its user incredible control over the battlefield. In the shape of a crown, its wearer is considered having at least 5th ambush and 5th tactician
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+EQUIP_CONDITION SKILL_CONDITION mage 1
+INITIATIVE 4
+MANA -4
+PRICE 5100
+
+ITEM rpow
+NAME ring of power
+PLURAL rings of power
+DESCRIPTION The black and white ring of power vibrates with energy, granting incredible magical abilities at a mundane price
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+MANA 30
+MELEE -15
+MISSILE -15
+PRICE 5100
+
+ITEM rphs
+NAME ring of phases
+PLURAL rings of phases
+DESCRIPTION The powerful ring of phases never seems to ever be fully there, and makes its wearer extremely hard to hit. Once phased, the user may take another action at -1 initiative
+EQUIP_CATEGORY 12
+EQUIP_MAX 2
+PRICE 5100
+STEALTH 1
+COMBAT_USE SPECIAL
+COMBAT INITIATIVE -5
+COMBAT BONUS DEFENSE 40
+COMBAT BONUS STEALTH 1
+COMBAT BONUS MELEE -5
+COMBAT LIFE 5
+COMBAT RANGE 0
+COMBAT TARGET BATTLEFIELD_TARGET_SELF
+
+ITEM mkey
+NAME mage key
+PLURAL mage keys
+DESCRIPTION A mage key opens many doors, and locks many others. It is required for certain magical operations
+PRICE 940
+
+
+ITEM dead
+NAME dead body
+PLURAL dead bodies
+DESCRIPTION Fresh unburied corpse, found after a battle. If a lot of them will remain unburied it may cause plague. Each turn, about 20% of the dead bodies turn into buried bones
+TYPE 2
+TOKEN 2
+HIDDEN
+PROSPECT_SKILL necr 1 #6000
+KNOWLEDGE bury
+NONREGENERATING
+
+ITEM bone
+NAME buried bones
+PLURAL buried bones
+DESCRIPTION Old bones, left after dead corpses have finished decaying. Each turn, about 10% of the bones disappear
+TYPE 2
+TOKEN 3
+HIDDEN
+PROSPECT_SKILL necr 1 #6000
+NONREGENERATING
+
+ITEM thammr
+NAME The Hammer of Thor
+DESCRIPTION This legendary artifact taken from the old Norse god can be used in battle for devastating effect, calling down lightning. Against lightning, any metal-based equipment, except adamantium, yield a negative defense value instead of positive defense. This is a unique item
+WEIGHT 10
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mele 1
+MELEE 4
+DAMAGE 4
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING_LEADER
+COMBAT RANGE 7
+COMBAT MISSILE 6
+COMBAT DAMAGE_TYPE 3
+RANGED_DAMAGE 15
+COMBAT HITS 1
+UNIQUE
+SPECIAL
+
+ITEM hecshl
+NAME The Shield of Hector
+DESCRIPTION This legendary artifact called from Troy's most fierce soldier can be used in battle to protect its wearer. Its wearer can use it as a secondary attack
+WEIGHT 10
+EQUIP_CATEGORY 8
+EQUIP_CONDITION SKILL_CONDITION parr 1
+DEFENSE 4
+LIFE 3
+HITS 1
+UNIQUE
+SPECIAL
+
+ITEM ssvetog
+NAME Svetogor
+PLURAL Svetogor
+DESCRIPTION Svetogor, forged by the legendary bladesmith Ilmarinen, is one of the finest weapons ever made. It seems to eminate power, but appears only as a blur to opponents in battle
+TYPE 1
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+SPECIAL
+UNIQUE
+
+ITEM astf
+NAME Staff of Bilam
+PLURAL Staff of Bilam
+DESCRIPTION The staff of tha legendary wizard 
+TYPE 1
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION mage 5
+INITIATIVE 3
+MANA 10
+DEFENSE 6
+LIFE 5
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 3
+COMBAT MISSILE 10
+COMBAT BONUS INITIATIVE 3
+COMBAT BONUS HITS 10
+COMBAT DAMAGE_TYPE 3
+RANGED_DAMAGE 5
+SPECIAL
+UNIQUE
+
+ITEM hscyt
+NAME Hvanetian Scythe
+PLURAL Hvanetian Scythe
+DESCRIPTION The Hvanetian Scythe, forged by the legendary bladesmith Berthram Kvalder, is one of the finest weapons ever made. It's curved blade can cut down opponents three at a time
+TYPE 2
+WEIGHT 3
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION cmbt 4
+INITIATIVE 3
+MELEE 6
+DEFENSE 6
+DAMAGE 10
+LIFE 1
+HITS 2
+SPECIAL
+UNIQUE
+
+ITEM palhrs
+NAME The Pale Horse
+PLURAL The Pale Horse
+DESCRIPTION This eerie mount has passed thru the ages and can only be approached with the appropriate knowledge. This is a unique item
+WEIGHT 120
+EQUIP_CAPACITY 0 200
+EQUIP_CAPACITY 1 250
+EQUIP_CAPACITY 2 200
+EQUIP_CAPACITY 3 240
+EQUIP_CATEGORY 2
+EQUIP_CONDITION SKILL_CONDITION mage 2
+INITIATIVE 5
+STEALTH 5
+OBSERVATION 1
+LIFE 2
+DEFENSE 5
+HITS 1
+LIVE
+UNIQUE
+
+ITEM huntbw
+NAME Bow of the Huntsman
+PLURAL Bow of the Huntsman
+DESCRIPTION Carved of the deepest ebony and inlaid with adamantium, this antique bow was overlaid with powerful magics. This is a unique item
+WEIGHT 1
+EQUIP_CATEGORY 5
+EQUIP_CONDITION SKILL_CONDITION tgld
+OBSERVATION 1
+DEFENSE 2
+INITIATIVE 1
+MISSILE 15
+COMBAT_USE RANGED
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING_LEADER
+COMBAT RANGE 5
+RANGED_DAMAGE 12
+COMBAT HITS 2
+UNIQUE
+
+ITEM glassa
+NAME Glass Armor
+PLURAL Glass Armor
+DESCRIPTION Despite its transparent nature, the Glass Armor is far from fragile, and surpasses even the best of the armors. Its sharp whorls make it deadlier to approach than most weapons. This is a unique item
+WEIGHT 1
+EQUIP_CATEGORY 6
+EQUIP_CONDITION SKILL_CONDITION parr 3
+DEFENSE 12
+COMBAT_USE MELEE
+COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
+COMBAT RANGE 1
+COMBAT BONUS DAMAGE 5
+COMBAT BONUS MELEE 5
+UNIQUE

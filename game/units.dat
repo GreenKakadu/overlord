@@ -1,0 +1,3742 @@
+# Overlord units data 
+# Ver 0.9.0
+
+KEYWORD UNIT 10000
+
+UNIT U1
+NAME Ykima
+ORDER  claim  over
+FACTION f01
+COMBAT_TACTICS avoid rear center flee
+ITEM ashd 1 1
+ITEM hcom 1 1
+ITEM aswd 1 1
+ITEM aplt 1 1
+ITEM amli 1 1
+ITEM rmig 1 1
+ITEM rdom 1 1
+ITEM coin 10000 0
+SKILL cmbt 45000
+SKILL blde 9000
+SKILL parr 9000
+SKILL mage 3000
+SKILL mane 4500
+SKILL parr 9000
+RACE hero 1
+
+
+
+UNIT U2
+NAME Guards of Itora
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM gshd 60 60
+ITEM hlmt 60 60
+ITEM sswd 60 60
+ITEM plat 60 60
+ITEM coin 200 0
+SKILL cmbt 4500
+SKILL blde 9000
+SKILL parr 9000
+SILENT
+TRACED
+RACE man 60
+STACK U1
+ORDER @ GUARD
+
+UNIT U3
+NAME Itorian Archers
+FACTION f01
+COMBAT_TACTICS defend rear center fire
+ITEM leat 60 60
+ITEM cbow 60 60
+ITEM coif 60 60
+ITEM whrs 60 60
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 9000
+SILENT
+TRACED
+RACE man 60
+STACK U1
+ORDER @ GUARD
+
+UNIT U5
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U6
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U7
+NAME Guards of Itora
+FACTION f01
+COMBAT_TACTICS defend front center charge
+ITEM gshd 60 60
+ITEM hlmt 60 60
+ITEM sswd 60 60
+ITEM plat 60 60
+ITEM coin 200 0
+SKILL cmbt 4500
+SKILL blde 9000
+SKILL parr 9000
+TRACED
+RACE man 60
+ORDER @ GUARD
+SILENT
+
+UNIT U8
+NAME Itorian Archers
+FACTION f01
+COMBAT_TACTICS defend rear center fire
+ITEM leat 60 60
+ITEM cbow 60 60
+ITEM coif 60 60
+ITEM whrs 60 60
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 9000
+SKILL arch 18000
+TRACED
+RACE man 60
+ORDER @ GUARD
+ORDER COMBAT arch
+SILENT
+
+
+UNIT U9
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U10
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U11
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U12
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U13
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U14
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U15
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U16
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U17
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U18
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U19
+SILENT
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U20
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U21
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U22
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U23
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U24
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U25
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U26
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U27
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U28
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U29
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U30
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U31
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U32
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U33
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U34
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U35
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U36
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U37
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U38
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U39
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U40
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U41
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U42
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U43
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U44
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U45
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U46
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U47
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U48
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U49
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U50
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U51
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U52
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U53
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U54
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U55
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U56
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U57
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U58
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U59
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U60
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+UNIT U61
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U62
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U63
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U64
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U65
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U66
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U67
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U68
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U69
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U70
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+
+UNIT U71
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U72
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U73
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U74
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U75
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U76
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U77
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U78
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U79
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U80
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U81
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U82
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U83
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U84
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U85
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U86
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+UNIT U87
+NAME Itorian Rangers
+FACTION f01
+COMBAT_TACTICS attack rear center fire
+ITEM leat 30 30
+ITEM lbow 30 30
+ITEM coif 30 30
+ITEM hrse 30 30
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 30
+ORDER @ GUARD
+SILENT
+
+UNIT U88
+NAME Itorian Guards
+FACTION f01
+COMBAT_TACTICS attack front center charge
+ITEM leat 40 40
+ITEM swrd 40 40
+ITEM coif 40 40
+ITEM hshd 40 40
+ITEM coin 200 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 40
+ORDER @ GUARD
+SILENT
+
+
+
+
+
+
+
+
+
+
+
+
+
+UNIT U201
+NAME Acholdang
+FACTION f02
+RACE ldr 1
+SKILL void 18000
+#SKILL raur 3000
+#SKILL idre 6000
+#SKILL tsig 3000
+#SKILL ides 6000
+#SKILL slve 9000
+#SKILL sdlc 9000
+#SKILL necr 6000
+#SKILL rzom 6000
+#SKILL dbon 6000
+ORDER @TEACH void
+CONTAINER B201
+ADVERTISE
+
+UNIT U202
+NAME Chobelan
+FACTION f02
+RACE ldr 1
+SKILL fire 18000
+ORDER @TEACH fire
+CONTAINER B202
+ADVERTISE
+
+UNIT U203
+NAME Agelor 
+FACTION f02
+RACE ldr 1
+SKILL airs 18000
+ORDER @TEACH airs
+CONTAINER B203
+ADVERTISE
+
+UNIT U204
+NAME Struistur
+FACTION f02
+RACE ldr 1
+SKILL eart 18000
+ORDER @TEACH eart
+CONTAINER B204
+ADVERTISE
+
+UNIT U205
+NAME Snildvor
+FACTION f02
+RACE ldr 1
+SKILL wate 18000
+ORDER @TEACH wate
+CONTAINER B205
+ADVERTISE
+
+UNIT U206
+NAME Kelwortor
+FACTION f02
+RACE ldr 1
+SKILL necr 6000
+ORDER @TEACH necr
+CONTAINER B206
+ADVERTISE
+
+
+UNIT U212
+NAME  Sheriff of Tetgate 
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U213
+NAME  Sheriff of Perabus 
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U214
+NAME  Sheriff of Tantras 
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U215
+NAME  Windfort Mayor
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U216
+NAME Oakhill Mayor
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U217
+NAME Sheriff of Morend 
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U218
+NAME Anarnium Lord
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+UNIT U219
+NAME Icebell Mayor
+FACTION f02
+RACE ldr 1
+COMBAT_TACTICS defend rear center fire
+ITEM leat 1 1
+ITEM cbow 1 1
+ITEM coif 1 1
+SKILL mane 1500
+SKILL arch 9000
+SKILL cmbt 18000
+ITEM coin 500 0
+TRACED
+ADVERTISE
+
+
+UNIT U221
+NAME Tetgate Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+SILENT
+ADVERTISE
+
+UNIT U222
+NAME Tetgate Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+SILENT
+ADVERTISE
+
+UNIT U223
+NAME Perabus Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U224
+NAME Perabus Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U225
+NAME Tantras Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U226
+NAME Tantras Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U227
+NAME Windfort Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U228
+NAME Windfort Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U229
+NAME Oakhill Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U230
+NAME Oakhill Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U231
+NAME Morend Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U232
+NAME Morend Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U233
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U234
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U235
+NAME Icebell Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U236
+NAME Icebell Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U237
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U238
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U239
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U240
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U241
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U242
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U243
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U244
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U245
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U246
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U247
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U248
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U249
+NAME Anarnium Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 20 20
+ITEM lbow 20 20
+ITEM coif 20 20
+ITEM hrse 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U250
+NAME Anarnium Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 20 20
+ITEM swrd 20 20
+ITEM coif 20 20
+ITEM hshd 20 20
+ITEM coin 500 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 20
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U251
+NAME  Rangers
+FACTION f02
+COMBAT_TACTICS attack rear center fire
+ITEM leat 50 50
+ITEM lbow 50 50
+ITEM coif 50 50
+ITEM hrse 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL arch 4500
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U252
+NAME  Guards
+FACTION f02
+COMBAT_TACTICS attack front center charge
+ITEM leat 50 50
+ITEM swrd 50 50
+ITEM coif 50 50
+ITEM hshd 50 50
+ITEM coin 2000 0
+SKILL cmbt 1500
+SKILL mane 1500
+SKILL blde 3000
+RACE man 50
+ORDER @ GUARD
+ADVERTISE
+
+UNIT U261
+NAME  Combat Trainer
+FACTION f02
+RACE ldr 1
+SKILL cmbt 18000
+ORDER @TEACH cmbt
+CONTAINER B211
+TRACED
+ADVERTISE
+
+UNIT U262
+NAME Building  Trainer
+FACTION f02
+RACE ldr 1
+SKILL buil 9000
+ORDER @TEACH buil
+CONTAINER B212
+TRACED
+ADVERTISE
+
+UNIT U263
+NAME  Forestry Trainer
+FACTION f02
+RACE ldr 1
+SKILL fore 9000
+ORDER @TEACH fore
+CONTAINER B213
+TRACED
+ADVERTISE
+
+UNIT U264
+NAME  Seamanship Trainer
+FACTION f02
+RACE ldr 1
+SKILL seas 9000
+ORDER @TEACH seas
+CONTAINER B214
+TRACED
+ADVERTISE
+
+UNIT U265
+NAME  Digging Trainer
+FACTION f02
+RACE ldr 1
+SKILL digg 9000
+ORDER @TEACH digg
+CONTAINER B215
+TRACED
+ADVERTISE
+
+UNIT U266
+NAME Beast Mastery  Trainer
+FACTION f02
+RACE ldr 1
+SKILL beas 9000
+ORDER @TEACH beas
+CONTAINER B216
+TRACED
+ADVERTISE
+
+UNIT U267
+NAME Observation  Trainer
+FACTION f02
+RACE ldr 1
+SKILL obse 36000
+ORDER @TEACH 0bse
+CONTAINER B217
+TRACED
+ADVERTISE
+
+UNIT U268
+NAME  Weaponsmith Trainer
+FACTION f02
+RACE ldr 1
+SKILL weap 9000
+ORDER @TEACH weap
+CONTAINER B218
+TRACED
+ADVERTISE
+
+UNIT U269
+NAME  Artisan Trainer
+FACTION f02
+RACE ldr 1
+SKILL arti 9000
+ORDER @TEACH arti
+CONTAINER B219
+TRACED
+ADVERTISE
+
+UNIT U270
+NAME Armory  Trainer
+FACTION f02
+RACE ldr 1
+SKILL armo 9000
+ORDER @TEACH armo
+CONTAINER B220
+TRACED
+ADVERTISE
+
+UNIT U310
+NAME Wolves
+FACTION f03
+RACE gwol 7
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L720 L513 L648 L647 
+
+UNIT U311
+NAME Snake
+FACTION f03
+RACE snak 1
+COMBAT_TACTICS attack front center charge
+
+UNIT U312
+NAME Wolves
+FACTION f03
+RACE gwol 7
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L545 L516 L463 L464 
+
+UNIT U313
+NAME Wolves
+FACTION f03
+RACE gwol 7
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L386 L496 L562 L537 L539 
+
+UNIT U314
+NAME Snakes
+FACTION f03
+RACE snak 5
+COMBAT_TACTICS attack front center charge
+
+
+UNIT U315
+NAME Pumas
+FACTION f03
+RACE puma 5
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L304 L312 L322
+
+UNIT U316
+NAME Lions
+FACTION f03
+RACE lion 4
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L467 L536
+
+UNIT U317
+NAME A pack of mangy wolves
+FACTION f03
+RACE gwol 5
+COMBAT_TACTICS attack front center charge
+
+UNIT U318
+NAME Wolves
+FACTION f03
+RACE gwol 7
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L310 L484 L480
+
+UNIT U319
+NAME Pumas
+FACTION f03
+RACE puma 5
+COMBAT_TACTICS attack front center charge
+ORDER @ CARAVAN L483 L482 L692
+
+#===============================
+
+UNIT U500
+NAME Faction Leader
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL obse 18000
+RACE hero 1
+
+UNIT U501
+NAME Scouting Expert
+ORDER  Name  ChiefRider
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL obse 18000
+SKILL scou 18000
+SKILL ambu 18000
+SKILL stea 18000
+RACE ldr 1
+
+
+UNIT U502
+NAME Combat Expert
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+SKILL cmbt 18000
+SKILL blde 18000
+SKILL mele 18000
+SKILL arch 18000
+SKILL mark 18000
+SKILL parr 18000
+SKILL mane 18000
+SKILL stra 36000
+RACE ldr 1
+
+
+UNIT U503
+NAME Pool
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+RACE man 30
+
+
+UNIT U504
+NAME Swordsmen
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM swrd 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL blde 9000
+RACE man 20
+
+
+UNIT U505
+NAME Archers
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+RACE man 20
+
+UNIT U506
+NAME 	Water Mage
+RACE ldr 1
+FACTION f05
+SKILL 	 mage 9000
+SKILL 	 wate 9000
+SKILL 	 medi 9000
+SKILL 	 wwal 9000
+SKILL 	 mshp 9000
+SKILL 	 hpot 9000
+SKILL 	 hail 9000
+SKILL 	 cloc 9000
+SKILL 	 chou 9000
+SKILL 	 slwe 9000
+SKILL 	 blif 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+
+
+UNIT U507
+NAME  Artisan
+RACE ldr 1
+FACTION f05
+SKILL 	arti 9000
+SKILL 	tolc 9000
+SKILL 	whee 9000
+ITEM hrse 1 1
+
+
+UNIT U508
+NAME Seaman
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL seas 9000
+SKILL sail 9000
+SKILL fshn 9000
+RACE ldr 1
+
+UNIT U509
+NAME Farmers
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL farm 3000
+RACE man 30
+
+
+UNIT U510
+NAME Bakers
+FACTION f05
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL bake 9000
+RACE man 20
+
+#===============================
+
+UNIT U600
+NAME Faction Leader
+
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+ITEM coin 1000
+SKILL obse 18000
+RACE hero 1
+
+
+UNIT U601
+NAME Scouting Expert
+
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL obse 18000
+SKILL scou 18000
+SKILL ambu 18000
+SKILL stea 18000
+RACE ldr 1
+
+
+UNIT U602
+NAME Combat Expert
+
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+SKILL cmbt 18000
+SKILL blde 18000
+SKILL mele 18000
+SKILL arch 18000
+SKILL mark 18000
+SKILL parr 18000
+SKILL mane 18000
+SKILL stra 12000
+SKILL tact 6000
+RACE ldr 1
+
+
+UNIT U603
+NAME Pool
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+RACE man 30
+
+UNIT U604
+NAME Archers
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+RACE man 20
+
+UNIT U605
+NAME Swordsmen
+FACTION f06
+RACE man 20
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+ITEM swrd 20 20
+SKILL blde 9000
+
+UNIT U606
+NAME 	Water Mage
+RACE ldr 1
+FACTION f06
+SKILL 	 mage 9000
+SKILL 	 wate 9000
+SKILL 	 medi 9000
+SKILL 	 wwal 9000
+SKILL 	 mshp 9000
+SKILL 	 hpot 9000
+SKILL 	 hail 9000
+SKILL 	 cloc 9000
+SKILL 	 chou 9000
+SKILL 	 slwe 9000
+SKILL 	 blif 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+
+
+UNIT U607
+NAME  Miner
+RACE ldr 1
+FACTION f07
+SKILL 	digg 18000
+SKILL 	mini 18000
+SKILL 	dgra 3000
+SKILL 	stcu 18000
+ITEM hrse 1 1
+
+
+UNIT U608
+NAME	Armorer
+FACTION f06
+RACE ldr 1
+SKILL 	 armo 9000
+SKILL 	 leat 9000
+SKILL 	 helm 9000
+SKILL 	 shsm 9000
+ITEM hrse 1 1
+
+UNIT U609
+NAME Farmers
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL farm 3000
+RACE man 30
+
+
+UNIT U610
+NAME Bakers
+FACTION f06
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL bake 9000
+RACE man 20
+
+
+#===============================
+
+UNIT U700
+NAME Faction Leader
+
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL obse 18000
+RACE hero 1
+
+
+UNIT U701
+NAME Scouting Expert
+
+ORDER  Name  ChiefGamma Rider
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL obse 18000
+SKILL scou 18000
+SKILL ambu 18000
+SKILL stea 18000
+RACE ldr 1
+
+
+UNIT U702
+NAME Combat Expert
+
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+SKILL cmbt 18000
+SKILL blde 18000
+SKILL mele 18000
+SKILL arch 18000
+SKILL mark 18000
+SKILL parr 18000
+SKILL mane 18000
+SKILL stra 12000
+SKILL tact 6000
+RACE ldr 1
+
+
+UNIT U703
+NAME Pool
+
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+RACE man 30
+
+
+UNIT U704
+NAME Archers
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+RACE man 20
+
+UNIT U705
+NAME Axemen
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM baxe 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL blde 9000
+RACE man 20
+
+
+UNIT U706
+NAME 	Earth Mage
+RACE ldr 1
+FACTION f07
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 petr 9000
+SKILL 	 cele 9000
+SKILL 	 slee 9000
+SKILL 	 stfi 9000
+SKILL 	 shai 9000
+SKILL 	 shed 9000
+SKILL 	 stel 9000
+SKILL 	 sgrp 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U707
+NAME	Weaponsmith
+FACTION f07
+RACE ldr 1
+SKILL 	 weap 9000
+SKILL 	 blsm 9000
+SKILL 	 axsm 9000
+SKILL 	 hmsm 9000
+SKILL 	 stsm 9000
+SKILL 	 bowy 9000
+ITEM hrse 1 1
+
+UNIT U708
+NAME	Armorer
+FACTION f07
+RACE ldr 1
+SKILL 	 armo 9000
+SKILL 	 leat 9000 
+SKILL 	 helm 9000 
+SKILL 	 shsm 9000 
+ITEM hrse 1 1
+
+
+UNIT U709
+NAME Farmers
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL farm 3000
+RACE man 30
+
+
+UNIT U710
+NAME Bakers
+FACTION f07
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL bake 9000
+TRACED
+RACE man 20
+
+#===============================
+UNIT U800
+NAME  Faction Leader
+RACE hero 1
+FACTION f08
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U801
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f08
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U802
+NAME Combat Expert
+RACE ldr 1
+FACTION f08
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U803
+NAME Archers
+FACTION f08
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U804
+NAME Pool
+FACTION f08
+race man 30
+
+UNIT U805
+NAME Hammermen
+FACTION f08
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM wham 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL mele 9000
+RACE man 20
+
+UNIT U806
+NAME 	Air Mage
+RACE ldr 1
+FACTION f08
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 slae 9000
+SKILL 	 cwnd 9000
+SKILL 	 fwnd 9000
+SKILL 	 ewag 9000
+SKILL 	 levi 9000
+SKILL 	 rmor 9000
+SKILL 	 lspd 9000
+SKILL 	 taim 9000
+SKILL 	 gwin 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U807
+NAME  Forester
+RACE ldr 1
+FACTION f08
+SKILL 	fore 18000
+SKILL 	herb 18000
+SKILL 	lumb 18000
+SKILL 	febe 18000
+SKILL 	hunt 18000
+SKILL 	skin 18000
+ITEM hrse 1 1
+
+UNIT U808
+NAME  BeastMaster
+RACE ldr 1
+FACTION f08
+SKILL 	beas 18000
+SKILL 	hors 18000
+SKILL 	trhr 18000
+SKILL 	pack 18000
+SKILL 	thou 18000
+ITEM hrse 1 1
+
+UNIT U809
+NAME Farmers
+FACTION f08
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL farm 3000
+RACE man 30
+
+
+UNIT U810
+NAME Bakers
+FACTION f08
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL bake 9000
+RACE man 20
+#===============================
+UNIT U900
+NAME  Faction Leader
+RACE hero 1
+FACTION f09
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U901
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f09
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U902
+NAME Combat Expert
+RACE ldr 1
+FACTION f09
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U903
+NAME Archers
+FACTION f09
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U904
+NAME Pool
+FACTION f09
+race man 30
+
+UNIT U905
+NAME Swordsmen
+FACTION f09
+RACE man 20
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+ITEM swrd 20 20
+SKILL blde 9000
+
+UNIT U906
+NAME 	Earth Mage
+RACE ldr 1
+FACTION f09
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 petr 9000
+SKILL 	 cele 9000
+SKILL 	 slee 9000
+SKILL 	 stfi 9000
+SKILL 	 shai 9000
+SKILL 	 shed 9000
+SKILL 	 stel 9000
+SKILL 	 sgrp 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U907
+NAME  Miner
+RACE ldr 1
+FACTION f09
+SKILL 	digg 18000
+SKILL 	mini 18000
+SKILL 	dgra 3000
+SKILL 	stcu 18000
+ITEM hrse 1 1
+
+UNIT U908
+NAME	Builder
+RACE ldr 1
+FACTION f09
+SKILL 	 buil 9000
+SKILL 	 maso 9000
+SKILL 	 fram 9000
+SKILL 	 ship 9000
+SKILL 	 ashp 9000
+SKILL 	 sieg 9000
+ITEM hrse 1 1
+
+UNIT U909
+NAME Farmers
+FACTION f09
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL farm 3000
+RACE man 30
+
+
+UNIT U910
+NAME Bakers
+FACTION f09
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL bake 9000
+RACE man 20
+#===============================
+UNIT U1000
+NAME  Faction Leader
+RACE hero 1
+FACTION f10
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1001
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f10
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1002
+NAME Combat Expert
+RACE ldr 1
+FACTION f10
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1003
+NAME Archers
+FACTION f10
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1004
+NAME Pool
+FACTION f10
+race man 30
+
+UNIT U1005
+NAME Hammermen
+FACTION f10
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM wham 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL mele 9000
+RACE man 20
+
+UNIT U1006
+NAME 	Void Mage
+RACE ldr 1
+FACTION f10
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 raur 9000
+SKILL 	 sdcl 9000
+SKILL 	 tsig 9000
+SKILL 	 ides 9000
+SKILL 	 slve 9000
+SKILL 	 necr 9000
+SKILL 	 rzom 9000
+SKILL 	 dbon 9000
+SKILL 	 rske 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U1007
+NAME  BeastMaster
+RACE ldr 1
+FACTION f10
+SKILL 	beas 18000
+SKILL 	hors 18000
+SKILL 	trhr 18000
+SKILL 	pack 18000
+SKILL 	thou 18000
+ITEM hrse 1 1
+
+UNIT U1008
+NAME  Forester
+RACE ldr 1
+FACTION f10
+SKILL 	fore 18000
+SKILL 	herb 18000
+SKILL 	lumb 18000
+SKILL 	febe 18000
+SKILL 	hunt 18000
+SKILL 	skin 18000
+ITEM hrse 1 1
+
+UNIT U1009
+NAME Ranchers
+FACTION f10
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL ranc 3000
+RACE man 20
+
+
+UNIT U1010
+NAME butchers
+FACTION f10
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL butc 9000
+RACE man 20
+
+#===============================
+UNIT U1100
+NAME  Faction Leader
+RACE hero 1
+FACTION f11
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1101
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f11
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1102
+NAME Combat Expert
+RACE ldr 1
+FACTION f11
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1103
+NAME Archers
+FACTION f11
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1104
+NAME Pool
+FACTION f11
+race man 30
+
+UNIT U1105
+NAME Axemen
+FACTION f11
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM baxe 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL blde 9000
+RACE man 20
+
+UNIT U1106
+NAME 	Air Mage
+RACE ldr 1
+FACTION f11
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 slae 9000
+SKILL 	 cwnd 9000
+SKILL 	 fwnd 9000
+SKILL 	 ewag 9000
+SKILL 	 levi 9000
+SKILL 	 rmor 9000
+SKILL 	 lspd 9000
+SKILL 	 taim 9000
+SKILL 	 gwin 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U1107
+NAME  Forester
+RACE ldr 1
+FACTION f11
+SKILL 	fore 18000
+SKILL 	herb 18000
+SKILL 	lumb 18000
+SKILL 	febe 18000
+SKILL 	hunt 18000
+SKILL 	skin 18000
+ITEM hrse 1 1
+
+UNIT U1108
+NAME	Weaponsmith
+FACTION f11
+RACE ldr 1
+SKILL 	 weap 9000
+SKILL 	 blsm 9000
+SKILL 	 axsm 9000
+SKILL 	 hmsm 9000
+SKILL 	 stsm 9000
+SKILL 	 bowy 9000
+ITEM hrse 1 1
+
+UNIT U1109
+NAME Ranchers
+FACTION f11
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL ranc 3000
+RACE man 20
+
+
+UNIT U1110
+NAME butchers
+FACTION f11
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL butc 9000
+RACE man 20
+
+
+
+#===============================
+UNIT U1200
+NAME  Faction Leader
+RACE hero 1
+FACTION f12
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1201
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f12
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1202
+NAME Combat Expert
+RACE ldr 1
+FACTION f12
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1203
+NAME Archers
+FACTION f12
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1204
+NAME Pool
+FACTION f12
+race man 30
+
+UNIT U1205
+NAME Hammermen
+FACTION f12
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM wham 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL mele 9000
+RACE man 20
+
+UNIT U1206
+NAME 	Void Mage
+RACE ldr 1
+FACTION f12
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 raur 9000
+SKILL 	 sdcl 9000
+SKILL 	 tsig 9000
+SKILL 	 ides 9000
+SKILL 	 slve 9000
+SKILL 	 necr 9000
+SKILL 	 rzom 9000
+SKILL 	 dbon 9000
+SKILL 	 rske 9000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U1207
+NAME  Miner
+RACE ldr 1
+FACTION f12
+SKILL 	digg 18000
+SKILL 	mini 18000
+SKILL 	dgra 3000
+SKILL 	stcu 18000
+ITEM hrse 1 1
+
+UNIT U1208
+NAME	Builder
+RACE ldr 1
+FACTION f12
+SKILL 	 buil 9000
+SKILL 	 maso 9000
+SKILL 	 fram 9000
+SKILL 	 ship 9000
+SKILL 	 ashp 9000
+SKILL 	 sieg 9000
+ITEM hrse 1 1
+
+UNIT U1209
+NAME Ranchers
+FACTION f12
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL ranc 3000
+RACE man 20
+
+
+UNIT U1210
+NAME butchers
+FACTION f12
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL butc 9000
+RACE man 20
+#===============================
+UNIT U1300
+NAME  Faction Leader
+RACE hero 1
+FACTION f13
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1301
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f13
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1302
+NAME Combat Expert
+RACE ldr 1
+FACTION f13
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1303
+NAME Archers
+FACTION f13
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1304
+NAME Pool
+FACTION f13
+race man 30
+
+UNIT U1305
+NAME Axemen
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM baxe 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL blde 9000
+RACE man 20
+
+UNIT U1306
+NAME Fire Mage
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+SKILL mage 9000
+SKILL medi 9000
+SKILL ffrm 9000
+SKILL fstd 9000
+SKILL ftch 9000
+SKILL ftrw 9000
+SKILL frai 9000
+SKILL fbal 12000
+SKILL blnd 9000
+SKILL slfe 9000
+SKILL sbal 18000
+RACE ldr 1
+
+UNIT U1307
+NAME  Artisan
+RACE ldr 1
+FACTION f13
+SKILL 	arti 9000
+SKILL 	tolc 9000
+SKILL 	whee 9000
+ITEM hrse 1 1
+
+UNIT U1308
+NAME Seaman
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+ITEM hrse 1 1
+SKILL seas 9000
+SKILL sail 9000
+SKILL fshn 9000
+RACE ldr 1
+
+
+UNIT U1309
+NAME Fishermans
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+SKILL fshn 3000
+RACE man 25
+
+
+UNIT U1310
+NAME Sailors
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+SKILL sail 9000
+RACE man 5
+
+
+UNIT U1311
+NAME Salters
+FACTION f13
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL salt 9000
+RACE man 20
+
+#===============================
+UNIT U1400
+NAME  Faction Leader
+RACE hero 1
+FACTION f14
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1401
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f14
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1402
+NAME Combat Expert
+RACE ldr 1
+FACTION f14
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1403
+NAME Archers
+FACTION f14
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1404
+NAME Pool
+FACTION f14
+race man 30
+
+UNIT U1405
+NAME Axemen
+FACTION f14
+COMBAT_TACTICS avoid rear center flee
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+ITEM baxe 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+SKILL blde 9000
+RACE man 20
+
+UNIT U1406
+NAME 	Fire Mage
+RACE ldr 1
+FACTION f14
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 ffrm 9000
+SKILL 	 fstd 9000
+SKILL 	 ftch 9000
+SKILL 	 ftrw 9000
+SKILL 	 frai 9000
+SKILL 	 fbal 12000
+SKILL 	 blnd 9000
+SKILL 	 slfe 9000
+SKILL 	 sbal 18000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U1407
+NAME  Miner
+RACE ldr 1
+FACTION f14
+SKILL 	digg 18000
+SKILL 	mini 18000
+SKILL 	dgra 3000
+SKILL 	stcu 18000
+ITEM hrse 1 1
+
+UNIT U1408
+NAME	Builder
+RACE ldr 1
+FACTION f14
+SKILL 	 buil 9000
+SKILL 	 maso 9000
+SKILL 	 fram 9000
+SKILL 	 ship 9000
+SKILL 	 ashp 9000
+SKILL 	 sieg 9000
+ITEM hrse 1 1
+
+UNIT U1409
+NAME Ranchers
+FACTION f14
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL ranc 3000
+RACE man 20
+
+
+UNIT U1410
+NAME butchers
+FACTION f14
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL butc 9000
+RACE man 20
+#===============================
+UNIT U1500
+NAME  Faction Leader
+RACE hero 1
+FACTION f15
+SKILL 	obse 18000
+ITEM hrse 1 1
+
+UNIT U1501
+NAME  Scouting Expert
+RACE ldr 1
+FACTION f15
+SKILL 	obse 18000
+SKILL 	scou 18000
+SKILL 	ambu 18000
+SKILL 	stea 18000
+ITEM hrse 1 1
+
+UNIT U1502
+NAME Combat Expert
+RACE ldr 1
+FACTION f15
+SKILL 	cmbt 18000
+SKILL 	blde 18000
+SKILL 	mele 18000
+SKILL 	arch 18000
+SKILL 	mark 18000
+SKILL 	parr 18000
+SKILL 	mane 18000
+SKILL 	tact 18000 # 0 - 6000 - 18000
+SKILL 	stra 36000 # 0 - 12000 - 36000
+ITEM plat 1 1
+ITEM hlmt 1 1
+ITEM tshd 1 1
+ITEM whrs 1 1
+
+UNIT U1503
+NAME Archers
+FACTION f15
+RACE man 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL arch 9000
+ITEM hrse 20 20
+ITEM lbow 20 20
+ITEM leat 20 20
+ITEM coif 20 20
+
+
+UNIT U1504
+NAME Pool
+FACTION f15
+race man 30
+
+UNIT U1505
+NAME Swordsmen
+FACTION f15
+RACE man 20
+ITEM whrs 20 20
+ITEM chai 20 20
+ITEM hlmt 20 20
+ITEM hshd 20 20
+SKILL cmbt 9000
+SKILL mane 9000
+SKILL parr 9000
+ITEM swrd 20 20
+SKILL blde 9000
+
+UNIT U1506
+NAME 	Fire Mage
+RACE ldr 1
+FACTION f15
+SKILL 	 mage 9000
+SKILL 	 medi 9000
+SKILL 	 ffrm 9000
+SKILL 	 fstd 9000
+SKILL 	 ftch 9000
+SKILL 	 ftrw 9000
+SKILL 	 frai 9000
+SKILL 	 fbal 12000
+SKILL 	 blnd 9000
+SKILL 	 slfe 9000
+SKILL 	 sbal 18000
+ITEM hrse 1 1
+ITEM hrbs 5 0
+ITEM msto 5 0
+
+UNIT U1507
+NAME	Weaponsmith
+FACTION f15
+RACE ldr 1
+SKILL 	 weap 9000
+SKILL 	 blsm 9000
+SKILL 	 axsm 9000
+SKILL 	 hmsm 9000
+SKILL 	 stsm 9000
+SKILL 	 bowy 9000
+ITEM hrse 1 1
+
+UNIT U1508
+NAME	Armorer
+FACTION f15
+RACE ldr 1
+SKILL 	 armo 9000
+SKILL 	 leat 9000 
+SKILL 	 helm 9000 
+SKILL 	 shsm 9000 
+ITEM hrse 1 1
+
+UNIT U1509
+NAME Ranchers
+FACTION f15
+COMBAT_TACTICS avoid rear center flee
+SKILL agri 3000
+SKILL ranc 3000
+RACE man 20
+
+
+UNIT U1510
+NAME butchers
+FACTION f15
+COMBAT_TACTICS avoid rear center flee
+SKILL cook 3000
+SKILL butc 9000
+RACE man 20

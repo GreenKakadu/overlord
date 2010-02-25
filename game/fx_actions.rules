@@ -1,0 +1,24 @@
+# Overlord special actions data
+# Ver 0.31 19.01.2004
+
+KEYWORD FX_ACTION 999
+
+FX_ACTION evtppoc PICKPOCKET_ACTION
+NAME "attempt of picking pockets"
+DESCRIPTION The skilled thief will pick someone's pockets. One object will be picked at random, tending to the smallest and most expensive. Stealing an item has a chance of success of 5% per stealth factor, minus 3% per unit of weight. Equipped items are considered last and suffer a penalty of 20% chance. If the attempt fails, the target will notice the thief with a 10% per observation level chance
+
+
+FX_ACTION evtritu RITUAL_ACTION
+NAME "Rutual"
+
+
+FX_ACTION evtbury BURY_ACTION
+NAME "Bury dead bodies"
+
+
+FX_ACTION evtinfe INFECTION_ACTION
+NAME "Infection"
+EFFECT plag
+
+FX_ACTION evtassa ASSASSINATE_ACTION
+NAME "Assassination attempt"

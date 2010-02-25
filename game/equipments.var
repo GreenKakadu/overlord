@@ -1,0 +1,70 @@
+# Overlord Equipment Slots data
+# Ver 0.3 23.10.2003
+
+KEYWORD EQUIPMENT_SLOT 20
+
+EQUIPMENT_SLOT equip_food
+NAME food
+
+EQUIPMENT_SLOT  equip_mount
+NAME mount
+PLURAL mounts
+
+EQUIPMENT_SLOT  equip_tool
+NAME tool
+PLURAL tools
+
+EQUIPMENT_SLOT  equip_ship
+NAME ship
+PLURAL ships
+
+EQUIPMENT_SLOT  equip_weapon
+NAME weapon
+PLURAL weapons
+
+EQUIPMENT_SLOT  equip_armor
+NAME armor
+PLURAL armors
+
+EQUIPMENT_SLOT  equip_helmet
+NAME helmet
+PLURAL helmets
+
+EQUIPMENT_SLOT   equip_shield
+NAME shield
+PLURAL shields
+
+EQUIPMENT_SLOT   equip_gloves
+NAME gloves
+PLURAL gloves
+
+EQUIPMENT_SLOT   equip_boots
+NAME boots
+PLURAL boots
+
+EQUIPMENT_SLOT   equip_amulet
+NAME amulet
+PLURAL amulets
+
+EQUIPMENT_SLOT   equip_ring
+NAME ring
+PLURAL rings
+
+EQUIPMENT_SLOT   equip_misc
+NAME misc
+PLURAL misc
+
+EQUIPMENT_SLOT   equip_cloak
+NAME cloak
+PLURAL cloaks
+
+
+
+
+
+
+
+
+
+
+

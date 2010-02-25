@@ -1,0 +1,262 @@
+GAME f01 pswd1 alpha
+UNIT U1
+claim  over
+UNIT U2
+@ guard
+UNIT U3
+COMBAT_ORDER RANGED 
+@ guard
+
+UNIT U5
+COMBAT_ORDER RANGED 
+@ guard
+UNIT U6
+@ guard
+UNIT U7
+@ guard
+UNIT U8
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U9
+@ guard
+UNIT U10
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U11
+@ guard
+UNIT U12
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U13
+@ guard
+UNIT U14
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U15
+@ guard
+UNIT U16
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U17
+@ guard
+UNIT U18
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U19
+@ guard
+UNIT U20
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U21
+@ guard
+UNIT U22
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U23
+@ guard
+UNIT U24
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U25
+@ guard
+UNIT U26
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U27
+@ guard
+UNIT U28
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U29
+@ guard
+UNIT U30
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U31
+@ guard
+UNIT U32
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U33
+@ guard
+UNIT U34
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U35
+@ guard
+UNIT U36
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U37
+@ guard
+UNIT U38
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U39
+@ guard
+UNIT U40
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U41
+@ guard
+UNIT U42
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U43
+@ guard
+UNIT U44
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U45
+@ guard
+UNIT U46
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U47
+@ guard
+UNIT U48
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U49
+@ guard
+UNIT U50
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U51
+@ guard
+UNIT U52
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U53
+@ guard
+UNIT U54
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U55
+@ guard
+UNIT U56
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U57
+@ guard
+UNIT U58
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U59
+@ guard
+UNIT U60
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U61
+@ guard
+UNIT U62
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U63
+@ guard
+UNIT U64
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U65
+@ guard
+UNIT U66
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U67
+@ guard
+UNIT U68
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U69
+@ guard
+UNIT U70
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U71
+@ guard
+UNIT U72
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U73
+@ guard
+UNIT U74
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U75
+@ guard
+UNIT U76
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U77
+@ guard
+UNIT U78
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U79
+@ guard
+UNIT U80
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U81
+@ guard
+UNIT U82
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U83
+@ guard
+UNIT U84
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U85
+@ guard
+UNIT U86
+@ guard
+COMBAT_ORDER RANGED 
+
+UNIT U87
+@ guard
+UNIT U88
+@ guard
+COMBAT_ORDER RANGED 
+
+
+END
