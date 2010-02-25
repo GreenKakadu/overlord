@@ -1,0 +1,17 @@
+<RCC>
+    <qresource prefix="/new/prefix1" >
+        <file>icons/Gray1.png</file>
+        <file>icons/Green1.png</file>
+        <file>icons/Red1.png</file>
+        <file>icons/Yellow1.png</file>
+        <file>icons/Folder.png</file>
+        <file>icons/Mail.png</file>
+        <file>icons/Standby.png</file>
+        <file>icons/Tools.png</file>
+        <file>icons/Web.png</file>
+        <file>icons/Cancel.png</file>
+        <file>icons/Download.png</file>
+        <file>icons/At.png</file>
+        <file>icons/Key.png</file>
+    </qresource>
+</RCC>
