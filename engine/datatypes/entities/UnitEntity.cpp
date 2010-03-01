@@ -243,6 +243,10 @@ bool UnitEntity::hasFollowers() {
  */
 void UnitEntity::dailyUpdate()
 {
+    if(isDisbanded())
+    {
+        return;
+    }
     enchantments_.carryOutAllActions(this,0);
     enchantments_.processExpiration(this, getFiguresNumber());
 

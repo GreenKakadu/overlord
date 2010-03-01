@@ -992,6 +992,10 @@ void ConstructionEntity::disband()
 
 void ConstructionEntity::dailyUpdate()
 {
+    if(isDisbanded())
+    {
+        return;
+    }
     enchantments_.carryOutAllActions(this,0);
    enchantments_.processExpiration(this,getFiguresNumber());
    TokenEntity::dailyUpdate();
