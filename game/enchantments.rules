@@ -1,5 +1,5 @@
 # Overlord special effects data
-# Ver 0.32 20.04.2004
+#  Version 1.0 06.04.2010
 
 # -------- Generic configuration parameters ---
 # FX_EFFECT - (string): tag of a new enchantment
@@ -329,3 +329,19 @@ NAME immunity
 PLURAL immunity
 DESCRIPTION Under this effect, the character can't be infected
 HIDDEN
+
+
+
+FX_EFFECT effphase
+NAME phasing out
+PLURAL phasing out
+DESCRIPTION Unit seems to ever be fully there, and makes its  extremely hard to hit.
+INITIATIVE -5
+DEFENSE 40
+STEALTH 1
+MELEE -5
+LIFE 5
+
+
+
+

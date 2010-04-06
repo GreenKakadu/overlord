@@ -1,5 +1,5 @@
-# Overlord Item definitions
-# Ver 0.4.4 Alpha  Dec 29 2008
+# Overlord Item definitions for sample game
+#  Version 1.0 06.04.2010
 
 # -------- Generic configuration parameters ---
 # ITEM - (string): tag of a new item
@@ -488,13 +488,15 @@ PRICE 33
 
 ITEM gauc
 NAME main gauche
+PLURAL main gauches
 WEIGHT 2
 DESCRIPTION The small swordlike weapon of choice for the expert swordsman, the main gauche complements the primary weapon allowing its user an extra attack in combat
 PRICE 63
 EQUIP_CATEGORY 8
 EQUIP_CONDITION SKILL_CONDITION blde 3
 MELEE 2
-HITS 1
+HITS 2
+
 
 ITEM swrd
 NAME sword
@@ -1292,14 +1294,12 @@ EQUIP_CATEGORY 12
 EQUIP_MAX 2
 PRICE 5100
 STEALTH 1
-COMBAT_USE SPECIAL
-COMBAT INITIATIVE -5
-COMBAT BONUS DEFENSE 40
-COMBAT BONUS STEALTH 1
-COMBAT BONUS MELEE -5
-COMBAT LIFE 5
-COMBAT RANGE 0
+COMBAT_USE COMBAT_ENCHANT
+COMBAT GRANTS effphase 1
 COMBAT TARGET BATTLEFIELD_TARGET_SELF
+COMBAT RANGE 0
+COMBAT SECONDARY_ACTION NEXT
+
 
 ITEM mkey
 NAME mage key
@@ -1379,7 +1379,7 @@ UNIQUE
 ITEM astf
 NAME Staff of Bilam
 PLURAL Staff of Bilam
-DESCRIPTION The staff of tha legendary wizard 
+DESCRIPTION The staff of the legendary wizard. Inflicts terrible damage to the enemies incierating them 
 TYPE 1
 WEIGHT 3
 EQUIP_CATEGORY 5
@@ -1391,11 +1391,11 @@ LIFE 5
 COMBAT_USE RANGED
 COMBAT TARGET BATTLEFIELD_TARGET_OPPOSING
 COMBAT RANGE 3
-COMBAT MISSILE 10
+COMBAT MISSILE 15
 COMBAT BONUS INITIATIVE 3
 COMBAT BONUS HITS 10
 COMBAT DAMAGE_TYPE 3
-RANGED_DAMAGE 5
+RANGED_DAMAGE 50
 SPECIAL
 UNIQUE
 

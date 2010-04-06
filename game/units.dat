@@ -1,5 +1,5 @@
-# Overlord units data 
-# Ver 0.9.0
+# Overlord units data for sample game
+#  Version 1.0 06.04.2010
 
 KEYWORD UNIT 10000
 
@@ -29,6 +29,7 @@ RACE hero 1
 UNIT U2
 NAME Guards of Itora
 FACTION f01
+SILENT
 COMBAT_TACTICS attack front center charge
 ITEM gshd 60 60
 ITEM hlmt 60 60
@@ -38,8 +39,7 @@ ITEM coin 200 0
 SKILL cmbt 4500
 SKILL blde 9000
 SKILL parr 9000
-SILENT
-TRACED
+LOYALITY 100
 RACE man 60
 STACK U1
 ORDER @ GUARD
@@ -47,7 +47,9 @@ ORDER @ GUARD
 UNIT U3
 NAME Itorian Archers
 FACTION f01
+SILENT
 COMBAT_TACTICS defend rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 60 60
 ITEM cbow 60 60
 ITEM coif 60 60
@@ -56,8 +58,7 @@ ITEM coin 200 0
 SKILL cmbt 1500
 SKILL mane 1500
 SKILL arch 9000
-SILENT
-TRACED
+LOYALITY 100
 RACE man 60
 STACK U1
 ORDER @ GUARD
@@ -65,7 +66,9 @@ ORDER @ GUARD
 UNIT U5
 NAME Itorian Rangers
 FACTION f01
+SILENT
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -106,7 +109,6 @@ ITEM coin 200 0
 SKILL cmbt 4500
 SKILL blde 9000
 SKILL parr 9000
-TRACED
 RACE man 60
 ORDER @ GUARD
 SILENT
@@ -115,6 +117,7 @@ UNIT U8
 NAME Itorian Archers
 FACTION f01
 COMBAT_TACTICS defend rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 60 60
 ITEM cbow 60 60
 ITEM coif 60 60
@@ -123,7 +126,7 @@ ITEM coin 200 0
 SKILL cmbt 1500
 SKILL mane 9000
 SKILL arch 18000
-TRACED
+LOYALITY 100
 RACE man 60
 ORDER @ GUARD
 ORDER COMBAT arch
@@ -134,6 +137,7 @@ UNIT U9
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -167,6 +171,7 @@ UNIT U11
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -200,6 +205,7 @@ UNIT U13
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -233,6 +239,7 @@ UNIT U15
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -266,6 +273,7 @@ UNIT U17
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -300,6 +308,7 @@ SILENT
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -332,6 +341,7 @@ UNIT U21
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -364,6 +374,7 @@ UNIT U23
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -396,6 +407,7 @@ UNIT U25
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -428,6 +440,7 @@ UNIT U27
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -460,6 +473,7 @@ UNIT U29
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -481,9 +495,10 @@ ITEM swrd 40 40
 ITEM coif 40 40
 ITEM hshd 40 40
 ITEM coin 200 0
-SKILL cmbt 1500
-SKILL mane 1500
-SKILL blde 3000
+SKILL cmbt 30000
+SKILL mane 9000
+SKILL blde 9000
+LOYALITY 100
 RACE man 40
 ORDER @ GUARD
 SILENT
@@ -492,6 +507,7 @@ UNIT U31
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -507,7 +523,7 @@ SILENT
 UNIT U32
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -524,6 +540,7 @@ UNIT U33
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -557,6 +574,7 @@ UNIT U35
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -589,6 +607,7 @@ UNIT U37
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -621,6 +640,7 @@ UNIT U39
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -653,6 +673,7 @@ UNIT U41
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -685,6 +706,7 @@ UNIT U43
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -717,6 +739,7 @@ UNIT U45
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -749,6 +772,7 @@ UNIT U47
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -781,6 +805,7 @@ UNIT U49
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -796,7 +821,7 @@ SILENT
 UNIT U50
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -814,6 +839,7 @@ UNIT U51
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -846,6 +872,7 @@ UNIT U53
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -879,6 +906,7 @@ UNIT U55
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -911,6 +939,7 @@ UNIT U57
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -943,6 +972,7 @@ UNIT U59
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -976,6 +1006,7 @@ UNIT U61
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1008,6 +1039,7 @@ UNIT U63
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1023,7 +1055,7 @@ SILENT
 UNIT U64
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1040,6 +1072,7 @@ UNIT U65
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1055,7 +1088,7 @@ SILENT
 UNIT U66
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1072,6 +1105,7 @@ UNIT U67
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1104,6 +1138,7 @@ UNIT U69
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1138,6 +1173,7 @@ UNIT U71
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1170,6 +1206,7 @@ UNIT U73
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1202,6 +1239,7 @@ UNIT U75
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1217,7 +1255,7 @@ SILENT
 UNIT U76
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1234,6 +1272,7 @@ UNIT U77
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1250,6 +1289,7 @@ UNIT U78
 NAME Itorian Guards
 FACTION f01
 COMBAT_TACTICS attack front center charge
+COMBAT_ORDER  Ranged 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1266,6 +1306,7 @@ UNIT U79
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1281,7 +1322,7 @@ SILENT
 UNIT U80
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1298,6 +1339,7 @@ UNIT U81
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1313,7 +1355,7 @@ SILENT
 UNIT U82
 NAME Itorian Guards
 FACTION f01
-COMBAT_TACTICS attack front center charge
+COMBAT_TACTICS attack front center charge 
 ITEM leat 40 40
 ITEM swrd 40 40
 ITEM coif 40 40
@@ -1330,6 +1372,7 @@ UNIT U83
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1362,6 +1405,7 @@ UNIT U85
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1394,6 +1438,7 @@ UNIT U87
 NAME Itorian Rangers
 FACTION f01
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 30 30
 ITEM lbow 30 30
 ITEM coif 30 30
@@ -1510,7 +1555,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U213
@@ -1525,7 +1569,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U214
@@ -1540,7 +1583,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U215
@@ -1555,7 +1597,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U216
@@ -1570,7 +1611,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U217
@@ -1585,7 +1625,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U218
@@ -1600,7 +1639,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 UNIT U219
@@ -1615,7 +1653,6 @@ SKILL mane 1500
 SKILL arch 9000
 SKILL cmbt 18000
 ITEM coin 500 0
-TRACED
 ADVERTISE
 
 
@@ -1623,6 +1660,7 @@ UNIT U221
 NAME Tetgate Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1657,6 +1695,7 @@ UNIT U223
 NAME Perabus Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1689,6 +1728,7 @@ UNIT U225
 NAME Tantras Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1721,6 +1761,7 @@ UNIT U227
 NAME Windfort Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1753,6 +1794,7 @@ UNIT U229
 NAME Oakhill Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1785,6 +1827,7 @@ UNIT U231
 NAME Morend Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1817,6 +1860,7 @@ UNIT U233
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1849,6 +1893,7 @@ UNIT U235
 NAME Icebell Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -1881,6 +1926,7 @@ UNIT U237
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -1913,6 +1959,7 @@ UNIT U239
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -1945,6 +1992,7 @@ UNIT U241
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -1977,6 +2025,7 @@ UNIT U243
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -2009,6 +2058,7 @@ UNIT U245
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -2041,6 +2091,7 @@ UNIT U247
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -2073,6 +2124,7 @@ UNIT U249
 NAME Anarnium Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 20 20
 ITEM lbow 20 20
 ITEM coif 20 20
@@ -2105,6 +2157,7 @@ UNIT U251
 NAME  Rangers
 FACTION f02
 COMBAT_TACTICS attack rear center fire
+COMBAT_ORDER  Ranged 
 ITEM leat 50 50
 ITEM lbow 50 50
 ITEM coif 50 50
@@ -2140,7 +2193,6 @@ RACE ldr 1
 SKILL cmbt 18000
 ORDER @TEACH cmbt
 CONTAINER B211
-TRACED
 ADVERTISE
 
 UNIT U262
@@ -2150,7 +2202,6 @@ RACE ldr 1
 SKILL buil 9000
 ORDER @TEACH buil
 CONTAINER B212
-TRACED
 ADVERTISE
 
 UNIT U263
@@ -2160,7 +2211,6 @@ RACE ldr 1
 SKILL fore 9000
 ORDER @TEACH fore
 CONTAINER B213
-TRACED
 ADVERTISE
 
 UNIT U264
@@ -2170,7 +2220,6 @@ RACE ldr 1
 SKILL seas 9000
 ORDER @TEACH seas
 CONTAINER B214
-TRACED
 ADVERTISE
 
 UNIT U265
@@ -2180,7 +2229,6 @@ RACE ldr 1
 SKILL digg 9000
 ORDER @TEACH digg
 CONTAINER B215
-TRACED
 ADVERTISE
 
 UNIT U266
@@ -2190,7 +2238,6 @@ RACE ldr 1
 SKILL beas 9000
 ORDER @TEACH beas
 CONTAINER B216
-TRACED
 ADVERTISE
 
 UNIT U267
@@ -2200,7 +2247,6 @@ RACE ldr 1
 SKILL obse 36000
 ORDER @TEACH 0bse
 CONTAINER B217
-TRACED
 ADVERTISE
 
 UNIT U268
@@ -2210,7 +2256,6 @@ RACE ldr 1
 SKILL weap 9000
 ORDER @TEACH weap
 CONTAINER B218
-TRACED
 ADVERTISE
 
 UNIT U269
@@ -2220,7 +2265,6 @@ RACE ldr 1
 SKILL arti 9000
 ORDER @TEACH arti
 CONTAINER B219
-TRACED
 ADVERTISE
 
 UNIT U270
@@ -2230,7 +2274,6 @@ RACE ldr 1
 SKILL armo 9000
 ORDER @TEACH armo
 CONTAINER B220
-TRACED
 ADVERTISE
 
 UNIT U310
@@ -2717,7 +2760,6 @@ FACTION f07
 COMBAT_TACTICS avoid rear center flee
 SKILL cook 3000
 SKILL bake 9000
-TRACED
 RACE man 20
 
 #===============================
