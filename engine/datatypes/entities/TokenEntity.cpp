@@ -445,9 +445,12 @@ void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 
 void TokenEntity::addReport(ReportRecord report)
 {
-    if(getFaction()->isNPCFaction())
+    if(getFaction())
     {
-        processAttitude(report);
+        if(getFaction()->isNPCFaction())
+        {
+            processAttitude(report);
+        }
     }
     Entity::addReport(report);
 }
@@ -558,7 +561,7 @@ void TokenEntity::giveAllInventory(TokenEntity * unit)
   * Returns number of items TokenEntity actually has.
   */
   
-  int TokenEntity::takeFromInventory(ItemRule * item, int num)
+int TokenEntity::takeFromInventory(ItemRule * item, int num)
   {
     return inventory_.take(item, num);
   }
@@ -1513,14 +1516,23 @@ int TokenEntity::getStealthRating()
     {	
       isPayingUpkeep_ = false;
     }
-    for (vector <string>::iterator iter = combatSettings_.begin(); iter != combatSettings_.end(); ++iter)
+    setCombatSettings();
+  }
+
+
+
+void TokenEntity::setCombatSettings()
+  {
+     for (vector <string>::iterator iter = combatSettings_.begin(); iter != combatSettings_.end(); ++iter)
     {
       checkCombatSetting(*iter);
     }
     setDefaultCombatMovement();
+
   }
-  
-  
+
+
+
   
   void TokenEntity::clearCombatSettings()
   {

@@ -45,55 +45,54 @@ STATUS SupportCombatOrder::loadParameters(Parser * parser,
 ORDER_STATUS SupportCombatOrder::process (Entity * entity, ParameterList &parameters)
 {
 
- TokenEntity * unit = dynamic_cast<TokenEntity *>(entity);
-  assert(unit);
-  BattleInstance * instance = unit->getBattleInstantiation();
-	BattleField * battleField = instance->getBattleField();
-  int initiative = battleField->getCombatEngine()->getCurrentInitiativeSegment();
+    TokenEntity * unit = dynamic_cast<TokenEntity *> (entity);
+    assert(unit);
+    BattleInstance * instance = unit->getBattleInstantiation();
+    BattleField * battleField = instance->getBattleField();
+    int initiative = battleField->getCombatEngine()->getCurrentInitiativeSegment();
 
-// Retreat?
+    // Retreat?
 
-    if(RetreatCombatOrder::retreatAway(instance))
-		{
-				return SUCCESS;
-		}
-
-
+    if (RetreatCombatOrder::retreatAway(instance))
+    {
+        return SUCCESS;
+    }
 
 
-// === End of retreat attempts
-
-//
-	if(!battleField->haveEnemies(instance,FORWARD))
-	{
-    if(battleField->haveEnemies(instance,FORWARD,2) ||
-       battleField->haveEnemiesRelative(instance,+1,+1) ||
-       battleField->haveEnemiesRelative(instance,+1,-1)		)
-		{
-	    combatReportFile<<entity<<" prefers not to advance and fire from distance."<<endl;
-				return SUCCESS;
-		}
-
-			combatReportFile<<entity<<" advances from ("<<instance->getRank() << ","<<instance->getFile()<<")";
-
-			if(battleField->moveEntity(unit,FORWARD))
-			{
-
-	    	combatReportFile<<" to ("<<instance->getRank() <<
-				 ","<<instance->getFile()<<")"<<endl;
-
- 				new TertiaryMessage(combatAdvanceReporter,
-					new IntegerData(initiative), entity,
-					new StringData(battleField->printPosition(instance->getFile(),
-			 		instance->getRank()))) >>*(battleField->getCombatReport()) ;
-				return SUCCESS;
-			}
-	}
-	else
-	    combatReportFile<<entity<<" can't advance."<<endl;
 
 
-	return SUCCESS;
+    // === End of retreat attempts
+
+    //
+    if (!battleField->haveEnemies(instance, FORWARD))
+    {
+        if (battleField->haveEnemies(instance, FORWARD, 2) ||
+                battleField->haveEnemiesRelative(instance, +1, +1) ||
+                battleField->haveEnemiesRelative(instance, +1, -1))
+        {
+            combatReportFile << entity << " prefers not to advance and fire from distance." << endl;
+            return SUCCESS;
+        }
+
+        combatReportFile << entity << " advances from (" << instance->getRank() << "," << instance->getFile() << ")";
+
+        if (battleField->moveEntity(unit, FORWARD))
+        {
+
+            combatReportFile << " to (" << instance->getRank() <<
+                    "," << instance->getFile() << ")" << endl;
+
+            new TertiaryMessage(combatAdvanceReporter,
+                    new IntegerData(initiative), entity,
+                    new StringData(battleField->printPosition(instance->getFile(),
+                    instance->getRank()))) >> *(battleField->getCombatReport());
+            return SUCCESS;
+        }
+    } else
+        combatReportFile << entity << " can't advance." << endl;
+
+
+    return SUCCESS;
 }
 
 

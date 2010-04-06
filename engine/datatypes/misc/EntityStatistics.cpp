@@ -291,6 +291,10 @@ void EntityStatistics::addPartialStats(EntityStatistics * stats, int numenator, 
 {
 
  	initiative_ += (stats->getInitiative() * numenator) / denominator;
+        if(initiative_ >= 100)
+        {
+            cout << "initiative = "<<initiative_<<endl;
+        }
 	melee_ += (stats->getMelee()* numenator) / denominator;
 	defence_ += (stats->getDefence()* numenator) / denominator;
 	damage_ += (stats->getDamage()* numenator) / denominator;

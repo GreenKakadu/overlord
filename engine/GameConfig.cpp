@@ -52,6 +52,7 @@ GameConfig::GameConfig()
         daysInMonth = 30;
 	runMode = NORMAL;
 	randomSeed_ = 0;
+        maxCombatRounds = 50;
 }
 
 GameConfig::~GameConfig()
@@ -175,6 +176,11 @@ void GameConfig::init(const char * filename)
       		daysInMonth = parser->getInteger();
       		continue;
     		}
+ 	if (parser->matchKeyword("COMBAT_ROUNDS"))
+    		{
+      		maxCombatRounds = parser->getInteger();
+      		continue;
+    		}
  	if (parser->matchKeyword("NEW_ENTITY_PREFIX"))
     		{
       		newEntityPrefix_ = parser->getWord();
@@ -257,7 +263,7 @@ void GameConfig::init(const char * filename)
  	if (parser->matchKeyword("SEED"))
     		{
       		randomSeed_ = parser->getLongInteger();
-//					cerr << "Got random seed " << randomSeed_<<endl;
+		cerr << "Got random seed " << randomSeed_<<endl;
       		continue;
     		}
     } while (! parser ->eof() );

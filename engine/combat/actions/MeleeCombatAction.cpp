@@ -26,11 +26,17 @@ GameData * MeleeCombatAction::createInstanceOfSelf()
 
 // get all potential targets
 BattleTargets MeleeCombatAction::getPotentialTargets(
-									BattleInstance * battleInstance, CombatReport * report)
+			BattleInstance * battleInstance, CombatReport * report)
 {
   BattleTargets potentialTargets;
 	if(battleInstance->getDamage()==0)// Can't do damage anyway
+        {
+            if(battleInstance->isTraced())
+            {
+            combatReportFile<<battleInstance->print()<<" cat'd do damage"<<endl;
+            }
 		return potentialTargets;
+        }
 	BattleField * battleField = battleInstance->getBattleField();
 //	CombatReport * report = battleField->getCombatEngine()->getCombatReport();
 
@@ -52,7 +58,7 @@ BattleTargets MeleeCombatAction::getPotentialTargets(
 	iter != potentialTargets.end(); )
 	{
 	 stealthBonus = (*iter).instance_->getStealth() -
-	 													 battleInstance->getObservation();
+	 				battleInstance->getObservation();
 	 if(stealthBonus > 0)
 	 {
 	 	 if(stealthBonus > Roll_1Dx(10))

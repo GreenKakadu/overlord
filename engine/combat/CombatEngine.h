@@ -65,9 +65,11 @@ public:
 	void removeAllDefenderSideEnchantment();
 
   void addSummonedEntity(BattleInstance * summoner, BattleEntity * summonedEntity);
+  void addNewSummonedEntities();
 	protected:
   private:
 			vector <BattleEntity *>  summoned_;
+                        vector <BattleEntity *>  newSummoned_;
 			vector <TokenEntity *> * attackers_;
 			vector <TokenEntity *> * defenders_;
 			vector <TokenEntity *>  deadCombatants_;

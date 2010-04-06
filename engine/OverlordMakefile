@@ -27,7 +27,8 @@ INCLUDES = -I$(BASE_DIR)                       \
            -I$(BASE_DIR)/report                \
            -I$(BASE_DIR)/misc                  \
            -I$(BASE_DIR)/implementation/actions \
-           -I$(BASE_DIR)/implementation/combat
+           -I$(BASE_DIR)/implementation/combat \
+           -I$(BASE_DIR)/implementation/effects
 
 ######################## Compilation dependency #########################
 
@@ -133,6 +134,7 @@ SOURCES = turn.cpp \
           datatypes/rules/ActionRule.cpp \
           datatypes/rules/ConstructionRule.cpp \
           datatypes/rules/CreatureRaceRule.cpp \
+          datatypes/rules/EffectRule.cpp \
           datatypes/rules/EnchantmentRule.cpp \
           datatypes/rules/FollowerRaceRule.cpp \
           datatypes/rules/ItemRule.cpp \
@@ -184,7 +186,7 @@ SOURCES = turn.cpp \
           implementation/combat/HeavinessCombatAction.cpp \
           implementation/combat/EnchantCombatAction.cpp \
           implementation/combat/SummonCombatAction.cpp \
-	  implementation/Effects/PlagueEntity.cpp \
+	  implementation/effects/PlagueEffect.cpp \
           misc/FileParser.cpp \
           misc/LineParser.cpp \
           misc/ReportPrinter.cpp \

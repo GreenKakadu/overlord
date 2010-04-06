@@ -801,10 +801,10 @@ int UnitEntity::getFiguresNumber() const {
  */
 void UnitEntity::setFigures(int number) {
     raceComposition_->setFigures(number);
-    if (number) {
-        recalculateStats(); //?
-    } else
+    if (number==0)
+    {
         disband();
+    }
 }
 
 /*
@@ -2330,6 +2330,7 @@ int UnitEntity::calculateMovementBonus(MovementVariety * mode) {
 void UnitEntity::sufferDamage(int value) {
     setFigures(getFiguresNumber() - value);
     updateEquipement();
+    recalculateStats();
 }
 
 string UnitEntity::printComposition() {
@@ -2345,16 +2346,20 @@ Rule * UnitEntity::getComposition() {
 EntityStatistics UnitEntity::getBasicStats() {
 
     EntityStatistics basicStats;
+    basicStats.clearStats();
     // Race
     basicStats.addStats(raceComposition_->getRace()->getStats());
     // Effects
     enchantments_.addStats(&basicStats, getFiguresNumber());
 
     // Building
-    if (containingConstruction_ != 0) {
-        //      cout << containingConstruction_->print()<<endl;
-        basicStats.addStats(getContainingConstruction()->getConstructionType()->getStats());
-    }
+    // Stats from building should be added carefully
+    // Building has life that should not be added to unit's stat.
+//    if (containingConstruction_ != 0) {
+//        //      cout << containingConstruction_->print()<<endl;
+//        basicStats.addStats(getContainingConstruction()->getConstructionType()->getStats());
+//    }
+    // Effects
 
     return basicStats;
 }

@@ -7,6 +7,7 @@
  ***************************************************************************/
 #ifndef COMBAT_REPORT_H
 #define COMBAT_REPORT_H
+//#include <sstream>
 #include <vector>
 #include "ReportPrinter.h"
 using namespace std;
@@ -22,9 +23,9 @@ public:
    ~CombatReport();
 		void add(ReportMessage * message);
 		void print(ReportPrinter &out);
- protected:
+//                ostringstream combatantList;
+protected:
 	vector <ReportMessage *> messageCollection_;
-
 
 
 };

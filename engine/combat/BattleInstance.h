@@ -54,29 +54,32 @@ public:
 	void removeAllSideEnchantment(bool targetSide);
 
 //--------- State and stats------
-	virtual bool isAlive();
+  virtual bool isAlive();
   virtual bool isFlying();
-	inline bool isAttacker() const {return isAttacker_;}
-	inline bool isDefender() const {return !isAttacker_;}
+  inline bool isAttacker() const {return isAttacker_;}
+  inline bool isDefender() const {return !isAttacker_;}
   inline void setAttacker() {isAttacker_ = true;}
   inline void setDefender() {isAttacker_ = false;}
   inline void setRank(int value) { positionRank_= value;}
   inline void setFile(int value) { positionFile_= value;}
-	inline  int getFile()const {return positionFile_;}
-	inline  int getRank()const {return positionRank_;}
-		     void setWounds(int value);
-		      int getWounds()const;
-		      int getMelee()const ;
-		      int getMissile()const ;
-		      int getDefence()const ;
-			    int getFiguresNumber()const ;
-			   void setFiguresNumber(int value);
-  		    int getDamage()  const;
-  		    int getRangedDamage()  const;
-			    int getHitNumbers()const ;
-			    int getStealth()const ;
-			    int getObservation()const ;
-			    int getMorale() const;
+  inline  int getFile()const {return positionFile_;}
+  inline  int getRank()const {return positionRank_;}
+  inline bool isTraced()const {return origin_->isTraced();}
+   void setWounds(int value);
+    int getWounds()const;
+    int getMelee()const;
+    int getMissile()const;
+    int getDefence()const;
+    int getFiguresNumber()const;
+   void setFiguresNumber(int value);
+    int getDamage() const;
+    int getRangedDamage() const;
+    int getHitNumbers()const;
+    int getStealth()const;
+    int getObservation()const;
+    int getMorale() const;
+    int getMana()const;
+   void setMana(int value);
 	inline DAMAGE_TYPE getDamageType() const { return damageType_;}
 	DAMAGE_TYPE modifyDamageType(DAMAGE_TYPE value);
 	inline bool isFanatic() const {return fanatic_;}
@@ -91,10 +94,11 @@ public:
   inline void setMovedOnRound(int value) {isMovedOnRound_ = value;}
   inline void setActedOnRound(int value) {isActedOnRound_ = value;}
   inline void setAttackedOnRound() {isAttackedOnRound_++;}
+  inline void setOneMoreActionOnRound(bool value) {oneMoreActionOnRound_ = value;}
   inline int getAttackedOnRound() const {return isAttackedOnRound_;}
   inline bool isWaiting() const {return isWaiting_;}
   inline void setWaiting(bool value){isWaiting_ = value;}
-	inline void setAffectingAction(CombatActionStrategy *action){ affectingAction_ = action;}
+  inline void setAffectingAction(CombatActionStrategy *action){ affectingAction_ = action;}
 //--------- Orders ------
   virtual inline vector < CombatOrderLine*> & getCombatOrderList()
 	                                      {return combatOrders_;}
@@ -110,6 +114,7 @@ public:
 	bool isProcessingRepeatingOrder();
   void processMultiHitting(int hitNumbers);
 	void fleeAway();
+	inline int getRepetitionCounter(){return repetitionCounter_;}
 //	inline void setRepetitionCounter(int value){repetitionCounter_ = value;}
 //	inline void setCurrentlyRepeatingOrder(CombatOrderLine * order)
 //		{currentlyRepeatingOrder_ = order;}
@@ -134,52 +139,58 @@ public:
   inline void setFleeCounter(int counter)  { fleeCounter_ = counter;}
   inline void advanceFleeCounter()  { fleeCounter_++;}
 	inline bool isFled() const {return fled_;}
-  inline void setFleing(bool value){fleing_ = value;}
+  inline void setFleing(bool value){fleing_ = value;
+    }
 
-	protected:
-		TokenEntity * origin_;
-		// Attributes
-		EnchantmentAttribute enchantments_;// Battle only enchantments
-		EnchantmentAttribute * sideEnchantments_;
-		EntityStatistics stats_;
+    int hasItem(ItemRule * item);
+    int takeItemOut(ItemRule * item, int num);
+
+protected:
+    TokenEntity * origin_;
+    // Attributes
+    EnchantmentAttribute enchantments_; // Battle only enchantments
+    EnchantmentAttribute * sideEnchantments_;
+    EntityStatistics stats_;
     InventoryAttribute inventory_;
-    SkillsAttribute      skills_;
-		// Unit-specific
-    TitlesAttribute   *   titles_; // pointer to unit's TitlesAttribute
-		vector< EquipSlot *> * equipSlots_;
-		RaceRule * race_;
-		//
-		CombatOrderLine * currentlyRepeatingOrder_;
-		int repetitionCounter_;
-		int fleeCounter_;
-		//
-		vector <int> figures_;
-		int figuresNumber_;
-		int wounds_;
-		DAMAGE_TYPE damageType_;
-	  int positionRank_;
-		int positionFile_;
-		bool isAttacker_;
+    SkillsAttribute skills_;
+    // Unit-specific
+    TitlesAttribute * titles_; // pointer to unit's TitlesAttribute
+    vector< EquipSlot *> * equipSlots_;
+    RaceRule * race_;
+    int mana_;
+    //
+    CombatOrderLine * currentlyRepeatingOrder_;
+    int repetitionCounter_;
+    int fleeCounter_;
+    //
+    vector <int> figures_;
+    int figuresNumber_;
+    int wounds_;
+    DAMAGE_TYPE damageType_;
+    int positionRank_;
+    int positionFile_;
+    bool isAttacker_;
     vector <CombatOrderLine *> combatOrders_;
-		int isMovedOnRound_;
-		int isActedOnRound_;
-		bool isWaiting_; // waiting to get initiative
-		CombatOrderLine * currentOrder_;
-		BattleField * battleField_;
-		CombatActionStrategy * affectingAction_;
-		bool parryFlag_;
-		int isAttackedOnRound_;
-		int movementInitiative_;
-		CombatReport * report_;
-		int combatExperience_;
-		int parryExperience_;
-		int meleeExperience_;
-		int missileExperience_;
-		vector <SkillElement> actionExperience_;
-		bool fanatic_;
-		bool routed_;
-		bool fled_;
-                bool fleing_;
+    int isMovedOnRound_;
+    int isActedOnRound_;
+    bool isWaiting_; // waiting to get initiative
+    CombatOrderLine * currentOrder_;
+    BattleField * battleField_;
+    CombatActionStrategy * affectingAction_;
+    bool parryFlag_;
+    int isAttackedOnRound_;
+    int movementInitiative_;
+    CombatReport * report_;
+    int combatExperience_;
+    int parryExperience_;
+    int meleeExperience_;
+    int missileExperience_;
+    vector <SkillElement> actionExperience_;
+    bool fanatic_;
+    bool routed_;
+    bool fled_;
+    bool fleing_;
+    bool oneMoreActionOnRound_;
   private:
 
 };

@@ -9,6 +9,7 @@
 #include "ReportMessage.h"
 CombatReport::CombatReport()
 {
+
 }
 
 

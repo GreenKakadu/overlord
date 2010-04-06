@@ -16,6 +16,7 @@
 #include "CombatAttackMessage.h"
 #include "CombatReport.h"
 #include "BattleEntity.h"
+
 extern int Roll_1Dx(int n);
 extern string longtostr(long u);
 extern ReportPattern * noTargetsReporter;
@@ -34,41 +35,56 @@ SummonCombatAction::SummonCombatAction ( const SummonCombatAction * prototype ):
 	randomPlace_ = false;
 }
 
-			STATUS
-SummonCombatAction::initialize        ( Parser *parser )
+STATUS
+SummonCombatAction::initialize(Parser *parser)
 {
-	CombatActionStrategy::initialize(parser);
+    CombatActionStrategy::initialize(parser);
 
-  if (parser->matchKeyword ("SUMMONS") )
+    if (parser->matchKeyword("SUMMONS"))
     {
-			entity_ =  new BattleEntity(sampleBattleEntity);
- 		 	RaceRule * race = races[ parser->getWord()];
-			if(race)
-			{
-				entity_->setRace(race);
-			int figures =  parser->getInteger();
-			if(figures == 0)
-				figures = 1;
-				entity_->setFigures(figures);
-			}
-			else
-				{
-					cerr << "Summoning has no race defined"<<endl;
-				}
+        entity_ = new BattleEntity(sampleBattleEntity);
+        RaceRule * race = races[ parser->getWord()];
+        if (race)
+        {
+            int figures = parser->getInteger();
+            if (figures == 0)
+                figures = 1;
+            //entity_->setFigures(figures);
+             entity_->setRace(race,figures);
+       } else
+        {
+            cerr << "Summoning has no race defined" << endl;
+        }
 
 
-     entity_->initialize(parser);
-      return OK;
+
+        return OK;
     }
-   if (parser->matchKeyword ("PLACE") )
+    if(entity_)
     {
-			if(parser->matchKeyword ("random") )
-			{
-				randomPlace_ = true;
-			}
-      return OK;
+          entity_->initialize(parser);
     }
-     return OK;
+    if (parser->matchKeyword("SUMMONED"))
+    {
+        entity_->initialize(parser);
+        return OK;
+    }
+    if (parser->matchKeyword("PLACE"))
+    {
+        if (parser->matchKeyword("random"))
+        {
+            randomPlace_ = true;
+        }
+        return OK;
+    }
+    if(entity_)
+    {
+      if (parser->matchKeyword("COMBAT_ORDER"))
+      {
+        entity_->addOrder("COMBAT_ORDER " + parser->getText());
+      }
+    }
+   return OK;
 
 }
 
@@ -85,35 +101,52 @@ BattleTargets SummonCombatAction::getPotentialTargets(
 	return potentialTargets;
 }
 
-
-
-void		SummonCombatAction::performAction(BattleInstance * battleInstance, BattleTargets & potentialTargets, CombatReport * report)
+void SummonCombatAction::performAction(BattleInstance * battleInstance, BattleTargets & potentialTargets, CombatReport * report)
 {
-	// create temporary BattleEntity for BattleInstance
-  BattleField * battleField = battleInstance->getBattleField();
-	entity_->recalculateStats();
-	BattleEntity * summonedEntity = entity_->makeCopy();
-	BattleInstance * summonedInstance = summonedEntity->createBattleInstantiation(battleField);
+    // create temporary BattleEntity for BattleInstance
+    BattleField * battleField = battleInstance->getBattleField();
+    //cout<<"===== Summoning performAction ======="<<endl;
+    //entity_->UnitEntity::privateReport(cout);
+//    entity_->recalculateStats();
+    entity_->setCombatSettings();
+    string name = entity_->getName() + " (summoned by " + battleInstance->print() + ")";
+    BattleEntity * summonedEntity = entity_->makeCopy();
+    summonedEntity->setLocation(battleInstance->getOrigin()->getLocation());
+    summonedEntity->setName(name);
+     int randomNum = Roll_1Dx(1000);
+   summonedEntity->setTag(string("SS") + longtostr(randomNum));
+    combatReportFile << " ==SS==  " << battleInstance->print() << " Summoning "<< entity_->getFiguresNumber()<<" "
+            << entity_->getRace()->getName() << " " << summonedEntity << endl;
+    if(battleInstance->getOrigin()->isTraced())
+    {
+    summonedEntity->setTraced(true);
+    }
 
-	int randomNum = Roll_1Dx(1000);
-	string name = entity_->getRace()->getName() +  " (summoned by " + battleInstance->print() +")";
-  summonedEntity->setName(name);
+//    for(vector<string>::iterator iter = combatOrders_.begin(); iter != combatOrders_.end(); ++iter)
+//    {
+//        summonedEntity->addOrder(*iter);
+////        summonedEntity->addCombatSetting(*iter);
+////        combatReportFile <<"Order: " <<(*iter)<<endl;
+//    }
+    summonedEntity->setCombatSettings();
+    report->add(new BinaryMessage(combatSummonReporter, battleInstance->getOrigin(), new RaceElement(entity_->getRace(), entity_->getFiguresNumber())));
+     BattleInstance * summonedInstance = summonedEntity->createBattleInstantiation(battleField);
+     summonedInstance->recalculateStats();
+//     if(summonedEntity->isTraced())
+//     {
+//       combatReportFile << " ==SS==Num:  "<<summonedEntity->getFiguresNumber() <<" -> "<< summonedInstance->getFiguresNumber()<<endl;
+//     }
+     battleField->getCombatEngine()->addSummonedEntity(battleInstance, summonedEntity);
 
-  summonedEntity->setTag(string("SS") + longtostr(randomNum));
-  summonedEntity->preprocessData();
-	combatReportFile<< " ==SS==  "<<battleInstance->print()<< " Summoning "
-	<<entity_->getRace()->getName()	<<" "<<summonedEntity<<endl;
-      report->add(new BinaryMessage(combatSummonReporter, battleInstance->getOrigin(),  new RaceElement(entity_->getRace(), entity_->getFigures()))); 
-  battleField->getCombatEngine()->addSummonedEntity(battleInstance,summonedEntity);
-	// now place it on field
-	if(randomPlace_)
-	{
-	}
-	else // default the same place as summoner
-	{
-   battleField->placeEntity(summonedEntity, battleInstance->getRank(), battleInstance->getFile());
-	 // place on battlefield
-	}
+    // now place it on field
+    if (randomPlace_)
+    {
+    } else // default the same place as summoner
+    {
+        battleField->placeEntity(summonedEntity, battleInstance->getRank(), battleInstance->getFile());
+        // place on battlefield
+    }
+    //cout<<"===$$===> Summon: "<<summonedEntity->print()<<" Instance: "<<summonedEntity->getBattleInstantiation()<<endl;
 }
 
 

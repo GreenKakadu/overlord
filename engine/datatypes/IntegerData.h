@@ -23,6 +23,7 @@ public:
   string print();
   inline int  getValue() const {return value_;}
   inline void setValue(int num)  {value_ = num;}
+  inline  string     getKeyword() const{ return "INT";}
   void saveAsParameter (ostream &out);
   inline void clean(){delete this;}
   protected:

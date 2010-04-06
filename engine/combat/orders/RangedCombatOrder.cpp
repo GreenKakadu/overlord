@@ -81,16 +81,49 @@ ORDER_STATUS RangedCombatOrder::process (Entity * entity, ParameterList &paramet
  // Fails if ranged damage of unit =0 
   if((battleInstance->getRangedDamage() <= 0)/* || (battleInstance->getRange() == 0)*/)
   {
+      if(entity->isTraced())
+      {
+        combatReportFile<<entity<<" Have no ranging attack ability"<<endl;
+      }
     return FAILURE;
   }
   // If there are adjacient units RANGED fails
   BattleField * battleField = battleInstance->getBattleField();
-  if(  battleField->haveEnemiesRelative(battleInstance, -1, -1) ||
-       battleField->haveEnemiesRelative(battleInstance, +1, +1) ||
-       battleField->haveEnemiesRelative(battleInstance, +1, -1) ||
-       battleField->haveEnemiesRelative(battleInstance, -1, +1) )
+  if(  battleField->haveEnemiesRelative(battleInstance, -1, 0) ||
+       battleField->haveEnemiesRelative(battleInstance, +1, 0) ||
+       battleField->haveEnemiesRelative(battleInstance, 0, -1) ||
+       battleField->haveEnemiesRelative(battleInstance, 0, +1) )
   {
-    return FAILURE;
+      if(entity->isTraced())
+      {
+          //int rank, file;
+        combatReportFile<<entity<<"  stays at "<<"(" <<battleInstance->getRank()<<"," <<battleInstance->getFile()<<")";
+        combatReportFile<<       " and can't use ranging attack because there are adjacient enemy units at:";
+        if(battleField->haveEnemiesRelative(battleInstance, -1, 0))
+        {
+            //rank = battleField->getRelativeRank(battleInstance,battleDirection, 1);
+            //file = battleField->getRelativeFile(battleInstance,battleDirection, 1);
+            combatReportFile<<" (" <<battleInstance->getRank() -1<<"," <<battleInstance->getFile()<<")";
+          //combatReportFile<<" * " <<(*(battleField->getUnits(battleInstance->getRank() -1, battleInstance->getFile() -1).begin()))->print();
+        }
+        if(battleField->haveEnemiesRelative(battleInstance, +1, 0))
+        {
+          combatReportFile<<" (" <<battleInstance->getRank() +1<<"," <<battleInstance->getFile()  <<")";
+         // combatReportFile<<" * " <<(*(battleField->getUnits(battleInstance->getRank() +1, battleInstance->getFile() +1).begin()))->print();
+        }
+        if(battleField->haveEnemiesRelative(battleInstance, 0, -1))
+        {
+          combatReportFile<<" (" <<battleInstance->getRank() <<"," <<battleInstance->getFile() -1 <<")";
+            // combatReportFile<<" * " <<(*(battleField->getUnits(battleInstance->getRank() +1, battleInstance->getFile() -1).begin()))->print();
+     }
+        if(battleField->haveEnemiesRelative(battleInstance, 0, +1))
+        {
+          combatReportFile<<" (" <<battleInstance->getRank() <<"," <<battleInstance->getFile() +1 <<")";
+          //combatReportFile<<" * " <<(*(battleField->getUnits(battleInstance->getRank() -1, battleInstance->getFile() +1).begin()))->print();
+        }
+            combatReportFile<<endl;
+      }
+   return FAILURE;
   }  
   vector <BattleTargetElement> potentialTargets =
           sampleRangedAction.getPotentialTargets(battleInstance, report);

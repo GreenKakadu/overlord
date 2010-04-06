@@ -54,39 +54,39 @@ public:
 	void placeEntity(TokenEntity * entity, int rank = 0, int file = 0);
 	bool moveEntity(TokenEntity * entity, BATTLE_DIRECTION battleDirection);
 	bool calculateMovementCoordinates(TokenEntity * entity,
-									BATTLE_DIRECTION battleDirection);
+			BATTLE_DIRECTION battleDirection);
 	void removeEntity(TokenEntity * entity);
   int getRelativeRank(BattleInstance * battleInstance,
-															BATTLE_DIRECTION battleDirection, int range = 1);
+			BATTLE_DIRECTION battleDirection, int range = 1);
   int getRelativeFile(BattleInstance * battleInstance,
-															BATTLE_DIRECTION battleDirection, int range = 1);
+                        BATTLE_DIRECTION battleDirection, int range = 1);
   bool haveEnemies(BattleInstance * battleInstance,
-															BATTLE_DIRECTION battleDirection, int range = 1);
+			BATTLE_DIRECTION battleDirection, int range = 1);
 bool haveEnemiesRelative(BattleInstance * battleInstance,
 			int deltaRank, int deltaFile);
 bool isBattlefieldRelative(BattleInstance * battleInstance,
 			int deltaRank, int deltaFile);
   void addEnemies(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									BATTLE_DIRECTION battleDirection);
+                    BattleTargets & potentialTargets,
+                    BATTLE_DIRECTION battleDirection);
 
   void addEnemies(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									int rank, int file);
+                BattleTargets & potentialTargets,
+                int rank, int file);
   void addAllEnemiesAtRange(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									int range);
+                                    BattleTargets & potentialTargets,
+                                    int range);
 
   void addFriends(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									BATTLE_DIRECTION battleDirection);
+                                BattleTargets & potentialTargets,
+                                BATTLE_DIRECTION battleDirection);
 
   void addFriends(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									int rank, int file);
+                                BattleTargets & potentialTargets,
+                                int rank, int file);
   void addAllFriendsAtRange(BattleInstance * battleInstance,
-									BattleTargets & potentialTargets,
-									int range);
+                                BattleTargets & potentialTargets,
+                                int range);
 
 //  BATTLE_DIRECTION sweepDirection(BattleInstance * battleInstance);
 	BATTLE_DIRECTION getDirection(BattleInstance * battleInstance,

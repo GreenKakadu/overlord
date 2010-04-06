@@ -51,11 +51,14 @@ public:
   int getInitiative();
   inline void setExperienceGainingSkill(SkillRule * skill){expGainingSkill_ = skill;}
   virtual CombatActionStrategy * cloneSelf();
+        bool mayApplyAction(BattleInstance * battleInstance);
+        void consumeActionResources(BattleInstance * battleInstance);
   
     protected:
       EntityStatistics nonCumulativeStats;
       EntityStatistics modifyingStats;
 	int range_;
+	int mana_;
 	ActionRule * action_;
 	CombatTargetVariety * target_;
       vector <ItemElement *> resources_;

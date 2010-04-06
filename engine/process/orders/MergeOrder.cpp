@@ -111,7 +111,7 @@ ORDER_STATUS MergeOrder::process (Entity * entity, vector <AbstractData *>
      }
        // efects
     recipient->updateEquipement();
-//QQQ
+    recipient->recalculateStats();
      unit->addReport(new TertiaryMessage(mergeReporter, unit,
           new RaceElement(unit->getRace(),number), recipient));
   return SUCCESS;

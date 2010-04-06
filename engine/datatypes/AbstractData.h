@@ -28,6 +28,7 @@ public:
  */ 
         virtual vector <AbstractData *> aPrint();
 	AbstractData(){}
+   virtual inline  string     getKeyword() const{ return "ABSTRACT";}
    virtual void saveAsParameter (ostream &){}
    virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.
                          // For  non-persistent objects derived from AbstractData

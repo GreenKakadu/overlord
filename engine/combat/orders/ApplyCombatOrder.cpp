@@ -92,28 +92,55 @@ ORDER_STATUS ApplyCombatOrder::process (Entity * entity, ParameterList &paramete
 
 	combatReportFile<<entity<<" applies "<<skill->print()<<endl;
   if(!unit->hasSkill(skill,1))
+  {
+      if(entity->isTraced())
+      {
+	combatReportFile<<entity<<" doesn't know "<<skill->print()<<endl;
+      }
 	    return FAILURE;
+  }
 
 	int level = unit->getSkillLevel(skill);
 	CombatActionStrategy * combatAction = 	skill->getCombatAction(level);
         //cout<<entity<<" applies "<<skill->print()<<" "<<level<<" "<<combatAction<<endl;
         //combatAction->debugPrint();
 	if(combatAction ==0)
+        {
+          if(entity->isTraced())
+          {
+            combatReportFile<<" There is no CombatActionStrategy for "<<skill->print()<<endl;
+          }
 	    return FAILURE;
+        }
 
-  BattleInstance * battleInstance = unit->getBattleInstantiation();
-	CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
-										->getCombatReport();
 
-report->add(new BinaryMessage(combatApplyReporter, battleInstance->getOrigin(), skill)); 
+    BattleInstance * battleInstance = unit->getBattleInstantiation();
+    CombatReport * report = battleInstance->getBattleField()->getCombatEngine()
+						->getCombatReport();
+
+
+        // Check material and mana requirements
+       if(!combatAction->mayApplyAction(battleInstance))
+        {
+            return FAILURE;
+        }
+        // Consume mana and resources
+        combatAction->consumeActionResources(battleInstance);
+
+	battleInstance->setAffectingAction(combatAction);
+        battleInstance->recalculateStats(); // After setting AffectingAction
+    report->add(new BinaryMessage(combatApplyReporter, battleInstance->getOrigin(), skill));
  	vector <BattleTargetElement> potentialTargets =
 	combatAction->getPotentialTargets(battleInstance, report);
 	if(potentialTargets.empty()) // No targets.  But already eported
 	{
+          if(entity->isTraced())
+          {
+            combatReportFile<<entity<<" finds no targets for "<<skill->print()<<endl;
+          }
 		return FAILURE;
 	}
 
-	battleInstance->setAffectingAction(combatAction);
 	combatAction->performAction(battleInstance, potentialTargets, report);
 
 	battleInstance->addActionExperience(skill);

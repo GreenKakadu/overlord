@@ -16,30 +16,31 @@
 #ifndef BATTLE_ENTITY_H
 #define BATTLE_ENTITY_H
 
-#include "TokenEntity.h"
+#include "UnitEntity.h"
 
 
 class RaceRule;
 /**subclass of TokenEntities that are summoned duiring battle and dissapear when battle is over
   *@author Alex Dribin
   */
-class BattleEntity : public TokenEntity  {
+class BattleEntity : public UnitEntity  {
 public:
       BattleEntity (const string & keyword, GameData * parent );
       BattleEntity ( const BattleEntity * prototype );
 	~BattleEntity(){}
 	inline void setBattleInstantiation(BattleInstance * instance)
-	 																									{battleInstance_ = instance;}
+	 {battleInstance_ = instance;}
   STATUS  initialize      ( Parser *parser );
       BattleEntity * makeCopy();
-			void recalculateStats();
-	inline RaceRule * getRace() const {return race_;}
-	inline void setRace(RaceRule * race)  {race_ = race;}
-	inline int getFigures() const {return figures_;}
-	inline void setFigures(int figures)  { figures_ = figures;}
+	void recalculateStats();
+        bool isUnaccessible(){return false;}
+//	inline RaceRule * getRace() const {return race_;}
+//	inline void setRace(RaceRule * race)  {race_ = race;}
+//	inline int getFigures() const {return figures_;}
+//	inline void setFigures(int figures)  { figures_ = figures;}
    protected:
-		RaceRule *  race_;
-		int figures_;
+		//RaceRule *  race_;
+		//int figures_;
 };
 extern BattleEntity         sampleBattleEntity;
 typedef vector <BattleEntity *>::iterator  BattleEntityIterator;

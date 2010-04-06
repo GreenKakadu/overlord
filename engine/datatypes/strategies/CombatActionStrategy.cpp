@@ -73,6 +73,11 @@ CombatActionStrategy::initialize        ( Parser *parser )
 			range_ = parser->getInteger();
 			return OK;
     }
+	if (parser->matchKeyword ("USE_MANA") )
+    {
+			mana_ = parser->getInteger();
+			return OK;
+    }
 
 	if (parser->matchKeyword ("CONSUME") )
     {
@@ -108,6 +113,12 @@ BattleTargets CombatActionStrategy::getPotentialTargets(
 		BattleInstance * battleInstance, CombatReport * report)
 {
   BattleTargets potentialTargets;
+  bool isTraced = battleInstance->getOrigin()->isTraced();
+
+  if(isTraced)
+  {
+      cout<< battleInstance->getOrigin()<<" applying "<< this->print()<<" targets "<<target_->print()<<endl;
+  }
 	BattleField * battleField = battleInstance->getBattleField();
 //	CombatReport * report = battleField->getCombatEngine()->getCombatReport();
 
@@ -405,4 +416,52 @@ CombatActionStrategy * CombatActionStrategy::cloneSelf()
  CombatActionStrategy * copyOfSelf = new CombatActionStrategy(keyword_,parent_);
  *copyOfSelf = *this;
  return copyOfSelf;
+}
+
+
+bool CombatActionStrategy::mayApplyAction(BattleInstance * battleInstance)
+{
+  if(mana_)
+  {
+      if(battleInstance->getMana() < mana_ )
+      {
+          return false;
+      }
+
+  }
+
+    if (battleInstance->isTraced())
+    {
+        combatReportFile << "== TRACING " << battleInstance->print() << " resourse check.\n";
+
+    }
+
+    for (vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+        if(battleInstance->hasItem((*iter)->getItemType()) < (*iter)->getItemNumber())
+        {
+            if (battleInstance->isTraced())
+            {
+                combatReportFile << "== TRACING " << battleInstance->print() << " has "
+                        << battleInstance->hasItem((*iter)->getItemType()) << " of "
+                        << (*iter)->getItemType()->printTag()
+                        << " ==> required for applying " << print() << "\n";
+            }
+        return false;
+        }
+    }
+    return true;
+}
+
+void CombatActionStrategy::consumeActionResources(BattleInstance * battleInstance)
+{
+    if (mana_)
+    {
+        battleInstance->setMana(battleInstance->getMana() - mana_);
+    }
+
+    for (vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+        battleInstance->takeItemOut((*iter)->getItemType(), (*iter)->getItemNumber());
+    }
 }

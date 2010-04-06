@@ -26,13 +26,13 @@ public:
 		 ~MeleeCombatAction(){}
       GameData * createInstanceOfSelf();
       void	performAction(BattleInstance * battleInstance,
-			                    BattleTargets & target, CombatReport * report);
-			  MeleeAttackElement meleeAttack(BattleInstance * battleInstance,
-								int melee, int damage, BattleInstance * target, int attFigNum);
-	MeleeAttackElement attack(BattleInstance * battleInstance,
+			        BattleTargets & target, CombatReport * report);
+    MeleeAttackElement meleeAttack(BattleInstance * battleInstance,
+                   int melee, int damage, BattleInstance * target, int attFigNum);
+    MeleeAttackElement attack(BattleInstance * battleInstance,
 					BattleInstance * target, int totalHits);
   BattleTargets getPotentialTargets(BattleInstance * battleInstance,
-																		 CombatReport * report);
+						CombatReport * report);
 	protected:
 };
 

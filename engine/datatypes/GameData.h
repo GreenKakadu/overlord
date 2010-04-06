@@ -26,6 +26,7 @@ class GameData : public BasicData
     public:
                     GameData (const string & keyword, GameData * parent );
                     GameData (const GameData * prototype);
+                    GameData ();
    virtual         ~GameData ( ){}
 
    static        GameData * createByKeyword(const string &keyword);
@@ -40,7 +41,9 @@ class GameData : public BasicData
 
    virtual STATUS dataConsistencyCheck();
            bool operator ==  (GameData data2);
-
+           static GameData *  registerObject();
+           static GameData *  objectParent;
+           static string objectKeyword;
     protected:
            string   keyword_;
            GameData * parent_;

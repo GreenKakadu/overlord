@@ -1,10 +1,10 @@
 /***************************************************************************
                       CombatEngine.cpp
-               Standard Engine for processing  combat
-							 Manages initialization of combat data
-							 sequence of orders
-							 detection of combat end
-							 managing post-combat action
+             Standard Engine for processing  combat
+             Manages initialization of combat data
+             sequence of orders
+             detection of combat end
+             managing post-combat action
                           ------------------
     begin                : Mon Oct 26 2004
     copyright            : (C) 2004 by Alex Dribin
@@ -124,10 +124,10 @@ cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
 // Create BattleInstances
  for(iter = attackers.begin(); iter != attackers.end(); ++iter )
   {
-		currentInstance = (*iter)->createBattleInstantiation(battleField_);
+    currentInstance = (*iter)->createBattleInstantiation(battleField_);
     currentInstance->setAttacker();// mark as attackers
-	  currentInstance->setSideEnchantment(&attackerSideEnchantments_);
-   battleField_->placeEntity(*iter,0,0);// place on battlefield
+    currentInstance->setSideEnchantment(&attackerSideEnchantments_);
+    battleField_->placeEntity(*iter,0,0);// place on battlefield
 
 	 (*iter)->setFullDayOrderFlag();// If combat happened
 		                               // no more full day orders possible
@@ -196,10 +196,8 @@ cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
  endLineMessage >>*report_ ;
 
 	 preProcess();
-		int maxRoundNum = 10;
-//		int maxRoundNum = 5;
-		int N = 1;
-	 while (N <= maxRoundNum)
+	int N = 1;
+	 while (N <= gameConfig.maxCombatRounds)
 	 {
 		preProcessRound(N);
 	 	processRound(N);
@@ -212,7 +210,7 @@ cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
 
 	 processRoutingRound();
 
-	 if(N > maxRoundNum) // normal exit from the loop
+	 if(N > gameConfig.maxCombatRounds) // normal exit from the loop
 	 {
    	new SimpleMessage(combatDrawReporter) >>*report_ ;
 	 }
@@ -349,6 +347,7 @@ void CombatEngine::preProcessRound(int round)
  initMin_ = 0;
  initMax_ = 0;
  woundlessRoundCounter_++;
+ BattleInstance * currentBattleInstance = 0;
  new UnaryMessage(combatRoundReporter,new IntegerData(round)) >>*report_ ;
 
 
@@ -358,26 +357,37 @@ void CombatEngine::preProcessRound(int round)
 	int currentAttackerTactics = calculateAttackerInitiative(round);
 	int currentDefenderTactics = calculateDefenderInitiative(round);
 //
-		for(BattleIterator iter = attackers_->begin();
+	for(BattleIterator iter = attackers_->begin();
 	    iter != attackers_->end(); ++iter )
   	{
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-				(*iter)->getBattleInstantiation()->recheckOrders();
-        (*iter)->getBattleInstantiation()->addCombatExperience(1);
+            currentBattleInstance =(*iter)->getBattleInstantiation();
+            if(currentBattleInstance ==0)
+            {
+                combatReportFile <<"---$$---- " <<(*iter)->print()<<" has no BattleInstantiation"<<endl;
+                cout <<"---$$---- " <<(*iter)->print()<<" has no BattleInstantiation"<<endl;
+                    continue;
+            }
+            if(!currentBattleInstance->isAlive())
+                    continue;
+            if(currentBattleInstance->isFled())
+                    continue;
+            currentBattleInstance->recheckOrders();
+            currentBattleInstance->addCombatExperience(1);
 
 		}
   	for(BattleIterator iter = defenders_->begin();
 	     iter != defenders_->end(); ++iter )
   	{
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-				(*iter)->getBattleInstantiation()->recheckOrders();
-        (*iter)->getBattleInstantiation()->addCombatExperience(1);
+            currentBattleInstance =(*iter)->getBattleInstantiation();
+            if(currentBattleInstance ==0)
+                    continue;
+            if(!currentBattleInstance->isAlive())
+                    continue;
+            if(currentBattleInstance->isFled())
+                    continue;
+            currentBattleInstance->recheckOrders();
+            currentBattleInstance->addCombatExperience(1);
+
   	}
 
 // /*combatReportFile*/ cout << " recalculation initiative for unit is done"  <<endl;
@@ -390,30 +400,37 @@ void CombatEngine::preProcessRound(int round)
 		for(BattleIterator iter = attackers_->begin();
 	    iter != attackers_->end(); ++iter )
   	{
+            currentBattleInstance =(*iter)->getBattleInstantiation();
+            if(currentBattleInstance ==0)
+                    continue;
+            if(!currentBattleInstance->isAlive())
+                    continue;
+            if(currentBattleInstance->isFled())
+                    continue;
 //			cout << "Examine "<< (*iter);
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-			(*iter)->getBattleInstantiation()->
-				reCalculateInitiative(currentAttackerTactics, initMin_, initMax_);
-				(*iter)->getBattleInstantiation()->clearRoundFlags();
-				(*iter)->getBattleInstantiation()->planRoundOrders();
+
+            currentBattleInstance-> reCalculateInitiative(currentAttackerTactics,
+                    initMin_, initMax_);
+            currentBattleInstance->clearRoundFlags();
+            currentBattleInstance->planRoundOrders();
 		}
   	for(BattleIterator iter = defenders_->begin();
 	     iter != defenders_->end(); ++iter )
   	{
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-			(*iter)->getBattleInstantiation()->
-				reCalculateInitiative(currentDefenderTactics, initMin_, initMax_);
-				(*iter)->getBattleInstantiation()->clearRoundFlags();
-				(*iter)->getBattleInstantiation()->planRoundOrders();
+            currentBattleInstance =(*iter)->getBattleInstantiation();
+            if(currentBattleInstance ==0)
+                    continue;
+            if(!currentBattleInstance->isAlive())
+                    continue;
+            if(currentBattleInstance->isFled())
+                    continue;
+            currentBattleInstance-> reCalculateInitiative(currentAttackerTactics,
+                    initMin_, initMax_);
+            currentBattleInstance->clearRoundFlags();
+            currentBattleInstance->planRoundOrders();
   	}
 
-		 combatReportFile<< "    Initiative calculation: initMin= " <<initMin_
+	combatReportFile<< "    Initiative calculation: initMin= " <<initMin_
 		 <<" initMax= "<< initMax_<<endl;
 
 }
@@ -422,54 +439,67 @@ void CombatEngine::preProcessRound(int round)
 
 // =====================================================================
 // Process orders
+
 void CombatEngine::processRound(int round)
 {
-	for (int initiative = initMax_; initiative >= initMin_; initiative--)
-	{
-//     combatReportFile << "      Initiative " << initiative<<endl;
-    currentInitiativeSegment_ = initiative;
-    combatActionOrders.setInitiative(initiative);
-    combatMovementOrders.setInitiative(initiative);
-		for(BattleIterator iter = attackers_->begin();
-	    iter != attackers_->end(); ++iter )
-  	{
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-			combatReportFile<< "Initiative: "<< initiative<<" process orders for "
-			<< (*iter)<<
-			" ("<<((*iter)->getBattleInstantiation()->getCombatOrderList()).size()
-			<<") "<<endl;
-//    for( currentIterator = ((*iter)->getBattleInstantiation()->getCombatOrderList()).begin();
-// 	      currentIterator != ((*iter)->getBattleInstantiation()->getCombatOrderList()).end();)
-//      {
+    for (int initiative = initMax_; initiative >= initMin_; initiative--)
+    {
+        //     combatReportFile << "      Initiative " << initiative<<endl;
+        currentInitiativeSegment_ = initiative;
+        combatActionOrders.setInitiative(initiative);
+        combatMovementOrders.setInitiative(initiative);
+        for (BattleIterator iter = attackers_->begin();
+                iter != attackers_->end(); ++iter)
+        {
+            if ((*iter)->getBattleInstantiation() == 0)
+            {
+                cout << "===$$===> Problem: " << (*iter)->print() << endl;
+                continue;
+            }
+            if (!(*iter)->getBattleInstantiation()->isAlive())
+                continue;
+            if ((*iter)->getBattleInstantiation()->isFled())
+                continue;
+            if((*iter)->isTraced())
+            {
+            combatReportFile << "Initiative: " << initiative << " process orders for "
+                    << (*iter) <<
+                    " (" << ((*iter)->getBattleInstantiation()->getCombatOrderList()).size()
+                    << ") " << endl;
+            }
+            //    for( currentIterator = ((*iter)->getBattleInstantiation()->getCombatOrderList()).begin();
+            // 	      currentIterator != ((*iter)->getBattleInstantiation()->getCombatOrderList()).end();)
+            //      {
 
-			// clear waiting for initiative flag
-			(*iter)->getBattleInstantiation()->setWaiting(false);
-			// Process combat movement orders first
-			CombatOrderProcessor::process((*iter),&combatMovementOrders,round);
-			// Process combat action orders
-			CombatOrderProcessor::process((*iter),&combatActionOrders,round);
-		}
+            // clear waiting for initiative flag
+            (*iter)->getBattleInstantiation()->setWaiting(false);
+            // Process combat movement orders first
+            CombatOrderProcessor::process((*iter), &combatMovementOrders, round);
+            // Process combat action orders
+            CombatOrderProcessor::process((*iter), &combatActionOrders, round);
+        }
 
-  	for(BattleIterator iter = defenders_->begin();
-	     iter != defenders_->end(); ++iter )
-  	{
-				if(!(*iter)->getBattleInstantiation()->isAlive())
-					continue;
-				if((*iter)->getBattleInstantiation()->isFled())
-					continue;
-			combatReportFile << "Initiative: "<< initiative<<" process orders for "
-			<< (*iter)<<endl;
-			// clear waiting for initiative flag
-			(*iter)->getBattleInstantiation()->setWaiting(false);
-			// Process combat movement orders first
-			CombatOrderProcessor::process((*iter),&combatMovementOrders,round);
-			// Process combat action orders
-			CombatOrderProcessor::process((*iter),&combatActionOrders,round);
-  	}
-	}
+        for (BattleIterator iter = defenders_->begin();
+                iter != defenders_->end(); ++iter)
+        {
+            if (!(*iter)->getBattleInstantiation()->isAlive())
+                continue;
+            if ((*iter)->getBattleInstantiation()->isFled())
+                continue;
+           if((*iter)->isTraced())
+            {
+            combatReportFile << "Initiative: " << initiative << " process orders for "
+                    << (*iter) << endl;
+           }
+            // clear waiting for initiative flag
+            (*iter)->getBattleInstantiation()->setWaiting(false);
+            // Process combat movement orders first
+            CombatOrderProcessor::process((*iter), &combatMovementOrders, round);
+            // Process combat action orders
+            CombatOrderProcessor::process((*iter), &combatActionOrders, round);
+        }
+        addNewSummonedEntities();
+    }
 }
 
 
@@ -599,7 +629,7 @@ void CombatEngine::postProcess()
 	}
 
     BattleInstance * current;
-// unsummon summoned units
+// unsummon summoned units. Do not delete! We'll need them for reports
 		for(BattleEntityIterator iter = summoned_.begin();
 	    iter != summoned_.end(); ++iter)
   	{
@@ -608,7 +638,7 @@ void CombatEngine::postProcess()
 
 			if(current->isAttacker())
 				{
-					attackersCount_ -= (*iter)->getFigures();
+					attackersCount_ -= (*iter)->getFiguresNumber();
 					attackersAliveCount_ -= current->getFiguresNumber();
 					for(BattleIterator iterA = attackers_->begin();
 	    			iterA != attackers_->end(); ++iterA )
@@ -622,7 +652,7 @@ void CombatEngine::postProcess()
 				}
 			else
 				{
-					defendersCount_ -= (*iter)->getFigures();
+					defendersCount_ -= (*iter)->getFiguresNumber();
 					defendersAliveCount_ -= current->getFiguresNumber();
 					for(BattleIterator iterA = defenders_->begin();
 	    			iterA != defenders_->end(); ++iterA )
@@ -635,7 +665,7 @@ void CombatEngine::postProcess()
 						}
 				}
 			delete (*iter)->getBattleInstantiation();
-			delete (*iter);
+			//delete (*iter);
 
 
 		}
@@ -692,6 +722,12 @@ void CombatEngine::postProcess()
 	currentLoot = battleField_->getCurrentLoot();
 		// sort loot by price/weight value
   std::sort(currentLoot.begin(),currentLoot.end(),CombatEngine::sortLoot);
+  combatReportFile << "============ After sort ========" <<endl;
+  for(ItemElementIterator iter = currentLoot.begin(); iter != currentLoot.end(); ++iter)
+  {
+      combatReportFile << (*iter).print() <<endl;
+  }
+
  		// distrinute loot randomly between all survived winner's units proportionally to unit's number untill unit has capacity to take
 
 		switch (result_)
@@ -909,15 +945,16 @@ void CombatEngine::processRoutingRound()
 
 void CombatEngine::shuffleSide(vector <TokenEntity *> * side, int ambush)
 {
-	for(BattleIterator iter = side->begin();
-	     iter != side->end(); ++iter )
-			 {
-			 	BattleInstance *currentInstance = (*iter)->getBattleInstantiation();
-				for (int i= 0; i<ambush; ++i)
-					{
-						this->battleField_->shuffleOnce(currentInstance);
-					}
-			 }
+    for(BattleIterator iter = side->begin();
+         iter != side->end(); ++iter )
+     {
+            BattleInstance *currentInstance = (*iter)->getBattleInstantiation();
+
+            for (int i= 0; i<ambush; ++i)
+            {
+                    this->battleField_->shuffleOnce(currentInstance);
+            }
+     }
 
 }
 
@@ -927,13 +964,16 @@ bool CombatEngine::sortLoot(ItemElement element1, ItemElement element2)
 	int weight1 = element1.getItemType()->getWeight();
 	int weight2 = element2.getItemType()->getWeight();
 // zero-weight items go first.
-	if(weight1 == 0)
+        if((weight1 == 0) && (weight2 == 0))
+            return false;
+
+        if(weight1 == 0)
 		return true;
 
 	if(weight2 == 0)
 		return false;
 
-	return (element1.getItemType()->getFormalPrice() /weight1 >= element2.getItemType()->getFormalPrice() /weight2);
+	return (element1.getItemType()->getFormalPrice() /weight1 > element2.getItemType()->getFormalPrice() /weight2);
 }
 
 
@@ -1025,30 +1065,58 @@ void CombatEngine::extendMinInitiative()
 
 }
 
-
 void CombatEngine::addSummonedEntity(BattleInstance * summoner, BattleEntity * summonedOne)
 {
-	 summoned_.push_back(summonedOne);
-	 BattleInstance * summonedInstance =summonedOne->getBattleInstantiation();
-	// name?
-  if(summoner->isAttacker())
-	{
-    summonedInstance->setAttacker();// mark as attacker
-	  summonedInstance->setSideEnchantment(&attackerSideEnchantments_);
-		attackers_->push_back(summonedOne);
-		attackersCount_ += summonedOne->getFigures();
-		attackersAliveCount_ += summonedOne->getFigures();
-	}
-	else
-	{
-    summonedInstance->setDefender();// mark as defender
-	  summonedInstance->setSideEnchantment(&defenderSideEnchantments_);
-		defenders_->push_back(summonedOne);
-		defendersCount_ += summonedOne->getFigures();
-		defendersAliveCount_ += summonedOne->getFigures();
-	}
-	// side observation update
- // no update for side  ambush, tactis, stategy -
- // new summoned unit has no time to reorganize troops that are already in the battle
+    summoned_.push_back(summonedOne);
+    newSummoned_.push_back(summonedOne);
+   BattleInstance * summonedInstance = summonedOne->getBattleInstantiation();
+    // name?
+    // Can't immediatelly add to attackes or defenders because this operation is done inside attackes/defenders cycle: 
+    //cout << "===$$===> Adding: " << summonedOne->print() << " Instance: " << summonedInstance << " Summoner: " << summoner->print() << endl;
+    if (summoner->isAttacker())
+    {
+        summonedInstance->setAttacker(); // mark as attacker
+        summonedInstance->setSideEnchantment(&attackerSideEnchantments_);
+        //attackers_->push_back(summonedOne);
+        attackersCount_ += summonedOne->getFiguresNumber();
+        attackersAliveCount_ += summonedOne->getFiguresNumber();
+    } else
+    {
+        summonedInstance->setDefender(); // mark as defender
+        summonedInstance->setSideEnchantment(&defenderSideEnchantments_);
+        //defenders_->push_back(summonedOne);
+        defendersCount_ += summonedOne->getFiguresNumber();
+        defendersAliveCount_ += summonedOne->getFiguresNumber();
+    }
+    // side observation update
+    // no update for side  ambush, tactis, stategy -
+    // new summoned unit has no time to reorganize troops that are already in the battle
+
+}
+
+
+void CombatEngine::addNewSummonedEntities()
+{
+    for(BattleEntityIterator iter = newSummoned_.begin();   iter != newSummoned_.end(); ++iter)
+  	{
+            BattleInstance * current = (*iter)->getBattleInstantiation();
+            if (current->isAttacker())
+            {
+                attackers_->push_back((*iter));
+                combatReportFile << "Adding "<<(*iter)->print()<<" to attackers"
+                <<endl;
+            }
+            else
+            {
+                defenders_->push_back((*iter));
+                combatReportFile << "Adding "<<(*iter)->print()<<" to defenders"
+                <<endl;
+            }
+    }
+//    if(newSummoned_.size())
+//    {
+//        cout << "===$$===> Adding all " << newSummoned_.size() << endl;
+//    }
+    newSummoned_.clear();
 
 }

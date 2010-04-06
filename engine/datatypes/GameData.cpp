@@ -12,7 +12,10 @@
 #include "PrototypeManager.h"
 GameData       sampleGameData("GameData",0);
 
+string GameData::objectKeyword = "GameData";
+GameData *  GameData::objectParent = 0;
 
+GameData * sampleGameDataO = GameData::registerObject();
 
 /** Used only for creation of sample objects for use in PrototypeManager  */
 GameData::GameData (const string & keyword, GameData * parent)
@@ -42,6 +45,9 @@ GameData::GameData(const GameData * prototype)
       keyword_ = prototype->getKeyword();
 }
 
+GameData::GameData()
+{
+}
 
 
 
@@ -136,5 +142,18 @@ return OK;
 	currentParent = currentParent -> getParent();
     }
     return false;
+}
+
+GameData * GameData::registerObject()
+{
+  GameData * t = new GameData();
+
+  if( prototypeManager == 0)
+  {
+	  cout << "Prototype Manager created on "<< GameData::objectKeyword<< " call"<<endl;
+    prototypeManager = new PrototypeManager;
+  }
+  prototypeManager->addToRegistry(t);
+  return t;
 }
 

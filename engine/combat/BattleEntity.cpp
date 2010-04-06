@@ -16,22 +16,24 @@
 #include "TargetOrder.h"
 #include "CombatOrderLine.h"
 #include "RaceRule.h"
+#include "BattleInstance.h"
+#include "BattleField.h"
 
 BattleEntity sampleBattleEntity  ("BATTLE_ENTITY",  &sampleTokenEntity);
 
-BattleEntity::BattleEntity (const string & keyword, GameData * parent ) : TokenEntity(keyword, parent)
+BattleEntity::BattleEntity (const string & keyword, GameData * parent ) : UnitEntity(keyword, parent)
 {
-  race_ = 0;
-	figures_ = 0;
+  //race_ = 0;
+//	figures_ = 0;
 }
 
 
 
-BattleEntity::BattleEntity(const BattleEntity * prototype): TokenEntity(prototype)
+BattleEntity::BattleEntity(const BattleEntity * prototype): UnitEntity(prototype)
 {
 
-  race_ = 0;
-	figures_ = 0;
+  //race_ = 0;
+//	figures_ = 0;
 }
 
 
@@ -58,13 +60,13 @@ STATUS BattleEntity::initialize        ( Parser *parser )
  	{
 	  combatOrders_.push_back(new CombatOrderLine(parser->getText(),this));
  	}
-       if (parser->matchKeyword("COMBAT"))
- 	{
-		addCombatSetting(parser->getText());
- 	}
+   if (parser->matchKeyword("COMBAT"))
+    {
+            addCombatSetting(parser->getText());
+    }
 
-	skills_.initialize(parser);
-	inventory_.initialize(parser);
+ skills_.initialize(parser);
+ inventory_.initialize(parser);
   combatTactics_.initialize(parser);
   return Entity::initialize(parser);
 
@@ -82,18 +84,34 @@ BattleEntity * BattleEntity::makeCopy()
 
   newCopy->getStats()->addStats(getStats());
 
-	newCopy->getCombatOrderList() = getCombatOrderList();
+  newCopy->getCombatOrderList() = getCombatOrderList();
   // copy race and figures
-  newCopy->setRace(getRace());
-  newCopy->setFigures(getFigures());
+  newCopy->setRace(getRace(),getFiguresNumber());
+//  if(getRace())
+//  {
+//  cout<<" Creating new BattleEntity "<< getRace()->print()<< " "<<getFiguresNumber()<<" dam: " <<getDamage() ;//<< " -> "<<newCopy->getDamage() <<endl;
+//
+//  }
+//  else
+//  {
+//  cout<<" Creating new BattleEntity NO RACE! "<<getFiguresNumber()<<endl;
+//
+//  }
+  //newCopy->setFigures(getFigures());
 	
 	newCopy->setCombatFile(getCombatFile());
 	newCopy->setCombatRank(getCombatRank());
 	newCopy->setCombatMove(getCombatMove());
 	newCopy->setCombatStance(getCombatStance());
 
-	newCopy->setTarget(getTarget());
+  newCopy->setTarget(getTarget());
   newCopy->recalculateStats();
+//  if(getRace())
+//  {
+//  cout<< " -> "<<newCopy->getDamage() <<endl;
+//
+//  }
+  //newCopy->traced_ = true;//isTraced();
   return newCopy;
 }
 
@@ -104,7 +122,7 @@ void BattleEntity::recalculateStats()
 {
   stats.clearStats();
  // Race
-  stats.addStats(race_->getStats());
+  stats.addStats(getRace()->getStats());
  // skills
 	skills_.addStats(&stats);
 	inventory_.addStats(&stats,getFiguresNumber());

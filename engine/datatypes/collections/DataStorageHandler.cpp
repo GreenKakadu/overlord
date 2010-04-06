@@ -27,133 +27,126 @@ DataStorageHandler::DataStorageHandler (string * filename)
 //cout << "Collection(s) "<< filename->c_str() << " created.\n";
 }
 
-
-
-DataStorageHandler::DataStorageHandler (const char * filename)
+DataStorageHandler::DataStorageHandler(const char * filename)
 {
-  filenameString_ = string(filename);
-	filename_ = &filenameString_;
-	status = UNDEFINED;
-//cout << "Collection "<< string(filename) << " created.\n";
+    filenameString_ = string(filename);
+    filename_ = &filenameString_;
+    status = UNDEFINED;
+    //cout << "Collection "<< string(filename) << " created.\n";
 }
 
-
-void DataStorageHandler::setCollection(BasicCollection  *collection)
+void DataStorageHandler::setCollection(BasicCollection *collection)
 {
-  	collection_ =  collection;
-	if(status == OK)
+    collection_ = collection;
+    if (status == OK)
     {
-      collection->setCollectionKeyword(collectionKeyword_);
-      collection->redimention(collectionSize_);
+        collection->setCollectionKeyword(collectionKeyword_);
+        collection->redimention(collectionSize_);
     }
 }
 
-
-
 DataStorageHandler::~DataStorageHandler()
 {
-  if(parser_) delete parser_;
-//   collection_->clear();
-  if(!collectionKeyword_.empty())cout << "Data handler ["<<collectionKeyword_ <<"] Destroyed " << endl;
+    if (parser_) delete parser_;
+    //   collection_->clear();
+    if (!collectionKeyword_.empty())cout << "Data handler [" << collectionKeyword_ << "] Destroyed " << endl;
 }
-
-
 
 STATUS DataStorageHandler::open()
 {
- 	parser_ = new FileParser ( filename_->c_str());
-	if (parser_->status != OK)
-			{
-				status = IO_ERROR;
-				return status;
-			}
-	status = OK;
-  	beginning_ = parser_->getPosition();
-  	do //Find collection keyword  definition
-    	{
-      		parser_->getLine();
-    	} while (! ( parser_->matchKeyword ("KEYWORD"))  || parser_->eof() );
+    parser_ = new FileParser(filename_->c_str());
+    if (parser_->status != OK)
+    {
+        status = IO_ERROR;
+        return status;
+    }
+    status = OK;
+    beginning_ = parser_->getPosition();
+    do //Find collection keyword  definition
+    {
+        parser_->getLine();
+    } while (!(parser_->matchKeyword("KEYWORD")) || parser_->eof());
 
-	if(parser_->eof() )
-		{
-			cout <<"Can't find KEYWORD definition "<<endl;
-		}
-  	collectionKeyword_ = parser_->getWord();
-    if(collection_) collection_->setCollectionKeyword(collectionKeyword_);
-  	if( parser_ -> matchInteger() )
-    		{
-      			collectionSize_ = parser_->getInteger();
-      			collection_->redimention(collectionSize_);
-    		}
-//cout << "Collection "<< collectionKeyword_ << " created.\n";
-				return status;
+    if (parser_->eof())
+    {
+        cout << "Can't find KEYWORD definition " << endl;
+    }
+    collectionKeyword_ = parser_->getWord();
+    if (collection_) collection_->setCollectionKeyword(collectionKeyword_);
+    if (parser_ -> matchInteger())
+    {
+        collectionSize_ = parser_->getInteger();
+        collection_->redimention(collectionSize_);
+    }
+    //cout << "Collection "<< collectionKeyword_ << " created.\n";
+    return status;
 }
-
-
 
 STATUS DataStorageHandler::load()
 {
-string tag;
-string keyword;
-string optionalDerivativeKeyword;
-   if(status == UNDEFINED ) // delayed initialization
-      open();
-   if(status == IO_ERROR)
-    return status;
-   parser_->setPosition ( beginning_ );
-   parser_->setLineNumber ( 0 );
-  do //Find class keyword  definition
+    string tag;
+    string keyword;
+    string optionalDerivativeKeyword;
+    if (status == UNDEFINED) // delayed initialization
+        open();
+    if (status == IO_ERROR)
+        return status;
+    parser_->setPosition(beginning_);
+    parser_->setLineNumber(0);
+    do //Find class keyword  definition
     {
-      	parser_->getLine();
-     	if (parser_->matchKeyword (collectionKeyword_.c_str()) )
-       	{
-	  			tag = parser_->getWord();
-	  			optionalDerivativeKeyword = parser_->getWord();
-	  		 if(optionalDerivativeKeyword.length() > 0)
-	    		{
-	      			keyword = optionalDerivativeKeyword;
-	    		}
-	  		else
-	    		{
-	      			keyword = collectionKeyword_;
-	    		}
-       	GameData * temp =  /*GameData::*/prototypeManager->findInRegistry(keyword) ;
-			if(temp == 0)
-				{
-					cout << "Can't  find object of type " <<  keyword << " in registry " << endl;
-				}
-			else
-				{
-  					GameData * newObject = temp ->createInstanceOfSelf ();
-       if(newObject == 0)
+        parser_->getLine();
+        if (parser_->matchKeyword(collectionKeyword_.c_str()))
         {
-					cout << "Can't create object from tag " <<  tag  << endl;
-          return IO_ERROR;
+            tag = parser_->getWord();
+            optionalDerivativeKeyword = parser_->getWord();
+            if (optionalDerivativeKeyword.length() > 0)
+            {
+                keyword = optionalDerivativeKeyword;
+            } else
+            {
+                keyword = collectionKeyword_;
+            }
+            GameData * temp = prototypeManager->findInRegistry(keyword);
+            if (temp == 0)
+            {
+                cout << "Can't  find object of type " << keyword
+                        << " in registry " << endl;
+            } else
+            {
+                GameData * newObject = temp ->createInstanceOfSelf();
+                if (newObject == 0)
+                {
+                    cout << "Can't create object from tag " << tag << endl;
+                    return IO_ERROR;
+                }
+
+                newObject -> setTag(tag);
+                //if(newObject->checkObjectType(collectionKeyword_))
+                {
+                    collection_ -> add(newObject);
+                    //cout << " After adding "<< newObject->print();
+
+                }
+            }
         }
 
-	  				newObject -> setTag(tag);
-//	  				if(newObject->checkObjectType(collectionKeyword_))
-						{
-	    					collection_ -> add (newObject) ;
-//                cout << " After adding "<< newObject->print();
-
-						}
-				 }
-		}
-
-      if (parser_->matchKeyword ("RIP") )
-       	{
-          if(parser_->matchInteger())
+        if (parser_->matchKeyword("RIP"))
+        {
+            if (parser_->matchInteger())
             {
-              collection_->addRIPindex(parser_->getInteger());
+                collection_->addRIPindex(parser_->getInteger());
             }
-          }
-    } while (!  parser_->eof() );
-if(keyword.empty())
-	{
-		cout <<"Data in the file " <<filenameString_<<"  are not matching keyword " <<  collectionKeyword_<<". May be it is empty."<<endl ;
-	}
-return OK;
+        }
+    } while (!parser_->eof());
+
+    if (keyword.empty())
+    {
+        cout << "Data in the file " << filenameString_
+             << "  are not matching keyword " << collectionKeyword_
+             << ". May be it is empty." << endl;
+    }
+    return OK;
 }
 
 

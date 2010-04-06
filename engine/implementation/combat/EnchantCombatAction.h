@@ -23,7 +23,7 @@ public:
       EnchantCombatAction ( const string & keyword, GameData * parent):
 				 CombatActionStrategy(keyword, parent){}
       EnchantCombatAction ( const EnchantCombatAction * prototype ):
-				 CombatActionStrategy(prototype){}
+				 CombatActionStrategy(prototype){nextCombatAction_ = false;}
 		 ~EnchantCombatAction(){}
       GameData * createInstanceOfSelf();
        BattleTargets getPotentialTargets(BattleInstance * battleInstance,
@@ -34,6 +34,7 @@ public:
 		int duration_;
 		EnchantmentRule * enchant_;
 		CombatActionStrategy * secondaryCombatAction_;
+                bool  nextCombatAction_;
 };
 
 extern EnchantCombatAction       sampleEnchantAction;

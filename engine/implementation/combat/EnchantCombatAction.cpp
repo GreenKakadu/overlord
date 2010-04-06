@@ -16,6 +16,7 @@
 #include "CombatReport.h"
 #include "EnchantmentRule.h"
 #include "CombatTargetVariety.h"
+#include "CombatOrderLine.h"
 extern int Roll_1Dx(int n);
 extern ReportPattern * noTargetsReporter;
 extern ReportPattern * combatCastReporter;
@@ -50,6 +51,12 @@ EnchantCombatAction::initialize        ( Parser *parser )
   if (parser->matchKeyword ("SECONDARY_ACTION") )
   {
     string keyword = parser->getWord();
+    if(keyword =="NEXT")
+    {
+        nextCombatAction_ = true;
+        return OK;
+    }
+
     GameData * temp =  prototypeManager->findInRegistry(keyword);
     if(temp == 0)
     {
@@ -210,6 +217,13 @@ void	EnchantCombatAction::performAction(BattleInstance * battleInstance, BattleT
     if(secondaryCombatAction_)
     {
       secondaryCombatAction_->performAction(battleInstance,  potentialTargets, report);
+    }
+
+    if(nextCombatAction_)
+    {
+      //battleInstance->getCurrentOrder()->setNexOrderToBeExecuted(true);
+      //battleInstance->setActedOnRound(false);
+      battleInstance->setOneMoreActionOnRound(true);
     }
     
 }

@@ -226,6 +226,7 @@ public:
 	inline bool isFanatic() const {return fanatic_;}
 	inline void setFanatic(bool value){fanatic_ = value;}
 	virtual inline bool mayParticipateInCombat() const {return true;}
+        virtual void setCombatSettings();
 // Ratings ========================================================
    virtual int getAttackRating() const;
    virtual int getDefenceRating() const;

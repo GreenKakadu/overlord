@@ -26,6 +26,7 @@ class StringData : public AbstractData  {
 public: 
 	StringData(const string &Data){Data_ = Data;}
 	~StringData(){}
+  inline  string     getKeyword() const{ return "STRING";}
   inline void saveAsParameter (ostream &out) {out << " "<<Data_;}
   inline string print()  {return Data_;}
   inline void clean(){ delete this;}

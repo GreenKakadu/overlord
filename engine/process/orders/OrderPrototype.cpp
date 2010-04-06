@@ -17,12 +17,14 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "OrderPrototypesCollection.h"
+#include "BattleEntity.h"
 ReportPattern *	invalidOrderReporter = new ReportPattern ("invalidOrderReporter");
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	unknownParameterReporter;
 extern OrderPrototypesCollection  * orderPrototypesCollection;
 
+extern ofstream combatReportFile; // Temp for Debugging
 
 OrderPrototype::OrderPrototype()
 {
@@ -128,34 +130,34 @@ bool OrderPrototype::isFullDayOrder()
  */
 bool OrderPrototype::mayBeProcessed(ProcessingMode * processingMode, Entity * entity)
 {
-/*  if(entity->isTraced())                                  //For Debugging only
+  if(entity->isTraced())                                  //For Debugging only
   {                                                      //For Debugging only
-    cout <<"==== Checking mayBeProcessed for "<<entity->print()<< endl;  //For Debugging only
-  }*/                                                     //For Debugging only
+    combatReportFile <<"==== Checking mayBeProcessed for "<<entity->print()<< endl;  //For Debugging only
+  }                                                    //For Debugging only
   if ( !processingMode-> mayExecute(orderType_))
     {
-/*      if(entity->isTraced())                                  //For Debugging only
-      {                                                      //For Debugging only
-        cout <<"==== Order can't be Executed "<< endl;  //For Debugging only
-      }                                                     //For Debugging only*/
+      if(entity->isTraced())                                //For Debugging only
+      {                                                     //For Debugging only
+        combatReportFile <<"====  "<<entity->print() <<" Order (type "<< (int)orderType_<<") can't be Executed at this mode " << endl;      //For Debugging only
+      }                                                     //For Debugging only
       return false;
     }
 
     if(entity->isUnaccessible())
     {
-/*      if(entity->isTraced())                                  //For Debugging only
+      if(entity->isTraced())                                  //For Debugging only
       {                                                      //For Debugging only
-        cout <<"==== isUnaccessible "<< endl;  //For Debugging only
-      }*/                                                     //For Debugging only
+        combatReportFile <<"==== "<<entity->print() <<" isUnaccessible "<< endl;               //For Debugging only
+      }                                                     //For Debugging only
       return false;
     }
 
     if(entity->isBusy() && !mayInterrupt())
     {
-/*      if(entity->isTraced())                                  //For Debugging only
+      if(entity->isTraced())                                  //For Debugging only
       {                                                      //For Debugging only
-        cout <<"====  isBusy"<< endl;  //For Debugging only
-      }*/                                                     //For Debugging only
+        combatReportFile <<"====  "<<entity->print() <<"  isBusy"<< endl;                        //For Debugging only
+      }                                                     //For Debugging only
       return false;
     }
 
@@ -175,16 +177,21 @@ bool OrderPrototype::mayInterrupt()
 
 /*
  * Checks that entity is unit. Used for unit-only orders
+ * BattleEntity is also considered to be unit
  */
 bool OrderPrototype::entityIsUnit(Entity *entity, PARSING_MODE mode)
 {
    UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   if(unit==0)  // Wrong Entity type
-				{
+    {
+//        BattleEntity * battle = dynamic_cast<BattleEntity *>(entity);
+//        if(battle==0)
+        {
          if(mode == NORMAL_PARSING)
           entity->addReport(new BinaryMessage(invalidOrderReporter, new StringData(keyword_), new StringData("units")));
          return false;
-				}
+        }
+    }
    return true;
 }
 

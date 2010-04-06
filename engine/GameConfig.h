@@ -90,6 +90,7 @@ public:
          bool isNewEntityName(const string &tag, FactionEntity * faction = 0);
   UINT turn;
   int daysInMonth;
+  int maxCombatRounds;
   RUNMODE runMode;
   protected:
   private:
@@ -138,7 +139,7 @@ public:
   
   string gameFile_;
   vector <string> npcFactions_;
-	unsigned long int randomSeed_;
+  unsigned long int randomSeed_;
 };
 extern GameConfig gameConfig;
  

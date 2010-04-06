@@ -255,10 +255,10 @@ ReportPattern * ritualTargetReporter = new ReportPattern("ritualTargetReporter")
 ReportPattern * plagueDeathReporter = new ReportPattern("plagueDeathReporter");
 ReportPattern * plagueDeathReporter2 = new ReportPattern("plagueDeathReporter2");
 //==================== Terraform
-ReportPattern * terraformReport = new ReportPattern(" terraformReport");
-ReportPattern * terraformReport2 = new ReportPattern(" terraformReport2");
+ReportPattern * terraformReport = new ReportPattern("terraformReport");
+ReportPattern * terraformReport2 = new ReportPattern("terraformReport2");
 //==================== Transform
-ReportPattern * transformReport = new ReportPattern(" transformReport");
+ReportPattern * transformReport = new ReportPattern("transformReport");
         //==================== Assassinate
 ReportPattern * assassineEscapededReport2   = new ReportPattern("assassineEscapededReport2");
 ReportPattern * assassineEscapededReport    = new ReportPattern("assassineEscapededReport");

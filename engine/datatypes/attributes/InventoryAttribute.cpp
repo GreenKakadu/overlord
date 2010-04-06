@@ -507,6 +507,7 @@ int InventoryAttribute::getWeight()
 
 void InventoryAttribute::addStats(EntityStatistics * stats, int figuresNumber )
 {
+
 	for (InventoryIterator iter = inventory_.begin();
                       iter != inventory_.end(); ++iter)
 		{

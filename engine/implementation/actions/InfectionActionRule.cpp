@@ -60,7 +60,12 @@ ACTION_RESULT  InfectionActionRule::carryOut(Entity * entity,  AbstractData * pa
   UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
   assert(unit);
   LocationEntity * location = unit->getLocation();
-  assert(location);
+  if(location==0)
+  {
+   cout <<"-+-+-+-> "<< entity->print() << " has no location"<<endl;
+   return ACTION_SUCCESS;
+  }
+  //assert(location);
   int counter;
   // Get duration of infection enchant
   if(value < effectType_->getMaxLength() - effectType_->getIncubationPeriod() )

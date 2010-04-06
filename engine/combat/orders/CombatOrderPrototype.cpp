@@ -8,6 +8,7 @@
  ***************************************************************************/
 #include "CombatOrderPrototype.h"
 #include "Entity.h"
+extern ofstream combatReportFile;
 
 
 
@@ -37,7 +38,6 @@ CombatOrderPrototype::save(ostream &out)
 
 
 
-
 /*
  * Sometimes order may not be processed for some reasons.
  * Entity may be unable to follow orders (dead, demoralized, paralized)
@@ -45,16 +45,34 @@ CombatOrderPrototype::save(ostream &out)
  * Determines if order may be processed
  */
 bool CombatOrderPrototype::mayBeProcessed(ProcessingMode * processingMode,
-									Entity * entity)
+        Entity * entity)
 {
-  	if ( !processingMode-> mayExecute(orderType_))
-		return false;
+    if (!processingMode-> mayExecute(orderType_))
+    {
+            if (entity->isTraced())
+            {
+              combatReportFile << "==$$== Wrong order for this mode "<<endl;
+            }
+            return false;
+    }
 
-    if(entity->isUnaccessible())
-		return false;
+    if (entity->isUnaccessible())
+    {
+            if (entity->isTraced())
+            {
+              combatReportFile << "==$$== "<<entity->print() <<" is Unaccessible."<<endl;
+            }
+        return false;
+    }
 
-    if(entity->isBusy() && !mayInterrupt())
-		  return false;
+    if (entity->isBusy() && !mayInterrupt())
+    {
+            if (entity->isTraced())
+            {
+              combatReportFile << "==$$== "<<entity->print() <<" is Busy."<<endl;
+            }
+        return false;
+    }
 
     return true;
 }

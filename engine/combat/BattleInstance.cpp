@@ -38,6 +38,7 @@ BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
 	positionFile_ =0;
 	isMovedOnRound_= 0;
 	isActedOnRound_= 0;
+        oneMoreActionOnRound_ = false;
 	isAttacker_ = false;
 	combatOrders_ = origin->getCombatOrderList();
 	currentOrder_ = 0;
@@ -60,15 +61,17 @@ BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
         fleing_ =false;
 	affectingAction_ = 0;
 	movementInitiative_ = 0;
+
 	// Attributes
 
 	inventory_ = InventoryAttribute(origin_);
 
-	for(InventoryIterator iter = origin_->getAllInventory().begin();
-			iter != origin_->getAllInventory().end();	 ++iter)
-  {
-		inventory_.add(*iter);
-  }
+	skills_ = origin_->getAllSkills();
+//         if(isTraced())
+//        {
+//            cout <<"---Dam--- Origin: "<<origin_->getDamage() <<" -> " <<getDamage()<< "skills: "<<skills_.getAll().size() <<endl;
+//        }
+       // Inventory may require skills. So skills should be added first.
 	// try to get titles
 	UnitEntity * originUnit = dynamic_cast<UnitEntity *>(origin_);
 	if(originUnit)
@@ -84,20 +87,58 @@ BattleInstance::BattleInstance(TokenEntity * origin, CombatReport * report)
 		race_ = 0;
 //  	titles_ = new TitlesAttribute();// empty
 		}
-	skills_ = origin_->getAllSkills();
-	stats_.addStats(origin_->getStats());
+
+	for(InventoryIterator iter = origin_->getAllInventory().begin();
+			iter != origin_->getAllInventory().end();	 ++iter)
+  {
+		inventory_.add(*iter);
+
+//        if(isTraced())
+//        {
+//            cout <<"---Inv--- Origin: "<<(*iter).getItemType()->print() <<"  "<<(*iter).getItemNumber()<< " Eq: " <<(*iter).getEquipedNumber() <<endl;
+//        }
+  }
+
+//       if(isTraced())
+//        {
+//  	for(InventoryIterator iter = inventory_.getAll().begin();
+//			iter != inventory_.getAll().end();	 ++iter)
+//          cout <<"---Inv--- Instance: "<<(*iter).getItemType()->print() <<"  "<<(*iter).getItemNumber()<< " Eq: " <<(*iter).getEquipedNumber() <<endl;
+//        }
+
 
 	damageType_ = origin_->getDamageType();
 	figuresNumber_ = origin->getFiguresNumber();
+        stats_.clearStats();
+
+	stats_ = origin_->getBasicStats();
+
+        if(figuresNumber_)
+        {
+//           if(isTraced())
+//            {
+//                cout <<"---Dam--- After recalculation inventory " <<getDamage()<<" Num= " << figuresNumber_<<endl;
+//            }
+            enchantments_.addStats(&stats_,figuresNumber_);
+
+
+            inventory_.addStats(&stats_,figuresNumber_);
+
+         }
+	skills_.addStats(&stats_);
 
 
 	int figuresLife = stats_.getLife();
+//        if(isTraced())
+//        {
+//            cout <<"---Life---" <<origin->print()<<" has "<<figuresLife<<" HP Dam: "<<getDamage()<<" Num= " << figuresNumber_<<endl;
+//        }
 	for (int i = 0; i <figuresNumber_; ++i)
 		figures_.push_back(figuresLife);
 
 	// equip some items on Battle instance (not Origin)
 	  sideEnchantments_ =0;
-		recalculateStats();
+          mana_ = stats_.getMana();
 }
 
 
@@ -221,18 +262,25 @@ void BattleInstance::respawnCombatActionOrders()
 // fill the list with the set of default combat orders
 void BattleInstance::respawnCombatMovementOrders()
 {
- 	combatReportFile<< "adding combat movement order to "<< origin_<<": ";
-	origin_->getDefaultCombatMovement()->printOrderLine(combatReportFile);
-	// When we copy new order all flags should be cleared:
-	origin_->getDefaultCombatMovement()->initialize(origin_);
-	origin_->getDefaultCombatMovement()->setPermanent(true);
-	combatOrders_.push_back(origin_->getDefaultCombatMovement());
+combatReportFile<< "adding combat movement order to "<< origin_<<": ";
+CombatOrderLine* defaultCombatMovement = origin_->getDefaultCombatMovement();
+if(defaultCombatMovement)
+{
+    defaultCombatMovement->printOrderLine(combatReportFile);
+    // When we copy new order all flags should be cleared:
+    defaultCombatMovement->initialize(origin_);
+    defaultCombatMovement->setPermanent(true);
+    combatOrders_.push_back(defaultCombatMovement);
+}
+else
+{
+
 }
 
-
+}
 
 int BattleInstance::reCalculateInitiative(int sideBonus,
-																					int &initMin, int &initMax )
+        int &initMin, int &initMax)
 {
  int current = 0;
 //     combatReportFile << "    Inside: initMax= " << initMax<< " initMin= " << initMin<<endl;
@@ -241,6 +289,10 @@ int BattleInstance::reCalculateInitiative(int sideBonus,
 			{
 
 				current = (*iter)->reCalculateInitiative(origin_->getInitiative(),sideBonus);
+        if(current > 100)
+        {
+            cout<< "Initiative too high for : "<<origin_->print() <<endl;
+        }
 				if (current > initMax)
 					initMax = current;
 				if (current < initMin)
@@ -283,8 +335,17 @@ void BattleInstance::setRoundFlags(ORDER_TYPE orderType,int round)
   switch(orderType)
 	{
 		case COMBAT_ACTION_ORDER:
+                {
+                    if(!oneMoreActionOnRound_)
+                    {
 			isActedOnRound_ = round;
+                    }
+                    else
+                    {
+                      oneMoreActionOnRound_ = false;
+                    }
 				return;
+                }
 
 		case COMBAT_MOVEMENT_ORDER:
 			isMovedOnRound_ = round;
@@ -439,93 +500,94 @@ DAMAGE_TYPE BattleInstance::modifyDamageType(DAMAGE_TYPE damageType)
 
 // Estimate which orders may be executed on this round.
 // If we have mandatory orders like RELOAD it should be treated here
+
 void BattleInstance::planRoundOrders()
 {
- int initiative;
- bool isFirst=true;
- // if RELOAD flag mark all action orders as unusable
-   for( CombatOrderIterator iter = combatOrders_.begin();
-	      iter != combatOrders_.end();++iter)
-     {
-		 	// check only sequentive action orders
-			  if ((*iter)->getOrderType() != COMBAT_ACTION_ORDER)
-					continue;
-				// If (RELOAD flag set) {(*iter)->setPlanned(false);continue;}
-				if(!(*iter)->isSequentive())
-					continue;
-			// evaluate
-				if((*iter)->evaluate(origin_))
-				{
-						(*iter)->setPlanned(true);
-						initiative = (*iter)->getInitiative();
-								//check that tactics and personal init included.
-						if (isFirst)
-						{
-								isFirst = false;
-								movementInitiative_ = initiative;
-						}
-				}
-				else
-				{
-					//mark as not usable;
-					(*iter)->setPlanned(false);
-				}
+    int initiative;
+    bool isFirst = true;
+    // if RELOAD flag mark all action orders as unusable
+    for (CombatOrderIterator iter = combatOrders_.begin();
+            iter != combatOrders_.end(); ++iter)
+    {
+        // check only sequentive action orders
+        if ((*iter)->getOrderType() != COMBAT_ACTION_ORDER)
+            continue;
+        // If (RELOAD flag set) {(*iter)->setPlanned(false);continue;}
+        if (!(*iter)->isSequentive())
+            continue;
+        // evaluate
+        if ((*iter)->evaluate(origin_))
+        {
+            (*iter)->setPlanned(true);
+            initiative = (*iter)->getInitiative();
+            //check that tactics and personal init included.
+            if (isFirst)
+            {
+                isFirst = false;
+                movementInitiative_ = initiative;
+            }
+        } else
+        {
+            //mark as not usable;
+            (*iter)->setPlanned(false);
+        }
 
-		 }
+    }
 
- // clear reload flag
+    // clear reload flag
 }
 
 
 // Instance takes damage.
 // It may loose some figures or die
 // Returns number of killed figures.
+
 int BattleInstance::sufferDamage(int hits, int damage, DAMAGE_TYPE type)
 {
-  combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
-  
-  
-  if(hits <= 0)
-    return 0;
-  if(damage <= 0)
-    return 0;
-  combatReportFile  <<"--- Life ---"<<endl;
-  for (int i = 0; i <figures_.size(); ++i)
-  {
-    combatReportFile  <<figures_[i]<<endl;
-  }
-  combatReportFile  <<"--- Life End ---"<<endl;
-  //combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
-  
-  int overkill = 0; // calculated for possible future use
-  int figuresDied = 0;
-  for (int i = 0; i <hits; ++i)
-  {
-    if(figures_.empty())
+    combatReportFile << origin_ << " takes " << hits << " hits of " << damage << " damage" << endl;
+
+
+    if (hits <= 0)
+        return 0;
+    if (damage <= 0)
+        return 0;
+    combatReportFile << "--- Life ---" << endl;
+    for (int i = 0; i < figures_.size(); ++i)
     {
-      overkill += damage;
-      continue;
+        combatReportFile << figures_[i] << endl;
     }
-    int randomIndex = Roll_1Dx(figures_.size());
-    int currentLife = figures_[randomIndex];
-    if(currentLife > damage)
-      figures_[randomIndex] -= damage;
-    else
+    combatReportFile << "--- Life End ---" << endl;
+    //combatReportFile  <<origin_<<" takes "<< hits << " hits of " <<damage<<" damage" <<endl;
+
+    int overkill = 0; // calculated for possible future use
+    int figuresDied = 0;
+    for (int i = 0; i < hits; ++i)
     {
-      overkill += damage - figures_[randomIndex];
-      figures_.erase(figures_.begin() +randomIndex);
-      figuresDied ++;
+        if (figures_.empty())
+        {
+            overkill += damage;
+            continue;
+        }
+        int randomIndex = Roll_1Dx(figures_.size());
+        int currentLife = figures_[randomIndex];
+        if (currentLife > damage)
+            figures_[randomIndex] -= damage;
+        else
+        {
+            overkill += damage - figures_[randomIndex];
+            figures_.erase(figures_.begin() + randomIndex);
+            figuresDied++;
+        }
     }
-  }
-  if(figuresDied)
-  {
-    lossFigures(figuresDied);
-  }
-  if(figures_.empty())
-  {
-    destroy();
-  }
-  return figuresDied;
+    if (figuresDied)
+    {
+        lossFigures(figuresDied);
+    }
+    if (figures_.empty())
+    {
+        destroy();
+    }
+    return figuresDied;
 }
 
 
@@ -534,49 +596,50 @@ int BattleInstance::sufferDamage(int hits, int damage, DAMAGE_TYPE type)
 // Count losses
 // unequip extra items
 // recalculate stats
+
 void BattleInstance::lossFigures(int figuresDied)
 {
-  CombatEngine * combat = battleField_->getCombatEngine();
+    CombatEngine * combat = battleField_->getCombatEngine();
 
-	figuresNumber_ -= figuresDied;
+    figuresNumber_ -= figuresDied;
 
-		if(isAttacker())
-		{
-			combat->decreaseAliveAttackers(figuresDied);
-		}
-		else
-		{
-			combat->decreaseAliveDefender(figuresDied);
-		}
+    if (isAttacker())
+    {
+        combat->decreaseAliveAttackers(figuresDied);
+    } else
+    {
+        combat->decreaseAliveDefender(figuresDied);
+    }
 
-	if(!isFanatic())
-	{
-		if(isAttacker())
-  		combat->addAttackerLoss(figuresDied); 
-		else
-  		combat->addDefenderLoss(figuresDied);
-	}
-	// Report
+    if (!isFanatic())
+    {
+        if (isAttacker())
+            combat->addAttackerLoss(figuresDied);
+        else
+            combat->addDefenderLoss(figuresDied);
+    }
+    // Report
 
-  combatReportFile << origin_ << " lost " << figuresDied << " figures"<<endl;
+    combatReportFile << origin_ << " lost " << figuresDied << " figures" << endl;
 
 
-	// unequip some items on Battle instance (not Origin)
-  if(figuresNumber_) // still alive. No need to unequip dead units
-	{
-		if(equipSlots_)
-		{
-	  	int equipMax;
-  		vector < InventoryElement> unequiped;// not really used here
-  		for (EquipSlotIterator iter = equipSlots_->begin();
+    // unequip some items on Battle instance (not Origin)
+    if (figuresNumber_) // still alive. No need to unequip dead units
+    {
+        if (equipSlots_)
+        {
+            int equipMax;
+            vector < InventoryElement> unequiped; // not really used here
+            for (EquipSlotIterator iter = equipSlots_->begin();
                     iter != equipSlots_->end(); ++iter)
-    	{
-	 			equipMax = figuresNumber_ * race_-> getEquipCapacity((*iter)->type);
-				inventory_.updateSlotEquipement((*iter)->type, unequiped,  equipMax);
-			}
-		recalculateStats();
-		}
-	}
+            {
+                equipMax = figuresNumber_ * race_-> getEquipCapacity((*iter)->type);
+                inventory_.updateSlotEquipement((*iter)->type, unequiped, equipMax);
+            }
+            combatReportFile << this->print() << " unequips inventory items" << endl;
+            recalculateStats();
+        }
+    }
 }
 
 
@@ -659,6 +722,7 @@ void BattleInstance::updateOrigin()
 void BattleInstance::recalculateStats()
 {
 	int lifeBefore = stats_.getLife();
+
 	if(lifeBefore <= 0)
 	{
 		cerr << "Life of "<< print()<< " is 0."<<endl;
@@ -678,6 +742,11 @@ void BattleInstance::recalculateStats()
 	// modify or set everything but initiative, because initiative was already set
 	// on the stage of loading parameters
 	int initiative = stats_.getInitiative();
+        if(initiative > 100)
+        {
+            cout <<" recalculateStats for " << print()<<" failed"<<endl;
+            combatReportFile <<" recalculateStats for " << print()<<" failed"<<endl;
+        }
 
    stats_.addStats( affectingAction_->getModifyingStats());
    stats_.replaceStats( affectingAction_->getNonCumulativeStats());
@@ -686,6 +755,7 @@ void BattleInstance::recalculateStats()
 	}
 // Recalculate actual remaining health of figures;
 	int lifeAfter = stats_.getLife();
+
 	int actualOld = 0;
 
 	for(vector <int>::iterator iter = figures_.begin(); iter != figures_.end();
@@ -695,6 +765,7 @@ void BattleInstance::recalculateStats()
 		*iter = (actualOld * lifeAfter + lifeBefore/2) /lifeBefore;
 		if (*iter <= 0) // figure will not die from recalculation
 			*iter = 1;
+
 	}
 }
 
@@ -894,7 +965,14 @@ void BattleInstance::processMultiHitting(int hitNumbers)
 		{
 			repetitionCounter_--;
 			if(repetitionCounter_ <= 0) // This was last time
+                        {
 					currentlyRepeatingOrder_ = 0;
+//                                        if(getOrigin()->isTraced())
+//                                        {
+//                                            cout << "This was last time"<<endl;
+//                                        }
+                                      //set  executedOnRound_
+                        }
 			else
 			getBattleField()->getCombatEngine()->extendMinInitiative();
 		}
@@ -930,3 +1008,56 @@ bool BattleInstance::isLeader()
 {
 	return race_->isDescendantFrom(&sampleLeaderRaceRule);
 }
+
+
+// Implementation of mana and resource consumption is done directly via origin
+int BattleInstance::getMana()const
+{
+    UnitEntity * unitOrigin = dynamic_cast<UnitEntity *>(origin_);
+    if(unitOrigin==0)
+    {
+        return 0;
+    }
+    else
+    {
+	return  unitOrigin->hasMana();
+    }
+}
+
+void BattleInstance::setMana(int value)
+{
+    UnitEntity * unitOrigin = dynamic_cast<UnitEntity *>(origin_);
+    assert(unitOrigin);
+    unitOrigin->setMana(value);
+}
+
+
+int BattleInstance::hasItem(ItemRule * item)
+{
+    // This is a hack.
+    if(item == items["mana"])
+    {
+	return getMana();
+    }
+    return origin_->hasItem(item);
+}
+
+
+
+int BattleInstance::takeItemOut(ItemRule * item, int num)
+{
+    if(item == items["mana"])
+    {
+        if(mana_ >= num)
+        {
+            setMana(mana_ - num);
+            return num;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return   origin_->takeFromInventory(item,num );
+}
+

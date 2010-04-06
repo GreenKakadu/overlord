@@ -80,6 +80,7 @@ class Entity : public GameData
   inline virtual OrderLine * getCurrentOrder() const {return currentOrder_;}
   inline virtual  void   setCurrentOrder(OrderLine * order) {currentOrder_ = order;}
   inline         bool    isTraced() const {return traced_;}  /** used for debugging */
+  inline         void    setTraced(bool value)  {traced_ = value;}  
 
   /** Deletes all unused event messages. */
   virtual void finalizeReports();

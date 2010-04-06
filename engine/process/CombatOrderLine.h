@@ -39,10 +39,15 @@ class CombatOrderLine : public OrderLine
 	inline bool isPlanned() const {return isPlanned_;}
 	inline void setPlanned(bool value)  { isPlanned_ = value;}
 
+        inline void setNexOrderToBeExecuted(bool value){nexOrderToBeExecuted_ = value;}
+        inline bool isNexOrderToBeExecuted(){return nexOrderToBeExecuted_;}
+        void setExecutedOnRound(int round);
+
     protected:
 	int initiative_;
 	int executedOnRound_;
 	bool isPlanned_;
+        bool nexOrderToBeExecuted_;
 
 
      private:
