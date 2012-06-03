@@ -52,6 +52,7 @@ public:
        inline LocationEntity * getLocation()const {return location_;}
        inline void setLocation(LocationEntity * location){location_ = location;}
        inline void initializeBuildingWorks(vector<ConstructionWorksElement *> buildingWorks) {buildingWorks_  = buildingWorks;}
+       inline vector<ConstructionWorksElement *> & getAllBuildingWorks() {return buildingWorks_;}
       bool addBuildingWork(ConstructionWorksElement * buildingWorks);
       int  workToDo(ConstructionWorksVariety * buildingWorksType);
       inline void setConstructionType(ConstructionRule * construction) {construction_ = construction;}
@@ -94,6 +95,7 @@ public:
      void addStaff(UnitEntity * unit);
      void removeStaff(UnitEntity * unit);
      inline int getEffectiveStaff() {return effectiveStaff_;}
+     inline vector <UnitEntity *> & getAllStaff() {return staff_;}
      bool mayUseAsStaff(UnitEntity * unit);
      bool isObservableBy(FactionEntity * faction);
     int calculateSkill(SkillRule *  skill);
@@ -110,16 +112,23 @@ public:
 
 // Later Construction Stats should be done more sophisticated 
 // and also depend on crew skills, enchants, weather etc.
-	 inline  int    getMelee() const {return construction_->getStats()->getMelee();}
-	 inline  int    getMissile() const {return construction_->getStats()->getMissile();}
-	 inline  int    getDefence() const {return construction_->getStats()->getDefence();}
-	 inline  int    getHits() const {return construction_->getStats()->getHits();}
-	 inline  int 	getLife() const {return construction_->getStats()->getLife();}
-	 inline  int 	getDamage() const {return construction_->getStats()->getDamage();}
-	 inline  int 	getRangedDamage() const {return construction_->getStats()->getRangedDamage();}
-   int getObservationRating() const;
-   int getStealthRating();
-
+ inline  int    getMelee() const {return construction_->getStats()->getMelee();}
+ inline  int    getMissile() const {return construction_->getStats()->getMissile();}
+ inline  int    getDefence() const {return construction_->getStats()->getDefence();}
+ inline  int    getHits() const {return construction_->getStats()->getHits();}
+ inline  int 	getLife() const {return construction_->getStats()->getLife();}
+ inline  int 	getDamage() const {return construction_->getStats()->getDamage();}
+ inline  int 	getRangedDamage() const {return construction_->getStats()->getRangedDamage();}
+  int getObservationRating() const;
+  int getStealthRating();
+ // ConstructionEntity *  createConstructionImage(TokenEntity * referent);
+  ConstructionEntity *  createConstructionImage(FactionEntity * referent, int observation);
+  virtual void makeAlliedImage( TokenEntity * source);
+  virtual void makeObservedImage(TokenEntity * source);
+  void     updateImage(ConstructionEntity *construction);
+  inline vector <UnitEntity *> & getAllUnits(){return units_;}
+  virtual void extractAndAddKnowledge(Entity * recipient, int parameter = 0);
+//  virtual void extractSkillKnowledge(Entity * recipient, int parameter = 0);
 
     protected:
     vector <UnitEntity *> units_;
@@ -131,9 +140,10 @@ public:
     vector <ResourceElement *>   resourceQuotas_;
     int effectiveStaff_;
     bool public_;
+    bool isUnfinished_;
 };
 extern ConstructionEntity   sampleConstructionEntity;
 #include "EntitiesCollection.h"
-extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
+//extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 
 #endif

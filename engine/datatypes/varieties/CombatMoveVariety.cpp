@@ -8,7 +8,7 @@
  ***************************************************************************/
 #include "CombatMoveVariety.h"
 CombatMoveVariety    sampleCombatMove    ("COMBAT_MOVE",   &sampleGameData);
-VarietiesCollection <CombatMoveVariety>    combatMoves(new DataStorageHandler("combat_moves.var"));
+//VarietiesCollection <CombatMoveVariety>    combatMoves(new DataStorageHandler("combat_moves.var"));
 CombatMoveVariety  *defaultCombatMove; 
 GameData * CombatMoveVariety::createInstanceOfSelf()
 {

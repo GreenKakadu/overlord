@@ -25,6 +25,6 @@ public:
     private:
 };
 
-extern VarietiesCollection <DirectionVariety>     directions;
+//extern VarietiesCollection <DirectionVariety>     directions;
 extern DirectionVariety sampleDirection;
 #endif

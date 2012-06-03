@@ -28,6 +28,10 @@ CreatureLearningStrategy::initialize        ( Parser *parser )
       return BasicLearningStrategy::initialize(parser);
 }
 
+void CreatureLearningStrategy::save(ostream &out)
+{
+    BasicLearningStrategy::save(out);
+}
 
 
 BasicLearningStrategy * CreatureLearningStrategy::cloneSelf()

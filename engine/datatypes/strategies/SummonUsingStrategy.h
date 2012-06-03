@@ -22,7 +22,8 @@ public:
 		 ~SummonUsingStrategy(){};
       GameData * createInstanceOfSelf();
      STATUS initialize        ( Parser *parser );
-      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
+       virtual void save(ostream &out);
+     USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       bool isValidSummoningTarget(UnitEntity * unit, UnitEntity * newUnit);
 //      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       UnitEntity *  findSummoningTarget(UnitEntity * unit);

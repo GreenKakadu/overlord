@@ -41,10 +41,11 @@ GameData * SummonUsingStrategy::createInstanceOfSelf()
 STATUS
 SummonUsingStrategy::initialize        ( Parser *parser )
 {
+     BasicProductionStrategy::initialize(parser);
 
 	if (parser->matchKeyword ("SUMMONS") )
     {
-      summonedRace_ = races[parser->getWord()];
+      summonedRace_ = gameFacade->races[parser->getWord()];
       productionDays_ =  parser->getInteger();
       if( (summonedRace_ == 0) ||  (productionDays_ == 0) )
       {
@@ -53,39 +54,27 @@ SummonUsingStrategy::initialize        ( Parser *parser )
       }
       return OK;
     }
-  if (parser->matchKeyword ("CONSUME") )
-    {
-			if(parser->matchElement())
-			  resources_.push_back(new ItemElement(parser));
-      return OK;
-    }
 
-	if (parser->matchKeyword ("USE_MANA") )
+
+    if (parser->matchKeyword ("USE_MANA") )
     {
       mana_ =  parser->getInteger();
       return OK;
     }
 
-  if (parser->matchKeyword ("MULTIPLE") )
-    {
-      productNumber_ =  parser->getInteger();
-      if(productNumber_ == 0)
-        productNumber_ = 1;
-      return OK;
-    }
 
-
-  if (parser->matchKeyword ("TOOL") )
-  {
-      ToolUseElement * tool = ToolUseElement::readElement (parser);
-      if( tool)
-        tools_.push_back(tool);
-      return OK;
-    }
       return OK;
 }
 
 
+void SummonUsingStrategy::save(ostream &out)
+{
+    BasicProductionStrategy::save(out);
+    if(summonedRace_) out<<"SUMMONS"<<" "<<summonedRace_->getTag()
+            <<" "<<productionDays_ << endl;
+    if(mana_) out<<"USE_MANA"<<" "<<mana_<<endl;
+
+}
 
 
 
@@ -202,7 +191,7 @@ UnitEntity *  SummonUsingStrategy::findSummoningTarget(UnitEntity * unit)
  				if(newUnit == 0) // Something wrong with placeholder
     				newUnit   = new UnitEntity(unit);
 
-      	if(units.addNew(newUnit) != OK)
+      	if(gameFacade->units.addNew(newUnit) != OK)
       		{
         		cout << "Failed to add new unit \n";
         		return 0;

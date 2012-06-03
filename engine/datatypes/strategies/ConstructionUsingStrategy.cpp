@@ -28,9 +28,7 @@
 #include "GameConfig.h"
 #include "StringData.h"
 
-extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
-extern RulesCollection <ConstructionRule>      constructions;
-extern RulesCollection    <ItemRule>     items;
+
 
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
@@ -61,7 +59,7 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("PRODUCES") )
     {
       string tag = parser->getWord();
-      construction_ = constructions[tag];
+      construction_ = gameFacade->constructions[tag];
       if(construction_ == 0 )
       {
         cout << "Unknown construction type to produce: "<< tag<<" \n";
@@ -74,7 +72,7 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("CONSUME") )
     {
-      resourceType_ = items[parser->getWord()];
+      resourceType_ = gameFacade->items[parser->getWord()];
       resourceNumber_ =  parser->getInteger();
       if( (resourceNumber_ == 0) ||  (resourceType_ == 0) )
         {
@@ -87,7 +85,7 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("UPGRADE") )
     {
       string tag = parser->getWord();
-      constructionToUpgrade_ = constructions[tag];
+      constructionToUpgrade_ = gameFacade->constructions[tag];
       if(constructionToUpgrade_ == 0 )
       {
         cout << "Unknown construction type to upgrade: "<< tag<<" \n";
@@ -96,6 +94,13 @@ ConstructionUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
       return OK;
+}
+void ConstructionUsingStrategy::save(ostream &out)
+{
+    if(construction_) out<<"PRODUCES"<<" "<<construction_->getTag()<<" "<<productionDays_ << endl;
+    if(resourceType_) out<<"CONSUME"<<" "<<resourceType_->getTag()<<" "<<resourceNumber_ <<endl;
+    if(constructionToUpgrade_) out<<"UPGRADE"<<" "<< constructionToUpgrade_->getTag()<<endl;
+
 }
 
 

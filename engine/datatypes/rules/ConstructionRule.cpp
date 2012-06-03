@@ -14,6 +14,7 @@
  ***************************************************************************/
  
 
+#include "GameFacade.h"
 #include "ConstructionRule.h"
 #include "ConstructionWorksElement.h"
 #include "SkillElement.h"
@@ -34,9 +35,9 @@
 #include "BinaryMessage.h"
 #include "StringData.h"
 
-extern EntitiesCollection <ConstructionEntity>   buildingsAndShips;
-ConstructionRule   sampleConstructionRule =   ConstructionRule("CONSTRUCTION", &sampleGameData);
-RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions.rules"));
+
+ConstructionRule   sampleConstructionRule("CONSTRUCTION", &sampleGameData);
+//RulesCollection <ConstructionRule>      constructions(new DataStorageHandler("constructions.rules"),&sampleConstructionRule);
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
 
@@ -99,7 +100,7 @@ ConstructionRule::initialize        ( Parser *parser )
 	  }
   if (parser->matchKeyword("TITLE"))
 	  {
-      generateTitle_ = titles[parser->getWord()];
+      generateTitle_ = gameFacade->titles[parser->getWord()];
 	    return OK;
 	  }
   if (parser->matchKeyword("BATTLE"))
@@ -119,35 +120,33 @@ ConstructionRule::initialize        ( Parser *parser )
   if (parser->matchKeyword("STAFF_CONDITION"))
     {
 
-      staffCondition_ = dynamic_cast<SkillCondition *> (createByKeyword(parser->getWord()));
+      staffCondition_ = BasicCondition::readCondition(parser);
       if(staffCondition_)
       {
         staffCondition_->initialize(parser) ;
-        staffCondition_->setSubject(this);
         }
       return OK;
     }
 
-  if (parser->matchKeyword("STAFF_CAPACITY"))
+    if (parser->matchKeyword("STAFF_CAPACITY"))
     {
-      if(parser->matchInteger())
-				{
-					int index =  parser->getInteger();
-					capacity_[index]  = parser->getInteger();
-          if(capacity_[index] )
-                  mobile_ = true;
-				}
-			else
-					{
-						string modeTag = parser->getWord();
-						if(movementModes.isValidTag(modeTag))
-							{
-								capacity_[modeTag]  = parser->getInteger();
-                if(capacity_[modeTag] )
-                  mobile_ = true;
-							}
-					}
-      return OK;
+        if (parser->matchInteger())
+        {
+            int index = parser->getInteger();
+            capacity_[index] = parser->getInteger();
+            if (capacity_[index])
+                mobile_ = true;
+        } else
+        {
+            string modeTag = parser->getWord();
+            if (gameFacade->movementModes.isValidTag(modeTag))
+            {
+                capacity_[modeTag] = parser->getInteger();
+                if (capacity_[modeTag])
+                    mobile_ = true;
+            }
+        }
+        return OK;
     }
 
   if (parser->matchKeyword("LAND"))
@@ -174,11 +173,13 @@ ConstructionRule::initialize        ( Parser *parser )
           GameData * temp =  prototypeManager->findInRegistry(keyword);
           if(temp == 0)
           {
-            cerr << "Unknown building paradigm " << keyword  << " for construstion " << print()<< endl;
+            cerr << "Unknown building paradigm " << keyword
+                    << " for construstion " << print()<< endl;
           }
           else
           {
-            buildingParadigm_ = dynamic_cast<BuildUsingStrategy *>(temp ->createInstanceOfSelf ());
+            buildingParadigm_ = dynamic_cast<BuildUsingStrategy *>
+                    (temp ->createInstanceOfSelf ());
           }
           return OK;
         }
@@ -186,11 +187,12 @@ ConstructionRule::initialize        ( Parser *parser )
           if (parser->matchKeyword("BUILD_CONDITION"))
     {
 
-      buildCondition_ = dynamic_cast<BasicCondition *> (createByKeyword(parser->getWord()));
+      buildCondition_ = dynamic_cast<BasicCondition *>
+              (createByKeyword(parser->getWord()));
       if(buildCondition_)
       {
         buildCondition_->initialize(parser) ;
-        buildCondition_->setSubject(this);
+        //buildCondition_->setSubject(this);
         }
       return OK;
     }
@@ -211,14 +213,67 @@ ConstructionRule::initialize        ( Parser *parser )
       return OK;
 }
 
+void ConstructionRule::save(ostream &out)
+{
+  Rule::save(out);
+  for(vector<ConstructionWorksElement *>::iterator iter = resources_.begin();
+          iter != resources_.end(); ++iter)
+  {
+     out<<"RESOURCE"<<" ";
+     (*iter)->save(out);
+  }
+  if(skill_)
+  {
+      out<<"SKILL"<<" ";
+      skill_->save(out);
+  }
+  if(buildingSkill_)
+  {
+      out<<"BUILDING_SKILL"<<" ";
+       buildingSkill_->save(out);
+  }
+  if(generateTitle_)out<<"TITLE"<<" "<<generateTitle_->getTag() <<endl;
+  if(isBattle_)out<<"BATTLE"<<" "<<endl;
+  if(maxStaff_)out<<"STAFF_MEN"<<" "<<maxStaff_ <<endl;
+  if(staffCondition_)
+  {
+      out<<"STAFF_CONDITION"<<" "<<staffCondition_->getKeyword() <<endl;
+      staffCondition_->save(out);
+  }
+ for(int i =0; i <gameFacade->movementModes.size(); ++i)
+  {
+    if(capacity_[i]) out << "STAFF_CAPACITY "<<(gameFacade->movementModes[i])->getTag()
+            <<" " << capacity_[i] <<endl;
+  }
+  if(landUse_)out<<"LAND"<<" "<<landUse_ <<endl;
+  if(economyBonus_)out<<"ECONOMY"<<" "<< economyBonus_<<endl;
+  if(weight_)out<<"WEIGHT"<<" "<< weight_<<endl;
+  // There is also parameter PRICE in rulefiles which is not used.
+  if(buildingParadigm_)
+  {
+      out<<"BUILDING_PARADIGM"<<" "<<buildingParadigm_->getKeyword() <<endl;
+      buildingParadigm_->save(out);
+  }
+  if(buildCondition_)
+  {
+      out<<"BUILD_CONDITION"<<" "<< buildCondition_->getKeyword()<<endl;
+      buildCondition_->save(out);
+  }
+    bonuses_.save(out,"BONUS ",0);
+    stats_.save(out,"",0);
+    skillBonuses_.save(out);
+    movementBonuses_.save(out);
+}
+
 
 
 ConstructionEntity * ConstructionRule::startConstruction(UnitEntity * unit)
 {
-  ConstructionEntity  * newBuilding   = dynamic_cast<ConstructionEntity *> (createByKeyword(entityKeyword_));
+  ConstructionEntity  * newBuilding   = dynamic_cast<ConstructionEntity *>
+          (createByKeyword(entityKeyword_));
   if(newBuilding)
   {
-    if(buildingsAndShips.addNew(newBuilding) != OK)
+    if(gameFacade->buildingsAndShips.addNew(newBuilding) != OK)
       {
         cout << "Failed to add new building \n";
         return 0;
@@ -309,10 +364,6 @@ void    ConstructionRule::extractKnowledge (Entity * recipient, int parameter)
 	skillBonuses_.extractKnowledge(recipient, 1);
 
 
-
-
-
-
   if(buildCondition_)
     buildCondition_->extractKnowledge(recipient);
   if(staffCondition_)
@@ -366,13 +417,93 @@ void ConstructionRule::printDescription(ReportPrinter & out)
 	 skillBonuses_.report(out);
 }
 
+
+
 vector <AbstractData *> ConstructionRule::aPrint()
 {
-  vector <AbstractData *> v;
-  return v;
+  vector <AbstractData *> out;
+  out.push_back(new StringData(getDescription()));
+
+  if(!resources_.empty())
+  {
+        out.push_back(new StringData(" Requires "));
+    for (ConstructionWorksIterator iter = resources_.begin();
+        iter != resources_.end();++iter )
+        {
+          if(iter != resources_.begin())
+        {
+            out.push_back(new StringData(", "));
+          }
+          out.push_back((*iter));
+        }
+    out.push_back(new StringData(". "));
+  }
+
+  if(buildingSkill_)
+  {
+      out.push_back(new StringData(" Requires "));
+      vector <AbstractData *> v = SkillLevelElement(buildingSkill_->getSkill() ,buildingSkill_->getLevel()).aPrintLevel();
+      for(vector<AbstractData *>::iterator iter= v.begin(); iter != v.end(); iter++)
+        {
+                out.push_back(*iter);
+        }
+       out.push_back(new StringData(" to build."));
+  }
+  if(generateTitle_)
+    {
+        out.push_back(new StringData("Generates "));
+        out.push_back(new StringData(generateTitle_->getName()));
+        out.push_back(new StringData(" title."));
+    }
+
+  out.push_back(new StringData(""));
+ if(isBattle_)
+ {
+     out.push_back(new StringData("May fight in battles."));
+ }
+
+ if(!stats_.empty())
+ {
+     bool isFirst = true;
+     out.push_back(new StringData(" Adds "));
+     vector<AbstractArray> statPrint = stats_.aPrint();
+     for(vector <AbstractArray>::iterator iter = statPrint.begin();
+     iter != statPrint.end(); ++iter)
+     {
+         if(!isFirst)
+         {
+             out.push_back(new StringData(", "));
+         }
+         else
+         {
+             isFirst = false;
+         }
+         for(vector <AbstractData *>::iterator iter2 = (*iter).begin();
+         iter2 != (*iter).end(); ++iter2)
+         {
+             out.push_back(*iter2);
+         }
+     }
+     out.push_back(new StringData(" to units inside. "));
+ }
+
+ vector<AbstractArray> v1 = skillBonuses_.aPrintReport();
+ for(vector<AbstractArray>::iterator iter= v1.begin(); iter != v1.end(); iter++)
+   {
+
+     for(AbstractArray::iterator iter2= (*iter).begin(); iter2 != (*iter).end(); iter2++)
+       {
+           out.push_back(*iter2);
+       }
+   }
+       return out;
 }
 
-USING_RESULT ConstructionRule::startNewConstruction(UnitEntity * unit,ConstructionEntity *buildingOrShip, AbstractData * target)
+
+
+
+USING_RESULT ConstructionRule::startNewConstruction(UnitEntity * unit,
+        ConstructionEntity *buildingOrShip, AbstractData * target)
 {
 
 // Check unit has skill to start construction
@@ -437,11 +568,9 @@ USING_RESULT ConstructionRule::startNewConstruction(UnitEntity * unit,Constructi
 
 
 
-USING_RESULT ConstructionRule::buildExistingConstruction(UnitEntity * unit, SkillRule * skill, int &useCounter,OrderLine * order)
-{
-  
-  
+USING_RESULT ConstructionRule::buildExistingConstruction(UnitEntity * unit,
+        SkillRule * skill, int &useCounter,OrderLine * order)
+{  
   USING_RESULT result = buildingParadigm_->unitUse(unit, skill, useCounter,order);
-
   return result;  
 }

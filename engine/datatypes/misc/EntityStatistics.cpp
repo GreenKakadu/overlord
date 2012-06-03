@@ -6,6 +6,8 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "EntityStatistics.h"
+#include "StringData.h"
+#include "IntegerData.h"
 
 EntityStatistics::EntityStatistics()
 {
@@ -44,75 +46,74 @@ STATUS EntityStatistics::initialize(Parser * parser)
      rangedDamage_ = parser->getInteger();
       return OK;
     }
-  if (parser->matchKeyword("DAMAGE_TYPE"))
+    if (parser->matchKeyword("DAMAGE_TYPE"))
     {
-			if(parser->matchInteger())
-				{
-					switch(parser->getInteger())
-					{
-						case AIR:
-						{
-				 			damageType_= AIR;
-      	 	    return OK;
-						}
-						case WATER:
-						{
-				 			damageType_= WATER;
-      	 	    return OK;
-						}
-						case EARTH:
-						{
-				 			damageType_= EARTH;
-      	 	    return OK;
-						}
-						case FIRE:
-						{
-				 			damageType_= FIRE;
-      	 	    return OK;
-						}
-						case VOID_DAMAGE:
-						{
-                                                  damageType_= VOID_DAMAGE;
-      	 	    return OK;
-						}
-						default:
-						{
-				 			damageType_= PHYSICAL;
-      	 	    return OK;
-						}
+        if (parser->matchInteger())
+        {
+            switch (parser->getInteger())
+            {
+                case AIR:
+                {
+                    damageType_ = AIR;
+                    return OK;
+                }
+                case WATER:
+                {
+                    damageType_ = WATER;
+                    return OK;
+                }
+                case EARTH:
+                {
+                    damageType_ = EARTH;
+                    return OK;
+                }
+                case FIRE:
+                {
+                    damageType_ = FIRE;
+                    return OK;
+                }
+                case VOID_DAMAGE:
+                {
+                    damageType_ = VOID_DAMAGE;
+                    return OK;
+                }
+                default:
+                {
+                    damageType_ = PHYSICAL;
+                    return OK;
+                }
 
-				 }
-				}
-			else
-			{
-				if(parser->matchKeyword("AIR"))
-					{
-						damageType_ = AIR;
-      			return OK;
-					}
-				if(parser->matchKeyword("EARTH"))
-					{
-						damageType_ = EARTH;
-      			return OK;
-					}
-				if(parser->matchKeyword("FIRE"))
-					{
-						damageType_ = FIRE;
-      			return OK;
-					}
-				if(parser->matchKeyword("VOID"))
-					{
-                                          damageType_ = VOID_DAMAGE;
-      			return OK;
-					}
-				if(parser->matchKeyword("WATER"))
-					{
-						damageType_ = WATER;
-      			return OK;
-					}
-			}
+            }
+        } else
+        {
+            if (parser->matchKeyword("AIR"))
+            {
+                damageType_ = AIR;
+                return OK;
+            }
+            if (parser->matchKeyword("EARTH"))
+            {
+                damageType_ = EARTH;
+                return OK;
+            }
+            if (parser->matchKeyword("FIRE"))
+            {
+                damageType_ = FIRE;
+                return OK;
+            }
+            if (parser->matchKeyword("VOID"))
+            {
+                damageType_ = VOID_DAMAGE;
+                return OK;
+            }
+            if (parser->matchKeyword("WATER"))
+            {
+                damageType_ = WATER;
+                return OK;
+            }
+        }
     }
-  if (parser->matchKeyword("MISSILE"))
+    if (parser->matchKeyword("MISSILE"))
     {
       missile_ = parser->getInteger();
       return OK;
@@ -155,6 +156,67 @@ STATUS EntityStatistics::initialize(Parser * parser)
       return OK;
 }
 
+
+
+void EntityStatistics::save(ostream &out,string prefix, int defaultValue)
+{
+    if(melee_ != defaultValue) out <<prefix<< "MELEE "<<melee_<<endl;
+    if(initiative_ != defaultValue) out <<prefix<< "INITIATIVE "<<initiative_<<endl;
+    if(defence_ != defaultValue) out <<prefix<< "DEFENSE "<<defence_<<endl;
+    if(damage_ != defaultValue) out <<prefix<< "DAMAGE "<<damage_<<endl;
+    if(rangedDamage_ != defaultValue) out <<prefix<< "RANGED_DAMAGE "<<rangedDamage_<<endl;
+
+    switch (damageType_)
+    {
+        case AIR:
+        {
+            out <<prefix<< "DAMAGE_TYPE "<<"AIR" <<endl;
+            break;
+        }
+        case WATER:
+        {
+            out <<prefix<< "DAMAGE_TYPE "<<"WATER" <<endl;
+            break;
+        }
+        case EARTH:
+        {
+             out <<prefix<< "DAMAGE_TYPE "<<"EARTH" <<endl;
+            break;
+        }
+        case FIRE:
+        {
+             out <<prefix<< "DAMAGE_TYPE "<<"FIRE" <<endl;
+            break;
+        }
+        case VOID_DAMAGE:
+        {
+            out <<prefix<< "DAMAGE_TYPE "<<"VOID_DAMAGE" <<endl;
+            break;
+        }
+        default: //damageType_ = PHYSICAL;
+        {
+              //out <<prefix<< "DAMAGE_TYPE "<<"PHYSICAL" <<endl;
+       }
+
+    }
+//    if(damageType_ != PHYSICAL)
+//    {
+//        out <<prefix<< "DAMAGE_TYPE "<<damageType_<<endl;
+//    }
+
+
+
+    if(missile_ !=defaultValue ) out <<prefix<< "MISSILE "<<missile_<<endl;
+    if(numOfHits_ !=defaultValue ) out <<prefix<< "HITS "<<numOfHits_<<endl;
+    if(life_ != defaultValue) out <<prefix<< "LIFE "<<life_<<endl;
+    if(mana_ != defaultValue) out <<prefix<< "MANA "<<mana_<<endl;
+    if(upkeep_ != defaultValue) out <<prefix<< "UPKEEP "<<upkeep_<<endl;
+    if(controlPoints_ != defaultValue) out <<prefix<< "CONTROL "<<controlPoints_<<endl;
+    if(stealth_ != defaultValue) out <<prefix<< "STEALTH "<<stealth_<<endl;
+    if(observation_ != defaultValue) out <<prefix<< "OBSERVATION "<<observation_<<endl;
+}
+
+
 void EntityStatistics::scaleControlPoints(int num, int factor)
 {
     int cp = controlPoints_ * num;
@@ -192,6 +254,25 @@ void EntityStatistics::reportStatistics(ostream &out)
   out << ". ";
 }
 
+vector<AbstractArray> EntityStatistics::aPrint()
+{
+   vector<AbstractArray> out;
+   aPrintThisStat_(initiative_, "initiative", out );
+   aPrintThisStat_(melee_, "attack", out);
+   aPrintThisStat_(missile_, "missile", out);
+   aPrintThisStat_(defence_, "defence", out);
+   aPrintThisStat_(damage_, "damage", out);
+   aPrintThisStat_(rangedDamage_, "range", out);
+   aPrintThisStat_(damageType_, "type", out);
+   aPrintThisStat_(numOfHits_, "hits", out);
+   aPrintThisStat_(life_, "life", out);
+   aPrintThisStat_(controlPoints_, "CP", out);
+   aPrintThisStat_(stealth_, "stealth", out);
+   aPrintThisStat_(observation_, "observation", out);
+  return out;
+}
+
+
 /*
  * Prints to output one statistic data if it is non-zero.
  */
@@ -208,6 +289,20 @@ void  EntityStatistics::printThisStat_(int thisStat, const char * name, bool & i
        }
 }
 
+/*
+ * Prints to string array one statistic data if it is non-zero.
+ */
+void  EntityStatistics::aPrintThisStat_(int thisStat, const char * name, vector<AbstractArray> & out)
+{
+    vector<AbstractData *> v;
+    if(thisStat)
+      {
+          v.push_back(new StringData(name));
+          v.push_back(new StringData(": "));
+          v.push_back(new IntegerData(thisStat));
+          out.push_back(v);
+       }
+}
 /*
  * Adds stat modifiers
  */

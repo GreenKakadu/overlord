@@ -8,7 +8,7 @@
 #include "CombatStanceVariety.h"
 
 CombatStanceVariety    sampleCombatStance    ("COMBAT_STANCE",   &sampleGameData);
-VarietiesCollection <CombatStanceVariety>    combatStances(new DataStorageHandler("combat_stances.var"));
+//VarietiesCollection <CombatStanceVariety>    combatStances(new DataStorageHandler("combat_stances.var"));
 //CombatStanceVariety * findStanceByTag(const string &tag)
 //{
 // return GET_FROM_COLLECTION<CombatStanceVariety>(&stances,tag);

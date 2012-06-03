@@ -23,7 +23,8 @@ public:
     virtual ~EffectRule();
 
        virtual STATUS     initialize      ( Parser *parser);
-      //GameData * createInstanceOfSelf();
+       virtual void save(ostream &out);
+     //GameData * createInstanceOfSelf();
        virtual bool isToBeCreated(LocationEntity * location);
        virtual EffectEntity * createEffect(LocationEntity * location);
        virtual void deleteEffect(LocationEntity * location);
@@ -44,7 +45,7 @@ protected:
 private:
 
 };
-extern RulesCollection <EffectRule>    effectRules  ;
+//extern RulesCollection <EffectRule>    effectRules  ;
 typedef   vector <EffectRule>::iterator EffectRulesIterator;
 extern  EffectRule      sampleEffectRule;
 #endif	/* _EFFECTRULE_H */

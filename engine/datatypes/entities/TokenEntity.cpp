@@ -14,8 +14,10 @@ email                : Alex.Dribin@gmail.com
 ***************************************************************************/
 #include <algorithm>
 #include "TokenEntity.h"
+#include "GameFacade.h"
 #include "TeachingOffer.h"
 #include "UnitEntity.h"
+#include "ConstructionEntity.h"
 #include "FactionEntity.h"
 #include "LocationEntity.h"
 #include "SimpleMessage.h"
@@ -42,7 +44,7 @@ email                : Alex.Dribin@gmail.com
 #include "BattleField.h"
 #include "CombatOrder.h"
 #include "CombatMoveVariety.h"
-extern DataManipulator * dataManipulatorPtr;
+//extern DataManipulator * dataManipulatorPtr;
 extern ReportPattern * newLevelReporter;
 extern ReportPattern * maxLevelReporter;
 extern ReportPattern *	cannotOathYourselfReporter;
@@ -85,6 +87,7 @@ TokenEntity::TokenEntity (const string & keyword, GameData * parent ) : Entity(k
   inventory_ = InventoryAttribute(this);
   loyality_ = 100;
   isDisbanded_ = false;
+  lastFaction_ =0;
 }
 
 
@@ -97,6 +100,7 @@ TokenEntity::TokenEntity(const TokenEntity * prototype): Entity(prototype)
   // combatTactics_.report(cerr);
   // cerr <<endl;
   faction_ = 0;
+  lastFaction_ =0;
   toOath_ = 0;
   moving_ = 0;
   isMoving_ = false;
@@ -150,7 +154,7 @@ STATUS TokenEntity::initialize        ( Parser *parser )
   
   if (parser->matchKeyword("FACTION"))
   {
-    faction_ = factions[ parser->getWord()];
+    faction_ = gameFacade->factions[ parser->getWord()];
     
     return OK;
   }
@@ -222,7 +226,7 @@ STATUS TokenEntity::initialize        ( Parser *parser )
   {
     addCombatSetting(parser->getText());
   }
-  
+
   skills_.initialize(parser);
   inventory_.initialize(parser);
   combatTactics_.initialize(parser);
@@ -234,11 +238,8 @@ STATUS TokenEntity::initialize        ( Parser *parser )
 
 void TokenEntity::save(ostream &out)
 {
-  out << endl;
   Entity::save(out);
-  //  out << keyword_ << " " <<tag_ << endl;
-  //  if(!name_.empty()) out << "NAME " <<name_ << endl;
-  //  if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
+
   if(faction_) out << "FACTION " << faction_->getTag()<<endl;
   if(silent_) out << "SILENT"<<endl;
   if(announcing_) out << "ANNOUNCE"<<endl;
@@ -278,6 +279,300 @@ void TokenEntity::save(ostream &out)
   }
 }
 
+void TokenEntity::save(ostream &out,string prefix)
+{
+  Entity::save(out,prefix);
+  //  out << keyword_ << " " <<tag_ << endl;
+  //  if(!name_.empty()) out << "NAME " <<name_ << endl;
+  //  if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
+  if(faction_) out << prefix<< "FACTION " << faction_->getTag()<<endl;
+  if(silent_) out << prefix<< "SILENT"<<endl;
+  if(announcing_) out << prefix<< "ANNOUNCE"<<endl;
+  if(advertising_) out << prefix<< "ADVERTISE"<<endl;
+  if(!withdrawingSupport_) out << prefix<< "NO_SUPPORT"<<endl;
+  if(!sharing_) out << prefix<< "NO_SHARING"<<endl;
+  //  TokenEntity * temp = this;
+  combatTactics_.save(out,prefix);
+
+  for (vector <string>::iterator iter = combatSettings_.begin();
+  iter != combatSettings_.end(); iter++)
+  {
+    out << prefix<< "COMBAT " <<(*iter)<<endl;
+  }
+
+
+  for (CombatOrderIterator iter = combatOrders_.begin();
+  iter != combatOrders_.end(); iter++)
+  {
+    (*iter)->save(out,prefix);
+  }
+
+  inventory_.save(out,prefix);
+  skills_.save(out,prefix);
+
+  for (SkillUseIterator iter= skillUse_.begin(); iter != skillUse_.end(); iter++)
+  {
+    out << prefix<< "SKILL_USE ";
+    (*iter)->save(out,prefix);
+  }
+
+  out << prefix<<"LOYALITY "<<loyality_<<endl;
+
+  if(target_)
+  {
+    out << prefix<< "TARGET "; target_->saveAsParameter(out); out<< endl;
+  }
+}
+
+
+
+// Create almost deep copy of game object
+
+TokenEntity *  TokenEntity::makePrivateImage()
+{
+    TokenEntity * image = dynamic_cast<TokenEntity *> (this->createInstanceOfSelf());
+    copyPrivateImage(image, this);
+    return image;
+}
+
+void  TokenEntity::copyPrivateImage(TokenEntity * image, TokenEntity * source)
+{
+    image->setTag(source->getTag());
+    image->setName(source->getName());
+    image->setDescription(source->getDescription());
+    if (moving_)
+    {
+        image->moving_ = source->moving_->clone();
+    }
+    else
+    {
+        image->moving_ = 0;
+    }
+    image->location_ = source->location_;
+
+
+
+    image->setFaction(source->getFaction());
+    image->setSilent(source->isSilent());
+    image->setAnnouncing(source->getAnnouncing());
+    image->setAdvertising(source->getAdvertising());
+    image->setWithdrawingSupport(source->getWithdrawingSupport());
+    image->setSharing(source->getSharing());
+
+    image->combatTactics_ = source->combatTactics_;
+    image->combatSettings_ = source->combatSettings_;
+    image->combatOrders_ = source->combatOrders_;
+
+    image->skills_ = source->skills_;
+    image->skillUse_ = source->skillUse_;
+    image->loyality_ = source->loyality_;
+    image->target_ = source->target_;
+    image->inventory_ = source->inventory_;
+    image->enchantments_ = source->enchantments_;
+    image->orders_ = source->orders_;
+    image->imageLevel_ = PRIVATE_IMAGE;
+    image->isImage_ = true;
+    image->setTimeStamp(gameFacade->getGameTurn(), gameFacade->getCurrentDay());
+    image->imageObservation_ =VERY_BIG_NUMBER;
+}
+
+
+
+void TokenEntity::makeAlliedImage(TokenEntity * source)
+{
+    setFaction(source->getFaction());
+    inventory_ = source->inventory_;
+    imageLevel_ = ALLIED_IMAGE;
+}
+
+
+void TokenEntity::makeObservedImage(TokenEntity * source)
+{
+    setFaction(source->getFaction());
+    inventory_ = source->inventory_.getObservableImage();
+    imageLevel_ = OBSERVABLE_IMAGE;
+    //inventory_.combineInventories(&(token->inventory_));
+}
+long wcounter2 = 0;
+
+
+
+// Create token object as it is seen by referent
+// Take into account observation. (imageLevel = obse)
+// for allied units effective observation may be higher
+
+TokenEntity * TokenEntity::createTokenImage(FactionEntity * referent, int observation)
+{
+    TokenEntity * image;
+    wcounter2++;
+//    if (wcounter2 % 1000 == 0)
+//        cerr << "Day " << gameFacade->getCurrentDay() << " createTokenImage  counter = " << wcounter2 / 1000 << ",000" << endl;
+    if (referent == this->getFaction())
+    {
+       return makePrivateImage();
+  //       image = dynamic_cast<TokenEntity *> (this->createInstanceOfSelf());
+ //       makePrivateImage(image, this);
+ //       return image;
+
+    }
+
+    // Not seen if stealth is higher than observation and not adverticind and not ally
+    if (observation < this->getStealth() && !this->getAdvertising()
+            && (!referent->stanceAtLeast(this->getFaction(), alliedStance)))
+    {
+        return 0;
+    }
+
+
+    image = dynamic_cast<TokenEntity *> (this->createInstanceOfSelf());
+
+
+
+    image->imageObservation_ = observation;
+    image->setTag(this->getTag());
+    image->setName(this->getName());
+    image->setDescription(this->getDescription());
+    if (moving_)
+    {
+        image->moving_ = this->moving_->clone();
+    }
+    else
+    {
+        image->moving_ = 0;
+    }
+    image->location_ = this->location_;
+
+
+    image->isImage_ = true;
+    image->combatTactics_.undefine();
+    image->setTimeStamp(gameFacade->getGameTurn(), gameFacade->getCurrentDay());
+    //--------------------------------------------------------
+
+
+    if (referent->stanceAtLeast(this->getFaction(), alliedStance))
+    {
+        image->makeAlliedImage(this);
+    }
+    else // Not allied
+    {
+        if (image->imageObservation_ > this->getStealth()
+                || this->getAdvertising())
+        {
+            image->makeObservedImage(this);
+        }
+        else
+        {
+            image->inventory_ = this->inventory_.getObservableImage();
+            this->imageLevel_ = UNKNOWN_IMAGE;
+        }
+
+    }
+
+    return image;
+}
+
+// Update token image with the data from another image
+void TokenEntity::updateImage(TokenEntity *tokenToAdd)
+{
+  Entity::updateImage(tokenToAdd);
+
+  if(this->getTimeStamp() < tokenToAdd->getTimeStamp())      // Image is newer
+    {
+      if(tokenToAdd->getFaction())
+        {
+          setFaction(tokenToAdd->getFaction());
+        }
+       moving_ =  tokenToAdd->moving_;
+       skillUse_ = tokenToAdd->skillUse_;
+       this->loyality_ = tokenToAdd->loyality_;
+
+      if(tokenToAdd->getImageLevel() == PRIVATE_IMAGE)
+          {
+            target_ = tokenToAdd->target_;
+            this->silent_ = tokenToAdd->silent_;
+            this->sharing_ = tokenToAdd->sharing_;
+            this->announcing_ = tokenToAdd->announcing_;
+            this->advertising_ = tokenToAdd->advertising_;
+            this->withdrawingSupport_ = tokenToAdd->withdrawingSupport_;
+
+          }
+
+
+    }
+  else if(this->getTimeStamp() == tokenToAdd->getTimeStamp())// Image is the same age
+    {
+      if(tokenToAdd->getFaction())
+        {
+          setFaction(tokenToAdd->getFaction());
+        }
+
+      if(this->getImageLevel() < tokenToAdd->getImageLevel())// new image has more reliable data
+        {
+//
+          moving_ =  tokenToAdd->moving_;
+          skillUse_ = tokenToAdd->skillUse_;
+          this->loyality_ = tokenToAdd->loyality_;
+
+          if(tokenToAdd->getImageLevel() == PRIVATE_IMAGE)
+            {
+//
+              target_ = tokenToAdd->target_;
+              this->silent_ = tokenToAdd->silent_;
+              this->sharing_ = tokenToAdd->sharing_;
+               this->announcing_ = tokenToAdd->announcing_;
+               this->advertising_ = tokenToAdd->advertising_;
+               this->withdrawingSupport_ = tokenToAdd->withdrawingSupport_;
+            }
+
+        }
+//
+    }
+  else                                                       // Image is older
+    {
+//
+      if(getFaction()== 0 && tokenToAdd->getFaction())
+        {
+          setLastKnownFaction(tokenToAdd->getFaction());
+        }
+    }
+
+
+//====================
+   if(this->imageLevel_ == PRIVATE_IMAGE)
+     {
+         return;
+     }
+
+
+    if(this->imageLevel_ == ALLIED_IMAGE)
+     {
+            this->makeAlliedImage(tokenToAdd);
+            return;
+     }
+
+// OBSERVABLE_IMAGE: Faction info + visible inventory
+    if(this->imageLevel_ == OBSERVABLE_IMAGE)
+     {
+        if(tokenToAdd->imageLevel_ ==  ALLIED_IMAGE)
+        {
+            this->makeAlliedImage(tokenToAdd);
+            return;
+        }
+    }
+// UNKNOWN_IMAGE: visible inventory
+
+        if(tokenToAdd->imageLevel_ ==  ALLIED_IMAGE)
+        {
+        	this->makeAlliedImage(tokenToAdd);
+            return;
+        }
+
+        if(tokenToAdd->imageLevel_ ==  OBSERVABLE_IMAGE)
+        {
+        	this->makeObservedImage(tokenToAdd);
+        return;
+        }
+}
 
 
 void TokenEntity::dailyUpdate()
@@ -303,7 +598,10 @@ void TokenEntity::dailyUpdate()
 
 void TokenEntity::postProcessData()
 {
-  
+	if(isUnknownEntity())
+	{
+		return;
+	}
 }
 
 void TokenEntity::postPostProcessData()
@@ -407,41 +705,83 @@ void TokenEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
 {
   skills_.report(out);
   //  out << "May learn: ";
-  
-  RulesIterator skillIter;
   bool isFirst = true;
-  for (skillIter = skills.begin(); skillIter != skills.end(); skillIter++)
-  {
-    SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
-    if(skill == 0)
-      continue;
-    if((skill->getRequirement(0) == 0) && (getSkillLevel(skill) == 0))
-      continue;
-    
-    if (isTraced())
-      cout <<"== TRACING " << print()<< " May learn [T] " << endl; 
-    if( mayStudySkill(skill))
-    {
-      faction->addSkillKnowledge(skill, getSkillLevel(skill) + 1); // It may be better placed
-      // in addNewSkill
+  int level;
+  SkillRule * skill;
+vector < SkillLevelElement *> mayLearnSkills = getMayLearnList();
+for(vector < SkillLevelElement *>::iterator iter = mayLearnSkills.begin();
+        iter != mayLearnSkills.end(); ++iter)
+{
+    skill = (*iter)->getSkill();
+    level = getSkillLevel(skill);
+      faction->addSkillKnowledge(skill, level + 1);
       if( isFirst)
       {
-	isFirst = false;
+    if (isTraced())
+      cout <<"== TRACING " << print()<< " May learn: " << endl;
+      isFirst = false;
 	out << "May learn: ";
       }
       else
       {
 	out << ", ";
       }
-      skill->printLevel(getSkillLevel(skill) + 1, out);
-    }
-    
-  }
+      skill->printLevel(level + 1, out);
+}
+//  RulesIterator skillIter;
+//  bool isFirst = true;
+//  for (skillIter = skills.begin(); skillIter != skills.end(); skillIter++)
+//  {
+//    SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
+//    if(skill == 0)
+//      continue;
+//    if((skill->getRequirement(1) == 0) && (getSkillLevel(skill) == 0))
+//      continue;
+//
+//    if (isTraced())
+//      cout <<"== TRACING " << print()<< " May learn [T] " << endl;
+//    if( mayStudySkill(skill))
+//    {
+//      faction->addSkillKnowledge(skill, getSkillLevel(skill) + 1); // It may be better placed
+//      // in addNewSkill
+//      if( isFirst)
+//      {
+//	isFirst = false;
+//	out << "May learn: ";
+//      }
+//      else
+//      {
+//	out << ", ";
+//      }
+//      skill->printLevel(getSkillLevel(skill) + 1, out);
+//    }
+//
+//  }
   
   if( !isFirst)
     out << ". ";
 }
 
+vector < SkillLevelElement *> TokenEntity::getMayLearnList()
+{
+    vector <SkillLevelElement *> skillsMeyBeLearned;
+  for (RulesIterator skillIter = gameFacade->skills.begin(); skillIter != gameFacade->skills.end(); skillIter++)
+  {
+    SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
+    if(skill == 0)
+      continue;
+    if((skill->getRequirement(1) == 0) && (getSkillLevel(skill) == 0))
+      continue;
+
+
+    if( mayStudySkill(skill))
+    {
+        skillsMeyBeLearned.push_back(new SkillLevelElement(skill, getSkillLevel(skill)));
+    }
+
+  }
+   return  skillsMeyBeLearned;
+}
 
 void TokenEntity::addReport(ReportRecord report)
 {
@@ -546,6 +886,22 @@ void TokenEntity::giveAllInventory(TokenEntity * unit)
 
 
 
+vector <AbstractArray> TokenEntity::aPrintInventory()
+{
+  return inventory_.aPrint();
+}
+
+
+ vector <AbstractArray> TokenEntity::aPrintSkills()
+ {
+   return skills_.aPrint();
+ }
+
+vector <AbstractArray> TokenEntity::aPrintEnchant()
+{
+  return enchantments_.aPrint();
+}
+
 ///*
 // * Takes up to num items from inventory. Returns number of items taken
 // */
@@ -598,7 +954,7 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
   int TokenEntity::hasItem(ItemRule * item)
   {
     // This is a hack.
-    if(item == items["mana"])
+    if(item == gameFacade->items["mana"])
     {
       UnitEntity * unit = dynamic_cast<UnitEntity *>(this);
       if(unit)
@@ -637,7 +993,11 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
     inventory_.add(item, num);
   }
   
-  
+  void  TokenEntity::checkEquipmentConditions()
+  {
+  	inventory_.checkEquipmentConditions(this);
+  }
+
   
   
   // Stacking/Containment ========================================================
@@ -724,24 +1084,27 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
   
   //  TokenEntity::newLevelReporter_ = new ReportPattern(""," reached level "," in ","");
   
-  
-  
   void TokenEntity::gainNewLevel(SkillRule * skill, int newLevel)
-  {
-    TertiaryMessage * Message = new TertiaryMessage(newLevelReporter, this, new IntegerData(newLevel), skill);
-    addReport(Message, 0,0);
-    
-    // Add knowledge to faction
-    getFaction()->addSkillKnowledge(skill, newLevel);
+{
+    if (getFaction())
+    {
+        TertiaryMessage * Message = new TertiaryMessage(newLevelReporter, this, new IntegerData(newLevel), skill);
+        addReport(Message, 0, 0);
+
+        // Add knowledge to faction
+        getFaction()->addSkillKnowledge(skill, newLevel);
+        //    // Recalculate stats
+        //    recalculateStats();
+        // Is it maximum level?
+        if (newLevel >= skill->getMaxLevel())
+        {
+            BinaryMessage * Message = new BinaryMessage(maxLevelReporter, this, skill);
+            addReport(Message, 0, 0);
+        }
+    }
     // Recalculate stats
     recalculateStats();
-    // Is it maximum level?
-    if  ( newLevel >= skill->getMaxLevel() )
-    {
-      BinaryMessage * Message = new BinaryMessage(maxLevelReporter, this, skill);
-      addReport(Message, 0,0 );
-    }
-  }
+}
   
   
   
@@ -1229,7 +1592,7 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
   
   void TokenEntity::calculateTotalCapacityMode(int & capacity, MovementVariety * mode)
   {
-    calculateTotalCapacity(capacity, movementModes.getIndex(mode->getTag()));
+    calculateTotalCapacity(capacity, gameFacade->movementModes.getIndex(mode->getTag()));
   }
   
   
@@ -1296,11 +1659,13 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
   }
   
   
-  
+ 
+
   // For tokens at the same location
   bool TokenEntity::mayObserveTokenEntity(TokenEntity * tokenEntity)
   {
-    if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
+
+   if(tokenEntity->getFaction() == this->getFaction() ) // the same faction
       return true;
     if(tokenEntity->isExposed())
       return true;
@@ -1348,6 +1713,41 @@ int TokenEntity::takeFromInventory(ItemRule * item, int num)
     
   }
   
+ bool TokenEntity::mayBeIdentified(FactionEntity * faction)
+  {
+    if( faction == 0)
+      return false;
+    LocationEntity * location = getLocation();
+    if(location == 0)
+      return false;
+
+    for(UnitIterator iter = location->unitsPresent().begin();
+    iter != location->unitsPresent().end(); ++iter)
+    {
+      if( (*iter)->getFaction() == faction)
+      {
+         if ((*iter)->getObservation() > getStealth() )
+         {
+            return true;
+         }
+      }
+    }
+  // Constructions may observe too?
+    for(ConstructionIterator iter = location->constructionsPresent().begin();
+    iter != location->constructionsPresent().end(); ++iter)
+    {
+      if( (*iter)->getFaction() == faction)
+      {
+         if ((*iter)->getObservation() > getStealth() )
+         {
+            return true;
+         }
+      }
+    }
+    return false;
+
+  }
+
   
   
   ORDER_STATUS TokenEntity::oath(FactionEntity * faction)
@@ -1782,3 +2182,14 @@ void TokenEntity::setCombatSettings()
     return guarding_ && faction_->isNPCFaction();
   }
   
+void TokenEntity::extractAndAddKnowledge(Entity * recipient, int parameter)
+{
+//    if(recipient==factions["f08"])
+//    {
+//        cout<<"<======== Extracting Token "<<getTag()<<endl;
+//    }
+    //SkillsAttribute
+    skills_.extractAndAddKnowledge(recipient, parameter);
+    //InventoryAttribute
+    inventory_.extractAndAddKnowledge(recipient, parameter);;
+}

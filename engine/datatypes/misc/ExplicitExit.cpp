@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "ExplicitExit.h"
+#include "GameFacade.h"
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
 
@@ -40,7 +41,7 @@ void ExplicitExit::save(ostream & out)
 		{
      int time = standardTravelTime_[i];
 		 if( time != 0)
-			 out << " " << (movementModes[i])->getTag()<< " " << time ;
+			 out << " " << (gameFacade->movementModes[i])->getTag()<< " " << time ;
 		}
 		
 		out << endl;

@@ -21,8 +21,10 @@ public:
       FollowerRaceRule ( const FollowerRaceRule * prototype );
     	~FollowerRaceRule(){}
        STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       void printTypeSpecificDescription(ReportPrinter & out);
+      vector <AbstractData *> aPrintTypeSpecificDescription();
       LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
       bool teacherRequired(SkillRule * skill, UnitEntity * unit);
       bool mayMove(UnitEntity * unit);

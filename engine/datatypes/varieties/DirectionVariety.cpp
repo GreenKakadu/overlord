@@ -18,7 +18,7 @@
 //DirectionVariety::DirectionVariety(const DirectionVariety * prototype)
 //{
 //}
-VarietiesCollection <DirectionVariety>     directions(new DataStorageHandler("directions.var"));
+//VarietiesCollection <DirectionVariety>     directions(new DataStorageHandler("directions.var"));
 DirectionVariety sampleDirection ("DIR",      &sampleGameData);
 
 GameData * DirectionVariety::createInstanceOfSelf()

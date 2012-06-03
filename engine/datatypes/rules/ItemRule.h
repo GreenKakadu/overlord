@@ -24,6 +24,7 @@ public:
       ItemRule ( const string & keyword, GameData * parent);
       ItemRule ( const ItemRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
+      void save(ostream &out);
       GameData * createInstanceOfSelf();
   inline string getPluralName() const{return pluralName_;}
     void printDescription(ReportPrinter & out);
@@ -35,19 +36,19 @@ public:
   inline int getFormalPrice() const {return price_;}
   inline  EntityStatistics * getStats()  {return &stats;}
   inline  BasicCondition * demandsEquipCondition(){return equipCondition_;}
-	inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
+  inline int getCapacity(MovementVariety * mode){return capacity_[mode];}
   inline int getCapacity(int modeIndex){return capacity_[modeIndex];}
   inline int getEquipCapacity(int modeIndex){return equipCapacity_[modeIndex];}
   inline int getEquipCapacity(MovementVariety * mode){return equipCapacity_[mode];}
         void extractKnowledge (Entity * recipient, int parameter = 0);
         void applyEquipementEffects(UnitEntity * unit, int number);
-	inline CombatActionStrategy * getCombatAction() {return combatAction_;}
+  inline CombatActionStrategy * getCombatAction() {return combatAction_;}
          int getProductionBonusValue(SkillRule * skill);
          int getStudyBonus(SkillRule * skill);
          int getLearningBonus(SkillRule * skill);
-	inline bool isUnique() {return unique_;}
-	inline SkillLevelElement * getProspectSkill(){return prospectSkill_;}
-        inline bool isRegeneratingResource(){return isRegeneratingResource_;}
+  inline bool isUnique() {return unique_;}
+  inline SkillLevelElement * getProspectSkill(){return prospectSkill_;}
+  inline bool isRegeneratingResource(){return isRegeneratingResource_;}
     protected:
 	  string pluralName_;
 	  EquipmentSlotVariety * equipSlot_;
@@ -61,16 +62,16 @@ public:
 		bool special_;
 		bool magic_;
 		bool live_;
-                bool isRegeneratingResource_;
-		MovementMode<int> capacity_;
+        bool isRegeneratingResource_;
+	MovementMode<int> capacity_;
     MovementMode<int> equipCapacity_;
     EntityStatistics stats;
-		CombatActionStrategy * combatAction_;
-		SkillBonusComboAttribute skillBonuses_;
+	CombatActionStrategy * combatAction_;
+	SkillBonusComboAttribute skillBonuses_;
     private:
 };
 extern ItemRule * cash; // special value
 extern ItemRule * food; // special value
 extern ItemRule       sampleItem;
-extern RulesCollection <ItemRule>      items;
+//extern RulesCollection <ItemRule>      items;
 #endif

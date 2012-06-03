@@ -13,11 +13,17 @@
  ***************************************************************************/
 #include "OwnershipPolicy.h"
 #include "StanceVariety.h"
+#include "GameFacade.h"
 
 OwnershipPolicy::OwnershipPolicy(/*LocationEntity * location*/)
 {
 // location_ = location; 
  movePermission_ = 0;
+}
+
+OwnershipPolicy::OwnershipPolicy(OwnershipPolicy & p)
+{
+ movePermission_ = p.movePermission_ ;
 }
 
 
@@ -26,17 +32,23 @@ void OwnershipPolicy::initialize(Parser * parser)
 {
   if (parser->matchKeyword("OWNERSHIP_POLICY"))
 	{
-   movePermission_ = stances[parser->getWord()];	 
+   movePermission_ = gameFacade->stances[parser->getWord()];
 	}
   if(movePermission_ == 0) // default
-    movePermission_ = neutralStance;
+    movePermission_ = unknownStance;
 }
 
 
 
 void OwnershipPolicy::save(ostream &out)
 {
-  out<<"OWNERSHIP_POLICY "<< movePermission_->getTag()<< endl;
+    if(movePermission_ )
+    {
+        if(movePermission_ != unknownStance)
+        {
+        out<<"OWNERSHIP_POLICY "<< movePermission_->getTag()<< endl;
+        }
+    }
 }
 
 

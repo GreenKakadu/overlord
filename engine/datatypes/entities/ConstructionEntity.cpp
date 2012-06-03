@@ -13,6 +13,7 @@
  *                                                                                            *
  ***************************************************************************/
 #include <algorithm>
+#include "GameFacade.h"
 #include "RulesCollection.h"
 #include "EntitiesCollection.h"
 #include "FactionEntity.h"
@@ -40,8 +41,10 @@ extern ReportPattern * departFollowerReporter;
 extern ReportPattern * departPublicReporter;
 extern ReportPattern * arrivePrivateReporter;
 extern ReportPattern * arrivePublicReporter;
-EntitiesCollection <ConstructionEntity>   buildingsAndShips(new DataStorageHandler(gameConfig.getBuildingsFile() ));
-ConstructionEntity   sampleConstructionEntity =   ConstructionEntity("BUILDING", &sampleTokenEntity);
+ConstructionEntity   sampleConstructionEntity("BUILDING", &sampleTokenEntity);
+//EntitiesCollection <ConstructionEntity>   buildingsAndShips
+//        (new DataStorageHandler(gameConfig.getBuildingsFile() ), &sampleConstructionEntity );
+
 
 
 ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) : TokenEntity(prototype)
@@ -49,6 +52,7 @@ ConstructionEntity::ConstructionEntity( const  ConstructionEntity* prototype ) :
   effectiveStaff_ = 0;
   construction_ = 0;
   public_ = false;
+  isUnfinished_ =false;
 }
 
 
@@ -64,34 +68,40 @@ GameData * ConstructionEntity::createInstanceOfSelf()
 
 
 STATUS
-ConstructionEntity::initialize        ( Parser *parser )
+        ConstructionEntity::initialize        ( Parser *parser )
 {
- if (parser->matchKeyword("OWNER"))
-	{
-	  setFaction(factions[parser->getWord()]);
-	  return OK;
-	}
+    if (parser->matchKeyword("OWNER"))
+    {
+        setFaction(gameFacade->factions[parser->getWord()]);
+        return OK;
+    }
 
- if (parser->matchKeyword("CONSTRUCTION"))
-	{
-	  construction_ = constructions[parser->getWord()];
-	  stats.addStats(construction_->getStats());
-	  return OK;
-	}
+    if (parser->matchKeyword("CONSTRUCTION"))
+    {
+        construction_ = gameFacade->constructions[parser->getWord()];
+        stats.addStats(construction_->getStats());
+        return OK;
+    }
 
-  if (parser->matchKeyword("RESOURCE"))
-	  {
+    if (parser->matchKeyword("RESOURCE"))
+    {
         ConstructionWorksElement * newResource = ConstructionWorksElement::readElement(parser);
         if(newResource)
-          buildingWorks_.push_back(newResource);
-	    return OK;
-	  }
- if (parser->matchKeyword("PUBLIC"))
-	{
-	  public_ = true;
-	  return OK;
-	}
-	return TokenEntity::initialize(parser );
+            buildingWorks_.push_back(newResource);
+        return OK;
+    }
+    if (parser->matchKeyword("PUBLIC"))
+    {
+        public_ = true;
+        return OK;
+    }
+    if (parser->matchKeyword("UNFINISHED"))
+    {
+        isUnfinished_ = true;
+        return OK;
+    }
+
+    return TokenEntity::initialize(parser );
 }
 
 
@@ -102,6 +112,7 @@ void    ConstructionEntity::preprocessData()
 	faction_-> addConstruction(this);
    if(construction_ == 0)
     cerr << "ERROR: "<< print() << " has undefined construction type"<<endl;
+        this->addAllAddedUnits();
   TokenEntity::preprocessData();
 }
 
@@ -121,7 +132,6 @@ void ConstructionEntity::postProcessData()
 //{
 //
 //}
-
 
 
 void      ConstructionEntity::save (ostream &out)
@@ -146,14 +156,107 @@ void      ConstructionEntity::save (ostream &out)
   if(getFaction()) out << "OWNER " << getFaction()->getTag()<<endl;
 
   if(public_)  out <<"PUBLIC"<<endl;
+  if(isUnfinished_)  out <<"UNFINISHED"<<endl;
 }
 
+
+void ConstructionEntity::makeAlliedImage(TokenEntity * source)
+{
+    TokenEntity::makeAlliedImage(source);
+}
+
+void ConstructionEntity::makeObservedImage(TokenEntity * source)
+{
+    TokenEntity::makeObservedImage(source);
+
+}
+
+// Create token object as it is seen by referent
+// Take into account observation. (imageLevel = obse)
+// for allied units effective observation may be higher
+ConstructionEntity *     ConstructionEntity::createConstructionImage(FactionEntity * referent, int observation)
+{
+
+    TokenEntity * token = createTokenImage(referent,observation);
+    if(token==0)
+    {
+        return 0;
+    }
+    ConstructionEntity  * constructionToAdd = dynamic_cast<ConstructionEntity *> (token) ;
+
+ // all:
+   constructionToAdd->construction_ = this->construction_;
+    constructionToAdd->public_ = this->public_;
+ //allied
+   if((referent->stanceAtLeast(this->getFaction(),alliedStance)))
+    {
+        constructionToAdd->buildingWorks_ = this->buildingWorks_;
+    }
+    if(!this->buildingWorks_.empty())
+    {
+      constructionToAdd->isUnfinished_ =true;
+    }
+    return constructionToAdd;
+}
+
+
+//// Create token object as it is seen by referent
+//// Take into account observation. (imageLevel = obse)
+//// for allied units effective observation may be higher
+//ConstructionEntity *     ConstructionEntity::createConstructionImage(TokenEntity * referent)
+//{
+//
+//    TokenEntity  * token = createTokenImage(referent);
+//    if(token==0)
+//    {
+//        return 0;
+//    }
+//    ConstructionEntity  * constructionToAdd = dynamic_cast<ConstructionEntity *> (token) ;
+//
+// // all:
+//   constructionToAdd->construction_ = this->construction_;
+//    constructionToAdd->public_ = this->public_;
+// //allied
+//   if((referent->getFaction()->stanceAtLeast(this,alliedStance)))
+//    {
+//        constructionToAdd->buildingWorks_ = this->buildingWorks_;
+//    }
+//    if(!this->buildingWorks_.empty())
+//    {
+//      constructionToAdd->isUnfinished_ =true;
+//    }
+//    return constructionToAdd;
+//}
+
+// Update token image with the data from another image
+void ConstructionEntity::updateImage(ConstructionEntity *construction)
+{
+//    if(image->getTimeStamp() < this->getTimeStamp())
+//    {
+//        return;
+//    }
+
+   this->TokenEntity::updateImage(construction);
+// all:
+    this->construction_ = construction->construction_;
+    this->public_ = construction->public_;
+     if(construction->imageLevel_ == ALLIED_IMAGE)
+    {
+        this->buildingWorks_ = construction->buildingWorks_;
+        if(!this->buildingWorks_.empty())
+        {
+        this->isUnfinished_ =true;
+        }
+    }
+
+
+}
 
 
 int  ConstructionEntity::workToDo(ConstructionWorksVariety * buildingWorksType)
 {
     for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
-  {       
+  {
         //if(this->isTraced())
         //cout<< "++++>" <<print()<<":"<<(*iter)->getWorkType()->print()<<" vs. "<<buildingWorksType->print()<<endl;
     if((*iter)->getWorkType() == buildingWorksType)
@@ -210,15 +313,7 @@ void      ConstructionEntity::produceFactionReport (FactionEntity * faction, Rep
     }
      out<< " at "<< location_->print()<<".\n";
      out.incr_indent();
-//   for(vector<ConstructionWorksElement *>::iterator iter = buildingWorks_.begin(); iter != buildingWorks_.end();iter++)
-//   {
-//     if(iter == buildingWorks_.begin())
-//         out << " Needs ";
-//     else
-//         out << ", ";
-// 
-//     out<<(*iter)->getWorkAmount()<< " "<<(*iter)->getWorkType()->print();
-//   }
+
 
  reportAppearence(getFaction(), out);
   if(public_)  out <<" It is public.";
@@ -310,15 +405,15 @@ void ConstructionEntity::reportInventory(FactionEntity * faction, ReportPrinter 
     int capacity;
     int weight = 0;
     out << ". Weight "<<calculateTotalWeight(weight);
-    for(int i=0; i < movementModes.size(); i++)
+    for(int i=0; i < gameFacade->movementModes.size(); i++)
     {
       capacity =  getCapacity(i);
       if( capacity )
         {
           if(firstMode)
-            out << ". Capacity "<< capacity<< " (" << (movementModes[i])->getName()<<")\n";
+            out << ". Capacity "<< capacity<< " (" << (gameFacade->movementModes[i])->getName()<<")\n";
           else
-          out <<", "<< capacity<< " (" << (movementModes[i])->getName()<<")\n";
+          out <<", "<< capacity<< " (" << (gameFacade->movementModes[i])->getName()<<")\n";
           firstMode = false;
         }
 
@@ -406,7 +501,7 @@ bool ConstructionEntity::recalculateSkills()
 // pass throudh all skills_ and normalize
 
  //clear all skills experience
- SkillCondition * condition = construction_->getStaffCondition();
+ SkillCondition * condition = dynamic_cast<SkillCondition *>(construction_->getStaffCondition());
  if(!condition)
   return false;
   assert(construction_->getMaxStaff());
@@ -454,11 +549,12 @@ return false;
 
 int ConstructionEntity::calculateSkill(SkillRule *  skill)
 {
-  if(!construction_->getStaffCondition())
+  SkillCondition * condition = dynamic_cast<SkillCondition *>(construction_->getStaffCondition());
+  if(condition == 0)
     return 0;
   if (construction_->getMaxStaff() == 0)
       return 0;
-  if(skill != construction_->getStaffCondition()->getSkill())
+  if(skill != condition->getSkill())
   return 0;
 
   int totalSkillPoints = 0;
@@ -570,7 +666,7 @@ void ConstructionEntity::eraseAllRemovedUnits()
 {
 	for(UnitIterator iter = unitsToRemove_.begin(); iter != unitsToRemove_.end(); ++iter)
 	{
-		eraseRemovedUnit(*iter);	
+		eraseRemovedUnit(*iter);
 	}
 	unitsToRemove_.clear();
 }
@@ -581,7 +677,7 @@ void ConstructionEntity::addAllAddedUnits()
 {
 	for(UnitIterator iter =unitsToAdd_.begin(); iter != unitsToAdd_.end(); ++iter)
 	{
-//cout << (*iter)->print() << " is added to "<< print()<<endl;
+//cout <<" * " << (*iter)->print() << " is added to "<< print() <<" at " << this->getLocation()->print()<<endl;
 		units_.push_back(*iter);
 	}
 	unitsToAdd_.clear();
@@ -635,7 +731,7 @@ void ConstructionEntity::destroy()
    location->freeLand(construction_->getLandUse());
    location->addReport(new UnaryMessage(buildingDestroyedReporter, this));
   // RIP
-    buildingsAndShips.addRIPindex(buildingsAndShips.getIndex(tag_));
+    gameFacade->buildingsAndShips.addRIPindex(gameFacade->buildingsAndShips.getIndex(tag_));
 }
 
 
@@ -918,11 +1014,12 @@ bool ConstructionEntity::isObservableBy(FactionEntity * faction)
  */
 LEARNING_RESULT ConstructionEntity::mayLearn(SkillRule * skill)
 {
-  // may learn only skills derived from condition
-	 if(construction_->getStaffCondition() == 0)
+	 SkillCondition * condition = dynamic_cast<SkillCondition *>(construction_->getStaffCondition());
+	  // may learn only skills derived from condition
+	 if(condition == 0)
       return CANNOT_STUDY_FAILURE;
 
-   if(!skill->isDescendFrom(construction_->getStaffCondition()->getSkill(),1))
+   if(!skill->isDescendFrom(condition->getSkill(),1))
       return CANNOT_STUDY_FAILURE;
 
 
@@ -990,6 +1087,7 @@ void ConstructionEntity::disband()
 
 
 
+
 void ConstructionEntity::dailyUpdate()
 {
     if(isDisbanded())
@@ -999,7 +1097,7 @@ void ConstructionEntity::dailyUpdate()
     enchantments_.carryOutAllActions(this,0);
    enchantments_.processExpiration(this,getFiguresNumber());
    TokenEntity::dailyUpdate();
-
+    addAllAddedUnits();
 // if terrain is ocean or lake check swimming capacity
 // ifnot enough - drowning
 // smart drowning
@@ -1018,7 +1116,7 @@ void ConstructionEntity::dailyUpdate()
 				// drop away cargo
 				}
 		}
-	}	 
+	}
 
 }
 
@@ -1053,3 +1151,18 @@ int ConstructionEntity::getStealthRating()
 {
   return 0;
 }
+void ConstructionEntity::extractAndAddKnowledge(Entity * recipient, int parameter)
+{
+TokenEntity::extractAndAddKnowledge(recipient, parameter);
+recipient->addKnowledge(construction_);
+  for (vector <ResourceElement *>::iterator iter = resourceQuotas_.begin();
+       iter != resourceQuotas_.end(); ++iter)
+       {
+         recipient->addKnowledge((*iter)->getResource());
+  }
+}
+
+//void ConstructionEntity::extractSkillKnowledge(Entity * recipient, int parameter)
+//{
+//
+//}

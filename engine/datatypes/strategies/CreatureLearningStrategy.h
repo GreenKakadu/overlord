@@ -23,6 +23,7 @@ public:
 	~CreatureLearningStrategy(){}
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
+      virtual void save(ostream &out);
 	BasicLearningStrategy * cloneSelf();
 };
 extern CreatureLearningStrategy sampleCreatureLearning;

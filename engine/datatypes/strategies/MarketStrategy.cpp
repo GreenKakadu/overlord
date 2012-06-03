@@ -48,7 +48,7 @@ MarketStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("SELL") )
     {
       int amount = parser->getInteger();
-      ItemRule * item = items[parser->getWord()];
+      ItemRule * item = gameFacade->items[parser->getWord()];
       int price = parser->getInteger();
       if(amount && item && price)
       {
@@ -61,7 +61,7 @@ MarketStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("BUY") )
     {
       int amount = parser->getInteger();
-      ItemRule * item = items[parser->getWord()];
+      ItemRule * item = gameFacade->items[parser->getWord()];
       int price = parser->getInteger();
       if(amount && item && price)
       {
@@ -74,7 +74,7 @@ MarketStrategy::initialize        ( Parser *parser )
   if (parser->matchKeyword ("RECRUIT") )
     {
       int amount = parser->getInteger();
-      RaceRule * race = races[parser->getWord()];
+      RaceRule * race = gameFacade->races[parser->getWord()];
       int price = parser->getInteger();
       if(/*amount && */race && price)
       {
@@ -85,7 +85,7 @@ MarketStrategy::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("PRINCE") )
     {
-      merchantPrince_ = units[parser->getWord()];
+      merchantPrince_ = gameFacade->units[parser->getWord()];
       return OK;
     }
       return OK;
@@ -226,6 +226,83 @@ void  MarketStrategy::produceFactionReport(FactionEntity * faction, ostream &out
  
 }
 
+vector<AbstractArray> MarketStrategy::aPrintReport()
+{
+  RequestIterator iter;
+  vector <AbstractArray> out;
+      vector <AbstractData *> v0;
+      v0.push_back(new StringData("For hire: "));
+      out.push_back(v0);
+      for( iter = recruitRequests_.begin(); iter != recruitRequests_.end(); ++iter)
+        {
+          LocalRecruitOffer * lr = dynamic_cast<LocalRecruitOffer *>(*iter);
+          if(lr)
+            {
+            out.push_back(lr->aPrint());
+            }
+        }
+
+    vector <AbstractData *> v1;
+    v1.push_back(new StringData("For sale: "));
+    out.push_back(v1);
+    for( iter = sellRequests_.begin(); iter != sellRequests_.end(); ++iter)
+      {
+         out.push_back((*iter)->aPrint());
+      }
+
+  vector <AbstractData *> v2;
+  v2.push_back(new StringData("Buying: "));
+  out.push_back(v2);
+  for( iter = buyRequests_.begin(); iter != buyRequests_.end(); ++iter)
+    {
+       out.push_back((*iter)->aPrint());
+    }
+
+  return out;
+}
+
+vector<AbstractArray> MarketStrategy::aPrintRecruitReport()
+{
+    RequestIterator iter;
+    vector <AbstractArray> out;
+    for( iter = recruitRequests_.begin(); iter != recruitRequests_.end(); ++iter)
+    {
+        LocalRecruitOffer * lr = dynamic_cast<LocalRecruitOffer *>(*iter);
+        if(lr)
+        {
+            out.push_back(lr->aPrint());
+        }
+    }
+
+    return out;
+}
+
+vector<AbstractArray> MarketStrategy::aPrintSaleReport()
+{
+    RequestIterator iter;
+    vector <AbstractArray> out;
+
+    for( iter = sellRequests_.begin(); iter != sellRequests_.end(); ++iter)
+    {
+        out.push_back((*iter)->aPrint());
+    }
+
+
+
+    return out;
+}
+
+vector<AbstractArray> MarketStrategy::aPrintBuyReport()
+{
+  RequestIterator iter;
+  vector <AbstractArray> out;
+  for( iter = buyRequests_.begin(); iter != buyRequests_.end(); ++iter)
+    {
+       out.push_back((*iter)->aPrint());
+    }
+
+  return out;
+}
 
 
 int MarketStrategy::getLocalBuyPrice(ItemRule * item)
@@ -263,4 +340,22 @@ int MarketStrategy::getLocalRecruitPrice(RaceRule * race)
 		return (*iter)->getPrice();
 	}
   return 0;
+}
+
+
+void MarketStrategy::extractAndAddKnowledge(FactionEntity * recipient, int parameter)
+{
+  for(RequestIterator iter = buyRequests_.begin(); iter != buyRequests_.end(); ++iter)
+	{
+	  recipient->addKnowledge(dynamic_cast<ItemRule *>((*iter)->getType()));
+	}
+  for(RequestIterator iter = sellRequests_.begin(); iter != sellRequests_.end(); ++iter)
+	{
+	  recipient->addKnowledge(dynamic_cast<ItemRule *>((*iter)->getType()));
+	}
+  for(RequestIterator iter = recruitRequests_.begin(); iter != recruitRequests_.end(); ++iter)
+	{
+	  recipient->addKnowledge(dynamic_cast<RaceRule *>((*iter)->getType()));
+	}
+
 }

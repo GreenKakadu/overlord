@@ -30,6 +30,7 @@ public:
       ActionRule ( const ActionRule * prototype );
       ~ActionRule (){}
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();
@@ -38,7 +39,7 @@ public:
 	protected:
        GameData * targetType_; // pointer to prototype
 };
-extern RulesCollection <ActionRule>    fx_actions  ;
+//extern RulesCollection <ActionRule>    fx_actions  ;
 extern  ActionRule      sampleAction;
 
 #endif

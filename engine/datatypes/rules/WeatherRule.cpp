@@ -11,14 +11,14 @@
 #include "BonusElement.h"
 
 WeatherRule   sampleWeather   ("WEATHER",  &sampleGameData);
-RulesCollection  <WeatherRule> weathers(new DataStorageHandler("weathers.rules"));
+//RulesCollection  <WeatherRule> weathers(new DataStorageHandler("weathers.rules"),&sampleWeather);
 
 
 
 
 WeatherRule * findWeatherByTag(const string &tag)
 {
- return GET_FROM_COLLECTION<WeatherRule>(&weathers,tag);
+ return GET_FROM_COLLECTION<WeatherRule>(&(gameFacade->weathers),tag);
 }
 
 
@@ -33,18 +33,22 @@ GameData * WeatherRule::createInstanceOfSelf()
   return CREATE_INSTANCE<WeatherRule> (this);
 }
 
-
-STATUS
-WeatherRule::initialize        ( Parser *parser )
+STATUS WeatherRule::initialize(Parser *parser)
 {
-  GameData::initialize(parser);
-		movementBonuses_.initialize(parser);
-		skillBonuses_.initialize(parser);
-   Rule::initialize(parser);
-     return OK;
+    GameData::initialize(parser);
+    movementBonuses_.initialize(parser);
+    skillBonuses_.initialize(parser);
+    Rule::initialize(parser);
+    return OK;
 
- }
+}
 
+void WeatherRule::save(ostream &out)
+{
+    Rule::save(out);
+    movementBonuses_.save(out);
+    skillBonuses_.save(out);
+}
 
 
 void WeatherRule::printDescription(ReportPrinter & out)
@@ -77,11 +81,30 @@ int WeatherRule::getStudyBonus(SkillRule * skill)
 {
   return skillBonuses_.getStudyBonus(skill);
 }
-  
+
+
+
+
 vector <AbstractData *> WeatherRule::aPrint()
 {
-  vector <AbstractData *> v;
-  v.push_back(this);
-  v.push_back(new StringData(": " + getDescription() + "."));
-  return v;
+    vector <AbstractData *> out;
+    out.push_back(new StringData(getDescription()));
+
+    out.push_back(new StringData(" "));
+
+  vector<AbstractArray> v = skillBonuses_.aPrintReport();
+
+
+  for(vector<AbstractArray>::iterator iter= v.begin(); iter != v.end(); iter++)
+    {
+
+      for(AbstractArray::iterator iter2= (*iter).begin(); iter2 != (*iter).end(); iter2++)
+        {
+            out.push_back(*iter2);
+        }
+
+    }
+
+return out;
+
 }

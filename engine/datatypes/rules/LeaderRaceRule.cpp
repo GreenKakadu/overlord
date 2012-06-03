@@ -6,7 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "LeaderRaceRule.h"
-LeaderRaceRule sampleLeaderRaceRule = LeaderRaceRule("LEADER", &sampleRace);
+LeaderRaceRule sampleLeaderRaceRule("LEADER", &sampleRace);
 
 LeaderRaceRule::LeaderRaceRule ( const LeaderRaceRule * prototype ) : RaceRule(prototype)
 {
@@ -37,6 +37,10 @@ LeaderRaceRule::initialize        ( Parser *parser )
       return RaceRule::initialize(parser);
 }
 
+void LeaderRaceRule::save(ostream &out)
+{
+  RaceRule::save(out);
+}
 
 
 /*
@@ -144,6 +148,14 @@ int LeaderRaceRule::getLearningCapacity()
 void LeaderRaceRule::printTypeSpecificDescription(ReportPrinter & out)
 {
   out << " This is a leader.";
+}
+
+
+vector <AbstractData *> LeaderRaceRule::aPrintTypeSpecificDescription()
+{
+    vector <AbstractData *> out;
+    out.push_back(new StringData(" This is a leader."));
+    return out;
 }
 
 

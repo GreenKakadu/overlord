@@ -13,7 +13,7 @@ Led::Led(QWidget * )
 {
 
     setPixmap(QPixmap(QString::fromUtf8
-                      (":/new/prefix1/icons/Gray1.png")).scaled(24,24));
+                      (":/new/prefix1/icons/Gray1.png")).scaled(24,24, Qt::IgnoreAspectRatio, Qt::FastTransformation));
     blinkTimer = new QTimer(this);
     connect(blinkTimer, SIGNAL(timeout()), this, SLOT(blink()));
     isLit_ = false;

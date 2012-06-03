@@ -18,8 +18,8 @@
 #include "StringData.h"
 
 //RulesCollection <ActionRule>    fx_actions(new DataStorageHandler(gameConfig.getFx_actionsFile()));
-RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions.rules"));
 ActionRule    sampleAction    ("FX_ACTION",&sampleGameData);
+//RulesCollection <ActionRule>    fx_actions(new DataStorageHandler("fx_actions.rules"),&sampleAction);
 
 ActionRule::ActionRule ( const ActionRule * prototype ) : Rule(prototype)
 {
@@ -55,6 +55,11 @@ ActionRule::initialize        ( Parser *parser )
     return OK;
 }
 
+void ActionRule::save(ostream &out)
+{
+  Rule::save(out);
+  if(targetType_) out<<"TARGET "<<targetType_->getKeyword()<<endl;
+}
 
 
 void ActionRule::printDescription(ReportPrinter & out)

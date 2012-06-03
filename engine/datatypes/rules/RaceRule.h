@@ -31,6 +31,7 @@ public:
       RaceRule ( const string & keyword, GameData * parent) : Rule(keyword, parent){}
       RaceRule ( const RaceRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
   int getEquipCapacity( EquipmentSlotVariety * type);
   inline string getPluralName() const{return pluralName_;}
@@ -38,6 +39,7 @@ public:
   virtual void printDescription(ReportPrinter & out);
   vector <AbstractData *> aPrint();
   virtual void printTypeSpecificDescription(ReportPrinter & out){}
+  virtual vector <AbstractData *> aPrintTypeSpecificDescription();
   inline   int getWeight() const {return weight_;}
 	inline  void setWeight(int weight) {weight_ = weight;}
   virtual LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
@@ -77,5 +79,5 @@ public:
 
 };
 extern RaceRule       sampleRace;
-extern RulesCollection <RaceRule>      races;
+//extern RulesCollection <RaceRule>      races;
 #endif

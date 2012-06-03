@@ -31,6 +31,7 @@ public:
 		 virtual ~CombatActionStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
+        virtual void save(ostream &out);
 
   virtual MeleeReport		makeAttack(BattleInstance * battleInstance, BattleTargets & potentialTargets, CombatReport * report);
   virtual void		performAction(BattleInstance * battleInstance, BattleTargets & potentialTargets, CombatReport * report);
@@ -53,7 +54,7 @@ public:
   virtual CombatActionStrategy * cloneSelf();
         bool mayApplyAction(BattleInstance * battleInstance);
         void consumeActionResources(BattleInstance * battleInstance);
-  
+   virtual  void extractKnowledge (Entity * recipient, int parameter = 0);
     protected:
       EntityStatistics nonCumulativeStats;
       EntityStatistics modifyingStats;

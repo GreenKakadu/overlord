@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BasicExit.h"
+#include "GameFacade.h"
 #include "LineParser.h"
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
@@ -57,15 +58,15 @@ void BasicExit::produceReport(ReportPrinter & out)
   int i;
   int days;
   bool firstMode= true;
-  for(i=0; i < movementModes.size(); i++)
+  for(i=0; i < gameFacade->movementModes.size(); i++)
   {
-    days =  getTravelTime(movementModes[i]);
+    days =  getTravelTime(gameFacade->movementModes[i]);
     if( days )
       {
         if(firstMode)
-          out << " "<< days<< " days of " << (movementModes[i])->getName();
+          out << " "<< days<< " days of " << (gameFacade->movementModes[i])->getName();
         else
-         out <<", "<< days<< " of " << (movementModes[i])->getName();
+         out <<", "<< days<< " of " << (gameFacade->movementModes[i])->getName();
          firstMode = false;
        }
 
@@ -79,7 +80,8 @@ void BasicExit::produceReport(ReportPrinter & out)
 }
 
 /*
- * aPrint is a function that performs print() in a form convinient for interpretaion in GUI application 
+ * aPrint is a function that performs print() in a form convinient for interpretaion
+ * in GUI application
  */   
   vector <AbstractData *> BasicExit::aPrint()
 {
@@ -95,23 +97,23 @@ void BasicExit::produceReport(ReportPrinter & out)
   out.push_back(new StringData(") "));
   int days=0;
   bool firstMode= true;
-  for(int i=0; i < movementModes.size(); i++)
+  for(int i=0; i < gameFacade->movementModes.size(); i++)
   {
-    days =  getTravelTime(movementModes[i]);
+    days =  getTravelTime(gameFacade->movementModes[i]);
     if( days )
     {
       if(firstMode)
       {
         out.push_back(new IntegerData(days));
         out.push_back(new StringData(" days of "));
-        out.push_back(movementModes[i]);
+        out.push_back(gameFacade->movementModes[i]);
       }
       else
       {
         out.push_back(new StringData(", "));
         out.push_back(new IntegerData(days));
         out.push_back(new StringData(" of "));
-        out.push_back(movementModes[i]);
+        out.push_back(gameFacade->movementModes[i]);
       }
       firstMode = false;
     }

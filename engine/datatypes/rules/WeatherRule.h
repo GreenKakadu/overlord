@@ -27,6 +27,7 @@ class  WeatherRule : public Rule
       WeatherRule ( const WeatherRule * prototype );
       ~WeatherRule (){}
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();
@@ -42,7 +43,7 @@ class  WeatherRule : public Rule
 
 extern WeatherRule * findWeatherByTag(const string &tag);
 extern WeatherRule    sampleWeather;
-extern RulesCollection  <WeatherRule> weathers;
+//extern RulesCollection  <WeatherRule> weathers;
 
 
 #endif

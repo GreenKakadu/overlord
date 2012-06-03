@@ -25,6 +25,10 @@ CombatUsingStrategy::initialize        ( Parser *parser )
       return OK;
 }
 
+void CombatUsingStrategy::save(ostream &out)
+{
+  
+}
 
 
 USING_RESULT CombatUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * skill, 
@@ -32,7 +36,5 @@ USING_RESULT CombatUsingStrategy::use(TokenEntity * tokenEntity, SkillRule * ski
 {
   return UNUSABLE;
 }
-
-
 
 

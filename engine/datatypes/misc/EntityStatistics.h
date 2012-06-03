@@ -61,7 +61,10 @@ public:
         void addPartialStats(EntityStatistics * stats, int numenator, int denominator);
         void clearStats(int value =0);
         bool empty();
-protected:
+        void save(ostream &out,string prefix, int defaultValue);
+        vector<AbstractArray> aPrint();
+        void aPrintThisStat_(int thisStat, const char * name, vector<AbstractArray> & out );
+    protected:
 	int initiative_;
 	int melee_;
 	int defence_;

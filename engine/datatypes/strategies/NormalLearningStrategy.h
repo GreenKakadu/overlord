@@ -24,6 +24,7 @@ public:
   GameData * createInstanceOfSelf();
   STATUS initialize        ( Parser *parser );
 	BasicLearningStrategy * cloneSelf();
+      virtual void save(ostream &out);
 };
 extern NormalLearningStrategy   sampleNormalLearning;
 

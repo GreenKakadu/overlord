@@ -34,6 +34,7 @@ public:
 		 ~ConstructionUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
+      virtual void save(ostream &out);
       USING_RESULT unitUse(UnitEntity * unit, SkillRule * skill, int & useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       void printSkillDescription(ostream & out);

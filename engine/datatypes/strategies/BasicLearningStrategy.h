@@ -35,6 +35,7 @@ public:
 //      BasicLearningStrategy ( const BasicLearningStrategy  &learning );
 		 ~BasicLearningStrategy(){};
       virtual STATUS     initialize      ( Parser *parser);
+        virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
   /** Calculate amount of experience gained by 1 day of study */
   virtual int  calculateLearningExperience(TokenEntity * unit, SkillRule * skill, TeachingOffer * teacher);

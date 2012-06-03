@@ -22,6 +22,7 @@ public:
 		 ~CombatUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
+        virtual void save(ostream &out);
       USING_RESULT use(TokenEntity * tokenEntity, SkillRule * skill, int & useCounter,OrderLine * order);
 //			virtual USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
 //      virtual void reportUse(USING_RESULT result, TokenEntity * unit);

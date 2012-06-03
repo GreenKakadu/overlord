@@ -16,11 +16,11 @@
 #include "BinaryMessage.h"
 #include "DataManipulator.h"
 
-extern DataManipulator * dataManipulatorPtr;
+//extern DataManipulator * dataManipulatorPtr;
 extern ReportPattern * notEnoughResourcesReporter;
 extern ReportPattern * privateActionReporter;
 extern ReportPattern * publicActionReporter;
-extern RulesCollection    <ActionRule>     fx_actions;
+
 ActionUsingStrategy       sampleActionUsing       ("USING_ACTION",       &sampleUsing);
 
 
@@ -41,9 +41,11 @@ ActionUsingStrategy::ActionUsingStrategy(const ActionUsingStrategy * prototype)
 STATUS
 ActionUsingStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("PRODUCES") )
+     BasicProductionStrategy::initialize(parser);
+
+     if (parser->matchKeyword ("PRODUCES") )
     {
-      productType_ = fx_actions[parser->getWord()];
+      productType_ = gameFacade->fx_actions[parser->getWord()];
       productionDays_ =  parser->getInteger();
       if( (productType_ == 0) ||  (productionDays_ == 0) )
       {
@@ -58,7 +60,7 @@ ActionUsingStrategy::initialize        ( Parser *parser )
       string tag =parser->getParameter();
       if(!tag.empty())
       {
-        specificProduct_ = dataManipulatorPtr->findGameData(tag);
+        specificProduct_ = gameFacade->getDataManipulator()->findGameData(tag);
       }
       if(specificProduct_==0)
       {
@@ -67,35 +69,24 @@ ActionUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
 
-
-  if (parser->matchKeyword ("CONSUME") )
-    {
-			if(parser->matchElement())
-			  resources_.push_back(new ItemElement(parser));
-      return OK;
-    }
-
-
-  if (parser->matchKeyword ("MULTIPLE") )
-    {
-      productNumber_ =  parser->getInteger();
-      if(productNumber_ == 0)
-        productNumber_ = 1;
-      return OK;
-    }
-
-
-  if (parser->matchKeyword ("TOOL") )
-  {
-      ToolUseElement * tool = ToolUseElement::readElement (parser);
-      if( tool)
-        tools_.push_back(tool);
-      return OK;
-    }
       return OK;
 }
 
 
+void ActionUsingStrategy::save(ostream &out)
+{
+        BasicProductionStrategy::save(out);
+    if(productType_) out<<"PRODUCES"<<" "<<productType_->getTag()
+            <<" "<<productionDays_ << endl;
+
+     if(specificProduct_)
+     {
+         out<< "PARAMETER"<<" ";
+         specificProduct_->saveAsParameter(out);
+         out<<endl;
+     }
+
+}
 
 /*
  *

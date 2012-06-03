@@ -29,7 +29,8 @@ public:
 		 ~HarvestUsingStrategy(){};
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
-      USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
+       virtual void save(ostream &out);
+     USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       void reportUse(USING_RESULT result, TokenEntity * tokenEntity);
       RationalNumber getDailyProduction(); // should return scaled int

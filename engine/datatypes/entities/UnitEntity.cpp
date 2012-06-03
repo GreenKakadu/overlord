@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include <algorithm>
+#include "GameFacade.h"
 #include "UnitEntity.h"
 #include "RationalNumber.h"
 #include "InventoryElement.h"
@@ -45,7 +46,7 @@
 #include "BattleUnit.h"
 // reporters
 UnitEntity sampleUnit("UNIT", &sampleTokenEntity);
-EntitiesCollection <UnitEntity> units(new DataStorageHandler(gameConfig.getUnitsFile()));
+//EntitiesCollection <UnitEntity> units(new DataStorageHandler(gameConfig.getUnitsFile()),&sampleUnit);
 extern ReportPattern * withdrawReporter;
 extern ReportPattern * borrowReporter;
 extern ReportPattern * lendReporter;
@@ -80,7 +81,7 @@ ReportPattern * guardNotEnoughReporter = new
 UnitEntity::UnitEntity(const string & keyword, GameData * parent) : TokenEntity(keyword, parent) {
     keyword_ = keyword;
     parent_ = parent;
-    prototypeManager->addToRegistry(this);
+    //prototypeManager->addToRegistry(this); //REALLY?
 }
 
 UnitEntity::UnitEntity(const UnitEntity * prototype) : TokenEntity(prototype) {
@@ -93,7 +94,7 @@ UnitEntity::UnitEntity(const UnitEntity * prototype) : TokenEntity(prototype) {
     discontenting_ = false;
     isAssignedToStaff_ = false;
     mana_ = 0;
-    //  cerr << "UnitEntity constructor";  
+    //  cerr << "UnitEntity constructor";
     // combatTactics_.report(cerr);
     // cerr <<endl;
 
@@ -107,7 +108,7 @@ UnitEntity::UnitEntity(const UnitEntity * prototype) : TokenEntity(prototype) {
 UnitEntity * UnitEntity::createUnit(FactionEntity * faction, RaceRule * race,
         int number, LocationEntity * location) {
     UnitEntity * newUnit = new UnitEntity(this);
-    if (units.addNew(newUnit) != OK) {
+    if (gameFacade->units.addNew(newUnit) != OK) {
         cout << "Failed to add new unit \n";
         return 0;
     }
@@ -152,6 +153,11 @@ STATUS UnitEntity::initialize(Parser *parser) {
 
     if (parser->matchKeyword("RACE")) {
         raceComposition_ = RaceElement::readElement(parser);
+        if(raceComposition_==0)
+        {
+            gameFacade->races.print();
+        }
+        assert(raceComposition_);
         RaceRule * race = raceComposition_->getRace();
 //        for (vector< SkillElement>::iterator iter = race->getIntristicSkills()->begin();
 //                iter != race->getIntristicSkills()->end(); ++iter) {
@@ -166,7 +172,9 @@ STATUS UnitEntity::initialize(Parser *parser) {
     }
 
     if (parser->matchKeyword("CONTAINER")) {
-        containingConstruction_ = buildingsAndShips[parser->getWord()];
+        containingConstruction_ = gameFacade->buildingsAndShips[parser->getWord()];
+        //containingConstruction_->addUnit(this);
+        //cout<<"Adding "<<print()<<" to "<<containingConstruction_->print()<<endl;
         if (parser->matchKeyword("STAFF")) {
             containingConstruction_->addStaff(this);
         }
@@ -174,7 +182,7 @@ STATUS UnitEntity::initialize(Parser *parser) {
     }
 
     if (parser->matchKeyword("STACK")) {
-        UnitEntity * unit = units[ parser->getWord()];
+        UnitEntity * unit = gameFacade->units[ parser->getWord()];
         if (unit != 0) {
             stack(this, unit);
         }
@@ -212,15 +220,192 @@ void UnitEntity::save(ostream &out) {
     if ((moving_ != 0) && (stackFollowingTo_ == 0)) {
         moving_->save(out);
     }
-
+    if(raceComposition_)
+    {
     out << "RACE ";
     raceComposition_->save(out);
+    }
 
     if (stackFollowingTo_) out << "STACK " << stackFollowingTo_->getTag() << endl;
     if (containingConstruction_) out << "CONTAINER " << containingConstruction_->getTag();
     if (isAssignedToStaff_) out << "STAFF " << endl;
     else out << endl;
 }
+
+
+
+void UnitEntity::save(ostream &out, string prefix)
+{
+    TokenEntity::save(out,prefix);
+
+    if (!consuming_) out <<prefix<< "NO_CONSUME" << endl;
+    if (discontenting_) out <<prefix<< "DISCONTENT" << endl;
+    if (mana_) out <<prefix<< "MANA " << mana_ << endl;
+
+
+//    out <<prefix<< "RACE ";
+//    raceComposition_->save(out,prefix);
+
+    if (stackFollowingTo_) out <<prefix<< "STACK " << stackFollowingTo_->getTag() << endl;
+    if (containingConstruction_) out <<prefix<< "CONTAINER " << containingConstruction_->getTag();
+    if (isAssignedToStaff_) out << "STAFF " << endl;
+    else out << endl;
+}
+
+
+
+
+void UnitEntity::copyPrivateImage(UnitEntity * unitImage, UnitEntity * unitSource)
+{
+    TokenEntity::copyPrivateImage(unitImage, unitSource);
+    unitImage->isAssignedToStaff_ = unitSource->isAssignedToStaff_;
+    unitImage->consuming_ = unitSource->consuming_;
+    unitImage->stackFollowingTo_ = unitSource->stackFollowingTo_;
+    unitImage->discontenting_ = unitSource->discontenting_;
+    unitImage->mana_ = unitSource->mana_;
+    unitImage->raceComposition_ = unitSource->raceComposition_;
+    unitImage->containingConstruction_ = unitSource->containingConstruction_;
+
+}
+UnitEntity * UnitEntity::makePrivateImage()
+{
+    UnitEntity * image = dynamic_cast<UnitEntity *> (this->createInstanceOfSelf());
+    copyPrivateImage(image, this);
+    return image;
+}
+
+
+
+void UnitEntity::makeAlliedImage(TokenEntity * source)
+{
+    TokenEntity::makeAlliedImage(source);
+
+    UnitEntity * unitSource = dynamic_cast<UnitEntity *>(source);
+    isAssignedToStaff_ = unitSource->isAssignedToStaff_;
+    consuming_ = unitSource->consuming_;
+    stackFollowingTo_ = unitSource->stackFollowingTo_;
+    discontenting_ = unitSource->discontenting_;
+    mana_ = unitSource->mana_;
+    raceComposition_ = unitSource->raceComposition_;
+    containingConstruction_ = unitSource->containingConstruction_;
+}
+
+
+
+void UnitEntity::makeObservedImage(TokenEntity * source)
+{
+    TokenEntity::makeObservedImage(source);
+    UnitEntity * unitSource = dynamic_cast<UnitEntity *>(source);
+    raceComposition_ = unitSource->raceComposition_;
+    containingConstruction_ = unitSource->containingConstruction_;
+
+}
+//// Create token object as it is seen by referent
+//UnitEntity *     UnitEntity::createUnitImage(TokenEntity * referent)
+//{
+//   TokenEntity * token = createTokenImage(referent);
+//   if(token== 0)
+//   {
+//       return 0;
+//   }
+//   UnitEntity * unit = dynamic_cast<UnitEntity *> (token);
+//// all:
+//        unit->raceComposition_ = this->raceComposition_;
+//        unit->containingConstruction_ = this->containingConstruction_;
+//// internal (available only if image produced for the same or allied faction:
+//    if((referent->getFaction()->stanceAtLeast(this->getFaction(),alliedStance)))
+//    {
+//
+//         unit->isAssignedToStaff_ =this->isAssignedToStaff_;
+//         unit->consuming_ =this->consuming_;
+//         unit->stackFollowingTo_ =this->stackFollowingTo_;
+//         unit->discontenting_ =this->discontenting_;
+//	 unit->mana_ = this->mana_;
+//    }
+//  return unit;
+//}
+
+
+
+UnitEntity *     UnitEntity::createUnitImage(FactionEntity * referent, int observation)
+{
+   TokenEntity * token = createTokenImage(referent,observation);
+   if(token== 0)
+   {
+       return 0;
+   }
+    if (referent == this->getFaction()) // own;
+    {
+        return makePrivateImage();
+        //return unit;
+    }
+   UnitEntity * unit = dynamic_cast<UnitEntity *> (token);
+// all:
+        unit->raceComposition_ = this->raceComposition_;
+        unit->containingConstruction_ = this->containingConstruction_;
+        unit->imageObservation_ = observation;
+// internal (available only if image produced for the same or allied faction:
+    if((referent->stanceAtLeast(this->getFaction(),alliedStance)))
+    {
+
+         unit->isAssignedToStaff_ =this->isAssignedToStaff_;
+         unit->consuming_ =this->consuming_;
+         unit->stackFollowingTo_ =this->stackFollowingTo_;
+         unit->discontenting_ =this->discontenting_;
+         unit->mana_ = this->mana_;
+    }
+  return unit;
+}
+
+//// Update token image with the data from another image
+//void UnitEntity::updateImage(Entity *image)
+//{
+////    if(image->getTimeStamp() < this->getTimeStamp())
+////    {
+////        return;
+////    }
+//   UnitEntity * unit = dynamic_cast<UnitEntity *> (image);
+//   this->TokenEntity::updateImage(image);
+//// all:
+//        this->raceComposition_ = unit->raceComposition_;
+//        this->containingConstruction_ = unit->containingConstruction_;
+//// internal:(image produced is of the same or allied faction)
+//    if(unit->imageLevel_ == ALLIED_IMAGE)
+//    {
+//         this->isAssignedToStaff_ =unit->isAssignedToStaff_;
+//         this->consuming_ =unit->consuming_;
+//         this->stackFollowingTo_ =unit->stackFollowingTo_;
+//         this->discontenting_ =unit->discontenting_;
+//         this->mana_ = unit->mana_;
+//    }
+//
+//}
+
+
+// Update token image with the data from real token
+void UnitEntity::updateImage(UnitEntity *unit)
+{
+//    if(unit->getTimeStamp() < this->getTimeStamp())
+//    {
+//        return;
+//    }
+
+   this->TokenEntity::updateImage(unit);
+//// all:
+//        this->raceComposition_ = unit->raceComposition_;
+//        this->containingConstruction_ = unit->containingConstruction_;
+//// internal:(image produced is of the same or allied faction)
+//    if(unit->imageLevel_ == ALLIED_IMAGE)
+//    {
+//         this->isAssignedToStaff_ =unit->isAssignedToStaff_;
+//         this->consuming_ =unit->consuming_;
+//         this->stackFollowingTo_ =unit->stackFollowingTo_;
+//         this->discontenting_ =unit->discontenting_;
+//         this->mana_ = unit->mana_;
+//    }
+
+}
+
 
 bool UnitEntity::isStackLeader() {
     if (getLeader())
@@ -243,7 +428,11 @@ bool UnitEntity::hasFollowers() {
  */
 void UnitEntity::dailyUpdate()
 {
-    if(isDisbanded())
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	if(isDisbanded())
     {
         return;
     }
@@ -354,14 +543,19 @@ void UnitEntity::dropUnequippedItems() {
     recalculateStats();
 }
 
+int UnitEntity::getUpkeep()
+{
+    return stats.getUpkeep() * getFiguresNumber();
+}
+
 void UnitEntity::payUpkeep() {
     if (!isPayingUpkeep())// Should not pay upkeep
     {
         return;
     }
-    int upkeep = stats.getUpkeep() * getFiguresNumber();
+    int upkeep = getUpkeep();
     //  winter upkeep is higher?
-    if (getConsuming()) {
+    if (isConsuming()) {
 
         int localFood = hasItem(food);
         if (localFood >= getFiguresNumber()) {
@@ -380,7 +574,7 @@ void UnitEntity::payUpkeep() {
         addReport(new UnaryMessage(upkeepReporter, new IntegerData(upkeep)));
     } else {
         addReport(new SimpleMessage(cannotPayUpkeepReporter));
-        if (getDiscontenting()) {
+        if (isDiscontent()) {
             addReport(new UnaryMessage(disbandReporter, this));
             disband();
         }
@@ -393,7 +587,12 @@ void UnitEntity::payUpkeep() {
     }
 }
 
-void UnitEntity::postProcessData() {
+void UnitEntity::postProcessData()
+{
+	if(isUnknownEntity())
+	{
+		return;
+	}
     if (location_ && isNpcGuard() && getLoyality() < 100) {
         // Loyality raise may also depend on owner's abilities.
         // That is not implemented
@@ -480,7 +679,7 @@ void UnitEntity::produceFactionReport(FactionEntity * faction, ReportPrinter &ou
     recalculateStats(); // Do we really need that?
     out << "Stats: " << stats;
     if (mana_) out << "Mana: " << hasMana() << "(" << stats.getMana() << ")";
-    out << " Upkeep: " << stats.getUpkeep() * getFiguresNumber() << " coins.";
+    out << " Upkeep: " << getUpkeep() << " coins.";
     if (getTarget())
         out << " Targeting " << getTarget()->print() << ".\n";
     out << endl << endl;
@@ -563,7 +762,12 @@ void UnitEntity::publicReport(int observation, ReportPrinter &out) {
     }
     out << " - " << print();
     if (!isGuarding() || (getStealth() < observation))
+    {
+    	if(getFaction())// For image factiom may be 0
+    	{
         out << " of " << getFaction()->print();
+    	}
+    }
     out << " " << raceComposition_->print();
     if (isGuarding())
         out << " on guard";
@@ -589,7 +793,8 @@ void UnitEntity::publicReport(int observation, ReportPrinter &out) {
 /*
  * Prints skills that unit has and skills it may learn
  */
-void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out) {
+void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out)
+{
     skills_.reportAllShort(out);
 
     //  out << "May learn: ";
@@ -598,12 +803,12 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out) {
     bool isFirst = true;
 //      if (isTraced())
 //        cout <<"== TRACING " << print()<< " May learn " << endl;
-    for (skillIter = skills.begin(); skillIter != skills.end(); skillIter++) {
+    for (skillIter = gameFacade->skills.begin(); skillIter != gameFacade->skills.end(); skillIter++) {
         SkillRule * skill = dynamic_cast<SkillRule*> (*skillIter);
         if (skill == 0)
             continue;
 //        if (isTraced()) {
-//               if(skill == skills["blde"])
+//               if(skill == skills["plwk"])
 //               {
 //               SkillLevelElement * skillEl =  skill->getRequirement(0);
 //               if(skillEl ==0)
@@ -618,7 +823,7 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out) {
 //               }
 //        }
 
-        if ((skill-> getRequirement(0) == 0) /*&& (getSkillLevel(skill) == 0)*/)
+        if ((skill-> getRequirement(1) == 0) /*&& (getSkillLevel(skill) == 0)*/)
             continue;
 
         if (mayStudySkill(skill)) {
@@ -642,6 +847,27 @@ void UnitEntity::reportSkills(FactionEntity * faction, ReportPrinter &out) {
         out << ". ";
 }
 
+vector < SkillLevelElement *> UnitEntity::getMayLearnList()
+{
+    vector <SkillLevelElement *> skillsMeyBeLearned;
+  for (RulesIterator skillIter = gameFacade->skills.begin(); skillIter != gameFacade->skills.end(); skillIter++)
+  {
+    SkillRule * skill = dynamic_cast<SkillRule*>(*skillIter);
+    if(skill == 0)
+      continue;
+    if((skill->getRequirement(1) == 0) && (getSkillLevel(skill) == 0))
+      continue;
+
+
+    if( mayStudySkill(skill) || mayStudyWithTeacher(skill))
+    {
+        skillsMeyBeLearned.push_back(new SkillLevelElement(skill, getSkillLevel(skill)));
+    }
+
+  }
+   return  skillsMeyBeLearned;
+}
+
 /*
  * Prints unit's items and equipement, weight and capacity
  */
@@ -662,7 +888,7 @@ void UnitEntity::reportInventory(FactionEntity * faction, ReportPrinter &out) {
     out << "Weight " << weight;
     if (weight != StackWeight) out << "(" << StackWeight << ")";
     out << ". ";
-    for (int movementModeIndex = 0; movementModeIndex < movementModes.size(); movementModeIndex++) {
+    for (int movementModeIndex = 0; movementModeIndex < gameFacade->movementModes.size(); movementModeIndex++) {
         int StackCapacity = 0;
         int capacity = getCapacity(movementModeIndex);
         calculateTotalCapacity(StackCapacity, movementModeIndex);
@@ -670,7 +896,7 @@ void UnitEntity::reportInventory(FactionEntity * faction, ReportPrinter &out) {
             if (!movementModeIndex)
                 out << "Capacity ";
             else
-                out << ", " << (movementModes[movementModeIndex])->getName() << " ";
+                out << ", " << (gameFacade->movementModes[movementModeIndex])->getName() << " ";
             out << capacity;
             if (StackCapacity != capacity) out << "(" << StackCapacity << ")";
         }
@@ -700,6 +926,7 @@ void UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out) {
                 << " (" << moving_->getTravelTime() - moving_->getRemainingTime() << " of " << moving_->getTravelTime()
                 << " days)";
     } else {
+        if(location_)
         out << " at " << location_->print();
     }
 
@@ -719,7 +946,11 @@ void UnitEntity::reportAppearence(FactionEntity * faction, ReportPrinter &out) {
 //===============================================================================
 
 void UnitEntity::dailyPreProcess() {
-    expose(false);
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	expose(false);
 }
 
 /*
@@ -749,7 +980,12 @@ void UnitEntity::preprocessData() {
 /*
  * Checks data consistency
  */
-STATUS UnitEntity::dataConsistencyCheck() {
+STATUS UnitEntity::dataConsistencyCheck()
+{
+	if(isUnknownEntity())
+	{
+		return OK;
+	}
     if (location_ == 0) {
         cerr << "Incomplete data (no location reference) for " << print() << endl;
         return IO_ERROR;
@@ -913,6 +1149,7 @@ int UnitEntity::equipItem(ItemRule * item, int num) {
 
 
     int currentlyEquipedItems = current->getEquipedNumber();
+    BasicCondition * equipCondition = inventory_.registerEquipCondition(item,currentlyEquipedItems,num);
     if (num < currentlyEquipedItems) // unequip
     {
         //      cout << " num = " << num << " currentlyEquipedItems = "<< currentlyEquipedItems<<endl;
@@ -921,7 +1158,6 @@ int UnitEntity::equipItem(ItemRule * item, int num) {
         return ( num - currentlyEquipedItems);
     }
     // Item may demand skills for being equiped.
-    BasicCondition * equipCondition = item->demandsEquipCondition();
     if (equipCondition) {
         if (!equipCondition->isSatisfied(this))
             return 0;
@@ -953,7 +1189,6 @@ int UnitEntity::equipItem(ItemRule * item, int num) {
     }
 
 }
-
 
 
 //  ==============================================================
@@ -1380,7 +1615,7 @@ void UnitEntity::mergeUnits(int number, UnitEntity * unit = 0) {
     }
 
     if (unit) {
-        setDiscontenting(unit->getDiscontenting()); // copy discontent flag
+        setDiscontenting(unit->isDiscontent()); // copy discontent flag
 
         for (iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); iter++) {
             if ((*iter).getSkill()->mayBeStudied(this) !=
@@ -1409,7 +1644,9 @@ void UnitEntity::mergeUnits(int number, UnitEntity * unit = 0) {
         //     (*iter).print(cout);cout <<endl;
         if ((*iter).getLevel() < oldLevel) {
             addReport(new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel())));
-            (*iter).getSkill()->checkConditions(this);
+            //(*iter).getSkill()->checkConditions(this);
+            checkEquipmentConditions();
+
         }
     }
     recalculateStats();
@@ -1488,13 +1725,24 @@ int UnitEntity::getLearningLevelBonus(SkillRule * skill) {
 
     // weather
     LocationEntity * currentLocation = getLocation();
-    currentBonus = currentLocation->getWeather()->getLearningBonus(skill);
-    if (currentBonus > bonus)
-        bonus = currentBonus;
-    // terrain
-    currentBonus = currentLocation->getTerrain()->getLearningBonus(skill);
-    if (currentBonus > bonus)
-        bonus = currentBonus;
+    if(currentLocation)
+    {
+        WeatherRule * weather =currentLocation->getWeather();
+        if(weather)
+        {
+        currentBonus = weather->getLearningBonus(skill);
+        if (currentBonus > bonus)
+            bonus = currentBonus;
+        }
+        // terrain
+        TerrainRule * terrain = currentLocation->getTerrain();
+        if(terrain)
+        {
+        currentBonus = terrain->getLearningBonus(skill);
+        if (currentBonus > bonus)
+            bonus = currentBonus;
+        }
+    }
     // Race
     currentBonus = getRace()->getLearningBonus(skill);
     if (currentBonus > bonus)
@@ -1771,6 +2019,7 @@ bool UnitEntity::isFollowingInStackTo(UnitEntity * unit) {
     return false;
 }
 
+
 bool UnitEntity::maySee(TokenEntity * tokenEntity) {
     if (tokenEntity == 0)
         return false;
@@ -1795,7 +2044,7 @@ bool UnitEntity::maySee(TokenEntity * tokenEntity) {
 }
 
 bool UnitEntity::mayInterract(UnitEntity * unit) {
-    if (unit == 0)
+	  if (unit == 0)
         return false;
     if (unit->getGlobalLocation() != this->getGlobalLocation()) // take into account buildings
         return false;
@@ -1945,8 +2194,8 @@ bool UnitEntity::moveAdvance() {
         return false;
     if (stackFollowingTo_) // not a stack leader
         return false;
-    if (patroling_) // Unit is just patroling. no advancement.
-        return false;
+//    if (patroling_) // Unit is just patroling. no advancement.
+//        return false;
 
     moving_->advance();
 
@@ -2054,7 +2303,7 @@ bool UnitEntity::work() {
         // report race can't work
         return false;
     }
-    RationalNumber amount(location_->getWages() * getFiguresNumber(), gameConfig.daysInMonth);
+    RationalNumber amount(location_->getWages() * getFiguresNumber(), gameFacade->getGameConfig()->daysInMonth);
     if (amount.getNumenator()) {
         location_->addMonthlyConflictRequest(new WagesCompetitiveRequest(this, 0, amount));
         //      cout << print() << " is working at "<< location_->print()<<"\n";
@@ -2098,7 +2347,7 @@ void UnitEntity::disband() {
     }
     // RIP
     isDisbanded_ = true;
-    units.addRIPindex(units.getIndex(tag_));
+    gameFacade->units.addRIPindex(gameFacade->units.getIndex(tag_));
     // If this is the last unit of the faction - resign it
     faction_->checkAnyUnitsLeft();
 }
@@ -2377,10 +2626,10 @@ int UnitEntity::getObservationRating() const
 
 
 
-int UnitEntity::getStealthRating() 
+int UnitEntity::getStealthRating()
 {
   int level = 0;
- SkillRule *   assassinateSkill = skills["assa"];
+ SkillRule *   assassinateSkill = gameFacade->skills["assa"];
  if(assassinateSkill)
  {
     level = getSkillLevel(assassinateSkill);
@@ -2389,4 +2638,29 @@ int UnitEntity::getStealthRating()
   return 0;
 }
 
+void UnitEntity::extractAndAddKnowledge(Entity * recipient, int parameter)
+{
+    if(recipient==gameFacade->factions["f08"])
+    {
+       // cout<<"<======== Extracting Unit "<<getTag()<<endl;
+    if(getTag()=="U807")
+    {
+        cout<<"<======== Extracting Knowledge from "<<getTag()<<endl;
+    }
+    }
+    TokenEntity::extractAndAddKnowledge(recipient, parameter);
+    //race
+    recipient->addKnowledge(raceComposition_->getRace());
+
+     for( TitleIterator iter = titles_.getAll()->begin(); iter != titles_.getAll()->end(); ++iter)
+     {
+        recipient->addKnowledge((*iter)->getTitle());
+
+    }
+}
+
+//void UnitEntity::extractSkillKnowledge(Entity * recipient, int parameter)
+//{
+//
+//}
 

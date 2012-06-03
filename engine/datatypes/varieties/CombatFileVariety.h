@@ -23,6 +23,6 @@ public:
     private:
 };
 
-extern VarietiesCollection <CombatFileVariety>     combatFiles;
+//extern VarietiesCollection <CombatFileVariety>     combatFiles;
 extern CombatFileVariety  *defaultCombatFile;
 #endif

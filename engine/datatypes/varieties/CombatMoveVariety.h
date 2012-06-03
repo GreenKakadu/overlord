@@ -22,6 +22,6 @@ public:
     private:
 };
 
-extern VarietiesCollection <CombatMoveVariety>     combatMoves;
+//extern VarietiesCollection <CombatMoveVariety>     combatMoves;
 extern CombatMoveVariety  *defaultCombatMove; 
 #endif

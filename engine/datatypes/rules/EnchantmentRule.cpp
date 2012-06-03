@@ -12,6 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include "GameFacade.h"
 #include "EnchantmentRule.h"
 #include "EntitiesCollection.h"
 #include "EffectEntity.h"
@@ -19,9 +20,8 @@
 #include "StringData.h"
 #include "ActionRule.h"
 
-extern EntitiesCollection <EffectEntity>   effects;
 EnchantmentRule    sampleEnchantment    ("FX_EFFECT",&sampleGameData);
-RulesCollection <EnchantmentRule>    enchantments(new DataStorageHandler("enchantments.rules"));
+//RulesCollection <EnchantmentRule>    enchantments(new DataStorageHandler("enchantments.rules"),&sampleEnchantment);
 
 EnchantmentRule::EnchantmentRule ( const EnchantmentRule * prototype ) : Rule(prototype)
 {
@@ -74,7 +74,7 @@ EnchantmentRule::initialize        ( Parser *parser )
         } else
         {
             string modeTag = parser->getWord();
-            if (movementModes.isValidTag(modeTag))
+            if (gameFacade->movementModes.isValidTag(modeTag))
             {
                 capacity_[modeTag] = parser->getInteger();
             }
@@ -83,7 +83,7 @@ EnchantmentRule::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("FX_ACTION") )
     {
-      action_ = fx_actions[parser->getWord()];
+      action_ = gameFacade->fx_actions[parser->getWord()];
       return OK;
     }
   if (parser->matchKeyword ("HIDDEN") )
@@ -103,6 +103,23 @@ EnchantmentRule::initialize        ( Parser *parser )
 
 }
 
+
+void EnchantmentRule::save(ostream &out)
+{
+  Rule::save(out);
+ if(!pluralName_.empty()) out << "PLURAL "<<pluralName_<<endl;
+ if(targetType_) out<<"TARGET "<<targetType_->getKeyword()<<endl;
+ for(int i =0; i <gameFacade->movementModes.size(); ++i)
+  {
+    if(capacity_[i]) out << "CAPACITY "<<(gameFacade->movementModes[i])->getTag()<<" " << capacity_[i] <<endl;
+  }
+  if(action_)   out <<"FX_ACTION "<<action_->getTag() <<endl;
+  if(isHidden_) out <<"HIDDEN "<<endl;
+  if(!reportPrefix_.empty()) out <<"REPORT_PREFIX "<<reportPrefix_<<endl;
+    movementBonuses_.save(out);
+    skillBonuses_.save(out);
+    stats_.save(out,"",0);
+}
 
 
 void EnchantmentRule::printDescription(ReportPrinter & out)
@@ -146,7 +163,7 @@ EffectEntity * EnchantmentRule::createEffect(Entity * target)
   EffectEntity  * newEffect   = dynamic_cast<EffectEntity *> (createByKeyword(effectKeyword_));
   if(newEffect)
   {
-    if(effects.addNew(newEffect) != OK)
+    if(gameFacade->effects.addNew(newEffect) != OK)
       {
         cout << "Failed to add new effect \n";
         return 0;

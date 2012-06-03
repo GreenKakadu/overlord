@@ -42,12 +42,20 @@ public:
    void dailyPreProcess();
    void  save(ostream &out);
    void produceFactionReport(FactionEntity * faction, ostream &out);
+   vector<AbstractArray> aPrintReport();
+   vector<AbstractArray> aPrintRecruitReport();
+   vector<AbstractArray> aPrintSaleReport();
+   vector<AbstractArray> aPrintBuyReport();
    void setLocation(LocationEntity * location);
    void setMerchantPrince(UnitEntity *prince){ merchantPrince_ = prince;}
    UnitEntity * getMerchantPrince() const {return merchantPrince_;}
    int getLocalBuyPrice(ItemRule * item);
    int getLocalSellPrice(ItemRule * item);
    int getLocalRecruitPrice(RaceRule * race);
+   void extractAndAddKnowledge(FactionEntity * recipient, int parameter = 0);
+   inline vector <LocalMarketRequest *> getAllBuyRequests(){return buyRequests_;}
+   inline vector <LocalMarketRequest *> getAllSellRequests(){return sellRequests_;}
+   inline vector <LocalMarketRequest *> getAllRecruitRequests(){return recruitRequests_;}
 protected:
    MarketConflict * marketConflict_;
    vector <LocalMarketRequest *> sellRequests_;

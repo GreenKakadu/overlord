@@ -36,6 +36,11 @@ BasicUsingStrategy::initialize        ( Parser *parser )
 
 }
 
+void BasicUsingStrategy::save(ostream &out)
+{
+}
+
+
 
 
 void BasicUsingStrategy::addUsingExperience(TokenEntity * tokenEntity, SkillElement & skill)

@@ -58,34 +58,38 @@ public:
           virtual void dailyUpdate();
           virtual bool defaultAction();
   STATUS  initialize      ( Parser *parser );
-  void    save (ostream &out);
+  virtual void    save (ostream &out);
+  virtual void save(ostream &out,string prefix);
   void      preprocessData();
   void postProcessData();
   void postPostProcessData();
 	virtual inline BattleInstance * getBattleInstantiation() const
 	 	{return battleInstance_;}
 // Reporting ==============================================
-         /** Return pointer to  Entity which keeps reports from this  */
-         Entity *         getReportDestination();
+  /** Return pointer to  Entity which keeps reports from this  */
+        Entity * getReportDestination();
    virtual void  privateReport(ReportPrinter &out);
    virtual void  printOrderTemplate(ReportPrinter &out);
    virtual void  reportAppearence(FactionEntity * faction, ReportPrinter &out){}
    virtual void  reportInventory(FactionEntity * faction, ReportPrinter &out){}
    virtual void  reportSkills(FactionEntity * faction, ReportPrinter &out);
    virtual void  reportFlags(ReportPrinter &out);
-   virtual string  reportCombatSettings();
+   virtual string reportCombatSettings();
    virtual string reportCombatTactics();
-    void addReport(ReportRecord report);
-   void addReport(ReportMessage * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
-    void processAttitude(ReportRecord report);
+           void   addReport(ReportRecord report);
+           void   addReport(ReportMessage * report,OrderLine *  orderId = 0, BasicCondition * observationCriteria = 0 );
+           void   processAttitude(ReportRecord report);
 // Data access methods ==============================================
-   virtual LocationEntity * getGlobalLocation() const;
+          virtual LocationEntity * getGlobalLocation() const;
    inline virtual LocationEntity * getLocation() const{return location_;}
    inline virtual void             setLocation(LocationEntity * location) 
 						    {location_ = location;}
    inline virtual FactionEntity *  getFaction() const{return faction_;}
    inline virtual void             setFaction( FactionEntity * faction) 
 						      {faction_ = faction;}
+   inline virtual FactionEntity *  getLastKnownFaction() const{return lastFaction_;}
+   inline virtual void             setLastKnownFaction( FactionEntity * faction)
+                                                   {lastFaction_ = faction;}
           virtual int              getWeight() {return 0;}
           virtual Rule *           getType() {return 0;}
           virtual bool             isOfType(Rule * type) {return false;}
@@ -109,21 +113,21 @@ public:
    inline virtual int              getControlPoints() const{return 0;}
    inline virtual int              getInitiative() const {return 0;}
 
-	 inline virtual int              getMelee() const {return 0;}
-	 inline virtual int              getMissile() const {return 0;}
-	 inline virtual int              getDefence() const {return 0;}
-	 inline virtual int              getHits() const {return 0;}
-	 inline virtual int              getFiguresNumber() const {return 1;}
-	 inline virtual void             sufferDamage(int value)  {}
+   inline virtual int              getMelee() const {return 0;}
+   inline virtual int              getMissile() const {return 0;}
+   inline virtual int              getDefence() const {return 0;}
+   inline virtual int              getHits() const {return 0;}
+   inline virtual int              getFiguresNumber() const {return 1;}
+   inline virtual void             sufferDamage(int value)  {}
 
    inline virtual bool             isExposed() const {return false;}
    inline virtual bool             mayGuard(bool enableReport = true)  const 
 						  {return false;}
    inline virtual bool             isAlive()  const {return alive_;}
-	 inline EntityStatistics * getStats()  {return &stats;}
-	 virtual EntityStatistics  getBasicStats(){return stats;}
-         inline virtual int getLoyality(){return loyality_;}
-         inline virtual void setLoyality(int loyality){loyality_ = loyality;}
+   inline         EntityStatistics * getStats()  {return &stats;}
+	  virtual EntityStatistics  getBasicStats(){return stats;}
+   inline virtual int getLoyality(){return loyality_;}
+   inline virtual void setLoyality(int loyality){loyality_ = loyality;}
 // Inventory methods ==============================================
      InventoryElement * findInInventory(ItemRule * item);
      vector < InventoryElement > getSlotContent(EquipmentSlotVariety * slot);
@@ -141,6 +145,8 @@ public:
      int     hasEquiped(ItemRule * item) ;
   vector < InventoryElement > & getAllInventory();
   void giveAllInventory(TokenEntity * unit);
+  vector <AbstractArray> aPrintInventory();
+  void checkEquipmentConditions();
 // Stacking/Containment ========================================================
           virtual void            accept(UnitEntity * unit);
           virtual bool isAccepting(UnitEntity * unit);
@@ -169,16 +175,20 @@ public:
          virtual  int getLearningCapacity();
          virtual bool teacherRequired(SkillRule * skill) ;
          virtual bool mayStudySkill(SkillRule * skill);
+         virtual vector < SkillLevelElement *> getMayLearnList();
          virtual bool mayStudyWithTeacher(SkillRule * skill);
          virtual LEARNING_RESULT mayLearn(SkillRule * skill);
   inline virtual bool mayGainExperience() const {return true;}
      TeachingOffer * findTeachingOffer(SkillRule  * skill, int level);
+     vector <AbstractArray> aPrintSkills();
+     vector <AbstractArray> aPrintEnchant();
 // Skill Use ========================================================
    /** returns true when work comleted. Otherwise - false */
    virtual int addSkillUse(SkillUseElement * skillUse);
    virtual int addCumullativeSkillUse(SkillUseElement * skillUse,
 				      int accumulationLimit);
    virtual bool isCurrentlyUsingSkill(SkillRule * skill);
+   inline virtual vector < SkillUseElement *> getAllSkillUse(){return skillUse_;}
 // Movement ========================================================
    virtual void setEntityMoving(TravelElement * moving);
    virtual void setEntityIndependentlyMoving(TravelElement * moving);
@@ -224,7 +234,7 @@ public:
 	virtual inline DAMAGE_TYPE getDamageType() const { return PHYSICAL;}
 	virtual DAMAGE_TYPE modifyDamageType(DAMAGE_TYPE value){return value;}
 	inline bool isFanatic() const {return fanatic_;}
-	inline void setFanatic(bool value){fanatic_ = value;}
+        inline void setFanatic(bool value){fanatic_ = value;}
 	virtual inline bool mayParticipateInCombat() const {return true;}
         virtual void setCombatSettings();
 // Ratings ========================================================
@@ -266,6 +276,7 @@ public:
                   bool mayInterractTokenEntity(TokenEntity * tokenEntity);
                   bool mayObserveTokenEntity(TokenEntity * tokenEntity);
           virtual bool mayInterractFaction(FactionEntity * faction);
+                  bool mayBeIdentified(FactionEntity * faction);
    inline TravelElement  * getTravelStatus() const {return moving_;}
    inline void  setTravelStatus(TravelElement  * status) {moving_ = status;}
 	  virtual string printComposition(){return string("");}
@@ -275,10 +286,26 @@ public:
     void explicitInitialization();
      int countElementalMagicSkill();
     bool canProspect(ResourceElement * res);
+  virtual void extractAndAddKnowledge(Entity * recipient, int parameter = 0);
+  // Image create and maintain
+public:
+//  virtual TokenEntity * createTokenImage(TokenEntity * referent);
+  virtual TokenEntity * createTokenImage(FactionEntity * referent, int observation);
+   void copyPrivateImage(TokenEntity * image,TokenEntity  * source);
+    TokenEntity *  makePrivateImage();
+//  virtual void makeAlliedImage(TokenEntity * image, TokenEntity * source);
+//  virtual void makeObservedImage(TokenEntity * image, TokenEntity * source);
+  virtual void makeAlliedImage(TokenEntity * source);
+  virtual void makeObservedImage(TokenEntity * source);
+   virtual void updateImage(TokenEntity * tokenToAdd);
+protected:
+    //bool isPrivateInfo_;
+    int imageObservation_;
 
 protected:
     LocationEntity * location_;
     FactionEntity * faction_;
+    FactionEntity * lastFaction_;
     TravelElement * moving_;
     bool isMoving_;
     int loyality_;

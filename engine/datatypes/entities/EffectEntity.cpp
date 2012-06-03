@@ -18,7 +18,7 @@
 #include "EntitiesCollection.h"
 
 EffectEntity         sampleEffectEntity  ("EFFECT",  &sampleTokenEntity);
-EntitiesCollection <EffectEntity>   effects(new DataStorageHandler(gameConfig.getEffectsFile()));
+//EntitiesCollection <EffectEntity>   effects(new DataStorageHandler(gameConfig.getEffectsFile()),&sampleEffectEntity);
 
 EffectEntity::EffectEntity( const  EffectEntity* prototype) : TokenEntity(prototype)
 {
@@ -44,12 +44,12 @@ EffectEntity::initialize        ( Parser *parser )
 {
   if (parser->matchKeyword("LOCATION"))
 	{
-	  setLocation(locations[ parser->getWord()]);
+	  setLocation(gameFacade->locations[ parser->getWord()]);
 	  return OK;
 	}
   if (parser->matchKeyword("TYPE"))
 	{
-	  effectType_ = effectRules[ parser->getWord()];
+	  effectType_ = gameFacade->effectRules[ parser->getWord()];
           if(effectType_ == 0)
           {
               cerr<<"Effect of undefined type"<<endl;
@@ -68,12 +68,61 @@ EffectEntity::initialize        ( Parser *parser )
  	}
 	return TokenEntity::initialize(parser );
 }
+// Create token object as it is seen by referent
+// Take into account observation. (imageLevel = obse)
+// for allied units effective observation may be higher
+//EffectEntity *     EffectEntity::createEffectImage(FactionEntity * referent, int observation)
+//{
+//  TokenEntity  * token = createTokenImage(referent,observation);
+//  if(token == 0)
+//  {
+//      return 0;
+//  }
+//  EffectEntity  * effect = dynamic_cast<EffectEntity *> (token) ;
+//  effect->setLocation(this->getLocation());
+//  effect->effectType_ = this->effectType_;
+//  return effect;
+//}
 
+
+// Create token object as it is seen by referent
+// Take into account observation. (imageLevel = obse)
+// for allied units effective observation may be higher
+EffectEntity *     EffectEntity::createEffectImage(FactionEntity * referent, int observation)
+{
+  TokenEntity  * token = createTokenImage(referent,observation);
+  if(token == 0)
+  {
+      return 0;
+  }
+  EffectEntity  * effect = dynamic_cast<EffectEntity *> (token) ;
+  effect->setLocation(this->getLocation());
+  effect->effectType_ = this->effectType_;
+  return effect;
+}
+
+
+// Update token image with the data from another image
+void EffectEntity::updateImage(EffectEntity * effect)
+{
+ //    if(image->getTimeStamp() < this->getTimeStamp())
+//    {
+//        return;
+//    }
+	  this->TokenEntity::updateImage(effect);
+	  this->setLocation(effect->getLocation());
+	  this->effectType_ = effect->effectType_;
+
+}
 
 // Here Expiration and
 void     EffectEntity::dailyPreProcess()
 {
-   effectType_->dailyPreProcessEffect(this);
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	effectType_->dailyPreProcessEffect(this);
 }
 
 
@@ -89,7 +138,11 @@ void    EffectEntity::preprocessData()
  */
 void EffectEntity::postProcessData()
 {
-        effectType_->postProcessEffect(this);
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	effectType_->postProcessEffect(this);
         if(expiration_ ==0)
         {
             terminate();
@@ -117,7 +170,6 @@ void      EffectEntity::save (ostream &out)
             return;
         }
 
-  out << endl;
   TokenEntity::save(out);
         out<<"EXPIRATION "<< getEffectExpiration() <<endl;
 
@@ -173,6 +225,15 @@ void   EffectEntity::reportInventory(FactionEntity * faction, ReportPrinter &out
 
 }
 
+void EffectEntity::extractAndAddKnowledge(FactionEntity * recipient, int parameter)
+{
+
+}
+
+//void EffectEntity::extractSkillKnowledge(Entity * recipient, int parameter)
+//{
+//
+//}
 
 
 

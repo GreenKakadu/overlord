@@ -34,6 +34,6 @@ extern CombatTargetVariety * battleTargetOpposing;
 
 
 
-extern VarietiesCollection <CombatTargetVariety>     combatTargets;
+//extern VarietiesCollection <CombatTargetVariety>     combatTargets;
 extern CombatTargetVariety  *defaultCombatTarget;
 #endif

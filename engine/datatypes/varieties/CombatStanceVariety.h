@@ -39,6 +39,6 @@ extern CombatStanceVariety     sampleCombatStance;
 extern CombatStanceVariety *  avoidStance;
 extern CombatStanceVariety *  defenceStance;
 extern CombatStanceVariety *  attackStance;
-extern VarietiesCollection <CombatStanceVariety>    combatStances;
+//extern VarietiesCollection <CombatStanceVariety>    combatStances;
 extern CombatStanceVariety  *defaultCombatStance;
 #endif                                              

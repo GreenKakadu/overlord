@@ -32,6 +32,7 @@ public:
       EnchantmentRule ( const EnchantmentRule * prototype );// : Rule(prototype)	{_optimalPopulation =0;landWalk_ =0;}
       ~EnchantmentRule (){}
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       inline string getPluralName() const{return pluralName_;}
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
@@ -59,7 +60,7 @@ public:
       string reportPrefix_;
 };
 
-extern RulesCollection <EnchantmentRule>   enchantments;
+//extern RulesCollection <EnchantmentRule>   enchantments;
 extern  EnchantmentRule      sampleEnchantment;
 
 #endif

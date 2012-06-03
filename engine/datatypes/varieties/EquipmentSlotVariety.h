@@ -18,11 +18,12 @@ public:
 //	EquipmentSlotVariety();
 	~EquipmentSlotVariety(){}
   virtual STATUS     initialize      ( Parser *parser);
-  GameData * createInstanceOfSelf();
+        virtual void save(ostream &out);
+    GameData * createInstanceOfSelf();
 		protected:
     private:
 };
 extern EquipmentSlotVariety      sampleEquipmentSlot;
-extern VarietiesCollection <EquipmentSlotVariety>      equipments;
+//extern VarietiesCollection <EquipmentSlotVariety>      equipments;
 
 #endif

@@ -26,7 +26,7 @@ public:
 extern MovementVariety * walkingMode;
 extern MovementVariety * swimingMode;
 extern MovementVariety * flyingMode;
-extern VarietiesCollection <MovementVariety> movementModes;
+//extern VarietiesCollection <MovementVariety> movementModes;
 extern MovementVariety  sampleMode;
 
 #endif

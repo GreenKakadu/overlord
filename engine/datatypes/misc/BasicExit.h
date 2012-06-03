@@ -9,7 +9,7 @@
 #define BASIC_EXIT_H
 #include <iostream>
 #include <vector>
-#include "BasicData.h"
+#include "GameData.h"
 #include "MovementElement.h"
 #include "ReportPrinter.h"
 
@@ -21,7 +21,7 @@ class UnitEntity;
 class MovementVariety;
 class Parser;
 
-class BasicExit :public BasicData{
+class BasicExit :public GameData{
 public: 
 	BasicExit(){};
 	BasicExit(LocationEntity * origin, DirectionVariety * dir, LocationEntity * dest);

@@ -51,14 +51,14 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
 {
   if (parser->matchKeyword ("HARVEST") )
     {
-      resourceConsumed_ = items[parser->getWord()];
+      resourceConsumed_ = gameFacade->items[parser->getWord()];
       harvest_  = parser->getInteger();
 
       return OK;
     }
   if (parser->matchKeyword ("PRODUCES") )
     {
-      resourceHarvested_ = items[parser->getWord()];
+      resourceHarvested_ = gameFacade->items[parser->getWord()];
       days_ =  parser->getInteger();
       return OK;
     }
@@ -74,6 +74,21 @@ HarvestUsingStrategy::initialize        ( Parser *parser )
 
 }
 
+void HarvestUsingStrategy::save(ostream &out)
+{
+    if(resourceConsumed_) out<<"HARVEST"<<" "<<resourceConsumed_->getTag()
+            <<" "<< harvest_<< endl;
+
+   if(resourceHarvested_) out<<"PRODUCES"<<" "<<resourceHarvested_->getTag()
+            <<" "<<days_ << endl;
+  for(vector <ToolUseElement *>::iterator iter = tools_.begin();
+          iter != tools_.end(); ++iter)
+    {
+        out<<"TOOL"<<" ";
+        (*iter)->save(out);
+    }
+
+}
 
 
 RationalNumber HarvestUsingStrategy::getDailyProduction()

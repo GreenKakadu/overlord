@@ -23,7 +23,6 @@ extern ReportPattern * privateEnchantmentReporter;
 extern GameData  targetTypeSelf;
 EnchantmentUsingStrategy  sampleEnchantmentUsing  ("USING_ENCHANT",      &sampleUsing);
 
-//extern RulesCollection    <EnchantmentRule>     enchantments;
 
 EnchantmentUsingStrategy::EnchantmentUsingStrategy ( const EnchantmentUsingStrategy * prototype ): BasicProductionStrategy(prototype)
 {
@@ -43,10 +42,11 @@ GameData * EnchantmentUsingStrategy::createInstanceOfSelf()
 STATUS
 EnchantmentUsingStrategy::initialize        ( Parser *parser )
 {
+     BasicProductionStrategy::initialize(parser);
 
 	if (parser->matchKeyword ("GRANTS") )
     {
-      productType_ = enchantments[parser->getWord()];
+      productType_ = gameFacade->enchantments[parser->getWord()];
       productionDays_ =  parser->getInteger();
       if( (productType_ == 0) ||  (productionDays_ == 0) )
       {
@@ -55,32 +55,16 @@ EnchantmentUsingStrategy::initialize        ( Parser *parser )
       }
       return OK;
     }
-  if (parser->matchKeyword ("CONSUME") )
-    {
-			if(parser->matchElement())
-			  resources_.push_back(new ItemElement(parser));
-      return OK;
-    }
 
-  if (parser->matchKeyword ("MULTIPLE") )
-    {
-      productNumber_ =  parser->getInteger();
-      if(productNumber_ == 0)
-        productNumber_ = 1;
-      return OK;
-    }
-
-
-  if (parser->matchKeyword ("TOOL") )
-  {
-      ToolUseElement * tool = ToolUseElement::readElement (parser);
-      if( tool)
-        tools_.push_back(tool);
-      return OK;
-    }
       return OK;
 }
 
+void EnchantmentUsingStrategy::save(ostream &out)
+{
+    BasicProductionStrategy::save(out);
+    if(productType_) out<<"GRANTS"<<" "<<productType_->getTag()
+            <<" "<<productionDays_ << endl;
+}
 
 
 USING_RESULT EnchantmentUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 

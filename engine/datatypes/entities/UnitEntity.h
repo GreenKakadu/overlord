@@ -42,6 +42,7 @@ class UnitEntity : public TokenEntity
   void    dailyPreProcess();
   STATUS  dataConsistencyCheck();
   void    save (ostream &out);
+  void    save(ostream &out, string prefix);
   void    dailyUpdate();
   bool    defaultAction();
   void    postProcessData();
@@ -58,24 +59,25 @@ class UnitEntity : public TokenEntity
   void    reportFlags(ReportPrinter &out);
 // Data access methods ==============================================
 
-         int              getObservation() const;
-         int              getStealth() const;
-         int              getWeight();
-         int              getCapacity(int modeIndex);
+	 int              getObservation() const;
+	 int              getStealth() const;
+	 int              getWeight();
+	 int              getCapacity(int modeIndex);
 	 int              getCapacity(MovementVariety * mode);
-         RaceRule *       getRace() const;
-         void setRace(RaceRule * race, int number);
-         void changeRace(RaceRule * race);
-         int              getFiguresNumber() const;
-         int getControlPoints() const;
-
+	 RaceRule *       getRace() const;
+   inline RaceElement    * getRaceComposition(){return raceComposition_;}
+	 void 		setRace(RaceRule * race, int number);
+	 void 		changeRace(RaceRule * race);
+	 int        getFiguresNumber() const;
+	 int 		getControlPoints() const;
+	 int 		getUpkeep();
    inline UnitEntity *     getLeader() const {return stackFollowingTo_;}
    inline ConstructionEntity * getContainingConstruction() const {return containingConstruction_ ;}
    inline void setContainingConstruction(ConstructionEntity * containingConstruction)  
 					{ containingConstruction_ = containingConstruction;}
-   bool recursiveSetContainingConstruction(ConstructionEntity* containingConstruction);
-          void enterConstruction(ConstructionEntity * containingConstruction) ;
-          void exitConstruction() ;
+    bool recursiveSetContainingConstruction(ConstructionEntity* containingConstruction);
+	  void enterConstruction(ConstructionEntity * containingConstruction) ;
+	  void exitConstruction() ;
 	 inline int getDamage() const {return stats.getDamage();}
 	 inline int getRangedDamage() const {return stats.getRangedDamage();}
 	 inline DAMAGE_TYPE getDamageType() const { return stats.getDamageType();}
@@ -132,6 +134,7 @@ class UnitEntity : public TokenEntity
           bool            isFollowingForeignUnit();
           bool              isStackLeader();
           bool              hasFollowers();
+          vector< UnitEntity *> & getAllFollowers(){ return stackFollowers_;}
 // Skills ========================================================
 
 
@@ -147,6 +150,7 @@ class UnitEntity : public TokenEntity
          bool teacherRequired(SkillRule * skill) ;
          LEARNING_RESULT mayLearn(SkillRule * skill);
           int getLearningLevelBonus(SkillRule * skill);
+          vector < SkillLevelElement *> getMayLearnList();
 // Titles ========================================================
           void addTitle(TitleElement * title);
           void removeTitle(TitleElement * title);
@@ -169,9 +173,11 @@ class UnitEntity : public TokenEntity
   int calculateMovementBonus(MovementVariety * mode);
 // Flags ========================================================
   void setConsuming(bool value) {consuming_ = value;}
-  bool getConsuming() {return consuming_;}
+ // bool getConsuming() {return consuming_;}
   void setDiscontenting(bool value) {discontenting_ = value;}
-  bool getDiscontenting() {return discontenting_;}
+ // bool getDiscontenting() {return discontenting_;}
+  inline bool isDiscontent(){return discontenting_;}
+  inline bool isConsuming(){return consuming_;}
 
 // Other ========================================================
   void sufferDamage(int value);
@@ -218,15 +224,22 @@ class UnitEntity : public TokenEntity
     void drownUnit();
     void addEffect(EffectEntity * effect);
     EnchantmentElement * hasEnchantment(EnchantmentRule * rule);
+  virtual void extractAndAddKnowledge(Entity * recipient, int parameter = 0);
+//  virtual void extractSkillKnowledge(Entity * recipient, int parameter = 0);
 // ReportPatterns ========================================================
-
-
+   void copyPrivateImage(UnitEntity * image, UnitEntity  * source);
+   UnitEntity *  makePrivateImage();
+  virtual void makeAlliedImage(TokenEntity * source);
+  virtual void makeObservedImage(TokenEntity * source);
+  virtual UnitEntity * createUnitImage(FactionEntity * referent, int observation);
+ // UnitEntity * createUnitImage(TokenEntity * referent);
+  void updateImage(UnitEntity *unit);
     protected:
          ConstructionEntity  * containingConstruction_;
          UnitEntity     * stackFollowingTo_;
          RaceElement    * raceComposition_;
          bool             staying_;
-         bool             patroling_;
+//         bool             patroling_;
          bool             exposeFlag_;
          bool 	          consuming_;
          bool 	          discontenting_;
@@ -240,8 +253,8 @@ class UnitEntity : public TokenEntity
 typedef vector <UnitEntity *>::iterator StackIterator;
 typedef vector <UnitEntity *>::iterator  UnitIterator;
 extern UnitEntity     sampleUnit;
-#include "EntitiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
+//#include "EntitiesCollection.h"
+//extern EntitiesCollection <UnitEntity>      units;
 
 #endif
 

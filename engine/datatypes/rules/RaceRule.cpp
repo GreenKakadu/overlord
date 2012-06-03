@@ -6,14 +6,14 @@ copyright            : (C) 2002 by Alex Dribin
 email                : Alex.Dribin@gmail.com
 ***************************************************************************/
 #include "StringData.h"
+#include "GameFacade.h"
 #include "RaceRule.h"
 #include "EquipmentSlotVariety.h"
 #include "RulesCollection.h"
 #include "PrototypeManager.h"
-extern RulesCollection <SkillRule>     skills;
-extern VarietiesCollection <EquipmentSlotVariety>      equipments;
-RulesCollection <RaceRule>      races(new DataStorageHandler("races.rules"));
+
 RaceRule      sampleRace      ("RACE",     &sampleGameData);
+//RulesCollection <RaceRule>      races(new DataStorageHandler("races.rules"),&sampleRace);
 
 equip_slot::equip_slot(EquipmentSlotVariety * slotRule, int  cap)
 {
@@ -33,20 +33,20 @@ RaceRule::RaceRule ( const RaceRule * prototype ) : Rule(prototype)
   hiringCost_ = 50;
   hiringProbability_ = 1000;
   hiringMax_ = 1000;
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_food"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_mount"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_tool"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_ship"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_weapon"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_armor"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_helmet"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_shield"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_gloves"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_boots"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_amulet"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_ring"], 2));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_misc"]));
-  equipmentSlots_.push_back(new EquipSlot(equipments["equip_cloak"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_food"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_mount"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_tool"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_ship"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_weapon"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_armor"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_helmet"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_shield"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_gloves"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_boots"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_amulet"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_ring"], 2));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_misc"]));
+  equipmentSlots_.push_back(new EquipSlot(gameFacade->equipments["equip_cloak"]));
 }
 
 
@@ -107,7 +107,7 @@ RaceRule::initialize        ( Parser *parser )
     else
     {
       string modeTag = parser->getWord();
-      if(movementModes.isValidTag(modeTag))
+      if(gameFacade->movementModes.isValidTag(modeTag))
       {
 	capacity_[modeTag]  = parser->getInteger();
       }
@@ -116,12 +116,21 @@ RaceRule::initialize        ( Parser *parser )
   }
   if (parser->matchKeyword("SKILL"))
   {
-    SkillRule *skill = skills[parser->getWord()];
+    SkillRule *skill = gameFacade->skills[parser->getWord()];
     if (skill == 0)
       return OK;
     else
     {
       SkillElement newSkill(skill,parser->getInteger());
+      for(vector< SkillElement>::iterator iter = intristicSkills_.begin(); iter != intristicSkills_.end();
+              ++iter)
+      {
+          if((*iter).getSkill() == skill)// If skill already present overwrite it
+          {
+            (*iter).setExpPoints(newSkill.getExpPoints());
+            return OK;
+          }
+      }
       intristicSkills_.push_back(newSkill);
     }
     return OK;
@@ -132,7 +141,7 @@ RaceRule::initialize        ( Parser *parser )
     string slotId = parser->getWord();
     if(slotId.empty())
       return OK;
-    EquipmentSlotVariety * slot = equipments[slotId];
+    EquipmentSlotVariety * slot = gameFacade->equipments[slotId];
     if(slot)	
     {		
       EquipSlotIterator iter;
@@ -154,6 +163,33 @@ RaceRule::initialize        ( Parser *parser )
   
 }
 
+void RaceRule::save(ostream &out)
+{
+  Rule::save(out);
+  if(!pluralName_.empty()) out << "PLURAL "<<pluralName_<<endl;
+  if(weight_) out << "WEIGHT "<<weight_ <<endl;
+  if(hiringProbability_) out<<"FRACTION "<<hiringProbability_<<endl;
+  if(hiringMax_) out<<"MAXIMUM "<<hiringMax_<<endl;
+  if(hiringCost_) out<<"COST "<<hiringCost_<<endl;
+  for(vector< EquipSlot *>::iterator iter = equipmentSlots_.begin(); iter != equipmentSlots_.end(); ++iter)
+  {
+   out<<"EQUIPMENT_SLOT "<<(*iter)->type->getTag()<<" "<<(*iter)->capacity <<endl;;
+  }
+  for(vector <SkillElement >::iterator iter = intristicSkills_.begin();
+  iter != intristicSkills_.end(); ++iter)
+  {
+    out<<"SKILL ";
+    (*iter).save(out);
+  }
+
+    for(int i =0; i <gameFacade->movementModes.size(); ++i)
+  {
+    if(capacity_[i]) out << "CAPACITY "<<(gameFacade->movementModes[i])->getTag()<<" " << capacity_[i] <<endl;
+  }
+ stats.save(out,"",0);
+  skillBonuses_.save(out);
+  movementBonuses_.save(out);
+}
 
 
 /*
@@ -271,7 +307,7 @@ void RaceRule::printDescription(ReportPrinter & out)
   {
     out <<"weight "  <<weight_ ;
     bool isFirst = true;
-    for(int i =0 ; i < movementModes.size(); ++i)
+    for(int i =0 ; i < gameFacade->movementModes.size(); ++i)
     {
       if(capacity_[i])
       {
@@ -283,7 +319,7 @@ void RaceRule::printDescription(ReportPrinter & out)
 	else
 	  out << ", ";
 	
-	out << capacity_[i]<< "/" << (movementModes[i])->getName();
+	out << capacity_[i]<< "/" << (gameFacade->movementModes[i])->getName();
       }
       
       
@@ -331,10 +367,145 @@ void RaceRule::printDescription(ReportPrinter & out)
   skillBonuses_.report(out);
 }
 
+
+
+vector <AbstractData *> RaceRule::aPrintTypeSpecificDescription()
+{
+    vector <AbstractData *> out;
+    return out;
+}
+
+
+
 vector <AbstractData *> RaceRule::aPrint()
 {
-  vector <AbstractData *> v;
-  return v;
+    vector <AbstractData *> out;
+    out.push_back(new StringData(getDescription()));
+    if(weight_)
+    {
+        out.push_back(new StringData(" weight "));
+        out.push_back(new IntegerData(weight_));
+
+        bool isFirst = true;
+        for(int i =0 ; i < gameFacade->movementModes.size(); ++i)
+        {
+            if(capacity_[i])
+            {
+                if(isFirst)
+                {
+                    out.push_back(new StringData(", capacity: "));
+                    isFirst = false;
+                }
+                else
+                {
+                    out.push_back(new StringData(", "));
+                }
+                out.push_back(new IntegerData(capacity_[i]));
+                out.push_back(new StringData("/"));
+                out.push_back(new StringData((gameFacade->movementModes[i])->getName()));
+            }
+        }
+        out.push_back(new StringData(". "));
+    }
+
+    vector <AbstractData *> v = aPrintTypeSpecificDescription();
+    for(vector<AbstractData *>::iterator iter= v.begin(); iter != v.end(); iter++)
+      {
+              out.push_back(*iter);
+      }
+
+    if(hiringCost_)
+    {
+        out.push_back(new StringData(" Base recruit price: $"));
+        out.push_back(new IntegerData(hiringCost_));
+        out.push_back(new StringData("."));
+    }
+    if(stats.getUpkeep())
+    {
+        out.push_back(new StringData(" Upkeep $"));
+        out.push_back(new IntegerData(stats.getUpkeep()));
+        out.push_back(new StringData(" per figure."));
+    }
+    if(stats.getControlPoints())
+    {
+        out.push_back(new StringData(" Required "));
+        out.push_back(new IntegerData(stats.getControlPoints()));
+        out.push_back(new StringData("  control per each "));
+      if( controlPointsFraction_ > 1)
+        {
+          out.push_back(new IntegerData(controlPointsFraction_));
+          out.push_back(new StringData(" figures"));
+      }
+      else
+      {
+          out.push_back(new IntegerData(controlPointsFraction_));
+          out.push_back(new StringData(" figure"));
+      }
+      out.push_back(new StringData(". "));
+    }
+
+    if(!stats.empty())
+    {
+        bool isFirst = true;
+        out.push_back(new StringData("  Stats: "));
+        vector<AbstractArray> statPrint = stats.aPrint();
+        for(vector <AbstractArray>::iterator iter = statPrint.begin();
+        iter != statPrint.end(); ++iter)
+        {
+            if(!isFirst)
+            {
+                out.push_back(new StringData(", "));
+            }
+            else
+            {
+                isFirst = false;
+            }
+            for(vector <AbstractData *>::iterator iter2 = (*iter).begin();
+            iter2 != (*iter).end(); ++iter2)
+            {
+                out.push_back(*iter2);
+            }
+        }
+        out.push_back(new StringData(". "));
+    }
+
+
+
+    if(!intristicSkills_.empty())
+    {
+        out.push_back(new StringData(" Skills: "));
+      for (SkillIterator iter = intristicSkills_.begin(); iter != intristicSkills_.end(); iter++)
+      {
+        if( iter != intristicSkills_.begin())
+        {
+            out.push_back(new StringData(", "));
+        }
+        vector <AbstractData *> v = (*iter).aPrintSkill();
+        for(vector<AbstractData *>::iterator iter= v.begin(); iter != v.end(); iter++)
+          {
+                  out.push_back(*iter);
+          }
+
+      }
+out.push_back(new StringData(". "));
+//out.push_back(new StringData(""));
+
+    }
+
+
+    vector<AbstractArray> v1 = skillBonuses_.aPrintReport();
+
+
+    for(vector<AbstractArray>::iterator iter= v1.begin(); iter != v1.end(); iter++)
+      {
+
+        for(AbstractArray::iterator iter2= (*iter).begin(); iter2 != (*iter).end(); iter2++)
+          {
+              out.push_back(*iter2);
+          }
+
+      }
+    return out;
 }
 
 int RaceRule::getProductionBonusValue(SkillRule * skill)

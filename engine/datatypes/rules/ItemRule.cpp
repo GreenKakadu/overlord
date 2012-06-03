@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "StringData.h"
+#include "GameFacade.h"
 #include "ItemRule.h"
 #include "EquipmentSlotVariety.h"
 #include "SkillLevelElement.h"
@@ -14,8 +15,9 @@
 #include "UnitEntity.h"
 #include "CombatActionStrategy.h"
 #include "PrototypeManager.h"
+
 ItemRule      sampleItem      ("ITEM",     &sampleGameData);
-RulesCollection <ItemRule>      items(new DataStorageHandler("items.rules"));
+//RulesCollection <ItemRule>      items(new DataStorageHandler("items.rules"),&sampleItem);
 
 extern VarietiesCollection <EquipmentSlotVariety>      equipments;
 
@@ -100,7 +102,7 @@ ItemRule::initialize        ( Parser *parser )
     else
     {
       string modeTag = parser->getWord();
-      if(movementModes.isValidTag(modeTag))
+      if(gameFacade->movementModes.isValidTag(modeTag))
       {
 	capacity_[modeTag]  = parser->getInteger();
       }
@@ -117,7 +119,7 @@ ItemRule::initialize        ( Parser *parser )
     else
     {
       string modeTag = parser->getWord();
-      if(movementModes.isValidTag(modeTag))
+      if(gameFacade->movementModes.isValidTag(modeTag))
       {
 	equipCapacity_[modeTag]  = parser->getInteger();
       }                            
@@ -129,10 +131,10 @@ ItemRule::initialize        ( Parser *parser )
     int index =  parser->getInteger();
     if(index)
     {
-      equipSlot_ = equipments[index - 1];
+      equipSlot_ = gameFacade->equipments[index - 1];
     }
     else
-      equipSlot_ = equipments[parser->getWord()];
+      equipSlot_ = gameFacade->equipments[parser->getWord()];
     return OK;
   }
   if (parser->matchKeyword("EQUIP_CONDITION"))
@@ -142,13 +144,12 @@ ItemRule::initialize        ( Parser *parser )
     if(equipCondition_)
     {
       equipCondition_->initialize(parser) ;
-      equipCondition_->setSubject(this);
     }
     return OK;
   }
   if (parser->matchKeyword("USE_SKILL"))
   {
-    SkillRule *skill = skills[parser->getWord()];
+    SkillRule *skill = gameFacade->skills[parser->getWord()];
     if (skill == 0)
       return OK;
     else
@@ -158,7 +159,7 @@ ItemRule::initialize        ( Parser *parser )
   
   if (parser->matchKeyword("PROSPECT_SKILL"))
   {
-    SkillRule *skill = skills[parser->getWord()];
+    SkillRule *skill = gameFacade->skills[parser->getWord()];
     if (skill == 0)
       return OK;
     else
@@ -215,11 +216,49 @@ ItemRule::initialize        ( Parser *parser )
   
 }
 
+void ItemRule::save(ostream &out)
+{
+  Rule::save(out);
+  if(!pluralName_.empty()) out << "PLURAL "<<pluralName_<<endl;
+  if(weight_) out << "WEIGHT "<<weight_ <<endl;
+  if(unique_) out << "UNIQUE "<<endl;
+  if(price_) out << "PRICE "<< price_<<endl;
+  if(live_) out << "LIVE " <<endl;
+  if(!isRegeneratingResource_) out << "NONREGENERATING "<<endl;
+  for(int i =0; i <gameFacade->movementModes.size(); ++i)
+  {
+    if(capacity_[i]) out << "CAPACITY "<<(gameFacade->movementModes[i])->getTag()<<" " << capacity_[i] <<endl;
+  }
+
+  for(int i =0; i <gameFacade->movementModes.size(); ++i)
+  {
+    if(equipCapacity_[i]) out << "EQUIP_CAPACITY "<<(gameFacade->movementModes[i])->getTag()<<" " <<equipCapacity_[i] <<endl;
+  }
+
+  if(equipSlot_) out << "EQUIP_CATEGORY "<<equipSlot_->getTag()<<endl;
+  if(equipCondition_) 
+  {
+      out << "EQUIP_CONDITION "<<equipCondition_->getKeyword()<<" ";
+      equipCondition_->save(out);
+  }
+  if(useSkill_) {out << "USE_SKILL "; useSkill_->save(out);}
+  if(prospectSkill_ ) {out << "PROSPECT_SKILL ";prospectSkill_->save(out);}
+  if(special_) out << "SPECIAL " <<endl;
+  if(combatAction_) 
+  {
+      out << "COMBAT_USE "<< " "<<combatAction_->getKeyword() <<endl;
+      combatAction_->save(out);
+  }
+  if(magic_) out << "MAGIC "<<endl;
+
+  stats.save(out,"",0);
+  skillBonuses_.save(out);
+}
 
 
 void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
 {
-//    if(this==items["dead"])
+//    if(this==items["adam"])
 //    {
 //        cout<<"extracting Knowledge for "<< recipient->print()<<" from "<<print()<<endl;
 //    }
@@ -231,6 +270,14 @@ void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
   }
   if(equipCondition_)    
     equipCondition_->extractKnowledge(recipient);
+
+  if(prospectSkill_)
+  {
+      if(recipient->addSkillKnowledge(prospectSkill_->getSkill(),prospectSkill_->getLevel()))
+  {
+     prospectSkill_->getSkill()->extractKnowledge(recipient,prospectSkill_->getLevel());
+  }
+}
 }
 
 
@@ -242,7 +289,7 @@ void ItemRule::printDescription(ReportPrinter & out)
   {
     out <<"weight "  <<weight_ ;
     bool isFirst = true;
-    for(int i =0 ; i < movementModes.size(); ++i)
+    for(int i =0 ; i < gameFacade->movementModes.size(); ++i)
     {
       if(capacity_[i])
           {
@@ -254,7 +301,7 @@ void ItemRule::printDescription(ReportPrinter & out)
               else
                 out << ", ";
 
-              out << capacity_[i]<< "/" << (movementModes[i])->getName();
+              out << capacity_[i]<< "/" << (gameFacade->movementModes[i])->getName();
               if(equipCapacity_[i])
                 out << " ("<<equipCapacity_[i]<< " while equiped)";
           }
@@ -339,7 +386,7 @@ vector <AbstractData *> ItemRule::aPrint()
     v.push_back(new StringData("weight "));
     v.push_back(new IntegerData(weight_));
     bool isFirst = true;
-    for(int i =0 ; i < movementModes.size(); ++i)
+    for(int i =0 ; i < gameFacade->movementModes.size(); ++i)
     {
       if(capacity_[i])
       {
@@ -355,7 +402,7 @@ vector <AbstractData *> ItemRule::aPrint()
 
         v.push_back(new IntegerData(capacity_[i]));
         v.push_back(new StringData("/"));
-        v.push_back(new StringData((movementModes[i])->getName()));
+        v.push_back(new StringData((gameFacade->movementModes[i])->getName()));
 
         if(equipCapacity_[i])
         {
@@ -365,33 +412,80 @@ vector <AbstractData *> ItemRule::aPrint()
         }
       }
     }
-    v.push_back(new StringData(". "));
+
   }
+
+  v.push_back(new StringData(". "));
+  if(stats.getUpkeep())
+  {
+      v.push_back(new StringData("Additional upkeep $"));
+      v.push_back(new IntegerData(stats.getUpkeep()));
+      v.push_back(new StringData(" per item. "));
+  }
+  if(stats.getControlPoints())
+  {
+      v.push_back(new StringData(" Required control"));
+      v.push_back(new IntegerData(stats.getControlPoints()));
+      v.push_back(new StringData(" per item. "));
+  }
+
+       if(equipCondition_)
+     {
+           vector <AbstractData *> condition = equipCondition_->aPrint();
+           v.push_back(new StringData(" Equipped with "));
+           for(vector <AbstractData *>::iterator iter = condition.begin();
+           iter != condition.end(); ++iter)
+           {
+             v.push_back(*iter);
+            }
+           v.push_back(new StringData(". "));
+     }
+
+       if(equipSlot_)
+       {
+           v.push_back(new StringData(" Equipment category: "));
+           v.push_back(new StringData(equipSlot_->getName()));
+
+           if(numEquipSlotsRequired_ > 1)
+           {
+               v.push_back(new StringData(" ( requires "));
+               v.push_back(new IntegerData(numEquipSlotsRequired_));
+               v.push_back(new StringData(" "));
+               v.push_back(new StringData(equipSlot_->getName()));
+               v.push_back(new StringData(" to equip ). "));
+           }
+           v.push_back(new StringData(". "));
+       }
+       if(!stats.empty())
+       {
+           bool isFirst = true;
+           v.push_back(new StringData(" Equipment gives "));
+           vector<AbstractArray> statPrint = stats.aPrint();
+           for(vector <AbstractArray>::iterator iter = statPrint.begin();
+           iter != statPrint.end(); ++iter)
+           {
+               if(!isFirst)
+               {
+                   v.push_back(new StringData(", "));
+               }
+               else
+               {
+                   isFirst = false;
+               }
+               for(vector <AbstractData *>::iterator iter2 = (*iter).begin();
+               iter2 != (*iter).end(); ++iter2)
+               {
+                   v.push_back(*iter2);
+               }
+           }
+           v.push_back(new StringData(". "));
+
+       }
   v.push_back(new StringData(getDescription()));
 
   return v;
 }
 
  
-//     if(stats.getUpkeep())
-//       out << " Additional upkeep $" << stats.getUpkeep()<<" per item.";
-//   
-//     if(stats.getControlPoints())
-//       out << " Required control " << stats.getControlPoints()<<" per item.";
-//   
-//     if(equipCondition_)
-//   {
-//     out << " Equipped with "<< *equipCondition_<<".";
-//   }
-//   
-//     if(equipSlot_)
-//   {
-//     out << " Equipment category: " << equipSlot_->getName();
-//     if(numEquipSlotsRequired_ > 1)
-//       out << " ( requires "<< numEquipSlotsRequired_ << " "<< equipSlot_->getName() << " to equip )";
-//     out<<".";
-//   }
-//     if(!stats.empty())
-//   {
-//     out << " Equipment gives " << stats;
-//   }
+
+

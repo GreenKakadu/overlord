@@ -26,6 +26,7 @@ class TitleRule : public Rule
       void       printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();
       virtual    STATUS initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
 
       int  getCost()    const  {  return cost_;}
@@ -87,6 +88,6 @@ private:
 };
 
 extern TitleRule       sampleTitle;
-extern RulesCollection <TitleRule>     titles;
+//extern RulesCollection <TitleRule>     titles;
 
 #endif

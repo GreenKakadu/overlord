@@ -6,7 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "FollowerRaceRule.h"
-FollowerRaceRule sampleFollowerRaceRule= FollowerRaceRule("FOLLOWER",&sampleRace);
+FollowerRaceRule sampleFollowerRaceRule("FOLLOWER",&sampleRace);
 
 FollowerRaceRule::FollowerRaceRule ( const FollowerRaceRule * prototype ) : RaceRule(prototype)
 {
@@ -32,6 +32,10 @@ FollowerRaceRule::initialize        ( Parser *parser )
       return RaceRule::initialize(parser);
 }
 
+void FollowerRaceRule::save(ostream &out)
+{
+  RaceRule::save(out);
+}
 
 
 bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * unit)
@@ -46,7 +50,7 @@ bool FollowerRaceRule::skillCompartibilityCheck(SkillRule * skill, UnitEntity * 
         return true;   //unit already knows this skill
    vector < SkillElement>::iterator iter;
    
-    SkillRule * scouting = skills["scou"];
+    SkillRule * scouting = gameFacade->skills["scou"];
     for(iter = unit->getAllSkills().begin(); iter != unit->getAllSkills().end(); ++iter)
    {
      if((*iter).getSkill()->getBasicSkill() == scouting) //Do not take scouting into account
@@ -128,7 +132,7 @@ LEARNING_RESULT FollowerRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)
 
 bool FollowerRaceRule::mayMove(UnitEntity * unit)
 {
-  SkillRule * scouting = skills["scou"];
+  SkillRule * scouting = gameFacade->skills["scou"];
   if (unit->hasSkillLevel(scouting,1))
     return true;
   else  
@@ -145,6 +149,16 @@ int FollowerRaceRule::getLearningCapacity()
 
 void FollowerRaceRule::printTypeSpecificDescription(ReportPrinter & out)
 {
-  out << " This is a follower.";
+    out << " This is a follower.";
 }
+
+
+
+vector <AbstractData *> FollowerRaceRule::aPrintTypeSpecificDescription()
+{
+    vector <AbstractData *> out;
+    out.push_back(new StringData(" This is a follower."));
+    return out;
+}
+
 

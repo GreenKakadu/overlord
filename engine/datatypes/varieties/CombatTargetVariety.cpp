@@ -24,7 +24,7 @@ CombatTargetVariety * battleTargetOpposing;
 
 
 CombatTargetVariety sampleCombatTarget  ("COMBAT_TARGET",   &sampleGameData);
-VarietiesCollection <CombatTargetVariety>    combatTargets(new DataStorageHandler("combat_target.var"));
+//VarietiesCollection <CombatTargetVariety>    combatTargets(new DataStorageHandler("combat_target.var"));
 GameData * CombatTargetVariety::createInstanceOfSelf()
 {
   return CREATE_INSTANCE<CombatTargetVariety> (this);

@@ -36,6 +36,7 @@ class OwnershipPolicy {
 public: 
 	OwnershipPolicy(/*LocationEntity * location*/);
 	~OwnershipPolicy();
+	OwnershipPolicy(OwnershipPolicy & p);
   StanceVariety * getHarvestPermission(ItemRule * item);
   StanceVariety * getBuyPermission(ItemRule * item);
   StanceVariety * getSellPermission(ItemRule * item);

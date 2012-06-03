@@ -9,7 +9,7 @@
 #include "CombatFileVariety.h"
 CombatFileVariety    sampleCombatFile    ("COMBAT_FILE",   &sampleGameData);
 CombatFileVariety  *defaultCombatFile;
-VarietiesCollection <CombatFileVariety>    combatFiles(new DataStorageHandler("combat_files.var"));
+//VarietiesCollection <CombatFileVariety>    combatFiles(new DataStorageHandler("combat_files.var"));
 
 GameData * CombatFileVariety::createInstanceOfSelf()
 {

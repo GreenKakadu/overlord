@@ -16,9 +16,9 @@
 #include "BonusElement.h"
 #include "QuintenaryMessage.h"
 TitleRule     sampleTitle     ("TITLE",    &sampleGameData);
-MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule =     MerchantPrinceTitleRule("PRINCE", &sampleTitle);
-OverlordTitleRule  sampleOverlordTitleRule =  OverlordTitleRule ("OVERLORD", &sampleTitle);
-RulesCollection <TitleRule>     titles(new DataStorageHandler("titles.rules"));
+MerchantPrinceTitleRule     sampleMerchantPrinceTitleRule ("PRINCE", &sampleTitle);
+OverlordTitleRule  sampleOverlordTitleRule("OVERLORD", &sampleTitle);
+//RulesCollection <TitleRule>     titles(new DataStorageHandler("titles.rules"),&sampleTitle);
 extern ReportPattern * failedContestTitleReporter;
 extern ReportPattern * successContestTitleReporter;
 
@@ -88,6 +88,20 @@ TitleRule::initialize        ( Parser *parser)
   return OK;
 }
 
+void TitleRule::save(ostream &out)
+{
+    Rule::save(out);
+    if (condition_)
+    {
+        out << "SKILL" << " ";
+        condition_->save(out);
+    }
+    if (getCost()) out << "COST" << " " << getCost() << endl;
+    if (getControl()) out << "CONTROL" << " " << getControl() << endl;
+    if (getType()) out << "TYPE" << " " << getType() << endl;
+    if (getRange()) out << "RANGE" << " " << getRange() << endl;
+    skillBonuses_.save(out);
+}
 
 
 void TitleRule::printDescription(ReportPrinter & out)
@@ -110,10 +124,65 @@ void TitleRule::printDescription(ReportPrinter & out)
 
 vector <AbstractData *> TitleRule::aPrint()
 {
-  vector <AbstractData *> v;
-  return v;
-}
 
+    vector <AbstractData *> out;
+    out.push_back(new StringData(getDescription()));
+
+
+
+
+    if (condition_)
+    {
+        out.push_back(new StringData(" Requires "));
+        vector <AbstractData *> v = condition_->aPrint();
+        for(vector<AbstractData *>::iterator iter= v.begin(); iter != v.end(); iter++)
+          {
+                    out.push_back(*iter);
+        }
+out.push_back(new StringData(".  "));
+    }
+    if (getCost())
+    {
+        out.push_back(new StringData(" Costs $"));
+        out.push_back(new IntegerData(getCost()));
+        out.push_back(new StringData(".  "));
+    }
+    if (getControl())
+    {
+        out.push_back(new StringData(" Adds "));
+        out.push_back(new IntegerData(getControl()));
+        out.push_back(new StringData("CP to faction limit. "));
+
+    }
+
+    if (getType())// Type is not used now
+    {
+        out.push_back(new StringData(" "));
+    }
+    if (getRange())
+    {
+        out.push_back(new StringData("Affects lands in the range of "));
+        out.push_back(new IntegerData(getRange()));
+        out.push_back(new StringData(" days of walking. "));
+    }
+
+
+
+    out.push_back(new StringData(" "));
+  vector<AbstractArray> v = skillBonuses_.aPrintReport();
+  for(vector<AbstractArray>::iterator iter= v.begin(); iter != v.end(); iter++)
+    {
+
+      for(AbstractArray::iterator iter2= (*iter).begin(); iter2 != (*iter).end(); iter2++)
+        {
+            out.push_back(*iter2);
+        }
+
+    }
+
+return out;
+
+}
 
 
 bool TitleRule::contest(UnitEntity * titleHolder, UnitEntity * contender,

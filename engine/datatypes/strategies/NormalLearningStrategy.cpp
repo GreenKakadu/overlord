@@ -29,6 +29,10 @@ NormalLearningStrategy::initialize        ( Parser *parser )
       return BasicLearningStrategy::initialize(parser);
 }
 
+void NormalLearningStrategy::save(ostream &out)
+{
+    BasicLearningStrategy::save(out);
+}
 
 BasicLearningStrategy * NormalLearningStrategy::cloneSelf()
 {

@@ -26,6 +26,7 @@ public:
       BuildUsingStrategy ( const string & keyword, GameData * parent): BasicProductionStrategy(keyword, parent){}
       BuildUsingStrategy ( const BuildUsingStrategy * prototype );
 		 ~BuildUsingStrategy(){};
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       STATUS initialize        ( Parser *parser );
 //      USING_RESULT use(TokenEntity * tokenEntity, SkillRule *, int &useCounter);

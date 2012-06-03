@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "EquipmentSlotVariety.h"
 EquipmentSlotVariety sampleEquipmentSlot     ("EQUIPMENT_SLOT", &sampleGameData);
-VarietiesCollection <EquipmentSlotVariety>      equipments(new DataStorageHandler("equipments.var"));
+//VarietiesCollection <EquipmentSlotVariety>      equipments(new DataStorageHandler("equipments.var"));
 
 GameData * EquipmentSlotVariety::createInstanceOfSelf()
 {
@@ -39,4 +39,10 @@ EquipmentSlotVariety::initialize        ( Parser *parser )
       return OK;
 
  }
+
+
+void EquipmentSlotVariety::save(ostream &out)
+{
+    out << getTag() <<endl;
+}
 

@@ -35,7 +35,7 @@ public:
 	  string pluralName_;
 };
 extern ConstructionWorksVariety   sampleConstructionWork;
-extern VarietiesCollection <ConstructionWorksVariety>      construction_works;
+//extern VarietiesCollection <ConstructionWorksVariety>      construction_works;
 
 
 #endif

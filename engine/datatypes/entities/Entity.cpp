@@ -12,8 +12,11 @@
 #include "InventoryElement.h"
 #include "TeachingOffer.h"
 #include "OrderProcessor.h"
-//#include "BasicAttribute.h"
+#include "DataManipulator.h"
+#include "Event.h"
+
 extern bool testMode;
+//extern DataManipulator * dataManipulatorPtr;
 Entity         sampleEntity  ("ENTITY",  &sampleGameData);
 
 //static vector <BasicAttribute *> Entity::attributes;
@@ -24,6 +27,9 @@ Entity::Entity ( const Entity * prototype ): GameData(prototype)
   traced_ = false;
   disobeying_ = false;
   isPayingUpkeep_ = true;
+  imageLevel_ = UNKNOWN_IMAGE;
+  isImage_ = false;
+  isUnknownEntity_ = false;
 }
 
 
@@ -109,12 +115,41 @@ STATUS currentResult = OK;
  	{
 	  orders_.push_back(new OrderLine(parser->getText(),this));
  	}
-   
+
+       if (parser->matchKeyword ("UNKNOWN") )
+         {
+    	   isUnknownEntity_ = true;
+         }
+       if (parser->matchKeyword("EVENT"))
+ 	{
+    	   string tag =parser->getText();
+    	   Event * event = gameFacade->events.findEvent(tag);
+    	   if(event)
+    	   {
+    	   collectedEvents_.push_back(event);
+    	   }
+ 	}
+       if (parser->matchKeyword("RELATED_EVENT"))
+ 	{
+    	   string tag =parser->getText();
+    	   Event * event = gameFacade->events.findEvent(tag);
+    	   if(event)
+    	   {
+    	   relatedEvents_.push_back(event);
+    	   }
+ 	}
+
         if (parser->matchKeyword("TRACED"))
         {
           traced_ = true;
           return OK;
         }
+        if (parser->matchKeyword("TIMESTAMP"))
+        {
+          timeStamp_.init(parser);
+          return OK;
+        }
+
 
   // currentResult = enchantments_.initialize(parser);
    if(currentResult != OK)
@@ -124,23 +159,123 @@ STATUS currentResult = OK;
 
 }
 
+//STATUS
+//Entity::initializeEvents        ( Parser *parser )
+//{
+//       if (parser->matchKeyword("EVENT"))
+// 	{
+//    	   string tag =parser->getText();
+//    	   Event * event = gameFacade->events.findEvent(tag);
+//    	   if(event)
+//    	   {
+//    	    collectedEvents_.push_back(event);
+//    	    return OK;
+//    	   }
+// 	}
+//       if (parser->matchKeyword("RELATED_EVENT"))
+// 	{
+//    	   string tag =parser->getText();
+//    	   Event * event = gameFacade->events.findEvent(tag);
+//    	   if(event)
+//    	   {
+//    	    relatedEvents_.push_back(event);
+//    	    return OK;
+//    	   }
+// 	}
+//	  return IO_ERROR;
+//}
 
 
-void
-Entity::save(ostream &out)
+void Entity::save(ostream &out) {
+	out << endl << getCollectionKeyword() << " " << tag_ << " " << getKeyword()
+			<< endl;
+	getTimeStamp().save(out);
+	if (!name_.empty())
+		out << "NAME " << name_ << endl;
+	if (!description_.empty())
+		out << "DESCRIPTION " << description_ << endl;
+	enchantments_.save(out);
+	//  out << endl;
+
+	saveEvents(out);
+	for (OrderIterator iter = orders_.begin(); iter != orders_.end(); iter++)
+	{
+		(*iter)->save(out);
+	}
+
+	if (traced_)
+		out << "TRACED" << endl;
+}
+
+void Entity::save(ostream &out, string prefix)
 {
-  out << keyword_ << " " <<tag_ << endl;
-  if(!name_.empty()) out << "NAME " <<name_ << endl;
-  if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
-  enchantments_.save(out);
-//  out << endl;
+    GameData::save(out,prefix);
+  enchantments_.save(out,prefix);
+  getTimeStamp().save(out);
   for (OrderIterator iter = orders_.begin(); iter != orders_.end(); iter++)
     {
            (*iter)->save(out);
     }
-    if (traced_) out << "TRACED" << endl;
 }
 
+/*
+ * This method updates current Entity's  with the data from imagetoAdd
+ * In some cases overwrite, in some add in some combine.
+ *
+ */
+
+
+void Entity::updateImage(Entity *imagetoAdd)
+{
+  if(this->getTimeStamp() < imagetoAdd->getTimeStamp())      // Image is newer
+    {
+        setName(imagetoAdd->getName());
+        setDescription(imagetoAdd->getDescription());
+        setTimeStamp(imagetoAdd->getTimeStamp());
+        collectedEvents_ = imagetoAdd->getAllCollectedEvents();
+        relatedEvents_= imagetoAdd->getAllRelatedEvents();
+
+        if(imagetoAdd->getImageLevel() == PRIVATE_IMAGE)
+          {
+            orders_ = imagetoAdd->orders_;
+          }
+        imageLevel_ = imagetoAdd->getImageLevel();
+
+    }
+  else if(this->getTimeStamp() == imagetoAdd->getTimeStamp())// Image is the same age
+    {
+      if(this->getImageLevel() < imagetoAdd->getImageLevel())// new image has more reliable data
+        {
+          setName(imagetoAdd->getName());
+          setDescription(imagetoAdd->getDescription());
+          if(imagetoAdd->getImageLevel() == PRIVATE_IMAGE)
+            {
+              orders_ = imagetoAdd->orders_;
+            }
+          imageLevel_ = imagetoAdd->getImageLevel();
+        }
+     // try to combine events
+      for(auto iter = relatedEvents_.begin(); iter != relatedEvents_.end(); ++iter)
+        {
+          for(auto iter2 = imagetoAdd->relatedEvents_.begin(); iter2 != imagetoAdd->relatedEvents_.end(); ++iter2)
+            {
+              (*iter)->updateEvent(*iter2);
+            }
+        }
+      for(auto iter = collectedEvents_.begin(); iter != collectedEvents_.end(); ++iter)
+         {
+           for(auto iter2 = imagetoAdd->collectedEvents_.begin(); iter2 != imagetoAdd->collectedEvents_.end(); ++iter2)
+             {
+               (*iter)->updateEvent(*iter2);
+             }
+         }
+    }
+  else                                                       // Image is older
+    {
+
+    }
+
+}
 
 
 ostream &operator << ( ostream &out, Entity * entity)
@@ -149,6 +284,26 @@ ostream &operator << ( ostream &out, Entity * entity)
 	return out;
 }
 
+
+
+void      Entity::saveEvents (ostream &out)
+{
+	for (EventIterator iter = collectedEvents_.begin(); iter
+			!= collectedEvents_.end(); ++iter)
+	{
+		out << "EVENT" << " " << (*iter)->getTag() << endl;
+	}
+	for (EventIterator iter = relatedEvents_.begin(); iter
+			!= relatedEvents_.end(); ++iter)
+	{
+		out << "RELATED_EVENT" << " " << (*iter)->getTag() << endl;
+	}
+
+}
+string Entity::getCollectionKeyword()
+{
+  return gameFacade->getDataManipulator()->getEntityCollectionKeyword(getTag());
+}
 
 
 void  Entity::loadOrders()
@@ -197,6 +352,10 @@ STATUS Entity::prepareData()
 #ifdef DEBUG
           cname = tag_.c_str();
 #endif
+    if(isUnknownEntity())
+    {
+    	return OK; // Do not check dummy UnknownEntity
+    }
 	preprocessData();    // Re-establish internal references, there they  were not saved.
    if(IO_ERROR == dataConsistencyCheck())    // Check consistency of data
       return IO_ERROR;
@@ -240,6 +399,20 @@ if (!isSilent())
 // cout << "Added report "; report->print(cout);
 }
 
+void     Entity::addEvent(Event * event, OrderLine *  orderId)
+{
+	cout<< "=====> Event "<< event->getTag()<<" was added fo "<< getTag()<<endl;
+   eventRecords_.push_back(EventElement(event,orderId));
+}
+
+
+
+void     Entity::addRelatedEvent(Event * event)
+{
+	cout<< "=====> Related Event "<< event->getTag()<<" was added fo "<< getTag()<<endl;
+ 	relatedEvents_.push_back(event);
+}
+
 
 
 void Entity::addReport(ReportMessage * report,OrderLine *  orderId, BasicCondition * observationCriteria)
@@ -276,7 +449,24 @@ void Entity::extractReport(UnitEntity * unit, vector < ReportElement * > & extra
         }
     }
 }
+/*
+ * Unit tries to get Event image from event holder (event origin)
+ */
 
+void     Entity::extractEventsImages(UnitEntity * unit, vector < Event *  > & extractedEvents)
+{
+	Event * event;
+   for(vector < EventElement>::iterator iter = eventRecords_.begin(); iter != eventRecords_.end(); ++iter)
+   {
+	   event = (*iter).getEvent();
+//		cout<< "=====> "<< unit->getTag()<<" tries to extract "<< event->getTag()<<" from "<<getTag()<<endl;
+      if(event->isObservableBy(unit))
+       {
+           extractedEvents.push_back(event);
+           cout<<"   === Extracted from  "<<getTag() <<" by "<<unit->getTag()  <<" ===> "<<event->getTag()<<endl;
+       }
+   }
+}
 
 
 /*
@@ -310,57 +500,133 @@ void Entity::reportEvents(ReportPrinter &out)
     out.decr_indent();
 }
 
-
-
 /** Transforms public reports into collected reports and cleans all unused public reports. */
 void Entity::finalizeReports()
 {
-//	for_each(publicReports_.begin(),publicReports_.end(),  )
-    if(isTraced())
+    //	for_each(publicReports_.begin(),publicReports_.end(),  )
+    if (isTraced())
     {
-//cout << "Finalizing report for " <<printTag()<<endl;
+        //cout << "Finalizing report for " <<printTag()<<endl;
     }
-// It is possible that exist two or more duplicates of the same report
-// (results of multiple attempts of the execution of the same order)
-// the earlier one should be deleted
+    // It is possible that exist two or more duplicates of the same report
+    // (results of multiple attempts of the execution of the same order)
+    // the earlier one should be deleted
 
-   vector<ReportRecord>::iterator iter1;
-   vector<ReportRecord>::iterator iter2;
-		bool duplicate;
+    vector<ReportRecord>::iterator iter1;
+    vector<ReportRecord>::iterator iter2;
+    bool duplicate;
 
-  for ( iter1 = publicReports_.begin(); iter1 != publicReports_.end(); )
-		{
-       duplicate = false;
-       if((*iter1).orderId == 0)
-       {
-					  iter1++;
+    for (iter1 = publicReports_.begin(); iter1 != publicReports_.end();)
+    {
+        duplicate = false;
+        if ((*iter1).orderId == 0)
+        {
+            iter1++;
             continue; // This is non-order generated report
-       }
-  		for ( iter2 = iter1 + 1; iter2 != publicReports_.end(); iter2++)
-					{
-					if( (*iter2).orderId == (*iter1).orderId)
-							{
-							  duplicate = true;
-								break;
-							}
-		    	}
-			if (duplicate)
-					{
-					publicReports_.erase(iter1);
-					}
-			else
-					iter1++;
-		}
+        }
+        for (iter2 = iter1 + 1; iter2 != publicReports_.end(); iter2++)
+        {
+            if ((*iter2).orderId == (*iter1).orderId)
+            {
+                duplicate = true;
+                break;
+            }
+        }
+        if (duplicate)
+        {
+            publicReports_.erase(iter1);
+        }
+        else
+            iter1++;
+    }
 
-  for ( iter1 = publicReports_.begin(); iter1 != publicReports_.end(); iter1++)
-		{
-					collectedReports_.push_back
-							(new ReportElement((*iter1).reportMessage,this));
-		}
+    for (iter1 = publicReports_.begin(); iter1 != publicReports_.end(); iter1++)
+    {
+        collectedReports_.push_back
+                (new ReportElement((*iter1).reportMessage, this));
+    }
+}
+
+///** Transforms crude EventElements into collected events and cleans all unused eventElements */
+//void Entity::finalizeEvents()
+//{
+//// It is possible that exist two or more duplicates of the same event
+//// (results of multiple attempts of the execution of the same order)
+//// the earlier one should be deleted
+//    vector<EventElement>::iterator iter1;
+//    vector<EventElement>::iterator iter2;
+//    bool duplicate;
+//
+//    for (iter1 = eventRecords_.begin(); iter1 != eventRecords_.end();)
+//    {
+//        duplicate = false;
+//        if ((*iter1).getOrder() == 0)
+//        {
+//            iter1++;
+//            continue; // This is non-order generated report
+//        }
+//        for (iter2 = iter1 + 1; iter2 != eventRecords_.end(); iter2++)
+//        {
+//            if ((*iter2).getOrder() == (*iter1).getOrder())
+//            {
+//                duplicate = true;
+//                break;
+//            }
+//        }
+//        if (duplicate)
+//        {
+//            eventRecords_.erase(iter1);
+//        }
+//        else
+//            iter1++;
+//    }
+//
+//    for (iter1 = eventRecords_.begin(); iter1 != eventRecords_.end(); iter1++)
+//    {
+//        collectedEvents_.push_back((*iter1).getEvent());
+//    }
+//}
+
+/*
+ * Transforms crude EventElements into Collected events 
+ */
+void Entity::finalizeEvents()
+{
+    for (vector<EventElement>::iterator iter = eventRecords_.begin(); 
+            iter != eventRecords_.end(); iter++)
+    {
+        collectedEvents_.push_back((*iter).getEvent());
+    }
+    eventRecords_.clear();
 }
 
 
 
+/*
+ * Post-turn processing of Collected events
+ */
+void     Entity::finalizeTurnEvents()
+{
+
+}
+
+
+
+bool Entity::isEventDuplicateExist(EventRule * eventRule, OrderLine * orderId)
+{
+    for (vector<EventElement>::iterator iter = eventRecords_.begin(); iter != eventRecords_.end(); ++iter)
+    {
+        if ((*iter).getOrder() == 0)
+        {
+            continue; // This is non-order generated report
+        }
+        if ((orderId == (*iter).getOrder()) && (eventRule == (*iter).getEvent()->getEventRule()))
+        {
+            return true;
+        }
+    }
+    return false;
+}
 /*
  * cleans all unused public reports.
  */
@@ -477,6 +743,22 @@ TeachingOffer * Entity::findTeachingOffer(SkillRule  * skill, int level)
 
 
 
+vector <AbstractArray> Entity::aPrintTeaching()
+{
+    vector <AbstractArray> out;
+    vector <TeachingOffer  *>::iterator iter;
+    for(iter = teachingDonorOffers_.begin(); iter != teachingDonorOffers_.end(); ++iter)
+    {
+         vector <AbstractData *> v;
+//      if((*iter)->getTeacher() == this)
+//          return (*iter)->isConfirmed();
+      out.push_back(v);
+      }
+    return out;
+
+}
+
+
 bool Entity::checkTeachingConfirmation()
 {
   vector <TeachingOffer  *>::iterator iter;
@@ -516,3 +798,14 @@ bool Entity::addSkillKnowledge(SkillRule * knowledge, int level)
 {
   return false;
 }
+
+
+void Entity::extractKnowledge(Entity * recipient, int parameter)
+{
+
+}
+
+//void Entity::extractSkillKnowledge(Entity * recipient, int parameter)
+//{
+//
+//}

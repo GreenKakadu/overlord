@@ -25,6 +25,7 @@ public:
   GameData * createInstanceOfSelf();
 	BasicLearningStrategy * cloneSelf();
   STATUS initialize        ( Parser *parser );
+      virtual void save(ostream &out);
 };
 extern MagicLearningStrategy    sampleMagicLearning;
 

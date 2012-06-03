@@ -23,6 +23,6 @@ public:
     private:
 };
 
-extern VarietiesCollection <CombatRankVariety>     combatRanks;
+//extern VarietiesCollection <CombatRankVariety>     combatRanks;
 extern CombatRankVariety  *defaultCombatRank;
 #endif

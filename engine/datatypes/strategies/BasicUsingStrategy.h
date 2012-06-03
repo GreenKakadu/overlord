@@ -28,7 +28,8 @@ public:
       BasicUsingStrategy ( const BasicUsingStrategy * prototype );
 		 ~BasicUsingStrategy(){};
       virtual STATUS     initialize      ( Parser *parser);
-      GameData * createInstanceOfSelf();
+         virtual void save(ostream &out);
+     GameData * createInstanceOfSelf();
       virtual USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
       virtual USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       virtual USING_RESULT use(TokenEntity * tokenEntity , SkillRule *, int &useCounter,OrderLine * order);

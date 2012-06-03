@@ -43,13 +43,13 @@ TokenEntity * NewEntityPlaceholder::getNewEntity()
 		return temporaryEntity_;
 
 
- char prefix = gameConfig.getEntityTypePrefix(temporaryName_);
+ char prefix = gameFacade->getGameConfig()->getEntityTypePrefix(temporaryName_);
 
- 	if(prefix == units.getEntityTagPrefix())
+ 	if(prefix == gameFacade->units.getEntityTagPrefix())
 	{
 		temporaryEntity_ = new UnitEntity(sampleUnit);
 	}
- 	else if(prefix ==  buildingsAndShips.getEntityTagPrefix())
+ 	else if(prefix ==  gameFacade->buildingsAndShips.getEntityTagPrefix())
 	{
 		temporaryEntity_ = new ConstructionEntity(sampleConstructionEntity);
 	}

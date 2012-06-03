@@ -33,6 +33,9 @@ public:
       virtual STATUS  initialize      ( Parser *parser );
        virtual void      save (ostream &out);
       virtual GameData * createInstanceOfSelf();
+  //EffectEntity * createEffectImage(TokenEntity * referent);
+  EffectEntity * createEffectImage(FactionEntity * referent, int observation);
+  void updateImage(EffectEntity *effect);
        virtual void     preprocessData();
        virtual void     postProcessData();
        virtual void     dailyPreProcess();
@@ -51,6 +54,8 @@ inline int  getEffectStrength(){return strength_;}
 inline void setEffectStrength(int strength){strength_ = strength;}
 inline int  getEffectExpiration(){return expiration_;}
 inline void setEffectExpiration(int expiration){expiration_ = expiration;}
+  virtual void extractAndAddKnowledge(FactionEntity * recipient, int parameter = 0);
+//  virtual void extractSkillKnowledge(Entity * recipient, int parameter = 0);
 
 	protected:
        Entity * target_;
@@ -59,8 +64,8 @@ inline void setEffectExpiration(int expiration){expiration_ = expiration;}
         int strength_;
 };
 
-#include "EntitiesCollection.h"
-extern EntitiesCollection  <EffectEntity>   effects;
+//#include "EntitiesCollection.h"
+//extern EntitiesCollection  <EffectEntity>   effects;
 extern EffectEntity         sampleEffectEntity;
 typedef vector <EffectEntity *>::iterator EffectIterator;
 #endif

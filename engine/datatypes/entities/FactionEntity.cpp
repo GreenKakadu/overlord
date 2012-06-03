@@ -22,6 +22,7 @@
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
 #include "TokenEntity.h"
+#include "EffectEntity.h"
 
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
@@ -36,18 +37,20 @@
 #include "ReportElement.h"
 #include "ReportMessage.h"
 #include "DataManipulator.h"
+#include "TurnReport.h"
 
 extern ReportPattern *	 resignReporter;
-extern DataManipulator * dataManipulatorPtr;
+//extern DataManipulator * dataManipulatorPtr;
 extern bool ciStringCompare(const string& s1,const string& s2);
 //extern StanceVariety * findStanceByTag(const string &tag);
-EntitiesCollection <FactionEntity>   factions(new DataStorageHandler(gameConfig.getFactionsFile() ));
 FactionEntity  sampleFaction ("FACTION", &sampleEntity);
-extern VarietiesCollection <StanceVariety>    stances;
+//EntitiesCollection <FactionEntity>   factions(new DataStorageHandler(gameConfig.getFactionsFile() ),&sampleFaction);
+
 extern int Roll_1Dx(int n);
 
 FactionEntity::FactionEntity ( const FactionEntity * prototype ) : Entity(prototype)
 {
+  defaultStance_ =0;
   maxControlPoints_ = 200;
   controlPoints_ = 0;
   terseBattleReport_ = false;
@@ -55,6 +58,8 @@ FactionEntity::FactionEntity ( const FactionEntity * prototype ) : Entity(protot
   isResigned_ = false;
   isDisbanded_ = false;
   temporaryFlags_ = 0x0;
+  x0_ = 0;
+  y0_ = 0;
 }
 
 void    FactionEntity::preprocessData()
@@ -65,12 +70,13 @@ void    FactionEntity::preprocessData()
   }
   newKnowledge = knowledge_.size();
   newSkillKnowledge = skillKnowledge_.size();
-//  cout <<"Begin: (" <<knowledge_.size()<<") -> " <<newKnowledge <<" ->end: " << (knowledge_.end() - knowledge_.begin())<<endl;
   maxControlPoints_ = 200;
   controlPoints_ = 0;
   terseBattleReport_ = false;
   isResigned_= false;;
   isDisbanded_ = false;
+  turnReport_ = new TurnReport();
+  turnReport_->init(this);
 }
 
 
@@ -81,8 +87,78 @@ GameData * FactionEntity::createInstanceOfSelf()
 }
 
 
-STATUS
-FactionEntity::initialize        ( Parser *parser )
+
+// Create faction object as it is seen by referent
+FactionEntity *     FactionEntity::createFactionImage(FactionEntity * referent)
+{
+    if(referent == this)
+    {
+        // Should not create image of your own faction
+        return 0;
+    }
+  FactionEntity * faction = new FactionEntity(sampleFaction);
+  faction->isImage_ = true;
+  // Public. Faction as it seen from outside
+  faction->setName(this->getName());
+  faction->setDescription(this->getDescription());
+  faction->setTag(this->getTag());
+  return faction;
+
+}
+
+// Updates current image with data
+void  FactionEntity::updateImage(FactionEntity * imagetoAdd)
+{
+  Entity::updateImage(imagetoAdd);
+  if(this->getTimeStamp() < imagetoAdd->getTimeStamp())      // Image is newer
+    {
+        if(imagetoAdd->getImageLevel() == PRIVATE_IMAGE)
+          {
+            if(!imagetoAdd->getEMail().empty())
+              {
+                setEMail(imagetoAdd->getEMail());
+              }
+            funds_ = imagetoAdd->funds_;
+            stances_ = imagetoAdd->stances_;
+            defaultStance_ = imagetoAdd->defaultStance_;
+            knowledge_ = imagetoAdd->knowledge_;
+            skillKnowledge_ = imagetoAdd->skillKnowledge_;
+          }
+
+
+    }
+  else if(this->getTimeStamp() == imagetoAdd->getTimeStamp())// Image is the same age
+    {
+      if(!imagetoAdd->getEMail().empty())
+        {
+          setEMail(imagetoAdd->getEMail());
+        }
+      if(this->getImageLevel() < imagetoAdd->getImageLevel())// new image has more reliable data
+        {
+//
+
+          if(imagetoAdd->getImageLevel() == PRIVATE_IMAGE)
+            {
+//
+            }
+
+        }
+//
+    }
+  else                                                       // Image is older
+    {
+//
+    }
+
+}
+
+
+
+
+
+
+
+STATUS FactionEntity::initialize        ( Parser *parser )
 {
 
        if (parser->matchKeyword("EMAIL"))
@@ -97,7 +173,7 @@ FactionEntity::initialize        ( Parser *parser )
 	}
        if (parser->matchKeyword("DEFAULIT_STANCE"))
 	{
-		StanceVariety * defaultStance = stances[parser->getWord()];
+		StanceVariety * defaultStance = gameFacade->stances[parser->getWord()];
 			if(defaultStance)
 	   		defaultStance_ =  defaultStance;
 //cout << "DEFAULIT_STANCE of "<< printTag()<< " = "<<defaultStance_->print()<<endl;
@@ -105,10 +181,10 @@ FactionEntity::initialize        ( Parser *parser )
 	}
        if (parser->matchKeyword("STANCE"))
 	{
-		Entity * entity = factions[parser->getWord()]; // Extend to all Entities
+		Entity * entity = gameFacade->factions[parser->getWord()]; // Extend to all Entities
 		if(entity == 0)
 			return OK;
-		StanceVariety * stance = stances[parser->getWord()];
+		StanceVariety * stance = gameFacade->stances[parser->getWord()];
 		if(stance == 0)
 				 stance =  defaultStance_;
 		stances_.push_back(StanceElement(stance,entity));
@@ -127,6 +203,12 @@ FactionEntity::initialize        ( Parser *parser )
     terseBattleReport_ = true;
 		return OK;
 	}
+      if (parser->matchKeyword("XY"))
+      {
+	x0_ = (parser->getInteger());
+	y0_ = (parser->getInteger());
+	return OK;
+      }
 //       if (parser->matchKeyword("REWARD"))
 //	{
 //	  set(parser->getText());
@@ -155,50 +237,92 @@ FactionEntity::initialize        ( Parser *parser )
  */
 void FactionEntity::save(ostream &out)
 {
-	saveReport();
-  if(isResigned_ || isDisbanded_)
-    return;
+	if (!isImage_ && (isResigned_ || isDisbanded_))// Image of disbanded faction still to be saved.
+	{
+		return;
+	}
 
-  out << keyword_ << " " << tag_ << endl;
-  if(!name_.empty())          out << "NAME "               << name_            << endl;
-  if(!description_.empty()) out << "DESCRIPTION " << description_  << endl;
- if(!email_.empty())             out << "EMAIL "               << email_            << endl;
- if(!password_.empty())      out << "PASSWORD "    << password_      << endl;
-  if(terseBattleReport_) out << "TERSE" << endl;
+	out << endl << getCollectionKeyword() << " " << tag_ << " " << getKeyword()
+			<< endl;
+	if (!name_.empty())
+		out << "NAME " << name_ << endl;
+	if (!description_.empty())
+		out << "DESCRIPTION " << description_ << endl;
+	if (!email_.empty())
+		out << "EMAIL " << email_ << endl;
+	if (!password_.empty())
+		out << "PASSWORD " << password_ << endl;
+	if (terseBattleReport_)
+		out << "TERSE" << endl;
+	if((x0_ != 0) || (y0_ != 0))
+	{
+	out << "XY " << x0_ << " " << y0_ << " " << endl;
+	}
+	for (ItemElementIterator fundsIter = funds_.begin(); fundsIter
+			!= funds_.end(); ++fundsIter)
+	{
+		out << "FUNDS ";
+		(*fundsIter).save(out);
+	}
 
-  for (ItemElementIterator fundsIter  = funds_.begin();
-					fundsIter != funds_.end(); ++fundsIter)
-    {
-           out << "FUNDS ";
-           (*fundsIter).save(out);
-    }
+	if (defaultStance_)
+	{
 
-
-  out << "DEFAULIT_STANCE " << defaultStance_ << endl;
+		out << "DEFAULIT_STANCE " << defaultStance_->getTag() << endl;
+	}
 	for (StanceIterator iter = stances_.begin(); iter != stances_.end(); ++iter)
-		{
-  out << "STANCE " <<(*iter).getParameter1() << (*iter).getRule() << endl;
-		}
+	{
+		out << "STANCE " << (*iter).getParameter1() << (*iter).getRule()
+				<< endl;
+	}
 
-   saveKnowledge(out);
-
-  for (vector<OrderLine *>::iterator  iter = orders_.begin(); iter != orders_.end(); ++iter)
-    {
-           (*iter)->save(out);
-    }
-  out << endl;
-
+	saveKnowledge(out);
+	saveEvents(out);
+	for (vector<OrderLine *>::iterator iter = orders_.begin(); iter
+			!= orders_.end(); ++iter)
+	{
+		(*iter)->save(out);
+	}
+	out << endl;
 
 }
-
-
+/*
+ * Tre-turn data hadling.
+ * Once-per game data initialization is also done here
+ *
+ */
+STATUS FactionEntity::prepareData()
+{
+    if (IO_ERROR == Entity::prepareData()) // Check consistency of data
+        return IO_ERROR;
+    if (gameFacade->getGameConfig()->runMode == STARTING_TURN)
+    {
+        // Set factional origin of coordinates
+        if (!loyalUnits_.empty())
+        {
+            UnitEntity * someUnit = loyalUnits_[0];
+            if (someUnit)
+            {
+                LocationEntity * loc = someUnit->getLocation();
+                if (loc)
+                {
+                    this->setX0(loc->getX());
+                    this->setY0(loc->getY());
+                }
+            }
+        }
+    }
+    // C
+    this->calculateControlPoints();
+    return OK;
+}
 
 /*
  * Load all orders from the input
  */
 void FactionEntity::loadOrders()
 {
-  string orderFlename = gameConfig.getOrdersFileName(this);
+  string orderFlename = gameFacade->getGameConfig()->getOrdersFileName(this);
   FileParser  * parser = new FileParser(orderFlename.c_str());
 	if(parser->status != OK)
 		return;
@@ -243,18 +367,18 @@ void FactionEntity::loadOrders()
 		if(parser->matchKeyword ("UNIT"))
 			{
 		
-				currentEntity = currentEntityOrders(units, parser);
+				currentEntity = currentEntityOrders(gameFacade->units, parser);
 				continue;
 			}
 		
 		if(parser->matchKeyword ("CONSTRUCTION"))
 			{
-				currentEntity =  currentEntityOrders(buildingsAndShips, parser);
+				currentEntity =  currentEntityOrders(gameFacade->buildingsAndShips, parser);
 				continue;
 			}
                 if(parser->matchKeyword ("BUILDING"))
                 {
-                  currentEntity =  currentEntityOrders(buildingsAndShips, parser);
+                  currentEntity =  currentEntityOrders(gameFacade->buildingsAndShips, parser);
                   continue;
                 }
 
@@ -309,7 +433,7 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, TokenEntity ** entity)
    		 		currentGame = parser->getWord();
    		 		if( !currentGame.empty() )
    		 			{
-   		 				if ( ciStringCompare( gameConfig.getGameId(),  currentGame )  ) // take care about case
+   		 				if ( ciStringCompare( gameFacade->getGameConfig()->getGameId(),  currentGame )  ) // take care about case
     		 				{
     		 					cerr << "Invalid orders (wrong game id) for faction " << tag_ << endl;
      		 					delete parser;
@@ -334,13 +458,13 @@ STATUS  FactionEntity::loadFactionOrders(Parser * parser, TokenEntity ** entity)
 	}
   if(parser->matchKeyword ("UNIT"))
     {
-      *entity = currentEntityOrders(units, parser);
+      *entity = currentEntityOrders(gameFacade->units, parser);
       return OK;
     }
 
   if(parser->matchKeyword ("CONSTRUCTION"))
     {
-      *entity = currentEntityOrders(buildingsAndShips, parser);
+      *entity = currentEntityOrders(gameFacade->buildingsAndShips, parser);
       return OK;
     }
   //-------------------------------------------------------
@@ -381,9 +505,9 @@ TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & colle
  TokenEntity * currentEntity = 0;
  FactionEntity * faction = 0;
 	// First check it for being new entity placaholder
-  if(gameConfig.isNewEntityName(entityName,faction))
+  if(gameFacade->getGameConfig()->isNewEntityName(entityName,faction))
     {
-      NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(entityName);
+      NewEntityPlaceholder * placeholder = gameFacade->getDataManipulator()->findOrAddPlaceholder(entityName);
       if(placeholder != 0)  // this is  placeholder. Now we'll create new unit but will
 			// not register it untill it is really created
         {
@@ -435,20 +559,245 @@ TokenEntity * FactionEntity::currentEntityOrders(BasicEntitiesCollection & colle
 		}
 
 }
+// This function extracts faction image from image
+void FactionEntity::addFactionImage(FactionEntity * factionToAdd)
+{
+    if (factionToAdd == 0)
+    {
+        return;
+    }
+    if(factionToAdd == this)
+    {
+    	return;
+    }
+    //cerr<< "Adding image of "<<image->print()<<" to "<<print()<<" ";
+
+    for(vector<FactionEntity *>::iterator iter = knownFactions_.begin();
+            iter != knownFactions_.end(); ++iter)
+    {
+        if ((*iter)->getTag() == factionToAdd->getTag())
+        {
+            (*iter)->updateImage(factionToAdd);
+            //cerr<<imageToAdd->print()<<" already recorded."<< endl;
+           return;
+        }
+
+    }
+    //cerr<<imageToAdd->print()<<" added"<< endl;
+    FactionEntity * imageToAdd = factionToAdd->createFactionImage(this);
+        knownFactions_.push_back(imageToAdd);
+}
 
 
+
+//// This function extracts faction image from image
+//void FactionEntity::addFactionImage(TokenEntity * image)
+//{
+//    if (image == 0)
+//    {
+//        return;
+//    }
+//
+//    FactionEntity * factionToAdd = image->getFaction();
+//    if (factionToAdd == 0)
+//    {
+//        return;
+//    }
+//    if(factionToAdd == this)
+//    {
+//    	return;
+//    }
+//    //cerr<< "Adding image of "<<image->print()<<" to "<<print()<<" ";
+//    FactionEntity * imageToAdd = factionToAdd->createFactionImage(this);
+//
+//    for(vector<FactionEntity *>::iterator iter = knownFactions_.begin();
+//            iter != knownFactions_.end(); ++iter)
+//    {
+//        if ((*iter)->getTag() == imageToAdd->getTag())
+//        {
+//            (*iter)->updateImage(imageToAdd);
+//            // delete one of two images?
+//            //cerr<<imageToAdd->print()<<" already recorded."<< endl;
+//           return;
+//        }
+//
+//    }
+//    //cerr<<imageToAdd->print()<<" added"<< endl;
+//        knownFactions_.push_back(imageToAdd);
+//}
+
+
+// This function extracts faction image from real Token
+void FactionEntity::extractFactionImage(TokenEntity * tokenToAdd)
+{
+    if(tokenToAdd == 0)
+    {
+        return;
+    }
+    // Check faction of unit. If it is visible search for this faction in knownFactions_
+    // if not present - create and add image of faction othervise - update.
+
+    if(tokenToAdd->mayBeIdentified(this))
+    {
+        FactionEntity * factionToAdd =tokenToAdd->getFaction();
+        FactionEntity * imageToAdd = factionToAdd->createFactionImage(this);
+    for(vector<FactionEntity *>::iterator iter = knownFactions_.begin();
+            iter != knownFactions_.end(); ++iter)
+    {
+        if ((*iter)->getTag() == imageToAdd->getTag())
+        {
+            (*iter)->updateImage(imageToAdd);
+            // delete one of two images?
+            return;
+        }
+
+    }
+        knownFactions_.push_back(imageToAdd);
+    }
+}
+//
+//void FactionEntity::addUnitImage(UnitEntity * imageToAdd)
+//{
+//    if(imageToAdd)
+//    {
+//      addFactionImage(imageToAdd);
+//      for(vector<UnitEntity *>::iterator iter =observedUnits_.begin();
+//                iter != observedUnits_.end(); ++iter )
+//        {
+//            if((*iter)->getTag() == imageToAdd->getTag())
+//            {
+//                delete *iter;
+//                *iter = imageToAdd;
+//                return;
+//            }
+//        }
+//            observedUnits_.push_back(imageToAdd );
+//    }
+//}
+//
+//void FactionEntity::createAndAddUnitImage(UnitEntity * unitToAdd, TokenEntity * referent)
+//{
+//    addFactionImage(unitToAdd);
+//
+//    // if image is not collected - create. otherwise - update
+//    UnitEntity * imageToAdd = unitToAdd->createUnitImage(referent);
+//    if(imageToAdd)
+//    {
+//        for(vector<UnitEntity *>::iterator iter =observedUnits_.begin();
+//                iter != observedUnits_.end(); ++iter )
+//        {
+//            if((*iter)->getTag() == imageToAdd->getTag())
+//            {
+//                delete *iter;
+//                *iter = imageToAdd;
+//                return;
+//            }
+//        }
+//            observedUnits_.push_back(imageToAdd );
+//    }
+//}
+//
+//
+//
+//
+//void FactionEntity::addConstructionImage(ConstructionEntity * imageToAdd)
+//{
+//    if(imageToAdd)
+//    {
+//        addFactionImage(imageToAdd);
+//        for(vector<ConstructionEntity *>::iterator iter =observedConstructions_.begin();
+//                iter != observedConstructions_.end(); ++iter )
+//        {
+//            if((*iter)->getTag() == imageToAdd->getTag())
+//            {
+//                delete *iter;
+//                *iter = imageToAdd;
+//                return;
+//            }
+//        }
+//            observedConstructions_.push_back(imageToAdd );
+//    }
+//
+//
+//}
+//void FactionEntity::addEffectImage(EffectEntity * imageToAdd)
+//{
+//   if(imageToAdd)
+//    {
+//        addFactionImage(imageToAdd);
+//
+//        for(vector<EffectEntity *>::iterator iter =observedEffects_.begin();
+//                iter != observedEffects_.end(); ++iter )
+//        {
+//            if((*iter)->getTag() == imageToAdd->getTag())
+//            {
+//                delete *iter;
+//                *iter = imageToAdd;
+//                return;
+//            }
+//        }
+//            observedEffects_.push_back(imageToAdd );
+//    }
+//}
+
+
+/*
+ * Add location to the list of discovered locations
+ * if it is not yet in this list
+ * These are locations, connected to visited locations
+ */
+void FactionEntity::addDiscoveredLocation(LocationEntity * location)
+{
+    if(visitedLocations_.end() != find(visitedLocations_.begin(),
+            visitedLocations_.end(), location )  )
+    {
+        return; //Location is already visited
+    }
+
+    if(discoveredLocations_.end() == find(discoveredLocations_.begin(),
+        discoveredLocations_.end(), location )  )
+    {
+        discoveredLocations_.push_back(location->createBasicImage(this));
+    }
+
+
+}
 
 /*
  * Add location to the list of locations visited
  * if it is not yet in this list
+ * If it is, then try to update info.
  */
-void FactionEntity::addVisitedLocation(LocationEntity * location)
+bool FactionEntity::addVisitedLocation(LocationEntity * location)
 {
-	if(visitedLocations_.end() == find(visitedLocations_.begin(),  visitedLocations_.end(), location )  )
- 	visitedLocations_.push_back(location);
+	vector<LocationEntity *>::iterator iter = find(visitedLocations_.begin(),
+            visitedLocations_.end(), location );
+
+    if(iter == visitedLocations_.end())// not found
+    {
+        location->addNeighbours(this);
+        visitedLocations_.push_back(location);
+        return true;
+    }
+
+    return false;
 }
 
-
+//// add LocationImage to faction. replace if older exists.
+// void FactionEntity::addLocationImage(LocationEntity * image)
+//{
+//       for(vector<LocationEntity *>::iterator iter = visitedLocations_.begin();
+//                iter != visitedLocations_.end(); ++iter )
+//        {
+//            if((*iter)->getTag() == image->getTag())
+//            {
+//                delete *iter;
+//                *iter = image;
+//                return;
+//            }
+//        }
+//        visitedLocations_.push_back(image);
+// }
 
 /*
  * Delete all entries from the list of visited locations
@@ -459,8 +808,23 @@ void FactionEntity::clearVisitedLocations(){
 
 
 
+bool FactionEntity::isVisitedLocation(LocationEntity * location)
+{
+if(visitedLocations_.end() != find(visitedLocations_.begin(),  visitedLocations_.end(), location )  )
+{
+    return true;
+}
+else
+{
+    return false;
+}
+
+}
+
+
+
 /*
- * Process all events reported by entities and slect those,
+ * Process all events reported by entities and select those,
  * that will be used for report
  */
 void FactionEntity::dailyReport()
@@ -484,29 +848,75 @@ void FactionEntity::dailyReport()
 	}
 }
 
+/*
+ * Collect all events observed by entities
+ */
+void FactionEntity::dailyEventProcessing()
+{
+// cout <<"Daily event collection for faction ["<< tag_ <<"]"<<endl;
+  vector< UnitEntity *>::iterator unitIterator;
+  EventIterator eventIterator;
+ for ( unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
+	{
+ 		vector <Event * > unitReporting;
+    // Collect events from location?
+                // from all present units?
+// 		if((*unitIterator)->getReportDestination() == gameFacade->locations["L62"])
+// 		{
+// 			cout << (*unitIterator)->getTag() << " tries to extract events from "<< (*unitIterator)->getReportDestination()->getTag()<<endl;
+// 		}
+
+   if( (*unitIterator)->getReportDestination() == 0)
+    continue;
+    else
+       (*unitIterator)->getReportDestination()->extractEventsImages((*unitIterator), unitReporting);
+		for ( eventIterator = unitReporting.begin(); eventIterator != unitReporting.end(); eventIterator++)
+			{
+				cout << "[Event "<<(*eventIterator)->getTag() <<" extracted] "<<endl;
+				updateEvents( (*eventIterator));
+			}
+		 unitReporting.clear();
+	}
+}
+
 bool locOrder(LocationEntity *l1,LocationEntity *l2)
 {
-	if(locations.getIndex(l1->getTag()) < locations.getIndex(l2->getTag()))
+	if(gameFacade->locations.getIndex(l1->getTag()) < gameFacade->locations.getIndex(l2->getTag()))
 		return true;
 	else
 		return false;
 }
-
 /*
  * Adds report to the list if it is different from those,
  * that are already there
  */
 void FactionEntity::updateReports(ReportElement * report)
 {
- for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); reportIterator++)
-		{
-         	if (report->getRecord() == (*reportIterator)->getRecord())
-				{
-					delete report;
-					return;
-				}
-		}
-	 collectedReports_.push_back(report);
+    for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); reportIterator++)
+    {
+        if (report->getRecord() == (*reportIterator)->getRecord())
+        {
+            delete report;
+            return;
+        }
+    }
+    collectedReports_.push_back(report);
+}
+/*
+ * Adds report to the list if it is different from those,
+ * that are already there
+ */
+void FactionEntity::updateEvents(Event *  event)
+{
+    for (EventIterator iter =collectedEvents_.begin(); iter != collectedEvents_.end(); iter++)//
+    {
+        if (event->getTag() == (*iter)->getTag())
+        {
+            return;
+        }
+    }
+    // <- insert into the final list of events collectedReports_?
+   // collectedEvents_.push_back(event);
 }
 
 ReportPrinter outfile;
@@ -516,23 +926,23 @@ ReportPrinter outfile;
  */
 void FactionEntity::saveReport()
 {
-    outfile.open(gameConfig.getReportFileName(this));
-	cout << gameConfig.getReportFileName(this)<<endl;
+    outfile.open(gameFacade->getGameConfig()->getReportFileName(this));
+	cout << gameFacade->getGameConfig()->getReportFileName(this)<<endl;
 	if(!isNPCFaction())
 	{
-    		reportlist<< gameConfig.getReportFileName(this)<<endl;
+    		reportlist<< gameFacade->getGameConfig()->getReportFileName(this)<<endl;
 	}
 
 // Mail header
 	outfile << "To: " << email_<<"\n";
-  	outfile << "Subject:"<< gameConfig.getGameId()<<" Report for Turn "
-	        << gameConfig.turn << endl;
-	outfile << "From: "<< gameConfig.getServer()
-	        <<" ("<<gameConfig.getServerName()<< " )"<< endl;
+  	outfile << "Subject:"<< gameFacade->getGameConfig()->getGameId()<<" Report for Turn "
+	        << gameFacade->getGameTurn() << endl;
+	outfile << "From: "<< gameFacade->getGameConfig()->getServer()
+	        <<" ("<<gameFacade->getGameConfig()->getServerName()<< " )"<< endl;
 	outfile << "\n";
 
 // Report
-   outfile << gameConfig.getGameId() <<" Report for Turn "<< gameConfig.turn
+   outfile << gameFacade->getGameConfig()->getGameId() <<" Report for Turn "<< gameFacade->getGameTurn()
 	         <<" for "<< print() << ", "<<email_<<"\n";
    if(isResigned_)
       {
@@ -541,7 +951,7 @@ void FactionEntity::saveReport()
        outfile.close();
        return;
       }
-     outfile << "Next turn: "<<gameConfig.getDeadline()<<endl;
+     outfile << "Next turn: "<<gameFacade->getGameConfig()->getDeadline()<<endl;
 	 outfile <<  endl << "// Faction stats " <<  endl;
    reportFunds(outfile);
    outfile << "Control Points: " << getControlPoints() <<" of "
@@ -614,63 +1024,168 @@ void FactionEntity::saveReport()
 
   vector< LocationEntity *>::iterator locIterator;
 //  ReportIterator reportIterator;
-  bool eventsReported = false;
-//locOrder(*(visitedLocations_.begin()),*(visitedLocations_.end()));
-	std::sort(visitedLocations_.begin(),visitedLocations_.end(),locOrder);
+    bool eventsReported = false;
+    //locOrder(*(visitedLocations_.begin()),*(visitedLocations_.end()));
+    std::sort(visitedLocations_.begin(), visitedLocations_.end(), locOrder);
 
-	for ( locIterator = visitedLocations_.begin(); locIterator != visitedLocations_.end(); locIterator++)
-		{
+    for (locIterator = visitedLocations_.begin(); locIterator != visitedLocations_.end(); locIterator++)
+    {
         (*locIterator) -> produceFactionReport(this, outfile);
         outfile << "\nEvents during turn: \n";
         eventsReported = false;
-        for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end(); )
-		      {
-         	  if (  (*locIterator) == (*reportIterator)->getDestination())
-				    {
-               (*reportIterator)->printReport(outfile);
-              reportIterator = collectedReports_.erase(reportIterator);
-              eventsReported = true;
-				    }
-            else
-              reportIterator++;
-		      }
-        if(!eventsReported)
-          outfile << "   - Nothing notable\n";
-    outfile<<endl;
-		}
-   outfile <<  endl << "// Combat " <<  endl <<  endl;
+        for (ReportIterator reportIterator = collectedReports_.begin(); reportIterator != collectedReports_.end();)
+        {
+            if ((*locIterator) == (*reportIterator)->getDestination())
+            {
+                (*reportIterator)->printReport(outfile);
+                reportIterator = collectedReports_.erase(reportIterator);
+                eventsReported = true;
+            } else
+                reportIterator++;
+        }
+        if (!eventsReported)
+            outfile << "   - Nothing notable\n";
+        outfile << endl;
+    }
+    outfile << endl << "// Combat " << endl << endl;
 
- 		for (vector< CombatReport *>::iterator iter = combatReports_.begin();
-     	iter != combatReports_.end(); ++iter)
-  		{
-				outfile << *(*iter);
-  		}
+    for (vector< CombatReport *>::iterator iter = combatReports_.begin();
+            iter != combatReports_.end(); ++iter)
+    {
+        outfile << *(*iter);
+    }
 
 
-   outfile <<  endl << "// Knowledge " <<  endl <<  endl;
+    outfile << endl << "// Knowledge " << endl << endl;
 
-   reportNewKnowledge(outfile);
-	outfile.max_width(60); // Make string shorter for reports
+    reportNewKnowledge(outfile);
+    outfile.max_width(60); // Make string shorter for reports
 
-   outfile <<  endl <<  endl << "#============== Orders Template ==========" <<  endl <<  endl;
+    outfile << endl << endl << "#============== Orders Template ==========" << endl << endl;
 
-  outfile <<"GAME "<< getTag()<< " "<<password_ << " " << gameConfig.getGameId() <<  endl <<  endl;
+    outfile << "GAME " << getTag() << " " << password_ << " " << gameFacade->getGameConfig()->getGameId() << endl << endl;
 
- for ( vector< UnitEntity *>::iterator unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
-	{
- 		(*unitIterator) -> printOrderTemplate(outfile);
-	}
+    for (vector< UnitEntity *>::iterator unitIterator = loyalUnits_.begin(); unitIterator != loyalUnits_.end(); unitIterator++)
+    {
+        (*unitIterator) -> printOrderTemplate(outfile);
+    }
 
-   outfile <<  endl << "#    --- Constructions ---" <<  endl <<  endl;
- for ( vector< ConstructionEntity *>::iterator constructionIterator = loyalConstructions_.begin(); constructionIterator != loyalConstructions_.end(); constructionIterator++)
-	{
- 		(*constructionIterator) -> printOrderTemplate(outfile);
-	}
-  outfile <<"END"<<endl;
-  outfile.close();
+    outfile << endl << "#    --- Constructions ---" << endl << endl;
+    for (vector< ConstructionEntity *>::iterator constructionIterator = loyalConstructions_.begin(); constructionIterator != loyalConstructions_.end(); constructionIterator++)
+    {
+        (*constructionIterator) -> printOrderTemplate(outfile);
+    }
+    outfile << "END" << endl;
+    outfile.close();
+}
+/*
+ * Creates serialized turn report file for faction
+ */
+void FactionEntity::saveCReport()
+{
+
+    outfile.open(gameFacade->getGameConfig()->getCReportFileName(this));
+    cout << gameFacade->getGameConfig()->getCReportFileName(this) << endl;
+    if (!isNPCFaction())
+    {
+        reportlist << gameFacade->getGameConfig()->getCReportFileName(this) << endl;
+    }
+
+    outfile <<"GAME "<< gameFacade->getGameConfig()->getGameId()<<endl;
+    outfile <<"TURN "<< gameFacade->getGameTurn()<<endl;
+    outfile <<"REPORT "<< getTag()<<endl;
+
+    // Save entities data as they seen by faction
+    outfile <<"LOCATIONS "<< getTag()<<endl;
+   for(vector<LocationEntity *>::iterator iter = visitedLocations_.begin();
+           iter != visitedLocations_.end(); ++iter)
+  {
+      (*iter)->save(outfile);
+  }
+  for( vector<LocationEntity *>::iterator iter =  discoveredLocations_.begin();
+          iter != discoveredLocations_.end(); ++iter)
+  {
+      (*iter)->save(outfile);
+  }
+
+   outfile <<"UNITS "<< getTag()<<endl;
+  for(vector<UnitEntity *>::iterator iter =  observedUnits_.begin();
+          iter != observedUnits_.end(); ++iter)
+  {
+      (*iter)->save(outfile);
+  }
+
+  outfile <<"CONSTRUCTIONS "<< getTag()<<endl;
+  for(vector<ConstructionEntity *>::iterator iter = observedConstructions_.begin();
+          iter != observedConstructions_.end(); ++iter)
+  {
+     (*iter)->save(outfile);
+  }
+
+  outfile <<"EFFECTS "<< getTag()<<endl;
+  for(vector<EffectEntity *>::iterator iter =  observedEffects_.begin();
+          iter != observedEffects_.end(); ++iter)
+  {
+      (*iter)->save(outfile);
+  }
+
+  outfile <<"FACTIONS "<< getTag()<<endl;
+  this->save(outfile);
+  for(vector<FactionEntity *>::iterator iter =  knownFactions_.begin();
+          iter != knownFactions_.end(); ++iter)
+  {
+     (*iter)->save(outfile);
+  }
+
+
+    // Save New Faction Knowledge
+  outfile <<endl<<"KNOWLEDGE "<< getTag()<<endl;
+   for(KnowledgeIterator iter = knowledge_.begin() + newKnowledge;
+            iter != knowledge_.end(); ++iter)
+    {
+         (*iter)->save(outfile);
+    }
+    for(SkillLevelIterator iter = skillKnowledge_.begin() + newSkillKnowledge;
+            iter != skillKnowledge_.end(); ++iter)
+    {
+       //(*iter)->getSkill()->saveLevel(outfile, (*iter)->getLevel());
+       (*iter)->saveLevelElement(outfile);
+    }
+
+    // Save Events
+
+    outfile << "END" << endl;
+    outfile.close();
 }
 
- vector <ReportElement *> FactionEntity::getEvents()
+
+vector <Rule *> FactionEntity::getAllKnowledge()
+{
+vector <Rule *> knowledge;
+for(KnowledgeIterator iter = knowledge_.begin() + newKnowledge;
+         iter != knowledge_.end(); ++iter)
+ {
+      knowledge.push_back(*iter);
+ }
+    return knowledge;
+}
+
+
+vector <SkillLevelElement *> FactionEntity::getAllSkillKnowledge()
+{
+vector <SkillLevelElement *> knowledge;
+for(SkillLevelIterator iter = skillKnowledge_.begin() + newSkillKnowledge;
+        iter != skillKnowledge_.end(); ++iter)
+
+ {
+      knowledge.push_back(*iter);
+ }
+    return knowledge;
+}
+
+
+
+vector <ReportElement *> FactionEntity::getEvents()
 {
   if (extractedReports_.size() != 0)
   {
@@ -700,6 +1215,39 @@ void FactionEntity::saveReport()
 void FactionEntity::dailyUpdate()
 {
    dailyReport();
+   dailyEventProcessing();
+   dailyImageProcessing();
+}
+
+
+/*
+ * Daily image creation and updating
+ */
+void FactionEntity::dailyImageProcessing()
+{
+     // Generate list of visited locations
+    LocationEntity * location = 0;
+    vector< LocationEntity *>::iterator locIterator;
+    for (vector< UnitEntity *>::iterator iter = loyalUnits_.begin(); iter != loyalUnits_.end(); ++iter)
+    {
+        location = (*iter)->getLocation();
+        if (location)
+        {
+            vector<LocationEntity *>::iterator locIterator = find(visitedTodayLocations_.begin(),
+                                                                  visitedTodayLocations_.end(), location);
+            if (locIterator == visitedTodayLocations_.end())
+            {
+                visitedTodayLocations_.push_back(location);
+            }
+        }
+    }
+
+
+    for (locIterator = visitedTodayLocations_.begin(); locIterator != visitedTodayLocations_.end(); locIterator++)
+    {
+        this->getTurnReport()->addLocationImage(*locIterator);
+    }
+    visitedTodayLocations_.clear();
 }
 
 
@@ -709,6 +1257,10 @@ void FactionEntity::dailyUpdate()
  */
 void FactionEntity::postProcessData()
 {
+	if(isUnknownEntity())
+	{
+		return;
+	}
 }
 
 
@@ -819,7 +1371,6 @@ return this;
 }
 
 
-
 /*
  * Determines faction's stance toward some unit.
  * Faction may have special stance to some unit.
@@ -827,36 +1378,46 @@ return this;
  * stance to it's faction will be returned.
  * Filally default stance will be used.
  */
+long wcounter8 = 0;
 StanceVariety * FactionEntity::getStance(TokenEntity * token)
 {
-	FactionEntity * faction = token->getFaction();
-	if(faction == 0) // Unowned constructions
-	{
-				return  defaultStance_;
-	}
+    FactionEntity * faction = token->getFaction();
+    if (faction == 0) // Unowned constructions
+    {
+        return defaultStance_;
+    }
 
-	if( faction == this)
- {
-    return alliedStance;
- }
+    if (faction == this)
+    {
+        return privateStance;
+    }
 
-	for (StanceIterator iter = stances_.begin(); iter != stances_.end(); iter++)
-		{
-			if ( (*iter).getParameter1() == token)
-				return (*iter).getRule();
-		}
+    for (StanceIterator iter = stances_.begin(); iter != stances_.end(); iter++)
+    {
+        if ((*iter).getParameter1() == token)
+            return (*iter).getRule();
+    }
     // Check that we can determine unit's owner
-		if(token->getAdvertising())
-	    return  getStance(faction);
-		if(token->getStealth() < token->getLocation()->getFactionalObservation(this))
-	    return  getStance(faction);
-		else
-		{   // we allways know identity of allied factions
-			if (faction->stanceAtLeast(this,alliedStance))
-	    	return  getStance(faction);
-			else // otherwise default
-				return  defaultStance_;
-		}
+    if (token->getAdvertising())
+        return getStance(faction);
+    LocationEntity * location = token->getLocation();
+    if(location == 0)
+    {
+        cerr << "Trying to determine stances to "<<token->print()<<" that has no location" <<endl;
+        return getStance(faction);
+    }
+//    	  wcounter8 ++;
+//	  if(wcounter8%1000 ==0)
+//	    cerr <<"Day "<<gameFacade->getCurrentDay() <<" getStance  counter = "<< wcounter8/1000<<",000" <<endl;
+    if (token->getStealth() < location->getFactionalObservation(this))
+        return getStance(faction);
+    else
+    { // we allways know identity of allied factions
+        if (faction->stanceAtLeast(this, alliedStance))
+            return getStance(faction);
+        else // otherwise default
+            return defaultStance_;
+    }
 
 }
 
@@ -871,7 +1432,7 @@ StanceVariety * FactionEntity::getStance(FactionEntity * faction)
 {
  if  (faction == this)
  {
-    return alliedStance;
+    return privateStance;
  }
 	for (StanceIterator iter = stances_.begin(); iter != stances_.end(); ++iter)
 		{
@@ -962,7 +1523,8 @@ bool FactionEntity::mayWithdraw(ItemRule * item, int number)
 
 
 //===============================  Knowledge ============
-/** No descriptions */
+/** Faction keeps record of rules that are known to it for reporting purpose */
+/* Here also we can add it to TurnReporter*/
 bool FactionEntity::addKnowledge(Rule * info)
 {
   if(info == 0)
@@ -973,6 +1535,7 @@ bool FactionEntity::addKnowledge(Rule * info)
   {
     knowledge_.push_back(info);
     info->extractKnowledge(this);
+    turnReport_->addRule(info);
     return true;
     }
     else
@@ -991,6 +1554,7 @@ bool FactionEntity::addSkillKnowledge(SkillRule * knowledge, int level)
   {
     skillKnowledge_.push_back(new SkillLevelElement(knowledge,level));
     knowledge->extractKnowledge(this,level);
+    turnReport_->addSkillKnowledge(knowledge,level);
     return true;
   }
   else
@@ -1066,11 +1630,11 @@ void FactionEntity::reshow(BasicRulesCollection  * collection, ReportPrinter &ou
 void FactionEntity::reshowSkills(ReportPrinter &out )
 {
 //  for(RulesIterator iter = skills.begin();iter != skills.end(); ++iter )
-  for(int i=0; i < skills.size(); ++i )
+  for(int i=0; i < gameFacade->skills.size(); ++i )
   {
     for (int level = 0; level < SkillRule::getMaxSkillLevel(); ++level)
     {
-      reshowSkill( skills[i], level,out);
+      reshowSkill( gameFacade->skills[i], level,out);
     }
   }
 }
@@ -1120,7 +1684,7 @@ void FactionEntity::saveKnowledge(ostream &out)
 
 void FactionEntity::markCollectionToReshow(BasicRulesCollection  * collection)
 {
-  if(collection->getCollectionKeyword()  == skills.getCollectionKeyword())
+  if(collection->getCollectionKeyword()  == gameFacade->skills.getCollectionKeyword())
     {
       markAllSkillsToReshow();
     }
@@ -1178,10 +1742,10 @@ void FactionEntity::reportNewKnowledge(ReportPrinter &out)
 
   allSkillsToReshow_ = false;
   skillsToReshow_.clear();
-  for(vector < BasicRulesCollection  *>::iterator collIter = ruleIndex.getAllRules().begin();
-          collIter != ruleIndex.getAllRules().end(); ++collIter)
+  for(vector < BasicRulesCollection  *>::iterator collIter = gameFacade->ruleIndex.getAllRules().begin();
+          collIter != gameFacade->ruleIndex.getAllRules().end(); ++collIter)
     {
-      if((*collIter) == &skills) // this is a skill
+      if((*collIter) == &(gameFacade)->skills) // this is a skill
          continue;
       if((*collIter)->size()==0) //collection is empty
          continue;
@@ -1250,7 +1814,7 @@ void FactionEntity::loadKnowledge(Parser *parser)
    	 if (parser->matchKeyword ("SKILL_KNOWLEDGE") )
     		{
           string knowledgeTag =parser->getWord();
-   	      SkillRule * skill = skills[knowledgeTag];
+   	      SkillRule * skill = gameFacade->skills[knowledgeTag];
           if(skill)
             {
               int level = parser->getInteger();
@@ -1263,7 +1827,7 @@ void FactionEntity::loadKnowledge(Parser *parser)
    	 if (parser->matchKeyword ("KNOWLEDGE") )
     		{
           string knowledgeTag =parser->getWord();
-   	      Rule * rule = ruleIndex.findRule(knowledgeTag);
+   	      Rule * rule = gameFacade->ruleIndex.findRule(knowledgeTag);
           if(rule)
             {
               knowledge_.push_back(rule);
@@ -1300,7 +1864,7 @@ bool FactionEntity::checkAnyUnitsLeft()
 
 void FactionEntity::resign(FactionEntity * faction)
 {
- // transfer all posessions
+ // transfer all possessions
  for (vector< UnitEntity *>::iterator iter = loyalUnits_.begin();
      iter != loyalUnits_.end(); ++iter)
   {
@@ -1325,7 +1889,7 @@ void FactionEntity::resign(FactionEntity * faction)
 
 bool FactionEntity::isNPCFaction()
 {
- return gameConfig.isNPCFaction(this);
+ return gameFacade->getGameConfig()->isNPCFaction(this);
 }
 
 
@@ -1341,6 +1905,7 @@ bool FactionEntity::stanceAtLeast(TokenEntity * token, StanceVariety * stance)
 {
   return (*(getStance(token)) >= *stance) ;
 }
+
 
 
 
@@ -1398,7 +1963,11 @@ void FactionEntity::reportFunds(ReportPrinter &out)
 
 void FactionEntity::dailyPreProcess()
 {
- // Calculate CP
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	// Calculate CP
  calculateControlPoints();
  if(controlPoints_  > maxControlPoints_)
  {
@@ -1439,4 +2008,58 @@ void FactionEntity::addCombatReport(CombatReport * combatReport)
 			return;
   }
 	combatReports_.push_back(combatReport);
+}
+
+bool FactionEntity::isLoyalUnit(UnitEntity * unit)
+{
+ for (vector< UnitEntity *>::iterator iter = loyalUnits_.begin();
+     iter != loyalUnits_.end(); ++iter)
+  {
+     if((*iter)->getTag()==unit->getTag())
+     {
+         return true;
+     }
+ }
+      return false;
+}
+bool FactionEntity::isLoyalConstruction(ConstructionEntity * construction)
+{
+ for (vector< ConstructionEntity *>::iterator iter = loyalConstructions_.begin();
+     iter != loyalConstructions_.end(); ++iter)
+  {
+     if((*iter)->getTag()== construction->getTag())
+     {
+         return true;
+     }
+ }
+     return false;
+}
+// This function looks for image of the object provided as a parameter.
+// For strings and integers returns corresponding object
+// For entities returns image of entity if faction has it. Otherwise returns special built-in unknown entity
+// For rules?
+// For elements?
+
+AbstractData * FactionEntity::findImage(AbstractData * data)
+{
+    Entity * entity = dynamic_cast<Entity *> (data);
+    if (entity == 0)
+    {
+        return data;
+    }
+    	return getTurnReport()->findEntityImage(entity);
+}
+
+
+
+void     FactionEntity::finalizeTurnEvents()
+{
+	   // Add global events to report at the end of turn.
+	    vector< Event *> events = gameFacade->getGameEntity()->getAllCollectedEvents();
+	    for(vector< Event *>::iterator iter = events.begin(); iter != events.end();++iter)
+	    {
+	       //this->getTurnReport()->addGlobalEvent(*iter);
+	       this->getTurnReport()->addEventImage(*iter);
+	    }
+
 }

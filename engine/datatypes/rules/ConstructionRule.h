@@ -40,6 +40,7 @@ public:
       ConstructionRule ( const string & keyword, GameData * parent) : Rule(keyword, parent){}
       ConstructionRule ( const ConstructionRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
 	   ~ConstructionRule();
               ConstructionEntity * startConstruction(UnitEntity * unit);
@@ -48,7 +49,7 @@ public:
         void printDescription(ReportPrinter & out);
         vector <AbstractData *> aPrint();
   inline BasicCondition * getBuildCondition() const {return buildCondition_;}
-  inline SkillCondition * getStaffCondition() const {return staffCondition_;}
+  inline BasicCondition * getStaffCondition() const {return staffCondition_;}
   inline EntityStatistics * getStats()  {return &stats_;}
   inline EntityStatistics * getBonusStats()  {return &bonuses_;}
   inline int getLandUse() const {return landUse_;}
@@ -77,7 +78,7 @@ public:
       int weight_;
       int landUse_;
       BasicCondition * buildCondition_;
-      SkillCondition * staffCondition_;
+      BasicCondition * staffCondition_;
       int maxStaff_;
       EntityStatistics stats_;
       EntityStatistics bonuses_;
@@ -95,6 +96,6 @@ public:
 typedef vector <BonusElement *>::iterator BonusIterator;
 typedef vector<ConstructionWorksElement *>::iterator ConstructionWorksIterator;
 extern ConstructionRule   sampleConstructionRule;
-extern RulesCollection <ConstructionRule>      constructions;
+//extern RulesCollection <ConstructionRule>      constructions;
 
 #endif

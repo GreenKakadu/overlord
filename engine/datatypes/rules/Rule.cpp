@@ -10,7 +10,7 @@
 #include "BasicCondition.h"
 #include "DataManipulator.h"
 
-extern DataManipulator * dataManipulatorPtr;
+//extern DataManipulator * dataManipulatorPtr;
 Rule::Rule ( const Rule * prototype ): GameData(prototype)
 {
 }
@@ -21,7 +21,7 @@ Rule::initialize        ( Parser *parser )
 {
   if (parser->matchKeyword("KNOWLEDGE"))
   {
-    Rule * data = dynamic_cast<Rule *>(dataManipulatorPtr->findGameData(parser->getWord()));
+    Rule * data = gameFacade->getDataManipulator()->findRule(parser->getWord());
     //Rule * data = dynamic_cast<Rule *>(createByKeyword(parser->getWord()));
     if(data)
     {
@@ -36,23 +36,42 @@ Rule::initialize        ( Parser *parser )
   return OK;
 }
 
-
-
-void Rule::bindCondition(BasicCondition * condition)
+void Rule::save(ostream &out)
 {
-  conditions_.push_back(condition);
-}
-
-
-
-void Rule::checkConditions(Entity * entity)
-{
-  vector <BasicCondition *>::iterator iter;
-  for(iter = conditions_.begin();iter != conditions_.end(); ++iter)
+  out <<getCollectionKeyword()<< " " <<tag_ << " "<<getKeyword() <<endl;
+  if(!name_.empty()) out << "NAME " <<name_ << endl;
+  if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
+  for(vector <Rule *>::iterator iter =  explicitKnowledge_.begin(); iter != explicitKnowledge_.end(); ++iter)
   {
-     (*iter)->conditionHandler(entity);
-    }
+      out<<"KNOWLEDGE "<<(*iter)->getTag()<<endl;
+  }
+//  for(vector <BasicCondition *>::iterator iter = conditions_.begin(); iter != conditions_.end(); ++iter)
+//  {
+//      out<<" "<<(*iter)->getTag()<<endl;      
+//  }
+
 }
+
+string Rule::getCollectionKeyword()
+{
+  return gameFacade->getDataManipulator()->getRuleCollectionKeyword(getTag());
+}
+
+//void Rule::bindCondition(BasicCondition * condition)
+//{
+//  conditions_.push_back(condition);
+//}
+
+
+
+//void Rule::checkConditions(Entity * entity)
+//{
+//  vector <BasicCondition *>::iterator iter;
+//  for(iter = conditions_.begin();iter != conditions_.end(); ++iter)
+//  {
+//     (*iter)->conditionHandler(entity);
+//    }
+//}
 
 void Rule::extractKnowledge(Entity * recipient, int parameter)
 {

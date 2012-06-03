@@ -11,8 +11,8 @@
 #include "LocationEntity.h"
 #include "entities/LocationEntity.h"
 
-RulesCollection <EffectRule>      effectRules(new DataStorageHandler("effects.rules"));
 EffectRule    sampleEffectRule    ("EFFECT_RULE",&sampleGameData);
+//RulesCollection <EffectRule>      effectRules(new DataStorageHandler("effects.rules"),&sampleEffectRule);
 
 EffectRule::EffectRule(const EffectRule * prototype): Rule(prototype)
 {
@@ -40,7 +40,7 @@ EffectEntity * EffectRule::createEffect(LocationEntity * location)
   EffectEntity  * newEffect   = dynamic_cast<EffectEntity *> (createByKeyword(entityKeyword_));
   if(newEffect)
   {
-    if(effects.addNew(newEffect) != OK)
+    if(gameFacade->effects.addNew(newEffect) != OK)
       {
         cout << "Failed to add new effect \n";
         return 0;
@@ -66,6 +66,12 @@ EffectRule::initialize        ( Parser *parser )
 {
   GameData::initialize(parser);
      return OK;
+}
+
+
+void EffectRule::save(ostream &out)
+{
+  Rule::save(out);
 }
 
 void EffectRule::terminateEffect(EffectEntity * entity)

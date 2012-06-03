@@ -5,6 +5,7 @@
     copyright            : (C) 2003 by Alex Dribin
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
+#include "GameFacade.h"
 #include "CombatActionStrategy.h"
 #include "CombatTargetVariety.h"
 #include "TokenEntity.h"
@@ -29,6 +30,7 @@ CombatActionStrategy::CombatActionStrategy ( const string & keyword, GameData * 
 	range_ = 0;
 	action_ = 0;
 	target_ = 0;
+        mana_ = 0;
         nonCumulativeStats.clearStats(VERY_BIG_NUMBER);
         expGainingSkill_ =0;
 }
@@ -40,6 +42,7 @@ CombatActionStrategy::CombatActionStrategy ( const CombatActionStrategy * protot
   range_ = 0;
   action_ = 0;
   target_ = 0;
+  mana_ = 0;
   tag_ = "CombatActionStrategy";
   nonCumulativeStats.clearStats(VERY_BIG_NUMBER);
   expGainingSkill_ =0;
@@ -51,7 +54,7 @@ CombatActionStrategy::initialize        ( Parser *parser )
 {
   if (parser->matchKeyword ("TARGET") )
     {
-			target_ = combatTargets[parser->getWord()];
+			target_ = gameFacade->combatTargets[parser->getWord()];
                         if(target_==0)
                         {
                           cout << "Empty target in "<< parser->report()<<endl;
@@ -60,7 +63,7 @@ CombatActionStrategy::initialize        ( Parser *parser )
     }
   if (parser->matchKeyword ("EFFECT") )
     {
-			action_ = fx_actions[parser->getWord()];
+			action_ = gameFacade->fx_actions[parser->getWord()];
                         if(action_==0)
                         {
                           cout << "Empty effect in "<< parser->report()<<endl;
@@ -96,8 +99,24 @@ CombatActionStrategy::initialize        ( Parser *parser )
 		}
      return OK;
 
+}
 
 
+
+void CombatActionStrategy::save(ostream &out)
+{
+
+    if(target_) out<<"COMBAT "<< "TARGET"<<" "<<target_->getTag() <<endl;
+    if(action_)out<<"COMBAT "<< "EFFECT"<<" "<<action_->getTag() <<endl;
+    if(range_)out<<"COMBAT "<< "RANGE"<<" "<<range_ <<endl;
+    if(mana_)out<<"COMBAT "<<"USE_MANA"<<" "<< mana_<<endl;
+    for(vector <ItemElement *>::iterator iter =resources_.begin(); iter != resources_.end();++iter)
+    {
+      out<<"COMBAT "<<"CONSUME ";
+      (*iter)->save(out);
+    }
+    modifyingStats.save(out,"COMBAT BONUS ",0);
+    nonCumulativeStats.save(out,"COMBAT ",VERY_BIG_NUMBER);
 }
 
 
@@ -464,4 +483,23 @@ void CombatActionStrategy::consumeActionResources(BattleInstance * battleInstanc
     {
         battleInstance->takeItemOut((*iter)->getItemType(), (*iter)->getItemNumber());
     }
+}
+
+
+
+void    CombatActionStrategy::extractKnowledge (Entity * recipient, int parameter)
+{
+  if(action_)
+  {
+    if(recipient->addKnowledge(action_))
+      action_->extractKnowledge(recipient);
+  }
+  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+      if(recipient->addKnowledge((*iter)->getItemType()))
+        (*iter)->getItemType()->extractKnowledge(recipient);
+    }
+//  if(expGainingSkill_) //causes loop
+//     expGainingSkill_->extractKnowledge(recipient);
+
 }

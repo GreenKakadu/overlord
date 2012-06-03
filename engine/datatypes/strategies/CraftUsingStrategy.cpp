@@ -40,29 +40,17 @@ GameData * CraftUsingStrategy::createInstanceOfSelf()
 STATUS
 CraftUsingStrategy::initialize        ( Parser *parser )
 {
+    BasicProductionStrategy::initialize(parser);
+
   if (parser->matchKeyword ("PRODUCES") )
     {
-      productType_ = items[parser->getWord()];
+      productType_ = gameFacade->items[parser->getWord()];
       productionDays_ =  parser->getInteger();
       if( (productType_ == 0) ||  (productionDays_ == 0) )
       {
         cout << "Error while reading PRODUCES \n";
         return IO_ERROR;
       }
-      return OK;
-    }
-  if (parser->matchKeyword ("CONSUME") )
-    {
-			if(parser->matchElement())
-			  resources_.push_back(new ItemElement(parser));
-      return OK;
-    }
-
-  if (parser->matchKeyword ("MULTIPLE") )
-    {
-      productNumber_ =  parser->getInteger();
-      if(productNumber_ == 0)
-        productNumber_ = 1;
       return OK;
     }
 
@@ -73,16 +61,20 @@ CraftUsingStrategy::initialize        ( Parser *parser )
     }
 
 
-  if (parser->matchKeyword ("TOOL") )
-  {
-      ToolUseElement * tool = ToolUseElement::readElement (parser);
-      if( tool)
-        tools_.push_back(tool);
-      return OK;
-    }
       return OK;
 }
 
+void CraftUsingStrategy::save(ostream &out)
+{
+     BasicProductionStrategy::save(out);
+
+    if(productType_) out<<"PRODUCES"<<" "<<productType_->getTag()
+            <<" "<<productionDays_ << endl;
+
+    if(mana_) out<<"USE_MANA"<<" "<<mana_<<endl;
+
+
+}
 
 
 USING_RESULT CraftUsingStrategy::unitUse(UnitEntity * unit, SkillRule * skill, 

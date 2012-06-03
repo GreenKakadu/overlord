@@ -26,6 +26,7 @@ public:
       CraftUsingStrategy ( const CraftUsingStrategy * prototype );
 		 ~CraftUsingStrategy(){};
       GameData * createInstanceOfSelf();
+      virtual void save(ostream &out);
       STATUS initialize        ( Parser *parser );
       USING_RESULT unitUse(UnitEntity * unit, SkillRule *, int &useCounter,OrderLine * order);
 //      USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);

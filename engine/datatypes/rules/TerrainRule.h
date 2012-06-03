@@ -24,6 +24,7 @@ class  TerrainRule : public Rule
       TerrainRule ( const TerrainRule * prototype );// : Rule(prototype)	{_optimalPopulation =0;landWalk_ =0;}
       ~TerrainRule (){}
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();
@@ -42,7 +43,7 @@ class  TerrainRule : public Rule
 		inline int getB(){return colorB_;}
 	protected:
       int optimalPopulation_;
-      MovementMode<int> _movementTime;
+      MovementMode<int> movementTime_;
       SkillRule * landWalk_;
       bool buildEnabled_;
 			SkillBonusComboAttribute skillBonuses_;

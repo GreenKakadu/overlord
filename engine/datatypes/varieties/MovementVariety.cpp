@@ -8,7 +8,7 @@
 #include "MovementVariety.h"
 
 MovementVariety  sampleMode  ("MOVEMENT",  &sampleVariety);
-VarietiesCollection <MovementVariety> movementModes(new DataStorageHandler("movements.var"));
+//VarietiesCollection <MovementVariety> movementModes(new DataStorageHandler("movements.var"));
 
 
 GameData * MovementVariety::createInstanceOfSelf()

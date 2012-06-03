@@ -6,7 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "CreatureRaceRule.h"
-CreatureRaceRule sampleCreatureRaceRule=CreatureRaceRule("CREATURE", &sampleRace);
+CreatureRaceRule sampleCreatureRaceRule("CREATURE", &sampleRace);
 CreatureRaceRule::CreatureRaceRule ( const CreatureRaceRule * prototype ) : RaceRule(prototype)
 {
   hiringCost_ = 500;
@@ -37,12 +37,24 @@ bool CreatureRaceRule::mayWork()
   return false;
 }
 
+void CreatureRaceRule::save(ostream &out)
+{
+  RaceRule::save(out);
+}
 
 
 void CreatureRaceRule::printTypeSpecificDescription(ReportPrinter & out)
 {
   out << " This is a creature.";
 }
+
+vector <AbstractData *> CreatureRaceRule::aPrintTypeSpecificDescription()
+{
+    vector <AbstractData *> out;
+    out.push_back(new StringData(" This is a creature."));
+    return out;
+}
+
 
 
 LEARNING_RESULT CreatureRaceRule::mayLearn(SkillRule * skill, UnitEntity * unit)

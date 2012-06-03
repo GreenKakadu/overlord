@@ -20,7 +20,9 @@ public:
       CreatureRaceRule ( const CreatureRaceRule * prototype );
     	~CreatureRaceRule(){}
        STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       void printTypeSpecificDescription(ReportPrinter & out);
+      vector <AbstractData *> aPrintTypeSpecificDescription();
       LEARNING_RESULT mayLearn(SkillRule * skill, UnitEntity * unit);
       GameData * createInstanceOfSelf();
       bool mayWork();

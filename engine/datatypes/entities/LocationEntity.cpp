@@ -7,6 +7,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include "GameConfig.h"
+#include "GameFacade.h"
 #include "IntegerData.h"
 #include "LocationEntity.h"
 #include "UnitEntity.h"
@@ -44,13 +45,15 @@
 #include "EffectEntity.h"
 #include "PlagueEffect.h"
 #include "EffectRule.h"
+#include "TurnReport.h"
+#include "EventRule.h"
 
 extern TerrainRule * findTerrainByTag(const string &tag);
 extern ReportPattern * taxCollectedReporter;
 extern int Roll_1Dx(int n);
 
 LocationEntity sampleLocation("LOCATION",&sampleTokenEntity);
-EntitiesCollection <LocationEntity>   locations(new DataStorageHandler(gameConfig.getLocationsFile() ));
+//EntitiesCollection <LocationEntity>   locations(new DataStorageHandler(gameConfig.getLocationsFile() ),&sampleLocation);
 
 ReportPattern  *	pillagerMovesReporter = new
             ReportPattern("pillagerMovesReporter");
@@ -80,17 +83,19 @@ LocationEntity::LocationEntity ( const LocationEntity * prototype ) : Entity(pro
 //  location_ = this;
   dailyConflict_ = new EvenConflict(this); // default
   monthlyConflict_ = new EvenConflict(this); // default
-  market_ = dynamic_cast<MarketStrategy *>(sampleMarket.createInstanceOfSelf ());
-  market_->setLocation(this);
+  market_ = 0;//dynamic_cast<MarketStrategy *>(sampleMarket.createInstanceOfSelf ());
+  if(market_) market_->setLocation(this);
   combatManager_ = new CombatManager(this);
   totalMarketValue_ = 0;
   studentCounter_ = 0;
   teacherCounter_ = 0;
   landPrice_ = 0;
-  landTotal_= 100;
+  landTotal_= 0;// 100;
   landFree_ = landTotal_;
   migration_ =0;
-	economy_ = 100;
+  population_ =0;
+  optima_ =100;
+  economy_ = 0;//100; // Default value
 	nextWeather_ = 0;
 	wages_ = 0;
 	season_ = determineSeason();
@@ -104,11 +109,355 @@ LocationEntity::LocationEntity ( const LocationEntity * prototype ) : Entity(pro
         }
 	skillBonuses_= SkillBonusAttribute("SKILL");
 	isInitialized_ = true;
+	outerLocation_ = 0;
 }
 
 GameData * LocationEntity::createInstanceOfSelf()
 {
    return CREATE_INSTANCE<LocationEntity> (this);
+}
+
+
+
+// Fill very basic info that is known even for locations that were not visited
+// but only observed as adjacient locations 
+LocationEntity * LocationEntity::createBasicImage(FactionEntity * referent)
+{
+    LocationEntity * location = new LocationEntity(sampleLocation);
+    location->setTimeStamp(gameFacade->getGameTurn(), gameFacade->getCurrentDay());
+
+//    if(gameFacade->getCurrentDay() == 2)
+//    {
+//    	//cerr<< print()<<" Location image created on day 2"<<endl;
+//    }
+
+    location->setTag(this->getTag());
+    location->setName(this->getName());
+    location->setTerrain(this->getTerrain());
+
+    location->setX(this->getX() - referent->getX0()); //  relative!
+    location->setY(this->getY() - referent->getY0()); // relative!
+    location->isVisited_ = false;
+    location->imageObservation_ =0;
+    location->isImage_ = true;
+
+    return location;
+}
+
+// fill location object for visited location with data 
+
+LocationEntity * LocationEntity::makeVisitedImage(LocationEntity * image, LocationEntity * source)
+{
+    image->isVisited_ = true;
+
+    image->setDescription(source->getDescription());
+    image->setNextWeather(source->getNextWeather());
+    image->owner_ = source->owner_;
+    image->setTitleLocation(source->getTitleLocation());
+    image->setOptima(source->getOptima());
+    image->setPopulation(source->getPopulation());
+    image->setWages(source->getWages());
+    image->setLandPrice(source->getLandPrice());
+    image->setTotalLand(source->getTotalLand());
+    image->setEconomy(source->getEconomy());
+
+    image->market_ = source->market_;
+    image->titles_ = source->titles_;
+    image->ownershipPolicy_ = source->ownershipPolicy_;
+    image->skillBonuses_ = source->skillBonuses_;
+    image->localItems_ = source->localItems_;
+    image->effects_ = source->effects_;
+    // Some exits may have conditional visibility but this is not implemented yet
+    image->exits_ = source->exits_;
+    //location->orders_ = this->orders_;//unseen now
+	return image;
+}
+
+
+// Create complete location image for visited location.
+
+LocationEntity * LocationEntity::createVisitedLocationImage(FactionEntity * referent, int observation)
+{
+    LocationEntity * locationImage = createBasicImage(referent);
+    this->imageObservation_ = observation;;
+     makeVisitedImage(locationImage,this);
+    for (ConstructionIterator iter = constructions_.begin(); iter != constructions_.end(); iter++)
+    {
+        if (((*iter)->getStealth() <= observation)||((*iter)->getAdvertising()) ||
+        		((*iter)->getFaction()->stanceAtLeast(referent,alliedStance)))
+        {
+            // create image
+//            ConstructionEntity * imageToAdd = (*iter)->createConstructionImage(referent, observation);
+              ConstructionEntity * imageToAdd =  referent->getTurnReport()->addConstructionImage((*iter), observation);
+              if(imageToAdd)
+              {
+           locationImage->constructions_.push_back(imageToAdd);
+              }
+        }
+    }
+    for (UnitIterator iter = units_.begin(); iter != units_.end(); iter++)
+    {
+        if (((*iter)->getStealth() <= observation)||((*iter)->getAdvertising()) ||
+         		((*iter)->getFaction()->stanceAtLeast(referent,alliedStance)))
+        {
+//           UnitEntity * imageToAdd = (*iter)->createUnitImage(referent, observation);
+           UnitEntity * imageToAdd = referent->getTurnReport()->addUnitImage((*iter), observation);
+           if(imageToAdd)
+           {
+           locationImage->units_.push_back(imageToAdd);
+           }
+           else
+           {
+        	   //cerr<<"image of "<<(*iter)->print()<<" is unseen"<<endl;
+           }
+        }
+    }
+    // Effects
+
+    // Some resources may be hidden!
+    for (ResourceElementIterator iter = this->resources_.begin();
+            iter != this->resources_.end(); iter++)
+    {
+        bool canProspect = false;
+        if ((*iter)->getResource()->getProspectSkill())
+        {// Resource requires prospecting skill:
+            //cout <<"Prospecting for "<< (*iter)->getResource()->print()<<" in " <<print()<<endl;
+            for (TokenIterator tokenIter = this->visitors_.begin();
+                    tokenIter != this->visitors_.end(); ++tokenIter)
+            {// Checking all visitors:
+                if ((*tokenIter)->getFaction() != referent)
+                {// Not from this faction
+                    continue;
+                }
+                if ((*tokenIter)->canProspect(*iter))
+                {// Somebody who can prospect found
+                    canProspect = true;
+                    // cout <<(*tokenIter)->print()<< " can prospect "<<endl;
+                    break;
+                }
+            }
+
+            if (!canProspect) // Nobody who can prospect was found
+            {
+                continue;
+            }
+
+        } else // No need in prospect or proper prospector found
+        {
+
+            locationImage->resources_.push_back((*iter));
+        }
+
+    }
+     
+     // Events
+     
+     for(vector<Event *>::iterator iter = collectedEvents_.begin(); iter != collectedEvents_.end(); ++iter)
+     {
+         BasicCondition * condition = (*iter)->getEventRule()->getCondition();
+         if(condition)
+         {
+             bool canObserve = false;
+            for (TokenIterator tokenIter = this->visitors_.begin();
+                    tokenIter != this->visitors_.end(); ++tokenIter)
+            {// Checking all visitors:
+                if ((*tokenIter)->getFaction() != referent)
+                {// Not from this faction
+                    continue;
+                }
+               if((*iter)->isObservableBy(*tokenIter)) 
+                {// Somebody who can observe found
+                    canObserve = true;
+                    break;
+                }
+            }
+
+            if (!canObserve) // Nobody who can observe this event was found. Go to next event.
+            {
+                continue;
+            }
+            
+         }
+         Event * eventImage = (*iter)->createEventImage(referent);
+         if(eventImage)
+         {
+           locationImage->collectedEvents_.push_back(eventImage);
+           referent->getTurnReport()->addEventImage(eventImage);
+         }
+         
+     }
+     
+     
+   return locationImage;
+}
+
+
+// Create location object for visited location. 
+// It does not contain any information which may change during the day 
+// or is dependent on observation or other abilities of visiting units
+// I.e. Tokens (units, constructions, effects) are not included and 
+// resources are not included
+// Currently not used
+LocationEntity * LocationEntity::createIncompleteVisitedImage(FactionEntity * referent)
+{
+    LocationEntity * location = createBasicImage(referent);
+     makeVisitedImage(location,this);   
+    return location;
+}
+
+
+// Add Tokens and resources info to location image. Not used
+void LocationEntity::populateLocationImage(FactionEntity * referent, int observation)
+{
+	LocationEntity * location = gameFacade->locations[getTag()]; // find origin of image
+   
+    this->imageObservation_ =observation;
+    // Some units and Constructions may be hidden
+
+
+   for (ConstructionIterator iter = location->constructions_.begin(); iter != location->constructions_.end(); iter++)
+    {
+        if (((*iter)->getStealth() <= observation)||((*iter)->getAdvertising()) ||
+        		((*iter)->getFaction()->stanceAtLeast(referent,alliedStance)))
+        {
+           ConstructionEntity * imageToAdd = referent->getTurnReport()->addConstructionImage((*iter),observation);
+            if(imageToAdd)
+           {
+            this->constructions_.push_back(imageToAdd);
+           }
+        }
+    }
+    for (UnitIterator iter = location->units_.begin(); iter != location->units_.end(); iter++)
+    {
+        if (((*iter)->getStealth() <= observation)||((*iter)->getAdvertising()) ||
+        		((*iter)->getFaction()->stanceAtLeast(referent,alliedStance)))
+        {
+           UnitEntity * imageToAdd = (*iter)->createUnitImage(referent, observation);
+           if(imageToAdd)
+           {
+           referent->getTurnReport()->addUnitImage(imageToAdd,observation);
+           //referent->getTurnReport()->addUnitImage(imageToAdd);
+           this->units_.push_back(imageToAdd);
+           }
+        }
+    }
+    // Effects
+
+    // Some resources may be hidden!
+
+    for (ResourceElementIterator iter = location->resources_.begin();
+            iter != location->resources_.end(); iter++)
+    {
+        bool canProspect = false;
+        if ((*iter)->getResource()->getProspectSkill())
+        {// Resource requires prospecting skill:
+            //cout <<"Prospecting for "<< (*iter)->getResource()->print()<<" in " <<print()<<endl;
+            for (TokenIterator tokenIter = location->visitors_.begin();
+                    tokenIter != location->visitors_.end(); ++tokenIter)
+            {// Checking all visitors:
+                if ((*tokenIter)->getFaction() != referent)
+                {// Not from this faction
+                    continue;
+                }
+                if ((*tokenIter)->canProspect(*iter))
+                {// Somebody who can prospect found
+                    canProspect = true;
+                    // cout <<(*tokenIter)->print()<< " can prospect "<<endl;
+                    break;
+                }
+            }
+
+            if (canProspect) // Nobody who can prospect was found
+            {
+                continue;
+            }
+
+        } else // No need in prospect or proper prospector found
+        {
+
+            this->resources_.push_back(*iter);
+        }
+
+    }
+}
+
+
+// Update location image with the data from another image
+
+
+void LocationEntity::updateImage(LocationEntity *location)
+{
+  Entity::updateImage(location);
+
+    if(location->isVisited_==false)
+    {
+        return;
+    }
+
+
+    if(this->isVisited_ ==false)
+    {
+        makeVisitedImage(this,location);
+        this->setTimeStamp(gameFacade->getGameTurn(), gameFacade->getCurrentDay());
+		return;
+    }
+	// Two cases of update:
+	// 1. new image is newer: replace units and constructions
+    // replace owner
+	// 2. new image observation is higher: add missing units and constructions (actualy may replace)
+	// In all cases add additional resources
+     if(location->getTimeStamp() > this->getTimeStamp())// newer
+    {
+       this->constructions_ = location->constructions_;
+       this->units_ = location->units_;
+       this->owner_ = location->owner_;
+        
+    }
+   else if(this->imageObservation_ <  location->imageObservation_ ) //???
+    {
+        this->constructions_ = location->constructions_;
+        this->units_ = location->units_;
+    }
+    this->setTimeStamp(gameFacade->getGameTurn(), gameFacade->getCurrentDay());
+    bool isFound;
+
+    for (ResourceElementIterator iter0 = location->resources_.begin();
+            iter0 != location->resources_.end(); ++iter0)
+    {
+        isFound = false;
+        for (ResourceElementIterator iter = this->resources_.begin();
+                iter != this->resources_.end(); iter++)
+        {
+            if ((*iter)->getResource() == (*iter0)->getResource())
+            {
+                isFound = true;
+                continue;
+            }
+        }
+        if(!isFound)
+        {
+          this->resources_.push_back(*iter0);
+        }
+    }
+    // Events
+    // Add new events that are not in the list yet.
+     for(vector<Event *>::iterator iter = location->collectedEvents_.begin(); iter != location->collectedEvents_.end(); ++iter)
+     {
+         bool isEventFound = false;
+         for(vector<Event *>::iterator iter1 = this->collectedEvents_.begin(); iter1 != this->collectedEvents_.end(); ++iter1)
+         {
+             if((*iter1)->getTag()==(*iter1)->getTag())
+             {
+                isEventFound = true; 
+                break;
+             }
+           }
+         if(!isEventFound)
+         {
+            this->collectedEvents_.push_back(*iter);
+         }
+     }
+ 
 }
 
 
@@ -140,8 +489,9 @@ LocationEntity::initialize        ( Parser *parser )
   }
   if (parser->matchKeyword("OWNER"))
   {
-    
-    setLegalOwner(factions[parser->getWord()],locations[parser->getWord()]);
+      FactionEntity * faction = gameFacade->factions[parser->getWord()];
+      LocationEntity * location = gameFacade->locations[parser->getWord()];
+      setLegalOwner(faction,location);
     return OK;
   }
   //      if (parser->matchKeyword("GUARD"))
@@ -155,17 +505,17 @@ LocationEntity::initialize        ( Parser *parser )
       //	}
       if (parser->matchKeyword("UNIT"))
       {
-	addUnitImmediatelly(units[ parser->getWord()]);
+	addUnitImmediatelly(gameFacade->units[ parser->getWord()]);
 	return OK;
       }
       if (parser->matchKeyword("EFFECT"))
       {
-	addEffect(effects[ parser->getWord()]);
+	addEffect(gameFacade->effects[ parser->getWord()]);
 	return OK;
       }
       if (parser->matchKeyword("CONSTRUCTION"))
       {
-	addConstructionImmediatelly(buildingsAndShips[ parser->getWord()]);
+	addConstructionImmediatelly(gameFacade->buildingsAndShips[ parser->getWord()]);
 	return OK;
       }
       if (parser->matchKeyword("POPULATION"))
@@ -174,11 +524,11 @@ LocationEntity::initialize        ( Parser *parser )
 	temp = parser->getWord();
 	if(!temp.empty())
 	{
-	  race_ = races[temp];
+	  race_ = gameFacade->races[temp];
 	  if( race_ != 0)
 	    return OK;
 	}
-	race_ = races["man"];  // default
+	race_ = gameFacade->races["man"];  // default
 	return OK;
       }
       if (parser->matchKeyword("WAGES"))
@@ -247,10 +597,10 @@ LocationEntity::initialize        ( Parser *parser )
 	if (parser->matchKeyword("EXIT"))
 	{
 	  
-	  DirectionVariety * dir = directions[parser->getWord()];
+	  DirectionVariety * dir = gameFacade->directions[parser->getWord()];
 	  if (dir == 0)
 	    return OK;
-	  LocationEntity * dest = locations[parser->getWord()];
+	  LocationEntity * dest = gameFacade->locations[parser->getWord()];
 	  if(dest == 0)
 	    return OK;
 	  BasicExit * newExit = new BasicExit(this,dir,dest);
@@ -262,28 +612,28 @@ LocationEntity::initialize        ( Parser *parser )
 	if (parser->matchKeyword("EXIT_EXPLICIT"))
 	{
 	  
-	  DirectionVariety * dir = directions[parser->getWord()];
+	  DirectionVariety * dir = gameFacade->directions[parser->getWord()];
 	  if (dir == 0)
 	    return OK;
-	  LocationEntity * dest = locations[parser->getWord()];
+	  LocationEntity * dest = gameFacade->locations[parser->getWord()];
 	  if(dest == 0)
 	    return OK;
 	  
 	  int days;
 	  MovementVariety * mode;
 	  MovementMode <int> travelTimes;
-	  for(int i=0;i<movementModes.size();i++)
+	  for(int i=0;i<gameFacade->movementModes.size();i++)
 	  {
 	    if(parser->matchInteger())  // old Overlord compartibility
 	    {
 	      days = parser->getInteger();
-	      mode = movementModes[parser->getInteger()];
+	      mode = gameFacade->movementModes[parser->getInteger()];
 	    }
 	    else
 	    {
 	      if(!parser->matchWord().empty())
 	      {
-		mode =  movementModes[parser->getWord()];
+		mode =  gameFacade->movementModes[parser->getWord()];
 		days = parser->getInteger();
 	      }
 	      else
@@ -306,10 +656,10 @@ LocationEntity::initialize        ( Parser *parser )
 	if (parser->matchKeyword("EXIT_SKILL"))
 	{
 	  
-	  DirectionVariety * dir = directions[parser->getWord()];
+	  DirectionVariety * dir = gameFacade->directions[parser->getWord()];
 	  if (dir == 0)
 	    return OK;
-	  LocationEntity * dest = locations[parser->getWord()];
+	  LocationEntity * dest = gameFacade->locations[parser->getWord()];
 	  if(dest == 0)
 	    return OK;
 	  int days;
@@ -319,7 +669,7 @@ LocationEntity::initialize        ( Parser *parser )
 	  MovementMode <int> travelTimes;
 	  SkillRule * skill;
 	  SkillLevelElement * skillRequirement;
-	  for(i=0;i<movementModes.size();i++)
+	  for(i=0;i<gameFacade->movementModes.size();i++)
 	  {
 	    if(parser->matchInteger())
 	      days = parser->getInteger();
@@ -327,16 +677,16 @@ LocationEntity::initialize        ( Parser *parser )
 	      break;
 	    
 	    if(parser->matchInteger())
-	      mode = movementModes[parser->getInteger()];
+	      mode = gameFacade->movementModes[parser->getInteger()];
 	    else
 	    {
 	      tempName = parser->getWord();
 	      if (tempName.empty())
 		break;
-	      mode =  movementModes[tempName];
+	      mode =  gameFacade->movementModes[tempName];
 	      if (mode == 0)
 	      {
-		skill = skills[tempName];
+		skill = gameFacade->skills[tempName];
 		if (skill)
 		{
 		  skillRequirement = new SkillLevelElement(skill, parser->getInteger());
@@ -389,21 +739,21 @@ LocationEntity::initialize        ( Parser *parser )
 void
 LocationEntity::save(ostream &out)
 {
-  out << endl;
-  out << keyword_ << " " <<tag_ << endl;
+  out <<endl<<getCollectionKeyword()<< " " <<tag_ << " "<<getKeyword() <<endl;
+  getTimeStamp().save(out);
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
-  out<< "TERRAIN " << getTerrain()->getTag()<< endl;
-	if(nextWeather_) out << "WEATHER "<< nextWeather_->getTag()<<endl;
+  if(getTerrain())out<< "TERRAIN " << getTerrain()->getTag()<< endl;
+  if(nextWeather_) out << "WEATHER "<< nextWeather_->getTag()<<endl;
   if(getLegalOwner()) out << "OWNER " << owner_->getTag()<<" "<<getTitleLocation()->getTag()<<endl;
 //  if(getGuard()) out << "GUARD " << guard_->getTag()<<endl;
   if(optima_) out << "OPTIMA " << optima_<<endl;
   if(population_) out << "POPULATION " << population_<<endl;
   if(wages_) out << "WAGES " << wages_<<endl;
   if(landPrice_)  out << "LANDPRICE " << landPrice_ <<endl;
-                  out << "LAND " <<   landTotal_ <<endl;
+  if(landTotal_)  out << "LAND " <<   landTotal_ <<endl;
 
-   market_->save(out);
+   if(market_) market_->save(out);
 
 	titles_.save(out);
 
@@ -437,6 +787,7 @@ LocationEntity::save(ostream &out)
     {
         out << "EFFECT " << (*effIter)->getTag() << endl;
     }
+  saveEvents(out);
 //  if(climate_) out << "CLIMATE " << climate_<<endl;
   if(economy_) out << "ECONOMY " << economy_<<endl;
        out << "XY " << x_ << " "<< y_<<" "<<endl;
@@ -464,6 +815,7 @@ void    LocationEntity::preprocessData()
   if(terrain_ == 0)
   {
     cout << this<<" has no  terrain defined. This may cause program to crash\n";
+    return;
   }
   // activate titles
 	titles_.activateAll();
@@ -471,6 +823,8 @@ void    LocationEntity::preprocessData()
    // Calculate equilibrium Population for last turn data
     int populationEquilibrium =  (terrain_->getOptima() * economy_ )/ 100;
     populationExcess_ = population_ - populationEquilibrium;
+    // Find inner and outer locations
+    checkInnerLocations();
 }
 
 
@@ -486,7 +840,11 @@ void LocationEntity::addBattle()
  */
 void LocationEntity::postProcessData()
 {
-    // Economy processing
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	// Economy processing
     int population = getPopulation();
     if (population)
     {
@@ -553,7 +911,7 @@ void LocationEntity::postProcessData()
 
     }
 
-  if ( gameConfig.runMode != STARTING_TURN )
+  if ( gameFacade->getGameConfig()->runMode != STARTING_TURN )
   {
 
 		// For all tokens call upkeep method
@@ -584,8 +942,8 @@ void LocationEntity::postProcessData()
 	// Dead bodies decay
    ResourceElementIterator iter;
    ResourceElementIterator boneIter = resources_.end();
-	ItemRule * deads = items["dead"];
-	ItemRule * bones = items["bone"];
+	ItemRule * deads = gameFacade->items["dead"];
+	ItemRule * bones = gameFacade->items["bone"];
 	int num;
 	if((deads == 0) || (bones == 0))
 	return;
@@ -634,13 +992,13 @@ void LocationEntity::postProcessData()
 //         (*iter)->setResourceAmount((*iter)->getAvailableResource());
 //      }
 //  }
-        for(int n =0; n < effectRules.size(); ++n)
+        for(int n =0; n < gameFacade->effectRules.size(); ++n)
  // for (EffectRulesIterator effIter  = effectRules.begin(); effIter != effectRules.end(); effIter++)
     {
-         if(effectRules[n]->isToBeCreated(this))
+         if(gameFacade->effectRules[n]->isToBeCreated(this))
          {
-	  cout << "================= Starting "<<effectRules[n]->print()<<"  at "<<print() << "======================= "<<endl;
-	  effectRules[n]->createEffect(this);
+	  cout << "================= Starting "<<gameFacade->effectRules[n]->print()<<"  at "<<print() << "======================= "<<endl;
+	  gameFacade->effectRules[n]->createEffect(this);
          }
     }
 }
@@ -649,7 +1007,7 @@ void LocationEntity::postProcessData()
 
 void LocationEntity::postPostProcessData()
 {
-    // Popolation migration
+    // Population migration
 }
 
 
@@ -659,9 +1017,11 @@ void LocationEntity::postPostProcessData()
  */
 void LocationEntity::setLegalOwner(FactionEntity * owner, LocationEntity * titleLocation)
 {
-  owner_ = owner;
+
+ owner_ = owner;
   if(owner)
 	{
+     // cout<<"Setting owner of "<< tag_<<" "<<owner->getTag()<<endl;
   	owner->addVisitedLocation(this);
 		setTitleLocation(titleLocation);
 	}
@@ -864,8 +1224,6 @@ void LocationEntity::addAllAddedUnits()
 	}
 	unitsToAdd_.clear();
 }
-
-
 /** prints  report about location based on abilities of units present there  */
 void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter & out)
 {
@@ -892,16 +1250,24 @@ void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter
   out << endl;
       faction->addKnowledge(terrain_);
   // Climate
+      if(season_)
+      {
 	out << "It is "<< season_->getName()<<". ";
-	if(weather_) out << "This turn weather was "<< weather_->getName();
-	if(nextWeather_) out << " next turn it should be "<< nextWeather_->getName()<<". ";
+        faction->addKnowledge(season_);
+      }
+	if(weather_)
+        {
+            out << "This turn weather was "<< weather_->getName();
+            faction->addKnowledge(weather_);
+       }
+	if(nextWeather_)
+        {
+            out << " next turn it should be "<< nextWeather_->getName()<<". ";
+            faction->addKnowledge(nextWeather_);
+        }
 
 	if(!description_.empty()) out<<description_;
 
-     for (EffectIterator iter = effects_.begin(); iter != effects_.end();++iter)
-    {
-             out << (*iter)->publicReport();
-    }
 
   // Location Titles: (report titles)
 		titles_.reportAll(faction, out);
@@ -933,16 +1299,16 @@ void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter
 	//cout <<"Prospecting for "<< (*iter)->getResource()->print()<<" in " <<print()<<endl;
 	for(TokenIterator tokenIter = visitors_.begin(); tokenIter != visitors_.end(); ++tokenIter)
 	{// Checking all visitors
-	  if((*tokenIter)->getFaction() != faction)// Not from this faction 
+	  if((*tokenIter)->getFaction() != faction)// Not from this faction
 	  {
 	    continue;
 	  }
 	  if((*tokenIter)->canProspect(*iter))// Somebody who can prospect found
 	  {
 	    canProspect = true;
-	   // cout <<(*tokenIter)->print()<< " can prospect "<<endl; 
+	   // cout <<(*tokenIter)->print()<< " can prospect "<<endl;
 	    break;
-	  }	  
+	  }
 	}
 	if(!canProspect) // Nobody who can prospect was found
 	{
@@ -985,21 +1351,6 @@ void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter
     out << ".\n";
  }
 
-//    if(!skillBonuses_.empty())
-//     {
-//       out << " Skill bonuses: ";
-//       for ( vector< BonusElement*>::iterator iter = skillBonuses_.begin();
-//             iter != skillBonuses_.end(); iter++)
-// 		    {
-//           if( iter != skillBonuses_.begin())
-//             {
-//               out << ", ";
-//             }
-//           out << (*iter);
-//           faction->addSkillKnowledge((*iter)->getSkill(), 1);
-//         }
-//       out <<". ";
-//     }
 		skillBonuses_.report(out);
 		skillBonuses_.extractKnowledge(faction,1);
 
@@ -1010,7 +1361,6 @@ void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter
     (*iter)->produceReport(out);
   }
     out << "\n";
-
 
   int localObservation  = getFactionalObservation(faction);
 
@@ -1095,12 +1445,30 @@ void LocationEntity::produceFactionReport(FactionEntity * faction, ReportPrinter
           }
 	}
   }
+     for (EffectIterator iter = effects_.begin(); iter != effects_.end();++iter)
+    {
+             out << (*iter)->publicReport();
+    }
+}
+// Produce images for faction
+        //create location image
+        // populate it with all Tokens
+        // create all Token Images
+// Currently not used
+LocationEntity * LocationEntity::produceDailyImages(FactionEntity * faction)
+{
+	int observation = this->getFactionalObservation(faction);
+        //LocationEntity * image = this->createVisitedLocationImage(faction,observation);
+        LocationEntity * image = this->createIncompleteVisitedImage(faction);
+        image->populateLocationImage(faction,observation);
+        return image;
 }
 
 
 //
 // Best observation of faction at this location (allies uncluded)
 //
+
 int LocationEntity::getFactionalObservation(FactionEntity * faction)
 {
  int maxLocalObservation = 0;
@@ -1108,7 +1476,16 @@ int LocationEntity::getFactionalObservation(FactionEntity * faction)
 
   for(UnitIterator iter= units_.begin(); iter != units_.end(); iter++)
   {
-    if ((*iter)->getFaction()->stanceAtLeast(faction, alliedStance))
+ 	  if(!(*iter)->isAlive() )
+          {
+              continue;
+          }
+ 	  if((*iter)->getFaction() ==0 )
+          {             
+	      cerr <<"Day "<<gameFacade->getCurrentDay() <<" For "<<(*iter)->print()<<" no faction"<<endl;
+              continue;
+          }
+	  if ((*iter)->getFaction()->stanceAtLeast(faction, alliedStance))
     {
         currentObservation = (*iter)->getObservation();
         if(currentObservation > maxLocalObservation)
@@ -1118,6 +1495,36 @@ int LocationEntity::getFactionalObservation(FactionEntity * faction)
     }
   }
  return maxLocalObservation;
+}
+
+
+
+//
+// Best observation of faction at this location (allies uncluded)
+//
+UnitEntity * LocationEntity::getFactionalObserver(FactionEntity * faction)
+{
+ int maxLocalObservation = -1 * VERY_BIG_NUMBER;
+ int currentObservation;
+ UnitEntity * currentObserver= 0;
+
+  for(UnitIterator iter= units_.begin(); iter != units_.end(); iter++)
+  {
+	  if(!(*iter)->isAlive() )
+          {
+              continue;
+          }
+    if ((*iter)->getFaction()->stanceAtLeast(faction, alliedStance))
+    {		
+        currentObservation = (*iter)->getObservation();
+        if(currentObservation > maxLocalObservation)
+        {
+          maxLocalObservation = currentObservation;
+          currentObserver = *iter;
+        }
+    }
+  }
+ return currentObserver;
 }
 
 
@@ -1311,7 +1718,11 @@ void LocationEntity::processMonthlyConflict()
 
 void LocationEntity::dailyPreProcess()
 {
-// activate market: add local requests
+	if(isUnknownEntity())
+	{
+		return;
+	}
+	// activate market: add local requests
  market_->dailyPreProcess();
  	isPillaged_ = false;
   setGuard(0);
@@ -1333,8 +1744,11 @@ void LocationEntity::addMarketRequest(MarketRequest * request)
 
 void LocationEntity::processMarket()
 {
-//  cout << "<><><><><><><><><><>   Processing Market conflict at " << print()<<endl;
-  market_->process();
+	if(market_)
+	{
+		//  cout << "<><><><><><><><><><>   Processing Market conflict at " << print()<<endl;
+		market_->process();
+	}
 }
 
 
@@ -1369,12 +1783,12 @@ LocationEntity * LocationEntity::findAdjacientLocation( int x, int y)
 	if((x == 0)&&(y == 0))
 	 return 0; // coordinates (0,0) are illegal - means uninitialized values
 
-	for ( int i=0; i < locations.size();i++)
+	for ( int i=0; i < gameFacade->locations.size();i++)
    {
-    if(locations[i] ==0)
+    if(gameFacade->locations[i] ==0)
           continue;
-		if((locations[i]->getX() == x) && (locations[i]->getY() == y))
-		  return locations[i];
+		if((gameFacade->locations[i]->getX() == x) && (gameFacade->locations[i]->getY() == y))
+		  return gameFacade->locations[i];
 		}
 	return 0;
 
@@ -1416,8 +1830,12 @@ void LocationEntity::cleanResourses()
 
 STATUS LocationEntity::prepareData()
 {
-  preprocessData();
-  if(!isInitialized_ || (gameConfig.runMode == LOCATION_INITIALIZATION))
+	if(isUnknownEntity())
+	{
+		return OK;
+	}
+	preprocessData();
+  if(!isInitialized_ || (gameFacade->getGameConfig()->runMode == LOCATION_INITIALIZATION))
   {
 
         generateResourses();
@@ -1433,7 +1851,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_,y_ + 2);
       if(dest && !findExit(dest) ) // Destination exists but exit to it not defined yet
       {
-	dir = directions["N"];
+	dir = gameFacade->directions["N"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1441,7 +1859,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_,y_ - 2);
       if(dest && !findExit(dest) )
       {
-	dir = directions["S"];
+	dir = gameFacade->directions["S"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1449,7 +1867,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_+1 ,y_+1);
       if(dest && !findExit(dest) )
       {
-	dir = directions["NE"];
+	dir = gameFacade->directions["NE"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1457,7 +1875,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_+1,y_-1);
       if(dest && !findExit(dest) )
       {
-	dir = directions["SE"];
+	dir = gameFacade->directions["SE"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1465,7 +1883,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_-1,y_+1);
       if(dest && !findExit(dest) )
       {
-	dir = directions["NW"];
+	dir = gameFacade->directions["NW"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1473,7 +1891,7 @@ STATUS LocationEntity::prepareData()
       dest = findAdjacientLocation(x_-1,y_-1);
       if(dest && !findExit(dest) )
       {
-	dir = directions["SW"];
+	dir = gameFacade->directions["SW"];
 	newExit = new BasicExit(this,dir,dest);
 	exits_.push_back (newExit);
       }
@@ -1623,6 +2041,22 @@ void LocationEntity::deleteTitle(TitleRule * titleType)
 TitleElement * LocationEntity::findTitle(TitleRule * titleType)
 {
 		return titles_.findTitle(titleType);
+}
+
+
+void LocationEntity::addNeighbours(FactionEntity * target)
+{
+  for(ExitIterator iter= exits_.begin(); iter != exits_.end(); iter++)
+  {
+     target->addDiscoveredLocation((*iter)->getDestination());
+  }
+}
+void LocationEntity::addNeighbours(TurnReport * report)
+{
+  for(ExitIterator iter= exits_.begin(); iter != exits_.end(); iter++)
+  {
+	  report->addDiscoveredLocation((*iter)->getDestination());
+  }
 }
 //========================================================================
 //            PathFinding
@@ -1990,7 +2424,7 @@ void LocationEntity::dailyUpdate()
 	{
 		if( (getLegalOwner() != 0) && (getLegalOwner() == getRealOwner()))
 		{
-	 		int taxes = getTaxes()/gameConfig.daysInMonth;
+	 		int taxes = getTaxes()/gameFacade->getGameConfig()->daysInMonth;
 	 		if(taxes)
 	 		{
 //	   		getTitleLocation()->addLocalItem(cash, taxes);
@@ -2078,8 +2512,13 @@ SeasonRule * LocationEntity::getSeason() const
 // May be location-specific
 SeasonRule * LocationEntity::determineSeason()
 {
- int index = (gameConfig.turn + 1)%4;
- return seasons[index];
+ int index = (gameFacade->getGameTurn() + 1)%4;
+ if(gameFacade->seasons.size()<index || index < 0)
+ {
+     cout<< "Season index "<<index<<" "<<gameFacade->seasons.size()<<" seasons"<<endl;
+     return 0;
+ }
+ return gameFacade->seasons[index];
 }
 
 int LocationEntity::getMovementBonus(MovementVariety * mode)
@@ -2141,4 +2580,132 @@ EffectEntity * LocationEntity::findEffect(EffectRule * rule)
         }
     }
      return 0;
+}
+
+void LocationEntity::extractAndAddKnowledge(FactionEntity * recipient, int parameter)
+{
+//    if(recipient==factions["f08"])
+//    {
+//        cout<<"<======== Extracting Location "<<getTag()<<endl;
+//    }
+    recipient->addKnowledge(getTerrain());
+
+    recipient->addKnowledge(getWeather());
+
+    //visible resources
+    for (ResourceElementIterator iter = this->resources_.begin();
+            iter != this->resources_.end(); iter++)
+    {
+        bool canProspect = false;
+        if ((*iter)->getResource()->getProspectSkill())
+        {// Resource requires prospecting skill:
+            //cout <<"Prospecting for "<< (*iter)->getResource()->print()<<" in " <<print()<<endl;
+            for (TokenIterator tokenIter = this->visitors_.begin();
+                    tokenIter != this->visitors_.end(); ++tokenIter)
+            {// Checking all visitors:
+                if ((*tokenIter)->getFaction() != recipient)
+                {// Not from this faction
+                    continue;
+                }
+                if ((*tokenIter)->canProspect(*iter))
+                {// Somebody who can prospect found
+                    canProspect = true;
+                    // cout <<(*tokenIter)->print()<< " can prospect "<<endl;
+                    break;
+                }
+            }
+
+            if (canProspect) // Nobody who can prospect was found
+            {
+                continue;
+            }
+
+        } else // No need in prospect or proper prospector found
+        {
+
+            recipient->addKnowledge((*iter)->getResource());
+        }
+
+    }
+    // items on market
+    if(market_)
+    {
+    market_->extractAndAddKnowledge(recipient,parameter);
+    }
+
+    recipient->addKnowledge(getRace());
+    
+  for (ItemElementIterator iter  = localItems_.begin(); iter != localItems_.end(); ++iter)
+    {
+        recipient->addKnowledge((*iter).getItemType());
+    }
+    // teaching offers
+    for(vector <SkillLevelElement *>::iterator iter = skillTeaching_.begin(); iter != skillTeaching_.end();++iter)
+    {
+        recipient->addSkillKnowledge((*iter)->getSkill(),(*iter)->getLevel());
+    }
+
+     vector <SkillLevelElement *>  skillTeaching_;
+    // titles
+     for( TitleIterator iter = titles_.getAll()->begin(); iter != titles_.getAll()->end(); ++iter)
+     {
+        recipient->addKnowledge((*iter)->getTitle());
+
+    }
+
+    recipient->addKnowledge(getSeason());
+     
+
+}
+
+//void LocationEntity::extractSkillKnowledge(Entity * recipient, int parameter)
+//{
+//
+//}
+
+
+void LocationEntity::checkInnerLocations()
+{
+  string dirName, relatedExitName;
+  for(auto iter = exits_.begin(); iter != exits_.end(); ++iter)
+    {
+      dirName = (*iter)->getDirection()->getTag();
+      LocationEntity * dest = (*iter)->getDestination();
+      BasicExit * relatedExit = dest->findExit(this);
+      if(relatedExit)
+        {
+          relatedExitName = relatedExit->getDirection()->getTag();
+        }
+      else
+        {
+          relatedExitName="";
+        }
+      if((dirName == "OUT")||(relatedExitName =="IN")) //  this is inner loc of dest
+        {
+          if(outerLocation_ ==0)
+            {
+            cout<<"<===Loc=== "<<print()<<" is inner location of "<<dest->print()<<endl;
+            }
+          outerLocation_ = dest;
+          dest->innerLocations_[this->getTag()]= this;
+          continue;
+        }
+      if((dirName == "IN")||(relatedExitName =="OUT")) // dest is inner loc of this
+        {
+          if(dest->outerLocation_ ==0)
+            {
+              cout<<"<===Loc==||= "<<dest->print()<<" is inner location of "<<print()<<endl;
+            }
+         dest->outerLocation_ = this;
+          innerLocations_[dest->getTag()] = dest;
+         continue;
+
+        }
+   // Add filter for multiple exits with the same destination
+    }
+
+
+//      ||(dirName == "UP")  ||(dirName == "DOWN")
+//      ||(dirName == "PORT")||(dirName == "PORTAL"))
+
 }

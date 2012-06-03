@@ -47,9 +47,46 @@ STATUS
 BasicProductionStrategy::initialize        ( Parser *parser )
 {
 	BasicUsingStrategy::initialize (parser);
+  if (parser->matchKeyword ("CONSUME") )
+    {
+			if(parser->matchElement())
+			  resources_.push_back(new ItemElement(parser));
+      return OK;
+    }
+
+  if (parser->matchKeyword ("MULTIPLE") )
+    {
+      productNumber_ =  parser->getInteger();
+      if(productNumber_ == 0)
+        productNumber_ = 1;
+      return OK;
+    }
+  if (parser->matchKeyword ("TOOL") )
+  {
+      ToolUseElement * tool = ToolUseElement::readElement (parser);
+      if( tool)
+        tools_.push_back(tool);
+      return OK;
+    }
 			return OK;
 }
 
+void BasicProductionStrategy::save(ostream &out)
+{
+  for(vector <ItemElement *>::iterator iter = resources_.begin(); iter != resources_.end(); ++iter)
+    {
+        out<<"CONSUME"<<" ";
+        (*iter)->save(out);
+    }
+    if(productNumber_) out<<"MULTIPLE"<<" "<<productNumber_<<endl;
+   for(vector <ToolUseElement *>::iterator iter = tools_.begin();
+          iter != tools_.end(); ++iter)
+    {
+        out<<"TOOL"<<" ";
+        (*iter)->save(out);
+    }
+
+}
 
 
 

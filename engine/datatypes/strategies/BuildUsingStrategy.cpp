@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "BuildUsingStrategy.h"
+#include "GameFacade.h"
 #include "ItemRule.h"
 #include "UnitEntity.h"
 #include "LocationEntity.h"
@@ -24,9 +25,8 @@
 #include "BinaryMessage.h"
 #include "StringData.h"
 
-extern VarietiesCollection   <ConstructionWorksVariety>  construction_works;
-extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
-extern RulesCollection <ConstructionRule>      constructions;
+
+
 extern ReportPattern * newBuidingStartedReporter;
 extern ReportPattern * buidingFinishedReporter;
 extern ReportPattern * constructionWorksCompletedReporter;
@@ -52,9 +52,11 @@ BuildUsingStrategy::BuildUsingStrategy ( const BuildUsingStrategy * prototype ):
 STATUS
 BuildUsingStrategy::initialize        ( Parser *parser )
 {
-  if (parser->matchKeyword ("PRODUCES") )
+     BasicProductionStrategy::initialize(parser);
+
+     if (parser->matchKeyword ("PRODUCES") )
     {
-      constructionWorkProduced_ = construction_works[parser->getWord()];
+      constructionWorkProduced_ = gameFacade->construction_works[parser->getWord()];
       productionDays_ =  parser->getInteger();
       if( (constructionWorkProduced_ == 0) ||  (productionDays_ == 0) )
       {
@@ -64,36 +66,17 @@ BuildUsingStrategy::initialize        ( Parser *parser )
       return OK;
     }
 
-
-
-  if (parser->matchKeyword ("CONSUME") )
-    {
-			if(parser->matchElement())
-			  resources_.push_back(new ItemElement(parser));
-      return OK;
-    }
-
-
-  if (parser->matchKeyword ("MULTIPLE") )
-    {
-      productNumber_ =  parser->getInteger();
-      if(productNumber_ == 0)
-        productNumber_ = 1;
-      return OK;
-    }
-
-
-  if (parser->matchKeyword ("TOOL") )
-  {
-      ToolUseElement * tool = ToolUseElement::readElement (parser);
-      if( tool)
-        tools_.push_back(tool);
-      return OK;
-    }
       return OK;
 }
 
 
+void BuildUsingStrategy::save(ostream &out)
+{
+     BasicProductionStrategy::save(out);
+    if(constructionWorkProduced_) out<<"PRODUCES"<<" "<<constructionWorkProduced_->getTag()
+            <<" "<<productionDays_ << endl;
+
+}
 
 
 

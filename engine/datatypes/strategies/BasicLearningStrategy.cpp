@@ -69,6 +69,24 @@ BasicLearningStrategy::initialize        ( Parser *parser )
 
 
 
+void BasicLearningStrategy::save(ostream &out)
+{
+    if(special_) out<< "SPECIALIST"<<endl;
+    if(bonusItem_)
+    {
+        out<< "WISDOM"<<" ";
+        bonusItem_->save(out);
+    }
+    if(itemRequired_)
+    {
+        out<< "ENABLE"<<" ";
+        itemRequired_->save(out);
+    }
+
+    if(racialClass_) out<< "STUDENT"<<" "<<racialClass_->getKeyword() << endl;
+}
+
+
 bool BasicLearningStrategy::teacherRequired(Entity * entity, SkillRule * skill)
 {
   if( special_ )
@@ -106,9 +124,9 @@ LEARNING_RESULT BasicLearningStrategy::mayStudy(TokenEntity * tokenEntity, Skill
           return ITEM_REQUIRED_FAILURE;
 
    }
-
+// Meet requirement to learn NEXT level?
   SkillLevelElement * requirement =
-			 skill->getRequirement(tokenEntity->getSkillLevel(skill));
+			 skill->getRequirement(tokenEntity->getSkillLevel(skill) +1);
   if(requirement)
     {
       if ( ! tokenEntity->hasSkill(requirement))
@@ -128,21 +146,21 @@ if(tokenEntity->isTraced())
 }
   if(skill->isElementalMagicSkill())
 {
-  int magecraftLevel = tokenEntity->getSkillLevel(skills["mage"]);
+  int magecraftLevel = tokenEntity->getSkillLevel(gameFacade->skills["mage"]);
   int elementalSkillKnown = 0;
-  int fireLevel = tokenEntity->getSkillLevel(skills["fire"]);
+  int fireLevel = tokenEntity->getSkillLevel(gameFacade->skills["fire"]);
   if(fireLevel >= 1)
     elementalSkillKnown++;
-  int airLevel = tokenEntity->getSkillLevel(skills["airs"]);
+  int airLevel = tokenEntity->getSkillLevel(gameFacade->skills["airs"]);
   if( airLevel >= 1)
     elementalSkillKnown++;
-  int waterLevel = tokenEntity->getSkillLevel(skills["wate"]);
+  int waterLevel = tokenEntity->getSkillLevel(gameFacade->skills["wate"]);
   if( waterLevel >= 1)
     elementalSkillKnown++;
-  int earthLevel = tokenEntity->getSkillLevel(skills["eart"]);
+  int earthLevel = tokenEntity->getSkillLevel(gameFacade->skills["eart"]);
   if( earthLevel >= 1)
     elementalSkillKnown++;
-  int voidLevel = tokenEntity->getSkillLevel(skills["void"]);
+  int voidLevel = tokenEntity->getSkillLevel(gameFacade->skills["void"]);
   if( voidLevel >= 1)
     elementalSkillKnown++;
   

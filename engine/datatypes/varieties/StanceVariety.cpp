@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "StanceVariety.h"
 StanceVariety    sampleStance    ("STANCE",   &sampleGameData);
-VarietiesCollection <StanceVariety>    stances(new DataStorageHandler("stances.var"));
+//VarietiesCollection <StanceVariety>    stances(new DataStorageHandler("stances.var"));
 
 //StanceVariety * findStanceByTag(const string &tag)
 //{
@@ -15,11 +15,13 @@ VarietiesCollection <StanceVariety>    stances(new DataStorageHandler("stances.v
 //}
 
 
+StanceVariety *  privateStance;
 StanceVariety *  alliedStance;
 StanceVariety *  friendlyStance;
 StanceVariety *  neutralStance;
 StanceVariety *  hostileStance;
 StanceVariety *  enemyStance;
+StanceVariety *  unknownStance;
 
 GameData * StanceVariety::createInstanceOfSelf()
 {

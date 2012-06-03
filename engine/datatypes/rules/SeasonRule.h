@@ -15,7 +15,7 @@
 #include "RulesCollection.h"
 #include "DataStorageHandler.h"
 #include "SkillBonusComboAttribute.h"
-
+#include "WeatherElement.h"
 
 
 class SkillRule;
@@ -29,6 +29,7 @@ class  SeasonRule : public Rule
       SeasonRule ( const SeasonRule * prototype );
       ~SeasonRule (){}
       virtual STATUS     initialize      ( Parser *parser);
+      virtual void save(ostream &out);
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();
@@ -40,10 +41,11 @@ class  SeasonRule : public Rule
 
     private:
 		vector <WeatherElement *> weatherProbabilities_;
+		vector <WeatherElement> weather_;
 		int totalProbabilityScore_;
 		SkillBonusComboAttribute skillBonuses_;
 };
 
 extern SeasonRule    sampleSeason;
-extern RulesCollection <SeasonRule>   seasons;
+//extern RulesCollection <SeasonRule>   seasons;
 #endif

@@ -28,9 +28,12 @@ class RaceRule;
 class SkillRule : public Rule  {
 public:
 
-			SkillRule ( const string & keyword, GameData * parent) : Rule(keyword, parent) {}
+      SkillRule ( const string & keyword, GameData * parent) : Rule(keyword, parent) {}
       SkillRule ( const SkillRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
+      virtual STATUS initializeLevel     ( Parser *parser, int level );
+      virtual void save(ostream &out);
+      void saveLevel(ostream &out, int level, bool isExtended = false);
       GameData * createInstanceOfSelf();
       STATUS dataConsistencyCheck();
       void postInit();
@@ -40,6 +43,7 @@ public:
 						{ description_[currentLevel_] = description;}
       void printSkillDescription(int level, ostream & out);
       //vector <AbstractData *> aPrintSkill(int level);
+      vector <AbstractData *>  aPrint(int level=0);
       SkillElement * getMax();
       LEARNING_RESULT mayBeStudied(TokenEntity * unit);
       USING_RESULT     mayBeUsedBy(TokenEntity * unit);
@@ -58,6 +62,7 @@ public:
           int  calculateUsingExperience(TokenEntity * unit);
   /** No descriptions */
           int  getLevelExperience(int level) const;
+          void setExpForLevel(int level, int exp);
    inline EntityStatistics * getStats(int level)  {return &(stats_[level]);}
           void       getDerivatives (vector <SkillLevelElement *> & derivatives, int level);
           void printLevel(int level, ostream & out);
@@ -84,6 +89,9 @@ public:
          int getLearningBonus(SkillRule * skill);
           bool isRacialEnabled(RaceRule * race);
           inline bool isBasicSkill(){return isBasic_;}
+              void initLevel(int level){initLevel_(level);}
+              
+          inline GameData * getTargetType(){return targetType_;}
     protected:
 		SkillBonusComboAttribute  * skillBonuses_;// implemented as pointer
 		                                          // to avoid type definition loop
@@ -119,6 +127,6 @@ public:
     private:
 };
 extern SkillRule      sampleSkill;
-extern RulesCollection <SkillRule>     skills;
+//extern RulesCollection <SkillRule>     skills;
 
 #endif

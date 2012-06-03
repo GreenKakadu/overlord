@@ -36,11 +36,13 @@ friend  ostream &operator << ( ostream &out, StanceVariety * stance);
     private:
 };
 extern StanceVariety     sampleStance;
+extern StanceVariety *  privateStance;
 extern StanceVariety *  alliedStance;
 extern StanceVariety *  friendlyStance;
 extern StanceVariety *  neutralStance;
+extern StanceVariety *  unknownStance;
 extern StanceVariety *  hostileStance;
 extern StanceVariety *  enemyStance;
-extern VarietiesCollection <StanceVariety>    stances;
+//extern VarietiesCollection <StanceVariety>    stances;
 extern StanceVariety    sampleStance;
 #endif

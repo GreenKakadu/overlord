@@ -37,6 +37,7 @@ public:
 		  virtual ~BasicProductionStrategy(){};
       virtual GameData * createInstanceOfSelf();
       virtual STATUS initialize        ( Parser *parser );
+      virtual void save(ostream &out);
       virtual USING_RESULT unitMayUse(UnitEntity * unit, SkillRule * skill);
       virtual USING_RESULT produce(UnitEntity * unit, SkillRule * skill,
 		 int & useRestrictionCounter, int & effectiveProduction,OrderLine * order, bool & newCycle);
