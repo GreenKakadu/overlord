@@ -12,6 +12,8 @@
 #include "Element.h"
 #include "ItemRule.h"
 #include "RationalNumber.h"
+#include "IntegerData.h"
+#include "StringData.h"
 class Parser;
 using namespace std;
 
@@ -39,6 +41,28 @@ public:
       return longtostr(parameter1_) + " " + rule_->print();
   }
 
+   vector <AbstractData *> aPrint()
+   {
+       //cout<<print()<<endl;
+     vector <AbstractData *> out;
+     if (rule_ == 0)
+     {
+         return out;
+     }
+//     if( parameter1_ > 1)
+//     {
+        out.push_back(new IntegerData(parameter1_));
+        out.push_back(new StringData(" "));
+        out.push_back(this);
+        return out;
+//     }
+//     else
+//     {
+//     }
+
+  }
+
+
    inline ItemRule *   getResource()      const     {return rule_;}
    inline int          getResourceAmount()         {return parameter1_;}
    inline void         setResourceAmount(int value)     { parameter1_ = value;}
@@ -49,12 +73,12 @@ public:
   /** Checks if it is possible to read Resource Element from the input parser */
   static ResourceElement read(Parser * parser)
     {
-	    return ResourceElement ( items[parser->getWord()], parser->getInteger() );
+	    return ResourceElement ( gameFacade->items[parser->getWord()], parser->getInteger() );
     }
 
   static ResourceElement * readElement(Parser * parser)
     {
-        ItemRule * item = items[parser->getWord()];
+        ItemRule * item = gameFacade->items[parser->getWord()];
         int number = parser->getInteger();
         if( item == 0  )
           return 0;
@@ -71,7 +95,7 @@ public:
     }
   static ResourceElement * readStoredElement(Parser * parser)
     {
-        ItemRule * item = items[parser->getWord()];
+        ItemRule * item = gameFacade->items[parser->getWord()];
         int number = parser->getInteger();
         if( item == 0  )
           return 0;

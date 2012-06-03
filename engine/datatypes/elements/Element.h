@@ -22,6 +22,7 @@ public:
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
    static void   operator delete(void * deadObject, size_t size);
+   AbstractData * createAbstractInstance();
    inline Element2<R,P> *   getNext()      const  {return next;}
    inline R *   getRule()      const  {return rule_;}
    inline P     getParameter1() const  {return parameter1_;}
@@ -38,6 +39,8 @@ public:
  */
    virtual void save(ostream & out)
     {out << rule_->getTag() << " " <<  parameter1_   << endl;}
+ virtual void save(ostream & out,string prefix)
+    {out <<prefix<< rule_->getTag() << " " <<  parameter1_   << endl;}
 	static Element2<R,P>  * headOfFreeList;
   /**  */
 protected:
@@ -72,10 +75,15 @@ template <class R, class P> void * Element2<R,P>::operator new (size_t size)
 		}	
 	return p;
 }
+
+
+
 template <class R, class P> void * Element2<R,P>::operator new(size_t, void * element)
 {
  return  element;
 }
+
+
 template <class R, class P> void  Element2<R,P>::operator delete (void * deadObject, size_t size)
 {
  if(deadObject == 0) return;
@@ -90,6 +98,10 @@ template <class R, class P> void  Element2<R,P>::operator delete (void * deadObj
 }
 //   inline ostream& operator << (ostream& out, Element2 <R,P> & data)
 //                                { out<<data.print(); return out;}
+template <class R, class P> AbstractData * Element2<R,P>::createAbstractInstance()
+{
+    return new Element2<R,P>(0,0);
+}
 
 
  
@@ -101,6 +113,7 @@ public:
    static void * operator new(size_t size);
    static void * operator new(size_t, void * element);  // Placement form of new
    static void   operator delete(void * deadObject, size_t size);
+     AbstractData * createAbstractInstance();
    inline Element3<R,P1,P2> *   getNext()      const  {return next;}
    
    inline R *   getRule()      const  {return rule_;}
@@ -121,6 +134,10 @@ public:
    virtual void save(ostream & out)
    {
       out << rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
+   }
+   virtual void save(ostream & out, string prefix)
+   {
+      out <<prefix<< rule_->getTag() << " " <<  parameter1_ << " " << parameter2_  << endl;
    }
 	static Element3<R,P1,P2>  * headOfFreeList;
   /**  */
@@ -172,6 +189,13 @@ template <class R, class P1, class P2> void  Element3<R,P1,P2>::operator delete 
 	Element3<R,P1,P2>  * p = static_cast<Element3<R,P1,P2>  *> (deadObject);
 	p->next = Element3<R,P1,P2> ::headOfFreeList;
 	Element3<R,P1,P2> ::headOfFreeList = p;
+}
+
+
+
+template <class R, class P1, class P2>  AbstractData * Element3<R,P1,P2>::createAbstractInstance()
+{
+    return new Element3<R,P1,P2>(0,0,0);
 }
 
 #endif

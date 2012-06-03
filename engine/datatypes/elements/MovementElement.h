@@ -55,7 +55,7 @@ friend  ostream &operator << ( ostream &out, MovementElement element)
   if(modeTag.empty())
     return MovementElement (0,0,0);
 
-  movementMode = movementModes[modeTag]; 
+  movementMode = gameFacade->movementModes[modeTag];
   if(movementMode == 0)
     return MovementElement (0,0,0);
   else

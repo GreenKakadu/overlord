@@ -73,6 +73,23 @@ vector <AbstractData *> aPrint()
   v.push_back(getRule());
   return v;
 }
+vector <AbstractData *> aPrintEnchant()
+{
+
+    vector <AbstractData *> v;
+    v.push_back(new IntegerData(getParameter1()));
+    if(parameter1_ > 1)
+    {
+        v.push_back(new StringData(" days of "));
+    }
+    else
+    {
+        v.push_back(new StringData(" day of "));
+    }
+    v.push_back(getRule());
+    //v.push_back(this);
+    return v;
+}
 
 };
 // void * EnchantmentElement::operator new (size_t size)

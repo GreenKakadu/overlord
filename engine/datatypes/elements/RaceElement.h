@@ -18,7 +18,7 @@ typedef Element2<RaceRule, int > BasicRaceElement;
 class RaceElement : public  BasicRaceElement {
 public: 
 	RaceElement(RaceRule * rule, int num)  : BasicRaceElement (rule,num){}
-	RaceElement(Parser * parser) : BasicRaceElement (0,0) {rule_ = races[parser->getWord()] ;parameter1_ = parser->getInteger();}
+	RaceElement(Parser * parser) : BasicRaceElement (0,0) {rule_ = gameFacade->races[parser->getWord()] ;parameter1_ = parser->getInteger();}
 	 ~RaceElement(){}
    inline int getWeight()               const {return rule_->getWeight() * parameter1_;}
    inline int getCapacity(int moveMode) const {return rule_->getCapacity(moveMode) * parameter1_;}
@@ -39,6 +39,15 @@ string /*RaceElement::*/print()
       return longtostr(parameter1_)  + " " + rule_->print();
 }
 
+vector <AbstractData *>  aPrint()
+{
+    vector <AbstractData *> out;
+    if (rule_ == 0) return out;
+    out.push_back(new IntegerData(getParameter1()));
+    out.push_back(new StringData(" "));
+    out.push_back(this);
+    return out;
+}
 
 
 //void RaceElement::save(ostream & out)
@@ -53,7 +62,7 @@ string /*RaceElement::*/print()
  */
 static RaceElement  * /*RaceElement::*/readElement (Parser * parser)
 {
-  RaceRule * item = races[parser->getWord()];
+  RaceRule * item = gameFacade->races[parser->getWord()];
   int number = parser->getInteger();
   if( item == 0  )
           return 0;

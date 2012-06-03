@@ -21,9 +21,7 @@ class LocationEntity;
 class TitleRule;
 
 using namespace std;
-extern RulesCollection <TitleRule>     titles;
-extern EntitiesCollection <LocationEntity>     locations;
-extern EntitiesCollection <UnitEntity>     units;
+
 
 
 /**
@@ -44,6 +42,8 @@ public:
    inline bool isValidElement() const {return (( title_ != 0 ) && (location_ != 0));}
    void save(ostream & out);
    string print();
+   vector <AbstractData *> aPrint();
+   vector <AbstractData *> unitPrint();
    void produceReport(ostream & out);
    static TitleElement  * readElement (Parser * parser);
    bool contest(UnitEntity * contender);

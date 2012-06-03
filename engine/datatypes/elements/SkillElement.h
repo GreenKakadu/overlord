@@ -10,6 +10,9 @@
 #include <iostream>
 #include "Element.h"
 #include "SkillRule.h"
+#include "SkillLevelElement.h"
+#include "StringData.h"
+#include "IntegerData.h"
 #include "BasicLearningStrategy.h"
 
 using namespace std;
@@ -26,6 +29,18 @@ public:
     {rule_->printLevel(getLevel(),out); out  << " (" <<  parameter1_ /BasicLearningStrategy::getPointsPerDay() <<")";}
   void reportNextLevel(ostream & out)
     {rule_->printLevel(getLevel() +1 ,out);}
+
+  vector <AbstractData *> aPrintSkill()
+{
+//vector <AbstractData *> v = SkillLevelElement(rule_,getLevel()).aPrintLevel();
+vector <AbstractData *> v;
+v.push_back(new SkillLevelElement(rule_,getLevel()));
+v.push_back(new StringData(" ("));
+v.push_back(new IntegerData(getParameter1()/BasicLearningStrategy::getPointsPerDay()));
+v.push_back(new StringData(" days)"));
+return v;
+}
+
   string print()
   { 
     if(parameter1_ > 1)
@@ -49,7 +64,7 @@ public:
 //   inline void         setSkill(SkillRule * rule) { rule_ = rule;}
   static SkillElement  * readElement (Parser * parser)
       {
-        SkillRule * skill = skills[parser->getWord()];
+        SkillRule * skill = gameFacade->skills[parser->getWord()];
         int expPoints = parser->getInteger();
         if( skill == 0  )
           return 0;

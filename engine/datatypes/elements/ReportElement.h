@@ -21,7 +21,7 @@ typedef   Element3<ReportMessage , Entity* , int> BasicReportElement;
 
 class ReportElement : public  BasicReportElement  {
 public:
-	ReportElement(ReportMessage * pattern, Entity* destination, int time = currentDay)  : BasicReportElement (pattern,destination,time)
+	ReportElement(ReportMessage * pattern, Entity* destination, int time = gameFacade->getCurrentDay())  : BasicReportElement (pattern,destination,time)
 			{}
 	~ReportElement(){}
   void printReport(ReportPrinter &out) const

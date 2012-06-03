@@ -17,18 +17,18 @@
 
 
 using namespace std;
-typedef Element2<ItemRule, int > BasicItemElement;
+typedef Element2<ItemRule, long int > BasicItemElement;
 
-class ItemElement : public  Element2< class ItemRule,  int > {
+class ItemElement : public  Element2< class ItemRule,  long int > {
 public: 
-	ItemElement(ItemRule * rule, int num)  : BasicItemElement (rule,num){}
-	ItemElement(Parser * parser) : BasicItemElement (0,0) {rule_ = items[parser->getWord()] ;parameter1_ = parser->getInteger();}
+	ItemElement(ItemRule * rule, long int num)  : BasicItemElement (rule,num){}
+	ItemElement(Parser * parser) : BasicItemElement (0,0) {rule_ = gameFacade->items[parser->getWord()] ;parameter1_ = parser->getLongInteger();}
 	 ~ItemElement(){}
 
    inline int getWeight() const {return rule_->getWeight() * parameter1_;}
    inline ItemRule *   getItemType()      const     {return rule_;}
    inline int          getItemNumber()    const     {return parameter1_;}
-   inline void         setItemNumber(int value)     { parameter1_ = value;}
+   inline void         setItemNumber(long int value)     { parameter1_ = value;}
    inline void         setItemType(ItemRule * rule) { rule_ = rule;}
    inline bool isValidElement() const {return (rule_ != 0 && parameter1_ != 0);}
 /*
@@ -65,7 +65,7 @@ string print()
   vector <AbstractData *> v; 
   v.push_back(new IntegerData(getParameter1())); 
   v.push_back(new StringData(" "));
-  v.push_back(getRule()); 
+  v.push_back(this);
   return v;
 }    
    
@@ -74,8 +74,8 @@ string print()
  */
 static ItemElement  * readElement (Parser * parser)
 {
-  ItemRule * item = items[parser->getWord()];
-  int number = parser->getInteger();
+  ItemRule * item = gameFacade->items[parser->getWord()];
+  long int number = parser->getLongInteger();
   if( (item == 0) || (number == 0))
           return 0;  
   else
@@ -83,8 +83,8 @@ static ItemElement  * readElement (Parser * parser)
 }
 static ItemElement readItemElement(Parser * parser)
 {
-  ItemRule * item = items[parser->getWord()];
-  int number = parser->getInteger();
+  ItemRule * item = gameFacade->items[parser->getWord()];
+  long int number = parser->getLongInteger();
   if( (item == 0) || (number == 0))
           return 0;  
   else

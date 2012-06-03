@@ -9,6 +9,8 @@
 #define SKILL_LEVEL_ELEMENT_H
 #include <iostream>
 #include "Element.h"
+#include "IntegerData.h"
+#include "StringData.h"
 #include "SkillRule.h"
 
 using namespace std;
@@ -47,8 +49,33 @@ void printNextLevel(ostream & out)
 //	return out;
 //}
 
-
-
+vector <AbstractData *> aPrintLevel()
+{
+    vector <AbstractData *> out;
+    if(parameter1_ >0)
+    {
+    out.push_back(new IntegerData(parameter1_));
+    }
+    switch (parameter1_)
+    {
+      case 0:
+       out.push_back(new StringData("novice "));
+       break;
+      case 1:
+       out.push_back(new StringData("st "));
+       break;
+      case 2:
+       out.push_back(new StringData("nd "));
+       break;
+      case 3:
+       out.push_back(new StringData("rd "));
+       break;
+      default:
+       out.push_back(new StringData("th "));
+      }
+    out.push_back(rule_);
+    return out;
+}
 inline bool skillEqual ( SkillLevelElement * skill1, SkillLevelElement * skill2)
 {
   return( skill1->getSkill() == skill2->getSkill() && skill1->getLevel() == skill2->getLevel());
@@ -84,7 +111,7 @@ static SkillLevelElement  * readElement (Parser * parser)
         string skillTag = parser->matchWord();
         if (skillTag.empty())
             return 0;
-        SkillRule * skill = skills[skillTag];
+        SkillRule * skill = gameFacade->skills[skillTag];
         if( skill == 0  )
           return 0;
         else
@@ -95,6 +122,13 @@ static SkillLevelElement  * readElement (Parser * parser)
           else
             level = 1;
         return new SkillLevelElement(skill, level);
+}
+
+void saveLevelElement (ostream & out)
+{
+    out<<"SKILL_ELEMENT "<<getSkill()->getTag()<<" "<<getLevel()<<endl;
+    getSkill()->saveLevel(out, getLevel(),true);
+    out<<endl;
 }
 
 };

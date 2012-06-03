@@ -29,6 +29,7 @@ public:
   inline bool isValidElement() const {return ( movementMode_ != 0 ) ;}
   void save(ostream & out);
   string print();
+  vector <AbstractData *> aPrintBonus();
   static MovementBonusElement   readElement (Parser * parser);
 
 	protected:

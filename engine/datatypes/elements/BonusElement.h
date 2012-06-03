@@ -10,6 +10,7 @@
 #include "Element.h"
 //#include "SkillElement.h"
 #include "SkillRule.h"
+#include "StringData.h"
 
 using namespace std;
 
@@ -39,9 +40,24 @@ public:
         return string (1,'-') + longtostr(100 - parameter1_)  + "% to " + rule_->getName();
     }
 
+    vector <AbstractData *> aPrint()
+   {
+     vector <AbstractData *> v;
+     if( parameter1_ >= 0)
+     {
+         v.push_back(new StringData(" +"+ longtostr(parameter1_)  + "% to "));
+   }
+     else
+     {
+         v.push_back(new StringData(" "+longtostr(parameter1_)  + "% to "));
+   }
+     v.push_back(rule_);
+     return v;
+   }
+
   static BonusElement  * readElement (Parser * parser)
       {
-        SkillRule * skill = skills[parser->getWord()];
+        SkillRule * skill = gameFacade->skills[parser->getWord()];
         int bonusPoints = parser->getInteger();
         if(( skill == 0 ) || (bonusPoints == 0) )
           return 0;

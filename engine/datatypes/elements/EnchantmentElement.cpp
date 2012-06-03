@@ -13,13 +13,14 @@
  *                                                                                            *
  ***************************************************************************/
 #include <stdlib.h>
+#include "GameFacade.h"
 #include "EnchantmentElement.h"
 #include "EnchantmentRule.h"
 
 
 EnchantmentElement  * EnchantmentElement::readElement (Parser * parser)
 {
-  EnchantmentRule * enchantment = enchantments[parser->getWord()];
+  EnchantmentRule * enchantment = gameFacade->enchantments[parser->getWord()];
   int number = parser->getInteger();
   if( (enchantment == 0) || (number == 0))
           return 0;

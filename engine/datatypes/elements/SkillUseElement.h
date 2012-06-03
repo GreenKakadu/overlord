@@ -24,6 +24,8 @@
 #include <string>
 #include "Element.h"
 #include "SkillRule.h"
+#include "IntegerData.h"
+#include "StringData.h"
 
 using namespace std;
 typedef Element3<SkillRule, RationalNumber , int> BasicSkillUseElement;
@@ -51,11 +53,20 @@ public:
     if (rule_ == 0) return "";
       return parameter1_.print() + " days of using " + rule_->print();
   }
-
+ vector <AbstractData *> aPrintSkillUse()
+ {
+ vector <AbstractData *> v;// = SkillLevelElement(rule_,getLevel()).aPrintLevel();
+ //v.push_back(new StringData(" ("));
+ v.push_back(new RationalNumber(getParameter1()));
+ v.push_back(new StringData(" days of using "));
+  v.push_back(getSkillUsed());
+  v.push_back(new StringData("."));
+ return v;
+ }
 
   static SkillUseElement  * readElement (Parser * parser)
       {
-        SkillRule * skill = skills[parser->getWord()];
+        SkillRule * skill = gameFacade->skills[parser->getWord()];
         RationalNumber effectiveSkillDays = parser->getRationalNumber();
         int duration = parser->getInteger();
         if( skill == 0  )

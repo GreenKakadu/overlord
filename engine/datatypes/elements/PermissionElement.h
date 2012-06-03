@@ -10,6 +10,7 @@ Permission on some sort of activity for factions with stances at least as good a
 #define PERMISSION_ELEMENT_H
 #include <iostream>
 #include <string>
+#include "GameFacade.h"
 #include "Element.h"
 #include "Rule.h"
 #include "StanceVariety.h"
@@ -45,10 +46,10 @@ void save(ostream & out)
  */
 static PermissionElement  * readElement (Parser * parser)
 {
-  Rule * rule = ruleIndex.findRule(parser->getWord());
+  Rule * rule = gameFacade->ruleIndex.findRule(parser->getWord());
   if( rule == 0  )
           return 0;
-  StanceVariety * stance  = stances[parser->getWord()]; 
+  StanceVariety * stance  = gameFacade->stances[parser->getWord()];
   if( stance == 0  )
           return 0;
   else

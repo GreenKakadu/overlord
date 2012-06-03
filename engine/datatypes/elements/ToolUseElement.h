@@ -32,7 +32,7 @@ public:
    inline void         setItemType(ItemRule * rule) { rule_ = rule;}
   static ToolUseElement  * readElement (Parser * parser)
       {
-        ItemRule * item = items[parser->getWord()];
+        ItemRule * item = gameFacade->items[parser->getWord()];
         int number = parser->getInteger();
         if( item == 0  )
           return 0;

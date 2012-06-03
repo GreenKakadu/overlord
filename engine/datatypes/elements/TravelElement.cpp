@@ -6,13 +6,12 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "TravelElement.h"
+#include "GameFacade.h"
 #include "misc/LineParser.h"
 #include "entities/LocationEntity.h"
 #include "varieties/MovementVariety.h"
 #include "collections/EntitiesCollection.h"
 #include "collections/VarietiesCollection.h"
-extern EntitiesCollection <LocationEntity> locations;
-extern VarietiesCollection <MovementVariety> movementModes;
 
 TravelElement::TravelElement(MovementVariety *    movingMode,
                   LocationEntity * origin,
@@ -36,14 +35,14 @@ TravelElement::~TravelElement(){
 
 TravelElement *    TravelElement::readElement( Parser *parser)
 {
-  MovementVariety *    movingMode = movementModes[parser->getWord()];
+  MovementVariety *    movingMode = gameFacade->movementModes[parser->getWord()];
   if(movingMode == 0)
       return 0;
-  LocationEntity * origin = locations[parser->getWord()];
+  LocationEntity * origin = gameFacade->locations[parser->getWord()];
  if(origin == 0)
       return 0;
 
-  LocationEntity * destination = locations[parser->getWord()];
+  LocationEntity * destination = gameFacade->locations[parser->getWord()];
  if(destination == 0)
       return 0;
   int time = parser->getInteger();
@@ -125,9 +124,9 @@ bool TravelElement::isArrived()
 int  TravelElement::getModeIndex() const
 {
     int i;
-    for( i = 0; i< movementModes.size();i++)
+    for( i = 0; i< gameFacade->movementModes.size();i++)
     {
-       if(movementModes[i] == movingMode_)
+       if(gameFacade->movementModes[i] == movingMode_)
         return i;
       }
       return -1;

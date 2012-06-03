@@ -17,6 +17,7 @@
 #include "Element.h"
 #include "ConstructionWorksVariety.h"
 #include "RationalNumber.h"
+#include "GameFacade.h"
 
 using namespace std;
 
@@ -49,7 +50,7 @@ public:
 
   static ConstructionWorksElement  * readElement (Parser * parser)
       {
-        ConstructionWorksVariety * works = construction_works[parser->getWord()];
+        ConstructionWorksVariety * works = gameFacade->construction_works[parser->getWord()];
         RationalNumber amount = parser->getRationalNumber();
         if(( works == 0 ) || (parser->status != OK) )
           return 0;

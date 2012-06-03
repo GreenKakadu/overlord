@@ -51,10 +51,10 @@ void save(ostream & out)
  */
 static FactionPermissionElement  * readElement (Parser * parser)
 {
-  Rule * rule = ruleIndex.findRule(parser->getWord());
+  Rule * rule = gameFacade->ruleIndex.findRule(parser->getWord());
   if( rule == 0  )
           return 0;
-  FactionEntity * faction  = factions[parser->getWord()]; 
+  FactionEntity * faction  = gameFacade->factions[parser->getWord()];
   if( faction == 0  )
           return 0;
   int permission = parser->getInteger();       

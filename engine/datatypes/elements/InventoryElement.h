@@ -12,6 +12,8 @@
 #include "Element.h"
 #include "ItemRule.h"
 #include "RationalNumber.h"
+#include "IntegerData.h"
+#include "StringData.h"
 class Parser;
 using namespace std;
 
@@ -66,7 +68,20 @@ public:
     else
       return parameter1_.print()  + " " + rule_->print();
    }
-
+vector <AbstractData *> aPrintItem()
+{
+ vector <AbstractData *> v;
+ v.push_back(new RationalNumber(getParameter1()));
+ v.push_back(new StringData(" "));
+ v.push_back(this);
+ if (parameter2_)
+ {
+      v.push_back(new StringData(" ("));
+      v.push_back(new IntegerData(getParameter2()));
+      v.push_back(new StringData(" equiped)"));
+ }
+ return v;
+}
 	
 /*
  * Checks if it is possible to read Inventory Element from the input parser
@@ -74,22 +89,21 @@ public:
  
   static InventoryElement  * readElement (Parser * parser)
       {
-        ItemRule * item = items[parser->getWord()];
+        ItemRule * item = gameFacade->items[parser->getWord()];
         int number = parser->getInteger();
         int equiped = parser->getInteger();
         if( (item == 0) || (number == 0))
           return 0;
         else
         return new InventoryElement(item, number,equiped);
-      }
+    }
 
-  InventoryElement read(Parser * parser)
-{
-	return InventoryElement (items[parser->getWord()],
-														parser->getRationalNumber(),
-														parser->getInteger()
-														);
-}
+    InventoryElement read(Parser * parser) {
+        return InventoryElement(gameFacade->items[parser->getWord()],
+                parser->getRationalNumber(),
+                parser->getInteger()
+                );
+    }
   protected:
 };
 typedef vector <InventoryElement *>::iterator InventoryElementIterator;

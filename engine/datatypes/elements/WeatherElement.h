@@ -40,7 +40,7 @@ public:
 
   static WeatherElement  * readElement (Parser * parser)
       {
-        WeatherRule * weather = weathers[parser->getWord()];
+        WeatherRule * weather = gameFacade->weathers[parser->getWord()];
         int probability = parser->getInteger();
         if(( weather == 0 ) || (probability == 0) )
           return 0;

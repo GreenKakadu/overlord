@@ -45,7 +45,47 @@ string TitleElement::print()
   return ( title_->getName() + " of " + location_->print());
 }
 
+vector <AbstractData *> TitleElement::aPrint()
+{
+    vector <AbstractData *> v;
+    if(!unit_)
+    {
+        v.push_back(new StringData("Available "));
+    }
+    else
+    {
+        v.push_back(new StringData("The "));
+    }
+    v.push_back(new StringData("title of "));
+    v.push_back(title_);
+    v.push_back(new StringData(" of "));
+    v.push_back(location_);
+    if(unit_)
+    {
+        v.push_back(new StringData(" held by "));
+        v.push_back(unit_);
+    }
+    if(title_->getClaimingCondition())
+    {
+        vector <AbstractData *> v1 = title_->getClaimingCondition()->aPrint();
+        v.push_back(new StringData(" requires "));
+        for(vector <AbstractData *>::iterator iter = v1.begin(); iter != v1.end(); ++iter)
+        {
+        v.push_back(*iter);
+        }
+    }
+    return v;
+}
 
+vector <AbstractData *> TitleElement::unitPrint()
+{
+    vector <AbstractData *> v;
+    v.push_back(new StringData(", the "));
+    v.push_back(title_);
+    v.push_back(new StringData(" of "));
+    v.push_back(location_);
+    return v;
+}
 
 
 void TitleElement::produceReport(ostream & out)
@@ -72,12 +112,12 @@ void TitleElement::produceReport(ostream & out)
 TitleElement  * TitleElement::readElement (Parser * parser)
 {
 	UnitEntity * unit =0;
-        TitleRule * title = titles[parser->getWord()];
-        LocationEntity * location   = locations[parser->getWord()];
+        TitleRule * title = gameFacade->titles[parser->getWord()];
+        LocationEntity * location   = gameFacade->locations[parser->getWord()];
 	string tag = parser->getWord();
 	if(!tag.empty())
 	{
-	  unit   = units[tag];
+	  unit   = gameFacade->units[tag];
 	}
         if(( title == 0 ) || (location == 0) )
           return 0;
