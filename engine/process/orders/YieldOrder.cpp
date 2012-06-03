@@ -17,8 +17,7 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
-extern RulesCollection <TitleRule>      titles;
-extern EntitiesCollection <LocationEntity>      locations;
+
 extern ReportPattern * noOwnYieldTitleReporter;
 extern ReportPattern * noYieldTitleReporter;
 extern ReportPattern * publicYieldTitleReporter;
@@ -41,9 +40,9 @@ STATUS YieldOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, titles, "title-tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->titles, "title-tag", parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity,  parser, locations, "location id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->locations, "location id", parameters))
             return IO_ERROR;
   return OK;
 

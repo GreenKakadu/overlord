@@ -13,7 +13,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern int currentDay;
+
 extern ReportPattern *	invalidParameterReporter;
 
 DayOrder * instantiateDayOrder = new DayOrder();
@@ -49,7 +49,7 @@ STATUS DayOrder::loadParameters(Parser * parser,
 
 ORDER_STATUS DayOrder::process (Entity * entity, ParameterList &parameters)
 {
-	if (currentDay == getIntegerParameter(parameters,0))
+	if (gameFacade->getCurrentDay() == getIntegerParameter(parameters,0))
 		return SUCCESS;
 	else
 		return FAILURE;

@@ -5,6 +5,7 @@
  email                : Alex.Dribin@gmail.com
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff */
 #include "TacticOrder.h"
+#include "GameFacade.h"
 #include "StringData.h"
 #include "TokenEntity.h"
 #include "UnaryMessage.h"
@@ -15,7 +16,7 @@ fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff */
 #include "CombatStanceVariety.h"
 #include "CombatRankVariety.h"
 #include "CombatFileVariety.h"
-extern EntitiesCollection < UnitEntity > units;
+
 extern ReportPattern * invalidParameterReporter;
 extern ReportPattern * missingParameterReporter;
 extern ReportPattern * unknownTactics;
@@ -101,7 +102,7 @@ ORDER_STATUS TacticOrder::process
                 string par = ( parameters[i] )->print();
                 stance =
                      dynamic_cast < CombatStanceVariety *
-                     > ( combatStances.findByTag( par, false ) );
+                     > ( gameFacade->combatStances.findByTag( par, false ) );
                 if ( stance )
                 {
                   token->setCombatStance( stance );
@@ -110,7 +111,7 @@ ORDER_STATUS TacticOrder::process
 
                 rank =
                      dynamic_cast < CombatRankVariety *
-                     > ( combatRanks.findByTag( par, false ) );
+                     > ( gameFacade->combatRanks.findByTag( par, false ) );
                 if ( rank )
                 {
                   token->setCombatRank( rank );
@@ -119,7 +120,7 @@ ORDER_STATUS TacticOrder::process
 
                 file =
                      dynamic_cast < CombatFileVariety *
-                     > ( combatFiles.findByTag( par, false ) );
+                     > ( gameFacade->combatFiles.findByTag( par, false ) );
                 if ( file )
                 {
                   token->setCombatFile( file );
@@ -128,7 +129,7 @@ ORDER_STATUS TacticOrder::process
 
                 move =
                      dynamic_cast < CombatMoveVariety *
-                     > ( combatMoves.findByTag( par, false ) );
+                     > ( gameFacade->combatMoves.findByTag( par, false ) );
                 if ( move )
                 {
                   token->setCombatMove( move );

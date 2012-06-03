@@ -261,7 +261,7 @@ bool OrderPrototype::parseGameDataParameter(Entity *entity,const string & tag, B
 
    if (!collection.checkDataType(tag)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!gameConfig.isNewEntityName(tag))
+           if(!gameFacade->getGameConfig()->isNewEntityName(tag))
  				  {
             entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_), new StringData(tag), new StringData(parameterTypeName)));
             return false;
@@ -288,7 +288,7 @@ bool OrderPrototype::checkParameterTag(Entity *entity, const string & tag,
    GameData* item = collection.findByTag(tag,false);
   if( item == 0) // Data doesn't exist but it may be new entity placeholder
 		{
-     if(gameConfig.isNewEntityName(tag))
+     if(gameFacade->getGameConfig()->isNewEntityName(tag))
       {
        NewEntityPlaceholder * placeholder = collection.findOrAddPlaceholder(tag);
        //    cout <<"placeholder=  "<< (int) placeholder <<endl;
@@ -381,7 +381,7 @@ bool OrderPrototype::parseOptionalGameDataParameter(Entity *entity,
         }
    if (!collection.checkDataType(tag)) // this can't be a tag but can be new entity placeholder
         {
-          if(!gameConfig.isNewEntityName(tag))
+          if(!gameFacade->getGameConfig()->isNewEntityName(tag))
           {
             return false;
           }

@@ -59,7 +59,7 @@ STATUS BuyOrder::loadParameters(Parser * parser,
     if (!parseIntegerParameter(parser, parameters))
       parameters.push_back( new IntegerData (ANY_PRICE)); // means very big number
 
-    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
 

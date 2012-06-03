@@ -20,9 +20,7 @@
 #include "ItemElement.h"
 #include "StanceVariety.h"
 #include "FactionEntity.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <LocationEntity>  locations;
-extern RulesCollection <ItemRule>      items;
+
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	privateGetItemsReporter;
 extern ReportPattern *	publicGetItemsReporter;
@@ -55,8 +53,8 @@ STATUS GetOrder::loadParameters(Parser * parser,
             return IO_ERROR;
 
     if(
-    !parseOptionalGameDataParameter(entity,  parser, units,  parameters) &&
-    !parseOptionalGameDataParameter(entity,  parser, locations,  parameters)
+    !parseOptionalGameDataParameter(entity,  parser, gameFacade->units,  parameters) &&
+    !parseOptionalGameDataParameter(entity,  parser, gameFacade->locations,  parameters)
       )
       {
        entity->addReport(new BinaryMessage(missingParameterReporter,
@@ -66,7 +64,7 @@ STATUS GetOrder::loadParameters(Parser * parser,
 
      parseIntegerParameter(parser, parameters);
 
-    if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
      parseIntegerParameter(parser, parameters);

@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MoveOrder.h"
+#include "GameFacade.h"
 #include "StringData.h"
 #include "IntegerData.h"
 #include "Entity.h"
@@ -20,8 +21,7 @@
 #include "TravelElement.h"
 #include "BasicExit.h"
 #include "QuartenaryMessage.h"
-extern EntitiesCollection <LocationEntity>      locations;
-extern VarietiesCollection  <DirectionVariety>      directions;
+
 const UINT MoveOrder::OVERLOADING_REPORT_FLAG = 0x01;
 const UINT MoveOrder::NO_MOVEMENT_ABILITY_REPORT_FLAG = 0x02;
 extern ReportPattern *	invalidParameterReporter;
@@ -70,13 +70,13 @@ STATUS MoveOrder::loadParameters(Parser * parser,
          return IO_ERROR;
         }
 
-   LocationEntity * destination = locations[tag];
+   LocationEntity * destination = gameFacade->locations[tag];
    if( destination != 0)
           {
    		      parameters.push_back(destination);
             return OK;
           }
-   DirectionVariety *direction = directions[tag];
+   DirectionVariety *direction = gameFacade->directions[tag];
    if( direction != 0)
           {
    		      parameters.push_back(direction);
@@ -167,9 +167,9 @@ ORDER_STATUS MoveOrder::move(TokenEntity * tokenEntity, AbstractData *parameter,
  MovementVariety * bestMode = 0;
  MovementVariety * currentMode = 0;
 
- for(i = 0; i < movementModes.size(); i++)
+ for(i = 0; i < gameFacade->movementModes.size(); i++)
   {
-	 currentMode = movementModes[i];
+	 currentMode = gameFacade->movementModes[i];
  	if(tokenEntity->isTraced())
  	{
  		cout <<"== TRACING ++++> MOVING: "<<" "<< currentMode->print();

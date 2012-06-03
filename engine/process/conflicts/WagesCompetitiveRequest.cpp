@@ -21,7 +21,7 @@
 #include "LocationEntity.h"
 #include "UnaryMessage.h"
 #include "BinaryMessage.h"
-extern RulesCollection    <ItemRule>    items;
+
 ReportPattern * WagesCompetitiveRequest::workPublicReporter = new ReportPattern("workPublicReporter");
 ReportPattern * WagesCompetitiveRequest::workPrivateReporter = new ReportPattern("workPrivateReporter");
 

@@ -16,9 +16,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern RulesCollection <TitleRule>      titles;
-extern EntitiesCollection <LocationEntity>      locations;
+
 extern ReportPattern * publicCancelTitleReporter;
 extern ReportPattern * privateCancelTitleReporter;
 extern ReportPattern * cannotCancelReporter;
@@ -45,9 +43,9 @@ STATUS CancelOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, titles, "title-tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->titles, "title-tag", parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity,  parser, locations, "location id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->locations, "location id", parameters))
             return IO_ERROR;
   return OK;
 

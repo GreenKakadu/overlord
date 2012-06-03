@@ -23,7 +23,6 @@ public:
    ~CombatReport();
 		void add(ReportMessage * message);
 		void print(ReportPrinter &out);
-//                ostringstream combatantList;
 protected:
 	vector <ReportMessage *> messageCollection_;
 

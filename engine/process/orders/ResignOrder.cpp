@@ -13,7 +13,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <FactionEntity>      factions;
+
 extern ReportPattern * resignReporter;
 ResignOrder * instantiateResignOrder = new ResignOrder();
 
@@ -37,7 +37,7 @@ ResignOrder::ResignOrder(){
 STATUS ResignOrder::loadParameters(Parser * parser,
                             ParameterList &parameters, Entity * entity )
 {
-    if(!parseGameDataParameter(entity,  parser, factions, "npc faction id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->factions, "npc faction id", parameters))
             return IO_ERROR;
          return OK;
 }

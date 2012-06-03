@@ -16,7 +16,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "RulesCollection.h"
-extern RulesCollection <ItemRule>      items;
+
 extern ReportPattern * privateDropItemsReporter;
 extern ReportPattern * publicDropItemsReporter;
 
@@ -38,7 +38,7 @@ STATUS DropOrder::loadParameters(Parser * parser,
 
      parseIntegerParameter(parser, parameters);
 
-    if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
      parseIntegerParameter(parser, parameters);

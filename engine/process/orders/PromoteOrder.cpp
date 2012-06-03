@@ -14,7 +14,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
+
 extern ReportPattern *	promotedReporter;
 extern ReportPattern *	promoteReporter;
 
@@ -38,7 +38,7 @@ STATUS PromoteOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
   return OK;
 

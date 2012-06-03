@@ -24,7 +24,7 @@
 #include "SimpleMessage.h"
 #include "BinaryMessage.h"
 #include "QuartenaryMessage.h"
-extern EntitiesCollection <UnitEntity>      units;
+
 extern ReportPattern * recruiterReporter;
 extern ReportPattern * newRecruitReporter;
 extern ReportPattern *	 recruitingNotPermittedReporter;
@@ -118,7 +118,7 @@ void NewRecruitRequest::answerMarketRequest(int price, int amount)
  		if(newUnit == 0) // Something wrong with placeholder
     		newUnit   = new UnitEntity(unit_);
 
-      if(units.addNew(newUnit) != OK)
+      if(gameFacade->units.addNew(newUnit) != OK)
       {
         cout << "Failed to add new unit \n";
         return;

@@ -20,8 +20,6 @@
 #include "SwapOrderRequest.h"
 #include "TokenEntity.h"
 
-extern EntitiesCollection <UnitEntity>      units;
-extern RulesCollection <ItemRule>      items;
 extern ReportPattern *	giveReporter;
 extern ReportPattern *	receiveReporter;
 
@@ -45,15 +43,15 @@ STATUS SwapOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
     if(!parseIntegerParameter(parser, parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
     if(!parseIntegerParameter(parser, parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
    return OK;
 

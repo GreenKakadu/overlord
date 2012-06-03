@@ -14,7 +14,6 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <LocationEntity>      locations;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 
@@ -38,7 +37,7 @@ STATUS AtOrder::loadParameters(Parser * parser,
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, locations, "location id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->locations, "location id", parameters))
             return IO_ERROR;
   return OK;
 

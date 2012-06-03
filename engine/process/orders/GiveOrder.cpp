@@ -18,12 +18,12 @@
 #include "Entity.h"
 #include "UnitEntity.h"
 #include "FactionEntity.h"
-
+#include "Event.h"
+#include "EventRule.h"
 //GiveOrder instantiateGiveOrder;
 GiveOrder * instantiateGiveOrder = new GiveOrder();
 
-extern EntitiesCollection <UnitEntity>      units;
-extern RulesCollection <ItemRule>      items;
+
 extern ReportPattern *	giveRejectedReporter;
 extern ReportPattern *	giveReporter;
 extern ReportPattern *	receiveReporter;
@@ -33,7 +33,7 @@ GiveOrder::GiveOrder()
 {
   keyword_ = "give";
   registerOrder_();
-  description = string("GIVE unit-id item-tag [number [kept]] \n") +
+  description = string("GIVE unit-id [number] item-tag [number [kept]] \n") +
   "Immediate.  Attempts to hand the required amount of items to the designated unit.\n" +
   "If no number is specified, attempts to give as much as possible.\n" +
   "  The order executes if the designated unit is there and the issuing unit has the items.\n" +
@@ -52,12 +52,12 @@ GiveOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity * e
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             {
     		parseIntegerParameter(parser, parameters);
-    		if(!parseGameDataParameter(entity, parser, items, "item tag", parameters))
+    		if(!parseGameDataParameter(entity, parser, gameFacade->items, "item tag", parameters))
             		return IO_ERROR;
 	    }
     else
@@ -91,7 +91,7 @@ GiveOrder::process (Entity * entity, vector < AbstractData*>  &parameters)
   assert(unit);
 if(unit->isTraced())
 {
-  cout << unit->print()<< " shoild GIVE "<<endl;
+  cout << unit->print()<< " should GIVE "<<endl;
 }
   UnitEntity * recipient   =  DOWNCAST_ENTITY<UnitEntity>(parameters[0]);
 
@@ -162,12 +162,15 @@ if(unit->isTraced())
 
 //        if (item->getTag() == string("mana"))    // Mana shouldn't be an item
 //                given = 0;
-
-
+        EventRule * giveRule = gameFacade->eventRules["evGive"];
+        assert(giveRule);
+        Event * giveEvent = Event::createNewEvent(unit,"evGive",orderId,unit,new IntegerData(reallyGiven),item,recipient);
+        assert(giveEvent);
    if (!unit->isSilent() && unit->getCurrentOrder()->isNormalReportEnabled()   )
       {
         unit->addReport( new QuartenaryMessage(giveReporter, unit, 
                    new IntegerData(reallyGiven), item, recipient),orderId,0);
+        unit->addEvent(giveEvent,orderId);
       }
 
     if (!recipient->isSilent())

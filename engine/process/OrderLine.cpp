@@ -5,12 +5,13 @@
  copyright            : (C) 2002 by Alex Dribin
  email                : Alex.Dribin@gmail.com
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff */
+#include <sstream>
 #include "OrderLine.h"
 #include "Entity.h"
 #include "OrderPrototype.h"
 #include "OrderPrototypesCollection.h"
-#include "UnitEntity.h" //For Debugging only
-extern int currentDay;
+//#include "UnitEntity.h" //For Debugging only
+
 extern bool testMode;
 
 
@@ -214,7 +215,7 @@ bool OrderLine::parse( Parser * parser, Entity * entity )
   string tempKeyword = parser->getWord();
   // If keyword is "combat" we would like to insert  order
   orderPrototype_ = orderPrototypesCollection->find( tempKeyword );
-  //cout << " Order ->"<<orderPrototype_->getKeyword()<<endl;
+
   if ( orderPrototype_ == 0 )
   {
     if(elseStatement_ || endifStatement_)
@@ -230,7 +231,9 @@ bool OrderLine::parse( Parser * parser, Entity * entity )
     return false;
   }
   
-  else if ( orderPrototype_->
+  else {
+      //cout << " Order ->"<<orderPrototype_->getKeyword()<<endl;
+      if ( orderPrototype_->
     loadParameters( parser, parameters_, entity ) == OK )
     return true;
   else
@@ -240,6 +243,7 @@ bool OrderLine::parse( Parser * parser, Entity * entity )
   }
   
 }
+}
 
 
 
@@ -248,10 +252,10 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
      {
        ORDER_STATUS result;
 
-//        if(entity->isTraced())                                  //For Debugging only
-//          {                                                      //For Debugging only
-//            cout <<"==== Trying to process "; printOrderLine(cout); //For Debugging only
-//          }                                                     //For Debugging only
+//     if(entity->isTraced())                                  //For Debugging only
+//       {                                                      //For Debugging only
+//         cout <<"==== Trying to process "; printOrderLine(cout); //For Debugging only
+//       }                                                     //For Debugging only
 
 
 #ifdef TEST_MODE
@@ -269,7 +273,7 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
 					else
          		return INVALID;
 		}
-       if ( executedOnDay_ == currentDay )
+       if ( executedOnDay_ == gameFacade->getCurrentDay() )
        {
      #ifdef TEST_MODE
          if ( testMode )
@@ -308,7 +312,7 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
  */        return FAILURE;
        }
 
-       if ( ( dayRestricted_ == 0 ) || ( dayRestricted_ == currentDay ) )
+       if ( ( dayRestricted_ == 0 ) || ( dayRestricted_ == gameFacade->getCurrentDay() ) )
        {
          entity->setCurrentOrder( this );
          //cout<<"orderPrototype_->process:"<<entity->print()<<endl;//(&OrderPrototype::process)
@@ -319,10 +323,10 @@ ORDER_STATUS OrderLine::process( ProcessingMode * processingMode,
        else
          return FAILURE;
        if ( ( result == SUCCESS ) || ( result == IN_PROGRESS ) )
-         executedOnDay_ = currentDay;
+         executedOnDay_ = gameFacade->getCurrentDay();
 
        if ( ( result == FAILURE ) && isFullDayOrder() ) // This order was already checked
-              executedOnDay_ = currentDay;
+              executedOnDay_ = gameFacade->getCurrentDay();
 
        return result; 
 }
@@ -346,7 +350,14 @@ void OrderLine::save( ostream & out )
   printOrderLine( out );
 }
 
-
+string OrderLine::print()
+{
+    stringstream ss;
+    printOrderLine(ss);
+    string s =ss.str(); 
+    s.erase (s.begin()+ s.length()-1); // Remove new line
+    return s;
+}
 
 void OrderLine::printOrderLine( ostream & out )
 {
@@ -375,7 +386,6 @@ void OrderLine::printOrderLine( ostream & out )
     for ( iterator2 = parameters_.begin(); iterator2 != parameters_.end();
          iterator2++ )
          {
-//		out<<" ";
            ( * iterator2 )->saveAsParameter( out );
     }
   }
@@ -410,7 +420,7 @@ void OrderLine::clearReportingFlag( UINT flag )
 
 bool OrderLine::getReportingFlag( UINT flag )
 {
-  return ( reportFlags & translate_( flag ) );
+  return (( reportFlags & translate_( flag ) )!=0);
 }
 
 

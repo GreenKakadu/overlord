@@ -10,13 +10,12 @@
 #include "DataStorageHandler.h"
 
 
-int currentDay = 1;
+
 const int BLOCK_SIZE = 1024;
 
 //const unsigned SCALE_FACTOR = 100;
 
-GameConfig gameConfig;
-RuleIndex ruleIndex;
+
 bool testMode = false;
 
 // special values
@@ -65,29 +64,29 @@ bool ciStringCompareN(const std::string& s1,const std::string& s2, const int N)
   }
 	return false ;
 }
-/* Converts a long int to a string.
-   'out' must be long enough to take the largest number.
- */
-void longtostr(unsigned long u, char *out)
-{
-        char *p=out,*r;
-	/* Process the number, output to the string in reverse */
-        r = p;
-        do {
-		/* Turn the digit into a character */
-                *p = '0' + u%10;
-                u=u/10;
-                p++;
-        } while(u != 0);
-
-        *p=0;
-        p--;
-        /* Reverse The String. */
-        while(r < p) {
-                *p ^= *r ^= *p ^= *r; /* A Crazy Swap */
-                p--; r++;
-        }
-}
+///* Converts a long int to a string.
+//   'out' must be long enough to take the largest number.
+// */
+//void longtostr(unsigned long u, char *out)
+//{
+//        char *p=out,*r;
+//	/* Process the number, output to the string in reverse */
+//        r = p;
+//        do {
+//		/* Turn the digit into a character */
+//                *p = '0' + u%10;
+//                u=u/10;
+//                p++;
+//        } while(u != 0);
+//
+//        *p=0;
+//        p--;
+//        /* Reverse The String. */
+//        while(r < p) {
+//                *p ^= *r ^= *p ^= *r; /* A Crazy Swap */
+//                p--; r++;
+//        }
+//}
 string longtostr(long in)
   {
     int    j = 0;
@@ -218,8 +217,51 @@ int roll_1Dx(int n)
   return ( seed31pmc %n );       
 }
 #endif
+
+bool isFileExist(string filename)
+{
+    ifstream * stream = new ifstream(filename.c_str());
+    if (*stream)
+    {
+        stream->close();
+        delete stream;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+
+}
+// Makes random name from capitall letters
+string makeRandomName(int length)
+{
+    char buff[length];
+//    char n;
+    for (int i=0; i<length;++i)
+    {
+ //      n = 65 + Roll_1Dx(26);
+       buff[i] = 65 + Roll_1Dx(26);
+
+    }
+    return string(&(buff[0]),length);
+}
+
+
+void notifyAndExit(string filename)
+{
+   char  buff[120];
+#ifdef WINGETCWD
+                cout<<"Can't find file "<< filename <<". Working directory is "<<  _getcwd(buff,119) <<endl;
+#else
+                cout<<"Can't find file "<< filename <<". Working directory is "<<  getcwd(buff,119) <<endl;
+#endif
+                cout << "Exiting..." << endl;
+		exit(1);
+}
 #include "Element.h"
 #include "ItemElement.h"
+#include "ToolUseElement.h"
 #include "RaceElement.h"
 #include "ReportElement.h"
 #include "ResourceElement.h"
@@ -237,6 +279,7 @@ int roll_1Dx(int n)
              BasicSkillElement * BasicSkillElement::headOfFreeList;
              BasicEnchantmentElement * BasicEnchantmentElement::headOfFreeList;
              BasicItemElement * BasicItemElement::headOfFreeList;
+             BasicToolUseElement * BasicToolUseElement::headOfFreeList;
              Element2<RaceRule, int > * Element2<RaceRule, int >::headOfFreeList;
              BasicInventoryElement * BasicInventoryElement::headOfFreeList;
              BasicReportElement  * BasicReportElement::headOfFreeList;
@@ -248,20 +291,22 @@ int roll_1Dx(int n)
              BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList;
              SwapRequestElement * SwapRequestElement::headOfFreeList;
              BasicWeatherElement * BasicWeatherElement::headOfFreeList;
+//             BasicEventElement * BasicEventElement::headOfFreeList;
 #else
 template  <> BasicSkillElement * BasicSkillElement::headOfFreeList = 0;
 template  <> BasicEnchantmentElement * BasicEnchantmentElement::headOfFreeList = 0;
 template  <> BasicItemElement * BasicItemElement::headOfFreeList = 0;
+template  <> BasicToolUseElement * BasicToolUseElement::headOfFreeList = 0;
 template  <> BasicRaceElement * BasicRaceElement::headOfFreeList = 0;
 template  <> BasicInventoryElement * BasicInventoryElement::headOfFreeList = 0;
 template  <> BasicReportElement  * BasicReportElement::headOfFreeList = 0;
 template  <> BasicStanceElement * BasicStanceElement::headOfFreeList = 0;
-//template  <> StanceElement * StanceElement::headOfFreeList = 0;
 template  <> BasicResourceElement * BasicResourceElement::headOfFreeList = 0;
 template  <> BasicMovementElement * BasicMovementElement::headOfFreeList = 0;
 template  <> BasicSkillUseElement * BasicSkillUseElement::headOfFreeList = 0;
 template  <> BasicConstructionWorksElement * BasicConstructionWorksElement::headOfFreeList = 0;
 template  <> SwapRequestElement * SwapRequestElement::headOfFreeList = 0;
 template  <> BasicWeatherElement * BasicWeatherElement::headOfFreeList = 0;
+//template  <> BasicEventElement * BasicEventElement::headOfFreeList = 0;
 #endif
 

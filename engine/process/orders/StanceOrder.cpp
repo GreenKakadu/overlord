@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "StanceOrder.h"
+#include "GameFacade.h"
 #include "StringData.h"
 #include "Entity.h"
 #include "UnitEntity.h"
@@ -16,9 +17,7 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "VarietiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <FactionEntity>      factions;
-extern VarietiesCollection <StanceVariety>      stances;
+
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	AtReporter;
@@ -48,10 +47,10 @@ STATUS StanceOrder::loadParameters(Parser * parser,
 //            return IO_ERROR;
 
 
-    parseOptionalGameDataParameter(entity,  parser, factions,parameters);
-    parseOptionalGameDataParameter(entity,  parser, units, parameters);
+    parseOptionalGameDataParameter(entity,  parser, gameFacade->factions,parameters);
+    parseOptionalGameDataParameter(entity,  parser, gameFacade->units, parameters);
 
-    if(!parseGameDataParameter(entity,  parser,  stances, "stance tag", parameters) )
+    if(!parseGameDataParameter(entity,  parser,  gameFacade->stances, "stance tag", parameters) )
       {
        entity->addReport(new BinaryMessage(missingParameterReporter,
  					new StringData(keyword_), new StringData("stance tag")));

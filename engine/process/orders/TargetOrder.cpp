@@ -24,12 +24,6 @@
 #include "TokenEntity.h"
 #include "DataManipulator.h"
 #include "UnaryMessage.h"
-
-extern DataManipulator * dataManipulatorPtr;
-extern RulesCollection <ConstructionRule>      constructions;
-extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <LocationEntity>      locations;
 extern ReportPattern * TargetReporter;
 //TargetOrder instantiateTargetOrder;
 TargetOrder * instantiateTargetOrder = new TargetOrder();
@@ -91,9 +85,9 @@ ORDER_STATUS TargetOrder::process (Entity * entity, ParameterList &parameters)
 
 bool TargetOrder::isUnit(const string & target)
 {
-   if (!units.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
+   if (!gameFacade->units.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!gameConfig.isNewEntityName(target))
+           if(!gameFacade->getGameConfig()->isNewEntityName(target))
  				  {
             return false;
 				  }
@@ -105,7 +99,7 @@ bool TargetOrder::isUnit(const string & target)
 
 bool TargetOrder::isConstruction(const string & target)
 {
-   if (!constructions.checkDataType(target))
+   if (!gameFacade->constructions.checkDataType(target))
        {
              return false;
        }
@@ -116,9 +110,9 @@ bool TargetOrder::isConstruction(const string & target)
 
 bool TargetOrder::isBuildingOrShip(const string & target)
 {
-   if (!buildingsAndShips.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
+   if (!gameFacade->buildingsAndShips.checkDataType(target)) // this doesn't look like a tag  but it still may be new tag
        {
-           if(!gameConfig.isNewEntityName(target))
+           if(!gameFacade->getGameConfig()->isNewEntityName(target))
  				  {
             return false;
 				  }
@@ -130,7 +124,7 @@ bool TargetOrder::isBuildingOrShip(const string & target)
 
 bool TargetOrder::isLocation(const string & target)
 {
-   if (!locations.checkDataType(target))
+   if (!gameFacade->locations.checkDataType(target))
        {
             return false;
        }
@@ -153,12 +147,12 @@ bool TargetOrder::isValidTarget(const string & target)
 AbstractData * TargetOrder::findTarget(const string & tag)
 {
   AbstractData * target;
-  assert(dataManipulatorPtr);
+  assert(gameFacade->getDataManipulator());
 
 // Placeholder?
-  if(gameConfig.isNewEntityName(tag))
+  if(gameFacade->getGameConfig()->isNewEntityName(tag))
     {
-      NewEntityPlaceholder * placeholder = dataManipulatorPtr->findOrAddPlaceholder(tag);
+      NewEntityPlaceholder * placeholder =gameFacade->getDataManipulator()->findOrAddPlaceholder(tag);
       if(placeholder != 0)  // this is  placeholder.
         {
           GameData* realEntity = placeholder->getRealEntity();
@@ -170,7 +164,7 @@ AbstractData * TargetOrder::findTarget(const string & tag)
 		}
 
 // Tag?
-	target =  dataManipulatorPtr->findGameData(tag);
+	target =  gameFacade->getDataManipulator()->findGameData(tag);
   if(target)
 		{
       return target;

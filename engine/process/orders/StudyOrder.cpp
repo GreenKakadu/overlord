@@ -22,7 +22,6 @@
 #include "TeachingOffer.h"
 #include "conflicts/TeachingOffer.h"
 
-extern RulesCollection <SkillRule>     skills;
 extern ReportPattern * cannotStudyReporter;
 extern ReportPattern * raceErrorReporter;
 extern ReportPattern * requirementErrorReporter;
@@ -71,7 +70,7 @@ STATUS StudyOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->skills, "skill tag", parameters))
             return IO_ERROR;
 
     parseIntegerParameter(parser, parameters);

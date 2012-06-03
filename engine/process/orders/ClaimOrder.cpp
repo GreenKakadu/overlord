@@ -30,7 +30,7 @@
 #include "QuartenaryMessage.h"
 
 ClaimOrder * instantiateClaimOrder = new ClaimOrder();
-extern RulesCollection <TitleRule>      titles;
+
 extern ReportPattern * noTitleReporter;
 extern ReportPattern * noTitleConditionReporter;
 extern ReportPattern * cantPayForTitleReporter;
@@ -67,7 +67,7 @@ STATUS ClaimOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, titles, "title tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->titles, "title tag", parameters))
             return IO_ERROR;
 
   if(parser ->matchKeyword("FREE"))

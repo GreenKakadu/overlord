@@ -15,7 +15,6 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "StanceVariety.h"
-extern EntitiesCollection <UnitEntity>      units;
 extern ReportPattern *	stackingUnacceptableReporter;
 extern ReportPattern *	stackReporter;
 extern ReportPattern *	ejectReporter;
@@ -23,7 +22,7 @@ extern ReportPattern *	ejectReporter;
 EjectOrder * instantiateEjectOrder = new EjectOrder();
 
 EjectOrder::EjectOrder(){
-  keyword_ = "Eject";
+  keyword_ = "eject";
   registerOrder_();
   description = string("EJECT unit-id \n") +
   "Immediate, leader-only.  Executes if the specified unit id is stacked at the\n" +
@@ -40,7 +39,7 @@ STATUS EjectOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
   return OK;
 

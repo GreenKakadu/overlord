@@ -22,7 +22,6 @@
 #include "FactionEntity.h"
 #include "StanceVariety.h"
 #define STEALTH_TO_ENTER_PROTECTED_BUILDING  4
-extern EntitiesCollection <ConstructionEntity>  buildingsAndShips;
 extern ReportPattern * protectedEnterReporter;
 
 //EnterOrder instantiateEnterOrder;
@@ -51,7 +50,7 @@ STATUS EnterOrder::loadParameters(Parser * parser,
      if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, buildingsAndShips, "construction id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->buildingsAndShips, "construction id", parameters))
             return IO_ERROR;
 
   return OK;

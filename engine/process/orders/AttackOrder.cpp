@@ -18,9 +18,6 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "BasicCombatManager.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <FactionEntity>      factions;
-extern EntitiesCollection <ConstructionEntity>      buildingsAndShips;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	ownUnitAttackReporter;
@@ -60,24 +57,24 @@ STATUS AttackOrder::loadParameters(Parser * parser,
          return IO_ERROR;
         }
 
-  	if (units.checkDataType(tag) || gameConfig.isNewEntityName(tag))
+  	if (gameFacade->units.checkDataType(tag) || gameFacade->getGameConfig()->isNewEntityName(tag))
 	{
-      if(checkParameterTag(entity, tag,  units, parameters))
+      if(checkParameterTag(entity, tag,  gameFacade->units, parameters))
       	return OK;
       else
         return IO_ERROR;
    	}
 
-  	if (factions.checkDataType(tag))
+  	if (gameFacade->factions.checkDataType(tag))
 	{
-      if(checkParameterTag(entity, tag,  factions, parameters))
+      if(checkParameterTag(entity, tag,  gameFacade->factions, parameters))
       	return OK;
       else
         return IO_ERROR;
    	}
-  	if (buildingsAndShips.checkDataType(tag) || gameConfig.isNewEntityName(tag))
+  	if (gameFacade->buildingsAndShips.checkDataType(tag) || gameFacade->getGameConfig()->isNewEntityName(tag))
 	{
-      if(checkParameterTag(entity, tag,  buildingsAndShips, parameters))
+      if(checkParameterTag(entity, tag,  gameFacade->buildingsAndShips, parameters))
       	return OK;
       else
         return IO_ERROR;

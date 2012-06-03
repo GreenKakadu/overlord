@@ -46,6 +46,16 @@ void  LocalRecruitOffer::produceFactionReport(FactionEntity * faction, ostream &
   faction->addKnowledge(race_);
 }
 
+vector <AbstractData *> LocalRecruitOffer::aPrint()
+{
+    vector <AbstractData *> out;
+    out.push_back(new RaceElement(race_,initialAmount_));
+    out.push_back(new StringData(" at $"));
+    out.push_back(new IntegerData(price_));
+    out.push_back(new StringData("."));
+    return out;
+}
+
 
 
 AbstractData * LocalRecruitOffer::getType() const

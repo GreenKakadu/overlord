@@ -9,28 +9,29 @@
 #include <time.h>
 #include <iostream>
 #include <fstream>
-
 #include "Global.h"
 #include "GameConfig.h"
 #include "DataManipulator.h"
 #include "BasicCombatManager.h"
 #include "ReportPattern.h" 
 #include "CombatReport.h"
+#include "GameFacade.h"
 
-extern int currentDay;
+
 extern bool testMode;
 
 #ifndef VERSION
-  #define VERSION "0.9"
+  #define VERSION "1.1"
 #endif
 string GameConfig::version = VERSION;
-DataManipulator * dataManipulatorPtr = 0;
+GameFacade * gameFacade = 0;
 BasicCombatManager * combatManager = new BasicCombatManager();
 void combatSimulator();
 
 
 int main( int argc, char * argv[] )
 {
+  string configFileName =  "overlord.config"; // Default name
   clock_t tick = 0;
   tick = clock();
   time_t start, end;
@@ -53,36 +54,29 @@ int main( int argc, char * argv[] )
       testMode = true;
       if ( argc >= 3 )
       {
-        gameConfig.init( argv[2] );
-      }
-      else
-      {
-        gameConfig.init( "overlord.config" );
+          configFileName = argv[2];
+
       }
     }
     else
 #endif
     {
-      gameConfig.init( argv[1] );
+          configFileName = argv[1];
+
     }
   }
-  else
+
+
+  gameFacade = new GameFacade();
+  if(!gameFacade->loadConfiguration(configFileName))
   {
-    gameConfig.init( "overlord.config" );
+      notifyAndExit(configFileName);
   }
 
-  cout << "Game " <<        ( gameConfig.getGameId() ) << endl;
-  cout << "Game data taken from " <<      *  ( gameConfig.getGameFile() ) << endl;
-  cout << "Units data taken from " <<     * ( gameConfig.getUnitsFile() ) << endl;
-  cout << "Factions data taken from " <<  * ( gameConfig.getFactionsFile() ) << endl;
-  cout << "Locations data taken from " << * ( gameConfig.getLocationsFile() ) << endl;
-  //   cout<< "Orders taken from " <<gameConfig.getOrdersFileName()<<endl;
-  DataManipulator dataManipulator;
-  dataManipulatorPtr = & dataManipulator;
+  gameFacade->prepareGame();
 
-  dataManipulator.turnPreProcessing();
 
-  if (  gameConfig.runMode ==  COMBAT_SIMULATOR )
+  if (  gameFacade->getGameConfig()->runMode ==  COMBAT_SIMULATOR )
 	{
           cout << endl<< "    === Running combat simulation mode. ==="<<endl<<endl;
           combatSimulator();
@@ -90,21 +84,21 @@ int main( int argc, char * argv[] )
 		return 0;
 	}
 
- if (  gameConfig.runMode ==   LOCATION_INITIALIZATION)
+ if (  gameFacade->getGameConfig()->runMode ==   LOCATION_INITIALIZATION)
 	{
           cout << endl<< "    === Running Data initialization mode. ==="<<endl<<endl;
-          dataManipulator.save();
+          gameFacade->getDataManipulator()->save();
 			cout << endl<< "    === Data initialization completed. ==="<<endl;
 		return 0;
 	}
-  if ( ( gameConfig.runMode == MEMORY_TEST )
-       || ( gameConfig.runMode == DAILY_MEMORY_TEST ) )
+  if ( ( gameFacade->getGameConfig()->runMode == MEMORY_TEST )
+       || ( gameFacade->getGameConfig()->runMode == DAILY_MEMORY_TEST ) )
        {
          cout << endl<< "    === Running memory test mode. ==="<<endl<<endl;
          cout << "After loading orders \n"; getchar();
   }
 
-  if ( gameConfig.runMode == TIME_TEST )
+  if ( gameFacade->getGameConfig()->runMode == TIME_TEST )
   {
     cout << endl<< "    === Running time test mode. ==="<<endl<<endl;
     time( & end );
@@ -122,45 +116,47 @@ int main( int argc, char * argv[] )
   cout << endl << endl << " ================= Turn processing ==============="
        << endl << endl;
 
-  if ( gameConfig.runMode != STARTING_TURN )
+  if ( gameFacade->getGameConfig()->runMode != STARTING_TURN )
   {
-	for ( currentDay = 1; currentDay <= gameConfig.daysInMonth; currentDay++ )
+	for (gameFacade->setCurrentDay(1);
+                gameFacade->getCurrentDay() <= gameFacade->getGameConfig()->daysInMonth;
+                gameFacade->setCurrentDay(gameFacade->getCurrentDay() +1))
 	{
-	cout << endl << "    #### Processing day " << currentDay
+	cout << endl << "    #### Processing day " << gameFacade->getCurrentDay()
 		<< " ####" << endl;
 	cout << endl << "Daily data pre-Processing  "  << endl;
-	dataManipulator.dailyPreProcessData();
+	gameFacade->getDataManipulator()->dailyPreProcessData();
 
 	cout  << "Processing immediate orders "  << endl;
-	dataManipulator.processOrders( & immediateOrders );
+	gameFacade->getDataManipulator()->processOrders( & immediateOrders );
 
         cout  << "Processing request orders "  << endl;
-	dataManipulator.processOrders( & requestOrders );
+	gameFacade->getDataManipulator()->processOrders( & requestOrders );
 
 	cout << "Processing stack orders "  << endl;
-	dataManipulator.processOrders( & stackOrders );
+	gameFacade->getDataManipulator()->processOrders( & stackOrders );
 
 	cout << "Processing combat resoution  for all combats"  << endl;
-	dataManipulator.processCombat();
+	gameFacade->getDataManipulator()->processCombat();
 
 
 	cout << "Processing full day orders "  << endl;
-	dataManipulator.processOrders( & dayOrders );
+	gameFacade->getDataManipulator()->processOrders( & dayOrders );
 
 	cout << "Processing competitive requests "  << endl;
-	dataManipulator.processCompetitiveRequests( 0 );
+	gameFacade->getDataManipulator()->processCompetitiveRequests( 0 );
 
-	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
+	if ( gameFacade->getGameConfig()->runMode == DAILY_MEMORY_TEST )
 	{
-	cout << "After Processing orders on day " << currentDay << "\n";
+	cout << "After Processing orders on day " << gameFacade->getCurrentDay() << "\n";
 	getchar();
 	}
 
-	dataManipulator.dailyUpdate(); // mana, time-lasting effects, item decay,  reports
+	gameFacade->getDataManipulator()->dailyUpdate(); // mana, time-lasting effects, item decay,  reports
 
-	if ( gameConfig.runMode == DAILY_MEMORY_TEST )
+	if ( gameFacade->getGameConfig()->runMode == DAILY_MEMORY_TEST )
 	{
-	cout << "After Processing reports on day " << currentDay << "\n";
+	cout << "After Processing reports on day " << gameFacade->getCurrentDay() << "\n";
 	getchar();
 	}
 	//cout << "Number of free positions in ReportElement pool:
@@ -169,7 +165,13 @@ int main( int argc, char * argv[] )
 	cout << endl << endl << " ============== End of Turn processing ============"
 	<< endl << endl;
   }
-  if ( gameConfig.runMode == TIME_TEST )
+  else
+  {
+      // generate missing data for first turn report
+      gameFacade->getDataManipulator()->prepareInitialReport();
+  }
+
+  if ( gameFacade->getGameConfig()->runMode == TIME_TEST )
   {
     time( & end );
     dif2 = difftime( end, start );
@@ -181,10 +183,11 @@ int main( int argc, char * argv[] )
 
 
 
-  currentDay = gameConfig.daysInMonth; // currentDay is daysInMonth + 1 after finishing cycle
-  dataManipulator.turnPostProcessing();
-  dataManipulator.save();
-  gameConfig.save();
+  gameFacade->setCurrentDay(gameFacade->getGameConfig()->daysInMonth); // currentDay is daysInMonth + 1 after finishing cycle
+  gameFacade->getDataManipulator()->turnPostProcessing();
+  gameFacade->getDataManipulator()->save();
+  gameFacade->getDataManipulator()->makeReports();
+  gameFacade->getGameConfig()->save();
 
   //... More operations
   cout << endl << endl
@@ -192,7 +195,7 @@ int main( int argc, char * argv[] )
   cout << " ===================== The End ====================" << endl;
 
 
-  if ( gameConfig.runMode == TIME_TEST )
+  if ( gameFacade->getGameConfig()->runMode == TIME_TEST )
   {
     time( & end );
     dif3 = difftime( end, start );
@@ -240,14 +243,14 @@ void combatSimulator()
       parser->getLine();
 	 if (parser->matchKeyword ("ATTACKER") )
     		{
-					currentToken = units[ parser->getWord()];
+					currentToken = gameFacade->units[ parser->getWord()];
 					if(currentToken)
       			attackers.push_back(currentToken);
       		continue;
     		}
 	 if (parser->matchKeyword ("DEFENDER") )
     		{
-					currentToken = units[ parser->getWord()];
+					currentToken = gameFacade->units[ parser->getWord()];
 					if(currentToken)
       			defenders.push_back(currentToken);
       		continue;

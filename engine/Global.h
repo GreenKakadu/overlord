@@ -33,7 +33,6 @@
 #include "HarvestUsingStrategy.h"
 #include "CraftUsingStrategy.h"
 #include "EnchantmentUsingStrategy.h"
-#include "CombatUsingStrategy.h"
 #include "SummonUsingStrategy.h"
 #include "BuildUsingStrategy.h"
 #include "ConstructionUsingStrategy.h"
@@ -52,8 +51,8 @@
 #include "LocationEntity.h"
 #include "ConstructionEntity.h"
 #include "EffectEntity.h"
-// #include "GameEntity.h"
-#include "GameConfig.h"
+//#include "GameEntity.h"
+//#include "GameConfig.h"
 
 // Varieties
 #include "VarietiesCollection.h"
@@ -79,9 +78,12 @@
 #include "BasicExit.h"
 
 
-extern int currentDay;
 extern bool testMode;
 // Functions
 extern bool ciStringCompare(const string& s1,const string& s2);
 extern bool matchItemElement(Parser * parser);
+extern bool isFileExist(string filename);
+extern string makeRandomName(int length=6);
+extern void notifyAndExit(string filename);
+
 #endif

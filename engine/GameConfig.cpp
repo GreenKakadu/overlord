@@ -12,13 +12,12 @@
 #include "FactionEntity.h"
 #include "EntitiesCollection.h"
 extern string longtostr(long u);
-extern EntitiesCollection <FactionEntity>   factions;
 
 GameConfig::GameConfig()
 {
-	unitsFile_          = string("units.dat");
-	locationsFile_      = string("locations.dat");
-	factionsFile_       = string("factions.dat");
+		unitsFile_          = string("units.dat");
+		locationsFile_      = string("locations.dat");
+		factionsFile_       = string("factions.dat");
         buildingsFile_      = string("buildings.dat");
         effectsFile_        = string("effects.dat");
 //Vars 
@@ -31,7 +30,7 @@ GameConfig::GameConfig()
         damage_typeFile_    = string("damage_type.var");
         directionsFile_     = string("directions.var");
         equipmentsFile_     = string("equipments.var");
-        movementsFile_      = string("movementsF.var");
+        movementsFile_      = string("movements.var");
         stancesFile_        = string("stances.var");
 //Rules 
         constructionsFile_  = string("constructions.rules");
@@ -40,19 +39,25 @@ GameConfig::GameConfig()
         itemsFile_          = string("items.rules");
         racesFile_          = string("races.rules");
         effectsRuleFile_    = string("effects.rules");
+        eventsRuleFile_     = string("event_types.rules");
         seasonsFile_        = string("seasons.rules");
         skillsFile_         = string("skills.rules");
         terrainsFile_       = string("terrains.rules");
         titlesFile_         = string("titles.rules");
         weathersFile_       = string("weathers.rules");
         
+ // Events
+        eventsFile_ = string(".events");
+
         gameFile_           = string("game.dat");
+        turnString_         = string("0");
 
         newEntityPrefix_    = string("new");
         daysInMonth = 30;
 	runMode = NORMAL;
 	randomSeed_ = 0;
         maxCombatRounds = 50;
+        isInitialized_ = true;
 }
 
 GameConfig::~GameConfig()
@@ -60,18 +65,17 @@ GameConfig::~GameConfig()
 }
 
 /** initializes Game with data from the file.
-Returns false if faileres to open file */
-void GameConfig::init(const char * filename)
+Returns false if fails to open file */
+bool GameConfig::init(const string filename)
 {
 	cout <<" Configuration file is " << filename << endl;
     FileParser * parser = new FileParser ( filename );
 	if( parser->status != OK)
 		{
-		cout << "Exiting..." << endl;
-		exit(1);
+                    return false;
 		}
 	else
-    filename_ =string( filename);
+    filename_ = filename;
   do
     {
       parser->getLine();
@@ -93,6 +97,11 @@ void GameConfig::init(const char * filename)
  	if (parser->matchKeyword("TURN"))
     		{
       		turn = parser->getInteger();
+      		continue;
+    		}
+ 	if (parser->matchKeyword("BLANKSTART"))
+    		{
+                isInitialized_ = false;
       		continue;
     		}
  	if (parser->matchKeyword("DEADLINE"))
@@ -159,7 +168,8 @@ void GameConfig::init(const char * filename)
         if (parser->matchKeyword("FX_ACTIONS_FILE")) { fx_actionsFile_ = parser->getParameter(); continue;}
         if (parser->matchKeyword("ITEMS_FILE")) { itemsFile_ = parser->getParameter(); continue;}
         if (parser->matchKeyword("RACES_FILE")) { racesFile_ = parser->getParameter(); continue;}
-        if (parser->matchKeyword("EFFECTS_RULE__FILE")) { effectsRuleFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("EFFECTS_RULE_FILE")) { effectsRuleFile_ = parser->getParameter(); continue;}
+        if (parser->matchKeyword("EVENTS_RULE_FILE")) { eventsRuleFile_ = parser->getParameter(); continue;}
         if (parser->matchKeyword("SEASONS_FILE")) { seasonsFile_ = parser->getParameter(); continue;}
         if (parser->matchKeyword("SKILLS_FILE")) { skillsFile_ = parser->getParameter(); continue;}
         if (parser->matchKeyword("TERRAINS_FILE")) {  terrainsFile_ = parser->getParameter(); continue;}
@@ -178,7 +188,7 @@ void GameConfig::init(const char * filename)
     		}
  	if (parser->matchKeyword("COMBAT_ROUNDS"))
     		{
-      		maxCombatRounds = parser->getInteger();
+                maxCombatRounds = parser->getInteger();
       		continue;
     		}
  	if (parser->matchKeyword("NEW_ENTITY_PREFIX"))
@@ -194,6 +204,11 @@ void GameConfig::init(const char * filename)
  	if (parser->matchKeyword("NPC"))
     		{
       		npcFactions_.push_back(parser->getWord());
+      		continue;
+    		}
+ 	if (parser->matchKeyword("PREFIX"))
+    		{
+
       		continue;
     		}
 
@@ -224,6 +239,7 @@ void GameConfig::init(const char * filename)
  itemsFile_.insert(0, gameDir_+ "/");
  racesFile_.insert(0, gameDir_+ "/");
  effectsRuleFile_.insert(0, gameDir_+ "/");
+ eventsRuleFile_.insert(0, gameDir_+ "/");
  seasonsFile_.insert(0, gameDir_+ "/");
  skillsFile_.insert(0, gameDir_+ "/");
  terrainsFile_.insert(0, gameDir_+ "/");
@@ -239,7 +255,8 @@ void GameConfig::init(const char * filename)
  gameFile_.insert(0, gameDir_+ "/");
 
 // Now initialize dynamic game data
-
+    if(isInitialized_)
+    {
 	parser = new FileParser ( gameFile_ );
 	if( parser->status != OK)
 		{
@@ -269,11 +286,15 @@ void GameConfig::init(const char * filename)
     } while (! parser ->eof() );
  delete parser;
  turnString_ = longtostr(turn);
+ eventsFile_.insert(0, gameDir_+ "/" + "turn" + turnString_);
+
 
 // cerr << "random seed is " << randomSeed_<<endl;
  if(randomSeed_ == 0)
- 		randomSeed_ = time( NULL );
+ 		randomSeed_ = (unsigned long)time( NULL );
  srand( randomSeed_ ); // init random
+    }
+ return true;
 
 }
 
@@ -334,6 +355,11 @@ string GameConfig::getReportFileName(FactionEntity * faction)
 return (playersDir_ +  "/" + faction -> getTag() +   "/"  +"report." + turnString_ );
 }
 /** No descriptions */
+string GameConfig::getCReportFileName(FactionEntity * faction)
+{
+return (playersDir_ +  "/" + faction -> getTag() +   "/"  +"creport." + turnString_ );
+}
+/** No descriptions */
 string GameConfig::getServer() const{
 return serverEMail_;
 }
@@ -391,8 +417,8 @@ bool GameConfig::isNewEntityName(const string &tag, FactionEntity * faction)
     return false;
     }
      string tempTag = tag.substr(0,factionTagSize);
-     faction = dynamic_cast<FactionEntity *>(factions.findByTag(tempTag,false));
-     if(factions.isValidTag(tempTag) )
+     faction = dynamic_cast<FactionEntity *>(gameFacade->factions.findByTag(tempTag,false));
+     if(gameFacade->factions.isValidTag(tempTag) )
    		 return true;
 //    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";
   return false;
@@ -435,3 +461,4 @@ char GameConfig::getEntityTypePrefix(const string &tag)
 	 }
 	 return 0;
 }
+

@@ -17,9 +17,7 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RulesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern RulesCollection <TitleRule>      titles;
-extern EntitiesCollection <LocationEntity>      locations;
+
 const unsigned BestowOrder::BESTOW_CONDITION_REPORT_FLAG = 0x01;
 const unsigned BestowOrder::CANNOT_BESTOW_SELF_REPORT_FLAG = 0x02;
 
@@ -49,11 +47,11 @@ STATUS BestowOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, titles, "title-tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->titles, "title-tag", parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity,  parser, locations, "location id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->locations, "location id", parameters))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity,  parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
   return OK;
 

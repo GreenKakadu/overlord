@@ -70,13 +70,13 @@ RecruitOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity 
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
 
     if(!parseIntegerParameter(parser, parameters))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity, parser, races, "race tag", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->races, "race tag", parameters))
             return IO_ERROR;
 
     parseIntegerParameter(parser, parameters);

@@ -33,8 +33,7 @@ void CombatReport::print(ReportPrinter &out)
  				iter != messageCollection_.end(); ++iter)
  {
    
-  out << **iter;
-//   (*iter)->printReport(out);   
+  out << **iter;;   
  }
 }
 

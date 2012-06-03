@@ -37,12 +37,13 @@ class GameConfig {
 public:
 	GameConfig();
 	~GameConfig();
-  void init(const char * filename);
+  bool init(const string filename);
   STATUS save();
   string getOrdersFileName(FactionEntity * faction);
   string getGameId() const;
   /** No descriptions */
   string getReportFileName(FactionEntity * faction);
+  string getCReportFileName(FactionEntity * faction);
   /** No descriptions */
   string getServer() const;
 //==    inline string getVersion() const{ return version_;}
@@ -75,12 +76,15 @@ public:
   string  * getFx_actionsFile(){return &fx_actionsFile_;} 
   string  * getItemsFile(){return &itemsFile_;} 
   string  * getEffectsRuleFile(){return &effectsRuleFile_;}
+  string  * getEventsRuleFile(){return &eventsRuleFile_;}
   string  * getRacesFile(){return &racesFile_;}
   string  * getSeasonsFile(){return &seasonsFile_;}
   string  * getSkillsFile(){return &skillsFile_;} 
   string  * getTerrainsFile(){return &terrainsFile_;} 
   string  * getTitlesFile(){return &titlesFile_;} 
   string  * getWeathersFile(){return &weathersFile_;} 
+  // Events
+  string  * getEventsFile(){return &eventsFile_;}
 
   string  getDeadline() {return deadline_;}
         bool isNPCFaction(FactionEntity * faction);
@@ -88,12 +92,14 @@ public:
   inline string getNewEntityPrefix() const {return newEntityPrefix_;}
   inline int getNewEntityPrefixSize() const {return newEntityPrefix_.size();}
          bool isNewEntityName(const string &tag, FactionEntity * faction = 0);
+   inline bool      isInitialized(){return isInitialized_;}
   UINT turn;
   int daysInMonth;
   int maxCombatRounds;
   RUNMODE runMode;
   protected:
   private:
+  bool isInitialized_;
   string description_; // Game description
   string filename_;
   string  name_; // Game extended name
@@ -136,11 +142,13 @@ public:
   string   titlesFile_;
   string   weathersFile_;
   string   effectsRuleFile_;
+  string   eventsRuleFile_;
   
+  string   eventsFile_;
   string gameFile_;
   vector <string> npcFactions_;
   unsigned long int randomSeed_;
 };
-extern GameConfig gameConfig;
+//extern GameConfig gameConfig;
  
 #endif

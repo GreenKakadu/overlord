@@ -14,7 +14,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern RulesCollection <SkillRule>      skills;
+
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 
@@ -37,7 +37,7 @@ STATUS SkillOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->skills, "skill tag", parameters))
             return IO_ERROR;
     if(!parseIntegerParameter(parser, parameters))
     {

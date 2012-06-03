@@ -21,7 +21,7 @@
 #include "SimpleMessage.h"
 #include "UnaryMessage.h"
 #include "TertiaryMessage.h"
-extern EntitiesCollection <UnitEntity>      units;
+
 extern ReportPattern * mergeRaceMismatchReporter;
 extern ReportPattern * mergeRaceErrorReporter;
 extern ReportPattern * mergeFactionMismatchReporter;
@@ -55,7 +55,7 @@ STATUS MergeOrder::loadParameters(Parser * parser, vector <AbstractData *>
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
 
      parseIntegerParameter(parser, parameters);

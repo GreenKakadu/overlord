@@ -16,15 +16,14 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
-extern EntitiesCollection <FactionEntity>  factions;
+
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	oathCantReporter;
 
 OathOrder * instantiateOathOrder = new OathOrder();
 
 OathOrder::OathOrder(){
-  keyword_ = "Oath";
+  keyword_ = "oath";
   registerOrder_();
   description = string("OATH  unit-id | faction-id \n") +
   "Immediate, one-shot.  This order executes immediately when you encounter the\n" +
@@ -46,8 +45,8 @@ STATUS OathOrder::loadParameters(Parser * parser,
             return IO_ERROR;
 
     if(
-    !parseOptionalGameDataParameter(entity,  parser, units,  parameters) &&
-    !parseOptionalGameDataParameter(entity,  parser, factions,  parameters)
+    !parseOptionalGameDataParameter(entity,  parser, gameFacade->units,  parameters) &&
+    !parseOptionalGameDataParameter(entity,  parser, gameFacade->factions,  parameters)
       )
       {
        entity->addReport(new BinaryMessage(missingParameterReporter,

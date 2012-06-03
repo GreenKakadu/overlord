@@ -15,7 +15,6 @@
 #include "EntitiesCollection.h"
 #include "OrderLine.h"
 extern bool ciStringCompare(const std::string& s1,const std::string& s2);
-extern EntitiesCollection <UnitEntity>      units;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	AtReporter;
@@ -157,7 +156,7 @@ bool CombatOrder::checkCombatAction(string & keyword, TokenEntity * entity, bool
       return true;
     }
 
-    rule = items.findByTag(keyword,false);
+    rule = gameFacade->items.findByTag(keyword,false);
 
 	if(rule) // <-------------- Item 
 	{
@@ -189,7 +188,7 @@ bool CombatOrder::checkCombatAction(string & keyword, TokenEntity * entity, bool
 	}
 	else// <-------------- Skill
 	{
-		rule= skills.findByTag(keyword,false);
+		rule= gameFacade->skills.findByTag(keyword,false);
 		if(rule)
 			{
 			skill = dynamic_cast<SkillRule*>(rule);

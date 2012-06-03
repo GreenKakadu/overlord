@@ -24,8 +24,7 @@
 #include "StringData.h"
 const UINT WithdrawOrder:: WITHDRAW_RESTRICTED_REPORT_FLAG= 0x01;
 
-//extern RulesCollection <TerrainRule>   terrains;
-extern RulesCollection    <ItemRule>     items;
+
 
 extern ReportPattern * withdrawInvalidReporter;
 extern ReportPattern *	invalidParameterReporter;
@@ -68,7 +67,7 @@ WithdrawOrder::loadParameters(Parser * parser, ParameterList &parameters, Entity
                                 new StringData(" integer ")));
         return IO_ERROR;
       }
-  parseOptionalGameDataParameter(entity, parser, items, parameters);
+  parseOptionalGameDataParameter(entity, parser, gameFacade->items, parameters);
   return OK;
 
 }
@@ -83,7 +82,7 @@ WithdrawOrder::process (Entity * entity, ParameterList &parameters)
   OrderLine * orderId = unit->getCurrentOrder();
 // May withdraw only in city (or bank)
 //   if(unit->getLocation()->getTerrain() != terrains["city"])
-   if(unit->getLocation()->getTerrain() != terrains.findByTag("city",false))
+   if(unit->getLocation()->getTerrain() != gameFacade->terrains.findByTag("city",false))
    {
      if(!orderId->getReportingFlag(WITHDRAW_RESTRICTED_REPORT_FLAG ))
       {

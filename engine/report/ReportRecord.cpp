@@ -7,7 +7,7 @@
  ***************************************************************************/
 #include "ReportRecord.h"
 #include "ReportMessage.h"
-extern int currentDay;
+
 
 ReportRecord::ReportRecord(ReportMessage * report, OrderLine *  order, BasicCondition * condition)
 {

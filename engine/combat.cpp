@@ -17,7 +17,7 @@
 #include "ReportPattern.h" //temp
 // tests
 
-extern int currentDay;
+extern int gameFacade->getCurrentDay();
 
 
 #ifndef VERSION
@@ -64,7 +64,9 @@ int main( int argc, char * argv[] )
 	DataManipulator dataManipulator;
   dataManipulatorPtr = & dataManipulator;
 
-  dataManipulator.turnPreProcessing();
+  //dataManipulator.turnPreProcessing();
+
+  gameFacade->prepareGame();
 
   if ( ( gameConfig.runMode == MEMORY_TEST )
        || ( gameConfig.runMode == DAILY_MEMORY_TEST ) )
@@ -112,7 +114,7 @@ int main( int argc, char * argv[] )
   cout << " ===================================================" << endl;
 
 
-//  if ( currentDay < 0 ) sampleTokenEntity.cancelTeachingOffer(); // to provide
+//  if ( gameFacade->getCurrentDay() < 0 ) sampleTokenEntity.cancelTeachingOffer(); // to provide
   // instantiation of sampleTokenEntity
 
 

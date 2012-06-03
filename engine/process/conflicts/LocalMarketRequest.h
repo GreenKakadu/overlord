@@ -27,6 +27,7 @@ public:
 	LocalMarketRequest(int amount, ItemRule * item,  int price, MARKET_OFFER type);
 	~LocalMarketRequest();
    string print();
+   virtual vector <AbstractData *> aPrint();
    bool isValid();
    virtual void  produceFactionReport(FactionEntity * faction, ostream &out);
    void free();

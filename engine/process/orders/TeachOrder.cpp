@@ -26,7 +26,6 @@
 #include "TokenEntity.h"
 #include "TeachingOffer.h"
 extern ReportPattern * teachingReporter;
-extern EntitiesCollection <UnitEntity>      units;
 
 //TeachOrder instantiateTeachOrder;
 TeachOrder * instantiateTeachOrder = new TeachOrder();
@@ -51,10 +50,10 @@ TeachOrder::TeachOrder()
 STATUS TeachOrder::loadParameters(Parser * parser,
                             ParameterList &parameters, Entity * entity )
 {
-    if(!parseGameDataParameter(entity,  parser, skills, "skill tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->skills, "skill tag", parameters))
             return IO_ERROR;
 
-    while (parseOptionalGameDataParameter(entity, parser, units, parameters))
+    while (parseOptionalGameDataParameter(entity, parser, gameFacade->units, parameters))
           {}
 
   return OK;

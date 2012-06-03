@@ -1,12 +1,13 @@
 How To...
-2. How to add new Rule?
+1. How to add new Rule?
  - Write NewRule class, derived from Rule
  - write newrule.rules text file with NewRule data and place it in project directory
- create newRulesCollection 
- (RulesCollection <NewRule>      newRulesCollection(new DataStorageHandler("newrule.rules")))
+ - in GameFacade add  newRulesCollection and bind it (newrule.bindHandler(new DataStorageHandler(gameConfig_.getNewruleFile()));)
+ - in GameConfig.h add getNewruleFile(), newruleFile_ and initialization of newruleFile_
+ - in GameConfig.cpp add default and explicit initialization of newruleFile_, append directory to newruleFile_
  -  add "ruleIndex.addRules (&NewRulesCollection) in DataManipulator.cpp
 
-3. How to add new Entity?
+2. How to add new Entity?
  - Write NewEntity class, derived from Entity
  - write newentityfile text file with NewEntity data (if any) and place it in project directory
  - add getNewEntityFile function to GameInfo class
@@ -14,26 +15,32 @@ How To...
  - add addEntities (&newentities) in DataManipulator.cpp
  - you may want to add isNewEntity method to TargetOrder
 
-4. How to add new Variety?
+3. How to add new Variety?
  - Write NewVariety class, derived from Variety
  - write newvarietyfile.var text file with NewVariety data and place it in project directory
  - add addVarieties (&newvarieties) in DataManipulator.cpp
 
 
-6. How to add new Element?
+4. How to add new Element?
  - Write NewElement class, derived from Element
  - add template instantiation: NewElement * NewElement::headOfFreeList into Global.cpp
  - add BCC template instantiation: template  <> NewElement * NewElement::headOfFreeList into Global.cpp
 
-7. How to add new Conflict?
-8. How to add new OrderSychronization?
-9. How to add new directory to project?
-10. How to add new unit's stat?
-11. How to add new Action?
+5. How to add new Conflict?
+6. How to add new OrderSychronization?
+7. How to add new directory to project?
+8. How to add new unit's stat?
+9. How to add new Action?
+10. How to add new Collection?
+- define collection in GameFacade
+- bind handler in GameFacade::loadConfiguration
+- in gameConfig define collection file name and method for getting it
+- register collection in DataManipulator::init()
 
-13. How to add new Report?
+11. How to add new Report?
 	- Add reporter template to file report_texts
 	- Define reporter (in TextsForReports.cpp or in the file where you use it)
 
+12. How to add new Event?
  
 

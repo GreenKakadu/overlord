@@ -14,7 +14,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern RulesCollection <ItemRule>      items;
+
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	AtReporter;
@@ -39,7 +39,7 @@ STATUS HaveOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
      parseIntegerParameter(parser, parameters);

@@ -25,7 +25,7 @@
 #include "FactionEntity.h"
 extern ReportPattern * newSplitReporter;
 extern ReportPattern * splitterReporter;
-extern EntitiesCollection <UnitEntity>      units;
+
 
 SplitOrder instantiateSplitOrder;
 
@@ -51,7 +51,7 @@ STATUS SplitOrder::loadParameters(Parser * parser, vector <AbstractData *>
 {
    if(!entityIsUnit(entity))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+    if(!parseGameDataParameter(entity, parser, gameFacade->units, "unit id", parameters))
             return IO_ERROR;
 
     parseIntegerParameter(parser, parameters);
@@ -102,7 +102,7 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
 			newUnit   = new UnitEntity(unit);
 		}
 
-      if(units.addNew(newUnit) != OK)
+      if(gameFacade->units.addNew(newUnit) != OK)
       {
         cout << "Failed to add new unit \n";
         return INVALID;
@@ -112,7 +112,7 @@ ORDER_STATUS SplitOrder::process (Entity * entity, vector <AbstractData *>
        unit->recalculateStats();
        RaceRule * race = unit->getRace();
 
-       newUnit->setDiscontenting( unit->getDiscontenting());
+       newUnit->setDiscontenting( unit->isDiscontent());
 
        placeholder->setRealEntity(newUnit);
        unit->getFaction()->addUnit(newUnit);

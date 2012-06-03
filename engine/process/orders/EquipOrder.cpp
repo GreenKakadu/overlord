@@ -49,7 +49,7 @@ STATUS EquipOrder::loadParameters(Parser * parser,
    if(!entityIsUnit(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
 //   string itemTag = parser->getWord();
@@ -154,15 +154,6 @@ ORDER_STATUS EquipOrder::process (Entity * entity, ParameterList &parameters)
 // 	//cout << unit->print()<< " is equipping all "<< item->print()<<endl;
 // 	}
         number = unit->hasItem(item);
-
-//         if((number > 0) && (unit == units["U8599"]))
-//         {
-//           cout << "o"<<endl;
-//         }
-//         if(number >= 17 )
-//         {
-//           cout << "!"<<endl;
-//         } 
         result = unit->equipItem (item, number);
         if (result == 0)
               {

@@ -14,7 +14,6 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "SynchroOrderRequest.h"
-extern EntitiesCollection <UnitEntity>      units;
 
 SynchroOrder * instantiateSynchroOrder = new SynchroOrder();
 
@@ -39,7 +38,7 @@ STATUS SynchroOrder::loadParameters(Parser * parser,
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
 
-    if(!parseGameDataParameter(entity,  parser, units, "tokenEntity id", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->units, "tokenEntity id", parameters))
             return IO_ERROR;
   return OK;
 

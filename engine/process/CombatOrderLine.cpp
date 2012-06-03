@@ -64,6 +64,12 @@ void CombatOrderLine::save( ostream & out )
   printOrderLine( out );
 }
 
+void CombatOrderLine::save( ostream & out, string prefix )
+{
+  out <<prefix<< "COMBAT_ORDER ";
+  printOrderLine( out );
+}
+
 bool CombatOrderLine::parse(Parser * parser, Entity * entity)
 {
     string tempKeyword = parser->matchWord(); // this may be keyword or parameter
@@ -78,7 +84,7 @@ bool CombatOrderLine::parse(Parser * parser, Entity * entity)
         else
         {
             // Try this keyword  as a skill
-            SkillRule * skill = skills[tempKeyword];
+            SkillRule * skill = gameFacade->skills[tempKeyword];
             if (skill != 0)
             {
                 orderPrototype_ = orderPrototypesCollection->find("Apply");
@@ -89,7 +95,7 @@ bool CombatOrderLine::parse(Parser * parser, Entity * entity)
                 }
             } else // Try this keyword  as an item
             {
-                ItemRule * item = items[tempKeyword];
+                ItemRule * item = gameFacade->items[tempKeyword];
                 if (item != 0)
                 {
                     orderPrototype_ = orderPrototypesCollection->find("CombatUse");
@@ -307,7 +313,7 @@ bool CombatOrderLine::parse(const string & orderText, Entity * entity )
 		else
 		{
 			// Try this keyword  as a skill
-			SkillRule * skill = skills[tempKeyword];
+			SkillRule * skill = gameFacade->skills[tempKeyword];
    		if ( skill != 0)
     	{
 				orderPrototype_ = orderPrototypesCollection->find("Apply");
@@ -319,7 +325,7 @@ bool CombatOrderLine::parse(const string & orderText, Entity * entity )
     	}
 			else			// Try this keyword  as an item
 			{
-				ItemRule * item = items[tempKeyword];
+				ItemRule * item = gameFacade->items[tempKeyword];
    			if ( item != 0)
 				{
 					orderPrototype_ = orderPrototypesCollection->find("CombatUse");

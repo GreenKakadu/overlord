@@ -15,7 +15,6 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "MoveOrder.h"
-extern EntitiesCollection <LocationEntity>      locations;
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	caravanLocationAddedReporter;
@@ -49,13 +48,13 @@ STATUS CaravanOrder::loadParameters(Parser * parser,
    string tag = parser->getWord();
 	while(tag.size() != 0)
 	{
-		if(!locations.checkDataType(tag))
+		if(!gameFacade->locations.checkDataType(tag))
 		{
             entity->addReport(new TertiaryMessage(invalidParameterReporter, new StringData(keyword_),
             				new StringData(tag), new StringData("location-id")));
             return IO_ERROR;
 		}
-	location = locations[tag];
+	location = gameFacade->locations[tag];
 	if(location)
 		parameters.push_back(location);
 	else

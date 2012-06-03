@@ -16,7 +16,7 @@
 #include "BinaryMessage.h"
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
-extern EntitiesCollection <UnitEntity>      units;
+
 extern ReportPattern *	invalidParameterReporter;
 extern ReportPattern *	stackingUnacceptableReporter;
 extern ReportPattern *	stackReporter;
@@ -58,7 +58,7 @@ STATUS StackOrder::loadParameters(Parser * parser, ParameterList &parameters, En
 //           return OK;
 //         }
         
-   if(!parseGameDataParameter(entity, parser, units, "unit id", parameters))
+   if(!parseGameDataParameter(entity, parser, gameFacade->units, "unit id", parameters))
           return IO_ERROR;
 
 //   if (!units.checkDataType(tag)) // this can't be a tag
@@ -106,11 +106,11 @@ ORDER_STATUS StackOrder::process (Entity * entity, ParameterList &parameters)
 
 
   UnitEntity * formerLeader = unit->getLeader();
+	UnaryMessage * unstackMessage = new UnaryMessage(unstackReporter, unit);
 
-  UnaryMessage * unstackMessage = new UnaryMessage(unstackReporter, unit);
   if (parameters.size() == 0) // This means unstack
     {
-      if(unit->unstack())
+     if(unit->unstack())
         {
           entity->addReport(unstackMessage,orderId,0 );
 		      formerLeader->addReport(unstackMessage,orderId,0 );

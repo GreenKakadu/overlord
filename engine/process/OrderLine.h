@@ -13,18 +13,18 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include "AbstractData.h"
 #include "LineParser.h"
 #include "OverlordTypes.h"
 #include "OrderPrototype.h"
 
 using namespace std;
 
-class AbstractData;
 class Entity;
 class OrderPrototype;
 
 
-class OrderLine
+class OrderLine : public AbstractData
 {
     public:
         OrderLine(const string & order, Entity * entity);
@@ -38,6 +38,7 @@ class OrderLine
 	ORDER_STATUS completeProcessing(Entity * entity, int result);
 	virtual void save(ostream &out);
 	virtual void printOrderLine(ostream &out);
+        string print();
 	virtual void parseModifiers(Parser * parser );
 	static void stripModifiers(Parser * parser );
 	virtual bool parse(Parser * parser, Entity * entity );
@@ -60,8 +61,10 @@ class OrderLine
          void setReportingFlag(UINT flag);
          void clearReportingFlag(UINT flag);
          bool getReportingFlag(UINT flag);
-
-
+         
+// New access methods for UI
+ inline OrderPrototype * getOrderPrototype() {return orderPrototype_;} 
+ inline ParameterList &  getParameterList(){return parameters_;}
 		protected:
 static const  UINT NO_NORMAL_REPORT_FLAG;
 static const  UINT NO_ERROR_REPORT_FLAG;

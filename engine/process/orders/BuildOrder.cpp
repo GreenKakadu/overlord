@@ -28,7 +28,6 @@
 #include "UnaryMessage.h"
 #include "LocationEntity.h"
 
-extern RulesCollection <SkillRule>      skills;
 extern ReportPattern * unusableSkillReporter;
 extern ReportPattern * unusableBuildingSkillReporter;
 const UINT BuildOrder::NO_RESOURCE_REPORT_FLAG = 0x01;
@@ -160,7 +159,7 @@ ORDER_STATUS BuildOrder::process ( Entity * entity, ParameterList &parameters )
           buildingOrShip   =  dynamic_cast<ConstructionEntity *>(parameters[0]); 
           if(!buildingOrShip)
           {
-            NewEntityPlaceholder * placeholder = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);
+            placeholder = dynamic_cast<NewEntityPlaceholder *>(parameters[0]);
         //    cout <<"placeholder=  "<< (int) placeholder <<endl;
               if(placeholder != 0)  // this is  placeholder.
               {

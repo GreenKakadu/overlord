@@ -15,9 +15,8 @@
 #include "TertiaryMessage.h"
 #include "EntitiesCollection.h"
 #include "RuleIndex.h"
-extern EntitiesCollection <FactionEntity>      factions;
+
 extern ReportPattern * ReshowReporter;
-extern RuleIndex ruleIndex;
 extern ReportPattern *	missingParameterReporter;
 extern ReportPattern *	invalidParameterReporter;
 ReshowOrder * instantiateReshowOrder = new ReshowOrder();
@@ -56,14 +55,14 @@ STATUS ReshowOrder::loadParameters(Parser * parser,
           return OK;
         }
 // if this is a keyword?
-  BasicRulesCollection  * collection = ruleIndex.findRuleCollection(tag);
+  BasicRulesCollection  * collection = gameFacade->ruleIndex.findRuleCollection(tag);
   if(collection != 0)
   {
     parameters.push_back(new StringData(tag));
     return OK;
   }
 // Check tag for being rule-tag or skill-tag
-   Rule * rule = ruleIndex.findRule(tag);
+   Rule * rule = gameFacade->ruleIndex.findRule(tag);
    if(rule==0)
     {
 
@@ -100,15 +99,15 @@ ORDER_STATUS ReshowOrder::process (Entity * entity, ParameterList &parameters)
   //  [ALL]
    if(!ciStringCompare(tag.c_str(),string("ALL")))
     {
-      for(vector < BasicRulesCollection  *>::iterator collIter = ruleIndex.getAllRules().begin();
-          collIter != ruleIndex.getAllRules().end(); ++collIter)
+      for(vector < BasicRulesCollection  *>::iterator collIter = gameFacade->ruleIndex.getAllRules().begin();
+          collIter != gameFacade->ruleIndex.getAllRules().end(); ++collIter)
       {
           faction->markCollectionToReshow(*collIter);
       }
     }
     else
     {
-    BasicRulesCollection  * collection = ruleIndex.findRuleCollection(tag);
+    BasicRulesCollection  * collection = gameFacade->ruleIndex.findRuleCollection(tag);
 	if(collection==0)
 	{
 	    cerr << "Unknown collection "<< tag<<endl;

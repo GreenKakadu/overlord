@@ -9,19 +9,23 @@
 #ifndef DATA_MANIPULATOR_H
 #define DATA_MANIPULATOR_H
 #include  <vector>
+#include  <string>
 class BasicEntitiesCollection;
 class BasicRulesCollection;
 class BasicVarietiesCollection;
 class ProcessingMode;
 class NewEntityPlaceholder;
 class GameData;
-
+class Rule;
+class Entity;
+using namespace std;
 class DataManipulator {
 public:
   DataManipulator();
   ~DataManipulator();
   STATUS load();
   STATUS save();
+  void init();
   void clear();
   void printAllData();
   STATUS initialize(); 
@@ -31,14 +35,27 @@ public:
   void processCombat();
   void processCompetitiveRequests(ProcessingMode * processingMode);
   STATUS checkOrders();
+  void makeReports();
   //void saveOrders();
   void prepareData();
   void dailyUpdate();
   void dailyPreProcessData();
   void turnPostProcessing();
   void turnPreProcessing();
+  void prepareInitialReport();
+  void check();
+  void createFileIfNotExist(string  * fileName, GameData * sample);
   GameData * findGameData(const string & tag);
+  GameData * findGameDataByName(const string & name);
+  Rule* findRule(const string & tag);
+  Rule* findRuleByName(const string & name);
+  Entity* findEntity(const string & tag);
   NewEntityPlaceholder * findOrAddPlaceholder(const string & tag);
+  string getCollectionKeyword(const string & tag);
+  string getRuleCollectionKeyword(const string & tag);
+  string getEntityCollectionKeyword(const string & tag);
+
+  BasicRulesCollection  * findRuleCollection(const string & keyword);
 protected:
 private:
   vector < BasicEntitiesCollection  * > entities_;

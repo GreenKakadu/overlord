@@ -47,6 +47,15 @@ string LocalMarketRequest::print()
           " of " + item_->print() + " for " + longtostr(price_)  + " coins\n";
 }
 
+vector <AbstractData *> LocalMarketRequest::aPrint()
+{
+    vector <AbstractData *> out;
+    out.push_back(new ItemElement(item_,initialAmount_));
+    out.push_back(new StringData(" at $"));
+    out.push_back(new IntegerData(price_));
+    out.push_back(new StringData("."));
+    return out;
+}
 
 void  LocalMarketRequest::produceFactionReport(FactionEntity * faction, ostream &out)
 {
