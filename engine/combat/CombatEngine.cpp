@@ -24,7 +24,6 @@
 #include "reporting.h"
 #include "CombatParticipantMessage.h"
 using namespace std;
-extern int currentDay;
 extern ReportPattern * combatStart2Reporter;
 extern ReportPattern * combatEndReporter;
 extern ReportPattern * combatAttackersReporter;
@@ -111,14 +110,14 @@ cout << "===> New combat created using CombatEngine" <<endl;
 
 
 // ==== For debugging: open file for printing debugging info
-cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
+cout << "Combat on day "<<gameFacade->getCurrentDay()<<" at " << location_<<endl;
  string combatReportFileName = combatName + longtostr(BasicCombatEngine::battleId) + ".crep";
  combatReportFile.open(combatReportFileName.c_str());
- combatReportFile<< "Combat on day "<<currentDay<<" at " << location_<<endl;
+ combatReportFile<< "Combat on day "<<gameFacade->getCurrentDay()<<" at " << location_<<endl;
  combatReportFile<< "Attackers: "<<endl;
 // ==== End of debugging info
 
- new BinaryMessage(combatStart2Reporter,new IntegerData(currentDay),location_) >>*report_ ;
+ new BinaryMessage(combatStart2Reporter,new IntegerData(gameFacade->getCurrentDay()),location_) >>*report_ ;
  new SimpleMessage(combatAttackersReporter) >>*report_ ;
  BattleInstance * currentInstance = 0;
 // Create BattleInstances
@@ -197,7 +196,7 @@ cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
 
 	 preProcess();
 	int N = 1;
-	 while (N <= gameConfig.maxCombatRounds)
+	 while (N <= gameFacade->getGameConfig()->maxCombatRounds)
 	 {
 		preProcessRound(N);
 	 	processRound(N);
@@ -210,7 +209,7 @@ cout << "Combat on day "<<currentDay<<" at " << location_<<endl;
 
 	 processRoutingRound();
 
-	 if(N > gameConfig.maxCombatRounds) // normal exit from the loop
+	 if(N > gameFacade->getGameConfig()->maxCombatRounds) // normal exit from the loop
 	 {
    	new SimpleMessage(combatDrawReporter) >>*report_ ;
 	 }
@@ -620,7 +619,7 @@ void CombatEngine::postProcess()
 	// die from wounds
 
 // Add dead bodies
-	ItemRule * deads = items["dead"];
+	ItemRule * deads = gameFacade->items["dead"];
 	if(deads != 0)
 	{
 	location_->addResource(deads, attackersCount_ - attackersAliveCount_ 

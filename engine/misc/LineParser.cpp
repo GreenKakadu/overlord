@@ -331,7 +331,7 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 long int Parser::getLongInteger()
 {
 int i;
-char buffer[LONG_INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
+char buffer[LONG_INTEGER_LENGTH]; 
 
 
 
@@ -506,11 +506,40 @@ char buffer[INTEGER_LENGTH]; // Integers should not be bigger than 65535 anyway
 
 string  Parser::getText ()
 {
-  while (isspace (*input_) ) // Skip spacing
+	char    separatorSymbol;
+
+
+	while (isspace (*input_) ) // Skip spacing
     input_++;
 
-    status = OK;
-  return string (input_);
+	if (*input_ == '"') // Separator
+		separatorSymbol = *input_++;
+	else // If no separator detected just return the rest of the string.
+	{
+		status = OK;
+		return string(input_);
+	}
+	// This part is similar to getParameter and reading the rest of the string until separator
+	  char    *scan;
+	  scan = input_;
+	  while (*scan)
+	  { // Until end of string
+	      if (*scan == separatorSymbol)
+	      { // Closing separator was found.
+		break;
+	      }
+		  if (*scan == COMMENT_SYMBOL)
+		  break;
+	    scan++;
+
+	  }
+	  string Parameter (input_, 0, scan - input_ );
+	  if(scan > input_)
+	      status = OK;
+	  else
+	      status = IO_ERROR;
+	   return Parameter;
+
 }
 
 void  Parser::rewind(int shift)

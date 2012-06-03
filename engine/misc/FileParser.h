@@ -29,7 +29,6 @@ public:
        void      setPosition         ( long int position);
        long int        getPosition();
        string report();
-		STATUS status;
 protected:
 
 private:

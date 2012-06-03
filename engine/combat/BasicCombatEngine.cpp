@@ -17,7 +17,7 @@
 
 BasicCombatEngine combatEngine;
 int BasicCombatEngine::battleId = 1;
-extern int currentDay;
+//extern int gameFacade->getCurrentDay();
 extern ReportPattern * combatStartReporter;
 extern ReportPattern * combatStart2Reporter;
 extern ReportPattern * combatEndReporter;
@@ -38,7 +38,7 @@ BATTLE_RESULT BasicCombatEngine::processBattle(vector<TokenEntity *> &attackers,
 {
 cout << "=== NB ===> New combat created using BasicCombatEngine created" <<endl;
  new UnaryMessage(combatStartReporter,new IntegerData(BasicCombatEngine::battleId)) >>*report_ ;
- new BinaryMessage(combatStart2Reporter,new IntegerData(currentDay),(*(attackers.begin()))->getLocation()) >>*report_ ;
+ new BinaryMessage(combatStart2Reporter,new IntegerData(gameFacade->getCurrentDay()),(*(attackers.begin()))->getLocation()) >>*report_ ;
 
  new SimpleMessage(combatAttackersReporter) >>*report_ ;
   vector<TokenEntity *>::iterator iter;

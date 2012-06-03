@@ -7,7 +7,8 @@
  ***************************************************************************/
 #include "ObservationCondition.h"
 #include "UnitEntity.h"
-ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleGameData);
+
+ObservationCondition  sampleObservationCondition ("OBSERVATION_CONDITION", &sampleBasicCondition);
 ObservationCondition::ObservationCondition(const ObservationCondition * prototype)
   : BasicCondition(prototype)
 {
@@ -23,25 +24,38 @@ GameData * ObservationCondition::createInstanceOfSelf()
 //#include "LocationEntity.h"
 
 
-bool ObservationCondition::isSatisfied(TokenEntity * entity)
+bool ObservationCondition::isSatisfied(TokenEntity * entity, Entity * target)
 {
 //  cout << unit->print()<< "at "<<unit->getLocation()->print() << "observing with "<< unit->getObservation() << " vs " <<observationRequired_<<endl;
    UnitEntity * unit = dynamic_cast<UnitEntity *>(entity);
-   if(unit==0)
+   if(unit==0) // Observation may be later defined also for buildings
     return false;
-  if(unit->getObservation() >= observationRequired_)
+   UnitEntity * targetUnit = dynamic_cast<UnitEntity *>(target);
+   if(targetUnit ==0) // May be some stealth Entities would be defined later
+   return true;
+
+
+
+  if(unit->getObservation() >= targetUnit->getStealth() + observationRequired_ )
     return true;
   else
     return false;  
-//  return (unit->getObservation() >= observationRequired_);
 }
 
 
 
 STATUS ObservationCondition::initialize ( Parser *parser )
 {
+
   observationRequired_ = parser->getInteger();
   return OK;
+}
+
+
+
+void ObservationCondition::save(ostream &out)
+{
+    out <<observationRequired_<<endl;
 }
 
 /** Create observation condition*/

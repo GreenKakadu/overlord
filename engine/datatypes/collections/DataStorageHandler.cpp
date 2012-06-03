@@ -14,7 +14,7 @@
 #include "GameData.h"
 #include "PrototypeManager.h"
 #include "GameConfig.h"
-
+extern bool isFileExist(string filename);
 extern bool testMode;
 ofstream reportlist; 
 
@@ -23,22 +23,41 @@ ofstream reportlist;
 DataStorageHandler::DataStorageHandler (string * filename)
 {
 	filename_ = filename;
-  status = UNDEFINED;
+        collectionSize_ =0;
+    if(isFileExist(*filename_))
+    {
+        status = UNDEFINED;
+    }
+    else
+    {
+        cout << "Can't find file " <<*filename<< endl;
+        status = IO_ERROR;
+    }
 //cout << "Collection(s) "<< filename->c_str() << " created.\n";
 }
 
 DataStorageHandler::DataStorageHandler(const char * filename)
 {
     filenameString_ = string(filename);
-    filename_ = &filenameString_;
-    status = UNDEFINED;
+         collectionSize_ =0;
+   filename_ = &filenameString_;
+    if(isFileExist(*filename_))
+    {
+        status = UNDEFINED;
+    }
+    else
+    {
+        cout << "Can't find file " <<filename<< endl;
+        status = IO_ERROR;
+    }
+
     //cout << "Collection "<< string(filename) << " created.\n";
 }
 
 void DataStorageHandler::setCollection(BasicCollection *collection)
 {
     collection_ = collection;
-    if (status == OK)
+    if (status == UNDEFINED)
     {
         collection->setCollectionKeyword(collectionKeyword_);
         collection->redimention(collectionSize_);
@@ -51,13 +70,14 @@ DataStorageHandler::~DataStorageHandler()
     //   collection_->clear();
     if (!collectionKeyword_.empty())cout << "Data handler [" << collectionKeyword_ << "] Destroyed " << endl;
 }
-
+/* Creates empty collection*/
 STATUS DataStorageHandler::open()
 {
     parser_ = new FileParser(filename_->c_str());
     if (parser_->status != OK)
     {
         status = IO_ERROR;
+         cout << "Can't find open file " <<filename_<< endl;
         return status;
     }
     status = OK;
@@ -73,6 +93,7 @@ STATUS DataStorageHandler::open()
     }
     collectionKeyword_ = parser_->getWord();
     if (collection_) collection_->setCollectionKeyword(collectionKeyword_);
+    //cout << "For file "<<*filename_ <<" keyword is set to "  << collectionKeyword_<<endl;
     if (parser_ -> matchInteger())
     {
         collectionSize_ = parser_->getInteger();
@@ -84,13 +105,16 @@ STATUS DataStorageHandler::open()
 
 STATUS DataStorageHandler::load()
 {
+    int counter = 0;
     string tag;
     string keyword;
     string optionalDerivativeKeyword;
     if (status == UNDEFINED) // delayed initialization
         open();
-    if (status == IO_ERROR)
+    if (status == IO_ERROR)//Can't find open file 
+    {
         return status;
+    }
     parser_->setPosition(beginning_);
     parser_->setLineNumber(0);
     do //Find class keyword  definition
@@ -98,37 +122,34 @@ STATUS DataStorageHandler::load()
         parser_->getLine();
         if (parser_->matchKeyword(collectionKeyword_.c_str()))
         {
-            tag = parser_->getWord();
-            optionalDerivativeKeyword = parser_->getWord();
-            if (optionalDerivativeKeyword.length() > 0)
-            {
-                keyword = optionalDerivativeKeyword;
-            } else
-            {
-                keyword = collectionKeyword_;
-            }
-            GameData * temp = prototypeManager->findInRegistry(keyword);
-            if (temp == 0)
-            {
-                cout << "Can't  find object of type " << keyword
-                        << " in registry " << endl;
-            } else
-            {
-                GameData * newObject = temp ->createInstanceOfSelf();
-                if (newObject == 0)
-                {
-                    cout << "Can't create object from tag " << tag << endl;
-                    return IO_ERROR;
-                }
+        tag = parser_->getWord();
+        if (tag.empty())
+        {
+            continue;
+        }
+        GameData *newObject = loadGameData(parser_, tag,collectionKeyword_,&status);
 
-                newObject -> setTag(tag);
-                //if(newObject->checkObjectType(collectionKeyword_))
-                {
-                    collection_ -> add(newObject);
-                    //cout << " After adding "<< newObject->print();
+//        if(collectionKeyword_ == "ORDER_INTERFACE")
+//        {
+//            cout<<"DataStorageHandler::load() ORDER_INTERFACE "<< (long)newObject<< " "<<newObject->getTag()<< " "<<(long)(&newObject->getTag()) <<endl;
+//        }
+//
 
-                }
+
+            if (status == IO_ERROR)
+            {
+                cout << "Can't create object for tag  "<<tag << endl;
+                return status;
             }
+           if(newObject)
+            {
+      //if(newObject->checkObjectType(collectionKeyword_))
+
+                        collection_ -> add(newObject);
+                        counter++;
+                        //cout << " After adding "<< newObject->print();
+
+                    }
         }
 
         if (parser_->matchKeyword("RIP"))
@@ -140,16 +161,65 @@ STATUS DataStorageHandler::load()
         }
     } while (!parser_->eof());
 
-    if (keyword.empty())
+    if (counter==0)
     {
         cout << "Data in the file " << filenameString_
              << "  are not matching keyword " << collectionKeyword_
              << ". May be it is empty." << endl;
     }
+    else
+    {
+    cout<<collectionKeyword_<< ": "<<counter<<" items added"<<endl;
+    }
     return OK;
 }
 
+GameData * DataStorageHandler::loadGameData(Parser * parser, string tag, string collectionKeyword, STATUS * status)
+{
+    int counter = 0;
+    string keyword;
+    string optionalDerivativeKeyword;
 
+    optionalDerivativeKeyword = parser->getWord();
+    if (optionalDerivativeKeyword.length() > 0)
+    {
+        keyword = optionalDerivativeKeyword;
+    }
+    else
+    {
+        keyword = collectionKeyword;
+    }
+    AbstractData * temp = prototypeManager->abstractFindInRegistry(keyword);
+    if (temp == 0)
+    {
+        cout << "Can't  find object of type " << keyword
+                << " in registry " << endl;
+    }
+    else
+    {
+        GameData * nextTemp = dynamic_cast<GameData *> (temp);
+        if (nextTemp == 0)
+        {
+            cout << "Wrong object  type " << keyword << " in " << collectionKeyword << endl;
+        }
+        else
+        {
+            GameData * newObject = nextTemp ->createInstanceOfSelf();
+            if (newObject == 0)
+            {
+                cout << "Can't create object from tag " << tag << endl;
+                *status = IO_ERROR;
+                return 0;
+            }
+
+            newObject -> setTag(tag);
+            return newObject;
+
+
+        }
+    }
+    return 0;
+}
 
 STATUS DataStorageHandler::save()
 {
@@ -159,7 +229,7 @@ STATUS DataStorageHandler::save()
   cout << "Saving data for "<< collectionKeyword_  <<endl;
   ofstream outfile ((*filename_ + ".new").c_str());
  //  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
-  outfile << "# Overlord units data " <<endl;
+  outfile << "# Overlord  data " <<endl;
   time ( &rawtime );
   outfile << "# Ver " <<  GameConfig::version <<" " <<ctime(&rawtime) <<endl;
   outfile << "KEYWORD " << collectionKeyword_ << " " <<collection_ -> size() <<endl;
@@ -167,10 +237,11 @@ STATUS DataStorageHandler::save()
 
   for (i=0; i < collection_ -> size()  ; i++)
     {
-      if (collection_->findByIndex(i) != 0)
+      GameData * data = collection_->findByIndex(i);
+      if (data != 0)
 	      {
 	        //cout << "Saving entity "<< ((*collection_)[i])->getTag()  <<endl;
-	        (collection_->findByIndex(i)) -> save(outfile);
+	        data -> save(outfile);
 	      }
     }
   outfile <<endl;
@@ -191,7 +262,10 @@ STATUS DataStorageHandler::initializeData()
  GameData * currentObject = 0;
   string currentTag;
   long int i=0;
-
+  if (status == IO_ERROR)//Can't find open file
+  {
+      return status;
+  }
    parser_->setPosition ( beginning_ );
    parser_->setLineNumber ( 0 );
   while (!  parser_->eof() )
@@ -200,6 +274,10 @@ STATUS DataStorageHandler::initializeData()
      if ( parser_->matchKeyword (collectionKeyword_.c_str()))
 	  {
 	    currentTag = parser_->getWord();
+            if(currentTag.empty())
+            {
+                continue;
+            }
 	    currentObject = collection_->findByTag(currentTag);
 	    if (currentObject != 0)
 	      {

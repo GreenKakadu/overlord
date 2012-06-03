@@ -22,12 +22,16 @@ class Entity;
 class SkillBonusAttribute : public BasicAttribute  {
 public: 
 	SkillBonusAttribute();
-	SkillBonusAttribute(const char * keyword, const char * reportTitle= "Skill bonuses");
+	SkillBonusAttribute(const char * keyword, 
+            const char * reportTitle= "Skill bonuses");
+        SkillBonusAttribute(SkillBonusAttribute & p);
 	~SkillBonusAttribute();
   STATUS     initialize      ( Parser *);
 	int getSkillBonus(SkillRule * skill);
   void add( BonusElement * data);
   void save(ostream &out);
+  bool isEmpty();
+  vector <AbstractArray>  aPrintReport();
   ostream& report(ostream &out);
   void remove( BonusElement * data);
   void extractKnowledge (Entity * recipient, int parameter);

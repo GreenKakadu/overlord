@@ -22,8 +22,8 @@ operations on all objects stored in the collection.
 extern int Roll_1Dx(int n);
 
 template <class T>
-EntitiesCollection<T>::EntitiesCollection (DataStorageHandler * handler,
-                                          long int dimensions) : BasicEntitiesCollection(handler, dimensions)
+EntitiesCollection<T>::EntitiesCollection (DataStorageHandler * handler,GameData *sample,
+                                          long int dimensions) : BasicEntitiesCollection(handler, sample,dimensions)
 {
 }
 

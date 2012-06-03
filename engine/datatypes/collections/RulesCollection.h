@@ -19,7 +19,7 @@ class  GameData;
 
 template <class T> class RulesCollection : public BasicRulesCollection {
   public:
-    RulesCollection(DataStorageHandler * handler) : BasicRulesCollection(handler){}
+    RulesCollection(DataStorageHandler * handler = 0, GameData *sample=0) : BasicRulesCollection(handler,sample){}
     ~RulesCollection(){/*clear();*/}
           T*            operator []  (long int        index);
           T*            operator []  (const string &tag);       

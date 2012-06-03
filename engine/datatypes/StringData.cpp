@@ -13,4 +13,17 @@
  *                                                                                            *
  ***************************************************************************/
 #include "StringData.h"
+#include "LineParser.h"
+
+// creates instance of string data with value of empty string
+AbstractData * StringData::createAbstractInstance()
+{
+   return new StringData("");
+}
+
+AbstractData *  StringData::loadInstance(Parser *parser)
+{
+   Data_ = parser->getWord();
+   return this;
+}
 

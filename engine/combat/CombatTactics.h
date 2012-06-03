@@ -24,9 +24,11 @@ class CombatTactics {
 public: 
 	CombatTactics();
 	~CombatTactics(){}
+	CombatTactics(CombatTactics & p);
    STATUS     initialize      ( Parser *parser);
    void     defaultInitialization();
    void       save (ostream &out);
+   void       save (ostream &out, string prefix);
    void       report (ostream &out);
    string print();
     inline CombatMoveVariety * getCombatMove() const {return move_;}
@@ -37,12 +39,16 @@ public:
     inline void setCombatStance(CombatStanceVariety * value) { stance_ = value;}
     inline void setCombatRank(CombatRankVariety * value) { rank_ = value;}
     inline void setCombatFile(CombatFileVariety * value) { file_ = value;}
-  
+    bool isDefined();
+    bool isDefault();
+    void undefine();
+    inline bool isUnknown(){return isUnknown_;}
     protected:
     CombatMoveVariety * move_;
     CombatStanceVariety * stance_;
     CombatRankVariety   * rank_;
     CombatFileVariety   * file_;
+    bool isUnknown_;
     private:
 };
    inline ostream& operator << (ostream& out,  CombatTactics& tactics)

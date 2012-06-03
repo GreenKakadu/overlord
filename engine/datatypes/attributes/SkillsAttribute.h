@@ -29,51 +29,53 @@ class FactionEntity;
 
 class SkillsAttribute : public BasicAttribute  {
 public:
-	SkillsAttribute(){}
-//	SkillsAttribute(TokenEntity * entity);
-	SkillsAttribute(vector <SkillElement > &skills);
-	~SkillsAttribute();
-  STATUS     initialize      ( Parser *);
-  void save(ostream &out);
-  ostream& report(ReportPrinter &out);
-  void reportAll(ReportPrinter &out);
-  void reportAllShort(ReportPrinter &out);
+    SkillsAttribute(){}
+    SkillsAttribute(SkillsAttribute &p);
+    SkillsAttribute(vector <SkillElement > &skills);
+    ~SkillsAttribute();
 
+    STATUS     initialize      ( Parser *);
+    void save(ostream &out);
+    void save(ostream &out, string prefix);
+    ostream& report(ReportPrinter &out);
+    void reportAll(ReportPrinter &out);
+    void reportAllShort(ReportPrinter &out);
+     virtual void extractAndAddKnowledge(Entity * recipient, int parameter = 0);
 
-	virtual int getProductionBonus(SkillRule * skill);
- 	virtual int getMovementBonus(MovementVariety * mode);
-  virtual int getLearningBonus(SkillRule * skill);
-  virtual int getStudyBonus(SkillRule * skill);
+    virtual int getProductionBonus(SkillRule * skill);
+    virtual int getMovementBonus(MovementVariety * mode);
+    virtual int getLearningBonus(SkillRule * skill);
+    virtual int getStudyBonus(SkillRule * skill);
 
-          vector < SkillElement>& getAll();
-          virtual int  addSkill(SkillRule  * skill, int expPoints);
-          virtual void addSkillExperience(SkillRule  * skill, int expPoints);
-          virtual int  getSkillLevel(SkillRule  * const skill);
-          virtual int  getSkillPoints(SkillRule  * const skill);
-          virtual SkillElement *  getSkillElement(SkillRule  * const skill);
-          virtual bool hasSkill(SkillRule  * skill, int experience);
+    vector < SkillElement>& getAll();
+    virtual int  addSkill(SkillRule  * skill, int expPoints);
+    virtual void addSkillExperience(SkillRule  * skill, int expPoints);
+    virtual int  getSkillLevel(SkillRule  * const skill);
+    virtual int  getSkillPoints(SkillRule  * const skill);
+    virtual SkillElement *  getSkillElement(SkillRule  * const skill);
+    virtual bool hasSkill(SkillRule  * skill, int experience);
 
-  inline  virtual bool hasSkillLevel(SkillRule  * skill, int level)
-        {return hasSkill(skill, skill->getLevelExperience(level));}
-  inline  virtual bool hasSkill(SkillLevelElement * skill)
-        {return hasSkill(skill->getSkill(),
-						 skill->getSkill()->getLevelExperience(skill->getLevel()));}
-  inline virtual bool hasSkill(SkillElement  * skill)
-        {return hasSkill(skill->getSkill(), skill->getExpPoints());}
-  inline virtual bool hasSkill(SkillElement  skill)
-        {return hasSkill(skill.getSkill(), skill.getExpPoints());}
+    inline  virtual bool hasSkillLevel(SkillRule  * skill, int level)
+    {return hasSkill(skill, skill->getLevelExperience(level));}
+    inline  virtual bool hasSkill(SkillLevelElement * skill)
+    {return hasSkill(skill->getSkill(),
+                     skill->getSkill()->getLevelExperience(skill->getLevel()));}
+    inline virtual bool hasSkill(SkillElement  * skill)
+    {return hasSkill(skill->getSkill(), skill->getExpPoints());}
+    inline virtual bool hasSkill(SkillElement  skill)
+    {return hasSkill(skill.getSkill(), skill.getExpPoints());}
 
-				void clear();
-         int              getCapacity(int modeIndex);
-				 int              getCapacity(MovementVariety * mode);
-				 void forgetSkill(SkillRule * skill, TokenEntity * entity);
-         void  addStats(EntityStatistics * stats);
-				 void proportionallyDiluteAll(int oldNumber, int newNumber,
-				 		 UnitEntity * entity);
+    void clear();
+    int              getCapacity(int modeIndex);
+    int              getCapacity(MovementVariety * mode);
+    void forgetSkill(SkillRule * skill, TokenEntity * entity);
+    void  addStats(EntityStatistics * stats);
+    void proportionallyDiluteAll(int oldNumber, int newNumber,
+                                 UnitEntity * entity);
 
-
+    vector <AbstractArray>   aPrint();
 		protected:
-  vector < SkillElement>      skills_;
-//	TokenEntity * entity_;
+    vector < SkillElement>      skills_;
+    //	TokenEntity * entity_;
 };
 #endif

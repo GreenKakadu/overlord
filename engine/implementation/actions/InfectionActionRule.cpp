@@ -42,7 +42,7 @@ InfectionActionRule::initialize        ( Parser *parser )
 
     if (parser->matchKeyword("EFFECT"))
     {
-        effectType_ = dynamic_cast<PlagueEffectRule *>(effectRules[parser->getText()]);
+        effectType_ = dynamic_cast<PlagueEffectRule *>(gameFacade->effectRules[parser->getText()]);
         return OK;
     }
     return OK;
@@ -76,7 +76,7 @@ ACTION_RESULT  InfectionActionRule::carryOut(Entity * entity,  AbstractData * pa
 //          int roll= Roll_1Dx(10000);
 //          cout<<"Roll: "<<roll<<" vs. "<<((effectType_->getlethality()*100)/gameConfig.daysInMonth)<<endl;
 //           if(roll < (effectType_->getlethality()*10)/gameConfig.daysInMonth)
-           if(Roll_1Dx(10000)< (effectType_->getlethality()*100)/gameConfig.daysInMonth)
+           if(Roll_1Dx(10000)< (effectType_->getlethality()*100)/gameFacade->getGameConfig()->daysInMonth)
            {
                counter++;
            }
@@ -98,7 +98,7 @@ ACTION_RESULT  InfectionActionRule::carryOut(Entity * entity,  AbstractData * pa
          unit->addReport(new UnaryMessage(plagueDeathReporter,unit));
          // report
        }
-       location->addResource(items["dead"],counter);
+       location->addResource(gameFacade->items["dead"],counter);
        //add dead body to location
       }
 

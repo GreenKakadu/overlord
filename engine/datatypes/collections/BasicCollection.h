@@ -20,13 +20,14 @@ class  NewEntityPlaceholder;
 /** Basic Collection of Polymorphic Persistent objects */
 class BasicCollection {
 public:
-	  BasicCollection(DataStorageHandler * handler){ bindHandler(handler);}
+	  BasicCollection(DataStorageHandler * handler =0, GameData * sample = 0)
+                                                    { bindHandler(handler); sampleData_ = sample;}
 	  virtual ~BasicCollection();
 	virtual GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
 	virtual GameData* findByIndex      (const long intindex, bool errorReportEnabled = true);
 	virtual NewEntityPlaceholder * checkPlaceholder(const string &tag);
 	virtual NewEntityPlaceholder * findOrAddPlaceholder(const string &tag);
-  virtual void       add  ( GameData * /*const*/ newRule);
+  virtual void       add  ( GameData * /*const*/ newRule, bool isReportDuplication=false);
   virtual bool      isValidTag (const string &tag)  ;//const;
   virtual bool      checkDataType    (const string &tag);
 	virtual long       size()                       const;
@@ -35,6 +36,8 @@ public:
   virtual void    redimention (long intsize);
           void    bindHandler(DataStorageHandler * handler);
   inline  DataStorageHandler * getStorageHandler() const { return handler_;}
+  string getStorageName();
+  int getStorageLocator();
           void setCollectionKeyword(const string &keyword) {collectionKeyword_ =keyword; }// not needed
   inline  STATUS getStatus() const {return status;}
   inline  string getCollectionKeyword() const {return collectionKeyword_;}
@@ -42,10 +45,12 @@ public:
   virtual void addRIPindex(long ){}
   virtual long int getRIPsize() const{return 0;}
   virtual long int getRIPbyIndex(long int ) const {return 0;}
+  inline GameData * getSampleObject() {return sampleData_;}
   
  protected:
 		string collectionKeyword_;
     DataStorageHandler * handler_;
+    GameData * sampleData_;
     STATUS status;
 private:
 

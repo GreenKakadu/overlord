@@ -26,21 +26,41 @@ RulesIterator iter;
    }
  if(errorReportEnabled)
  //cerr << "Error findByTag: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
-   cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName())
-           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+   cerr << "Error: Tag [" << tag << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
            << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
  return 0 ;
 }
+
+
+
 GameData* BasicRulesCollection::findByIndex (const long int index, bool errorReportEnabled)
 {
 	if ( index <= size())
          return data_[index];
  if(errorReportEnabled)
- cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+ cerr << "Error: BasicRules Array index (" << index << ") <in ["<<getCollectionKeyword()<<"] is out of array dimensions!\n";
  return 0 ;
 }
 
-void   BasicRulesCollection::add  ( GameData * /*const*/ newRule)
+
+
+GameData* BasicRulesCollection::findByName (const string &name, bool errorReportEnabled)
+{
+RulesIterator iter;
+ for (iter = begin(); iter != end(); iter++)
+   {
+      if ((*iter) ->getName() == name)
+       return  (*iter);
+   }
+ if(errorReportEnabled)
+   cerr << "Error: Name [" << name << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
+           << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
+ return 0 ;
+}
+
+void   BasicRulesCollection::add  ( GameData * /*const*/ newRule, bool)
 {
   data_.push_back ( dynamic_cast< Rule*> (newRule) );
 //  vector <Rule *>::iterator iter = data_.end() - 1;

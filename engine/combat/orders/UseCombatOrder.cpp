@@ -36,7 +36,7 @@ STATUS UseCombatOrder::loadParameters(Parser * parser,
 {
    if(!entityIsTokenEntity(entity))
             return IO_ERROR;
-    if(!parseGameDataParameter(entity,  parser, items, "item tag", parameters))
+    if(!parseGameDataParameter(entity,  parser, gameFacade->items, "item tag", parameters))
             return IO_ERROR;
 
 	// Set initiative to initiative of CombatAction

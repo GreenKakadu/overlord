@@ -109,7 +109,7 @@ ACTION_RESULT PickpocketActionRule::carryOut(Entity * entity, AbstractData * par
   //calculate chances
   int chance = 5 * thief->getStealth();
 //      cout << "==PP==> Initial chance "<<chance <<endl;
-  int skillLevel = thief->getSkillLevel(skills["ppoc"]);
+  int skillLevel = thief->getSkillLevel(gameFacade->skills["ppoc"]);
   if(skillLevel > 1)
         chance += thief->getStealth();
 //      cout << "==PP==> Chance after level correction"<<chance <<endl;

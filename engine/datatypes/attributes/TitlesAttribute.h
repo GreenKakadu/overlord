@@ -24,41 +24,47 @@ class SkillRule;
 class FactionEntity;
 class TokenEntity;
 /**
-  *@author Alex Dribin
-  */
+ *@author Alex Dribin
+ */
 
-class TitlesAttribute : public BasicAttribute  {
-public: 
-	TitlesAttribute(){}
-	TitlesAttribute(vector <TitleElement *> &titles);
-//	TitlesAttribute(UnitEntity * unit);
-	~TitlesAttribute();
-  STATUS     initialize      ( Parser *);
-  void save(ostream &out);
-  ostream& report(ostream &out);
+class TitlesAttribute : public BasicAttribute {
+public:
 
-// Titles ========================================================
-          void reportAll(FactionEntity * faction, ostream &out);
-	        void addTitle(TitleElement * title);
-          void removeTitle(TitleElement * title);
-					bool mayCancelTitle(TitleElement * title);
-          void deleteTitle(TitleRule * titleType);
-          TitleElement * findTitle(TitleRule * titleType);
-          void activateAll();
+    TitlesAttribute() {}
+    TitlesAttribute(vector <TitleElement *> &titles);
+    TitlesAttribute(TitlesAttribute & p);
+    //	TitlesAttribute(UnitEntity * unit);
+    ~TitlesAttribute();
+    STATUS initialize(Parser *);
+    void save(ostream &out);
+    ostream& report(ostream &out);
 
+    // Titles ========================================================
+    vector <AbstractArray> aPrintAll();
+    vector <AbstractData *> aPrintUnitTitles();
+    //vector <AbstractData *> aPrintAll();
+    void reportAll(FactionEntity * faction, ostream &out);
+    void addTitle(TitleElement * title);
+    void removeTitle(TitleElement * title);
+    bool mayCancelTitle(TitleElement * title);
+    void deleteTitle(TitleRule * titleType);
+    TitleElement * findTitle(TitleRule * titleType);
+    void activateAll();
 
+    virtual int getProductionBonus(SkillRule * skill);
+    virtual int getMovementBonus(MovementVariety * mode);
+    virtual int getLearningBonus(SkillRule * skill);
+    virtual int getStudyBonus(SkillRule * skill);
+    //  ==============================================
+    int getControlPointsBonus();
+    void releaseAll(UnitEntity * unit);
+    void printAll(ostream &out);
 
-	virtual int getProductionBonus(SkillRule * skill);
- 	virtual int getMovementBonus(MovementVariety * mode);
-  virtual int getLearningBonus(SkillRule * skill);
-  virtual int getStudyBonus(SkillRule * skill);
-//  ==============================================
-          int getControlPointsBonus();
-					void releaseAll(UnitEntity * unit);
-          void printAll(ostream &out);
-					vector < TitleElement *> * getAll() {return &titles_;}
-		protected:
-  vector < TitleElement *>      titles_;
+    vector < TitleElement *> * getAll() {
+        return &titles_;
+    }
+protected:
+    vector < TitleElement *> titles_;
 //	UnitEntity * unit_;
 };
 typedef   vector <TitleElement *>::iterator  TitleIterator;

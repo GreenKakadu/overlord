@@ -21,15 +21,18 @@ typedef     vector <Entity *>::iterator EntitiesIterator;
 
 class BasicEntitiesCollection : public  BasicCollection{
 public:
-	  BasicEntitiesCollection(DataStorageHandler * handler):BasicCollection(handler){}
-    BasicEntitiesCollection (DataStorageHandler * handler,
-                                          long int dimensions);
+    BasicEntitiesCollection(DataStorageHandler *handler =0, GameData *sample=0):BasicCollection(handler,sample){}
+    BasicEntitiesCollection (DataStorageHandler * handler =0, GameData *sample=0,
+                                          long int dimensions=1000);
   virtual ~BasicEntitiesCollection();
-	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
-	        GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
+  const static int incrementSize;
+GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
+GameData* findByName       (const string &name, bool errorReportEnabled = true);
           bool          isValidTag   (const string &tag)  ;//const;
           long int        getIndex     (const string &tag, bool errorReportEnabled = true)  ;
-  virtual void             add      (GameData* /*const*/ newEntity);
+          long int        extractIndex     (const string &tag, bool errorReportEnabled = true)  ;
+  virtual void             add      (GameData* /*const*/ newEntity, bool isReportDuplication =true);
   inline long int        size() const    {return data_.size();}
   inline  EntitiesIterator begin()         {return data_.begin();}
   inline  EntitiesIterator end()           {return data_.end();}

@@ -20,7 +20,7 @@
 
 
 class RaceRule;
-/**subclass of TokenEntities that are summoned duiring battle and dissapear when battle is over
+/**subclass of TokenEntities that are summoned during battle and disappear when battle is over
   *@author Alex Dribin
   */
 class BattleEntity : public UnitEntity  {

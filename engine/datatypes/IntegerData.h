@@ -20,6 +20,8 @@
 class IntegerData : public AbstractData  {
 public: 
 	IntegerData(int num) {value_ = num;}
+  AbstractData * createAbstractInstance();
+  AbstractData *  loadInstance(Parser *parser);
   string print();
   inline int  getValue() const {return value_;}
   inline void setValue(int num)  {value_ = num;}

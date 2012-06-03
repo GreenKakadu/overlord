@@ -13,7 +13,7 @@
 SkillBonusAttribute::SkillBonusAttribute()
 {
    keyword_ = "STUDY_BONUS";
-	 reportTitle_ = "Skill bonuses";
+   reportTitle_ = " Skill bonuses";
 }
 
 
@@ -25,6 +25,12 @@ SkillBonusAttribute::SkillBonusAttribute(const char * keyword, const char * repo
 
 }
 
+SkillBonusAttribute::SkillBonusAttribute(SkillBonusAttribute & p)
+{
+    keyword_ =p.keyword_;
+    skillBonuses_ = p.skillBonuses_;
+    reportTitle_ = p.reportTitle_;
+}
 
 
 SkillBonusAttribute::~SkillBonusAttribute(){
@@ -35,14 +41,21 @@ SkillBonusAttribute::~SkillBonusAttribute(){
 STATUS
 SkillBonusAttribute::initialize        ( Parser *parser )
 {
-	if ( parser->matchKeyword (keyword_) )
+//     if(skillBonuses_.size())
+//    {
+//         if((*(skillBonuses_.begin())).getSkill()->getTag()=="wate")
+//         {
+//           cout<<"======> Initializing "<<(*(skillBonuses_.begin())).getSkill()->getTag() <<" SkillBonusAttribute "<<skillBonuses_.size()<<endl;
+//         }
+//    }
+     if ( parser->matchKeyword (keyword_) )
     {
-        SkillRule * skill = skills[parser->getWord()];
+        SkillRule * skill = gameFacade->skills[parser->getWord()];
         int bonusPoints = parser->getInteger();
         if(( skill == 0 ) || (bonusPoints == 0) )
           return OK;
         else
-        	skillBonuses_.push_back(BonusElement(skill, bonusPoints));
+        	add(new BonusElement(skill, bonusPoints));
     }
    return OK;
 }
@@ -83,14 +96,15 @@ return bonus;
 
 void SkillBonusAttribute::add( BonusElement * data)
 {
-  for (BonusIterator2  iter = skillBonuses_.begin();
+
+
+     for (BonusIterator2  iter = skillBonuses_.begin();
     iter != skillBonuses_.end();  ++iter)
     {
       if ( (*iter).getSkill() == data->getSkill() )
         {
 
-          (*iter).setBonusPoints((*iter).getBonusPoints() +
-									 data->getBonusPoints()) ;
+          (*iter).setBonusPoints((*iter).getBonusPoints() + data->getBonusPoints()) ;
             return;
         }
     }
@@ -142,7 +156,7 @@ void SkillBonusAttribute::save(ostream &out)
 {
   for (BonusIterator2 bonusIter = skillBonuses_.begin(); bonusIter != skillBonuses_.end(); bonusIter++)
     {
-        out << keyword_ ;
+        out << keyword_ <<" ";
         (*bonusIter).save(out);
     }
 }
@@ -168,3 +182,25 @@ ostream& SkillBonusAttribute::report(ostream &out)
 		return out;
 }
 
+vector <AbstractArray>  SkillBonusAttribute::aPrintReport()
+{
+    vector <AbstractArray> out;
+    vector <AbstractData *> v;
+    v.push_back(new StringData(reportTitle_));
+    v.push_back(new StringData(": "));
+    out.push_back(v);
+
+    for ( vector< BonusElement>::iterator iter = skillBonuses_.begin();
+    iter != skillBonuses_.end(); iter++)
+    {
+        out.push_back((*iter).aPrint());
+    }
+
+    //out.push_back(new StringData(" "));
+    return out;
+}
+
+bool SkillBonusAttribute::isEmpty()
+{
+   return (skillBonuses_.empty());
+}

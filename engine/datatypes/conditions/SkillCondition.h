@@ -21,20 +21,22 @@ public:
   SkillCondition(const SkillCondition * prototype);
 	~SkillCondition(){delete skillRequirement_;}
   STATUS      initialize ( Parser *parser );
+  virtual void save(ostream &out);
   GameData * createInstanceOfSelf();
-  bool isSatisfied(TokenEntity * unit);
-  void conditionHandler(Entity * entity);
-  void setSubject(Rule * subject);
+  bool isSatisfied(TokenEntity * unit, Entity * target=0 );
+//  void conditionHandler(Entity * entity);
+//  void setSubject(Rule * subject);
   void extractKnowledge (Entity * recipient, int parameter = 0);
   SkillLevelElement * getSkillLevel() const {return skillRequirement_;}
-  Rule * getSubject() const ;
+//  Rule * getSubject() const ;
   SkillRule * getSkill() const ;
   int  getLevel() const ;
 //  ostream & reportCondition(ostream & out);
   string print(){return string("condition: ") + skillRequirement_->print();}
+  vector <AbstractData *> aPrint();
 protected:
 	SkillLevelElement * skillRequirement_;
-  ItemRule * subject_;
+//  ItemRule * subject_;
 };
 extern SkillCondition  sampleSkillCondition;
 

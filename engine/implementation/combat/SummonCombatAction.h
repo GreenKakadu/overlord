@@ -31,10 +31,12 @@ public:
     ~SummonCombatAction() {}
     GameData * createInstanceOfSelf();
     STATUS initialize(Parser *parser);
+        virtual void save(ostream &out);
     BattleTargets getPotentialTargets(BattleInstance * battleInstance,
             CombatReport * report);
     void performAction(BattleInstance * battleInstance,
             BattleTargets & potentialTargets, CombatReport * report);
+    void extractKnowledge (Entity * recipient, int parameter = 0);
 protected:
     BattleEntity * entity_;
     bool randomPlace_;

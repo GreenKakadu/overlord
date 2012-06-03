@@ -31,8 +31,15 @@ bool      BasicCollection::checkDataType    (const string &)
 void BasicCollection::bindHandler(DataStorageHandler * handler)
 {
   handler_ = handler;
-  handler->setCollection(this);
-//  cout << " Handled binded for collection "  <<collectionKeyword_ << endl;
+  if(handler)
+  {
+    handler->setCollection(this);
+    if(handler->status != IO_ERROR)
+    {
+        status = OK;
+    }
+  }
+  //cout << " Handled binded for collection "  <<collectionKeyword_ << endl;
 }
 
 
@@ -46,7 +53,7 @@ GameData* BasicCollection::findByTag        (const string &, bool ){return 0;}
 GameData* BasicCollection::findByIndex      (const long int , bool){return 0;}
 
 
-void BasicCollection::add  ( GameData * /*const*/ newRule)
+void BasicCollection::add  ( GameData * /*const*/ newRule, bool isReportDuplication)
 {
 }
 
@@ -72,3 +79,27 @@ NewEntityPlaceholder * BasicCollection::checkPlaceholder(const string &)
   return 0;
 }
 
+string BasicCollection::getStorageName()
+{
+    if (handler_)
+    {
+        return *(handler_->getInputFileName());
+    }
+    else
+    {
+        return "Unknown storage";
+    }
+}
+
+int BasicCollection::getStorageLocator()
+{
+    if (handler_)
+    {
+        return handler_->getInputLineNumber();
+    }
+    else
+    {
+        return 0;
+    }
+
+}

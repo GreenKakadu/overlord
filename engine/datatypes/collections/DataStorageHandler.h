@@ -35,6 +35,7 @@ public:
    STATUS status;
    int getInputLineNumber();
    string * getInputFileName();
+   static GameData * loadGameData(Parser * parser, string tag, string collectionKeyword, STATUS * status);
 protected:
   FileParser * parser_;
   string * filename_;

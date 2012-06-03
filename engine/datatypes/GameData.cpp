@@ -10,10 +10,15 @@
 #include "GameData.h"
 #include "ProcessingMode.h"
 #include "PrototypeManager.h"
+#include "DataManipulator.h"
+#include "misc/LineParser.h"
+#include "GameFacade.h"
 GameData       sampleGameData("GameData",0);
-
+const string GameData::l_bracket("[");
+const string GameData::r_bracket("]");
 string GameData::objectKeyword = "GameData";
 GameData *  GameData::objectParent = 0;
+//extern DataManipulator * dataManipulatorPtr;
 
 GameData * sampleGameDataO = GameData::registerObject();
 
@@ -34,21 +39,38 @@ GameData::GameData (const string & keyword, GameData * parent)
   prototypeManager->addToRegistry(this);
 }
 
-
-
 /** Used in the cloning of new objects  */
 GameData::GameData(const GameData * prototype)
 {
-	if( prototype == 0)
-		cout << "Error in  GameData constructor: prototype is 0\n" ;
-      parent_ = prototype->getParent();
-      keyword_ = prototype->getKeyword();
+    if (prototype == 0)
+    {
+        cout << "Error in  GameData constructor: prototype is 0\n";
+    }
+    else
+    {
+        parent_ = prototype->getParent();
+        keyword_ = prototype->getKeyword();
+    }
 }
 
 GameData::GameData()
 {
 }
 
+
+
+GameData * GameData::createByKeyword(const string &keyword)
+{
+ AbstractData * temp =  AbstractData::createByKeyword(keyword);
+ return dynamic_cast<GameData *>(temp);
+}
+
+
+AbstractData * GameData::createAbstractInstance()
+{
+
+   return createInstanceOfSelf();
+}
 
 
 /** Produces a clone of sample object */
@@ -58,6 +80,10 @@ GameData::createInstanceOfSelf ( )
   return CREATE_INSTANCE<GameData> (this);
 }
 
+AbstractData *  GameData::loadInstance(Parser *parser)
+{
+    return (gameFacade->getDataManipulator()->findGameData(parser->getWord()));
+}
 
 
 /** initialization  with saved object data */
@@ -80,13 +106,19 @@ GameData::initialize        ( Parser *parser )
 
 
 /**  saving object data */
-void
-GameData::save(ostream &out)
+void GameData::save(ostream &out)
 {
-  out << keyword_ << " " <<tag_ << endl;
+  out << " " <<tag_ << endl;
   if(!name_.empty()) out << "NAME " <<name_ << endl;
   if(!description_.empty()) out << "DESCRIPTION " <<description_  << endl;
   out << endl;
+}
+
+
+void GameData::save(ostream &out, string prefix)
+{
+  if(!name_.empty()) out <<prefix<< " "<< "NAME " <<name_ << endl;
+  if(!description_.empty()) out <<prefix<< " "<< "DESCRIPTION " <<description_  << endl;
 }
 
 
@@ -99,21 +131,45 @@ bool GameData::operator ==  (GameData data2)
 
 
 
-/** Creation of object of type specified by keyword  */
-GameData * GameData::createByKeyword(const string &keyword)
-{
- GameData * temp =  prototypeManager->findInRegistry(keyword);
-	if(temp == 0)
-	{
-		cout << "Unknown polymorphic persistent object [" << keyword  <<"]"<< endl;
-		return 0;
-	}
-	else
-	{
- 		return temp ->createInstanceOfSelf ();
- 	}
+
+string   GameData::getTag()          const { return tag_;}
+
+
+
+/** returns tag for use in reports and messages
+ *  (enbraced in square brackets)
+ */
+string GameData::printTag() const{
+ return ( l_bracket + tag_ + r_bracket);
 }
 
+
+
+/** returns name for use in reports and messages
+ * (followed by tag enbraced in square brackets)
+ */
+string GameData::print() /*const*/
+{
+ return (name_ + l_bracket + tag_ + r_bracket);
+}
+
+
+
+/** returns data identificator in a form of parameter accepted by order */
+void      GameData::saveAsParameter (ostream &out)
+{
+  out <<  " " <<tag_;
+}
+
+
+
+string   GameData::getDescription()  const
+{
+  if(description_.empty())
+    return string("No description");
+  else
+    return description_;
+}
 
 
 /** Checks data consistency */

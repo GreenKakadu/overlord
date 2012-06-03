@@ -21,7 +21,7 @@ template <class T> T* RulesCollection <T>::operator [] (long int index)
 	if (index <= size())
          return dynamic_cast< T*>(data_[index]);
 //	 return dynamic_cast< T*>(*(begin() + index) );
- cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+ cerr << "Error: Rules array index (" << index << ") <in ["<<getCollectionKeyword()<<"] is out of array dimensions!\n";
  return 0 ;
 }
 
@@ -37,8 +37,8 @@ RulesIterator iter;
    } 
 
  //cerr << "Error []: Tag (" << tag  << ") was not found in "<<collectionKeyword_<<"-s collection\n";
-    cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName())
-           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+    cerr << "Error: Tag [" << tag << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
            << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
     return 0 ;
 }

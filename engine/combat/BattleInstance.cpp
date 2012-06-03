@@ -20,6 +20,7 @@
 #include "BasicLearningStrategy.h"
 #include "EquipmentSlotVariety.h"
 #include "LeaderRaceRule.h"
+#include "SkillCondition.h"
 
 SkillRule * parrySkill;
 SkillRule * meleeSkill;
@@ -888,8 +889,11 @@ void BattleInstance::addFinalExperience(int survived, int totalEnemies, int surv
 			 	(*iter).getItemType()->demandsEquipCondition();
 			if(equipCondition)
 			{
-				Rule * rule = equipCondition->getSubject();
-				skill = dynamic_cast<SkillRule *>(rule);
+				SkillCondition * skillCondition = dynamic_cast<SkillCondition *>(equipCondition);
+				if(skillCondition)
+				{
+					skill = skillCondition->getSkill();
+				}
 				if(skill == 0)
 					skill = meleeSkill;//default
 			}
@@ -1035,7 +1039,7 @@ void BattleInstance::setMana(int value)
 int BattleInstance::hasItem(ItemRule * item)
 {
     // This is a hack.
-    if(item == items["mana"])
+    if(item == gameFacade->items["mana"])
     {
 	return getMana();
     }
@@ -1046,7 +1050,7 @@ int BattleInstance::hasItem(ItemRule * item)
 
 int BattleInstance::takeItemOut(ItemRule * item, int num)
 {
-    if(item == items["mana"])
+    if(item == gameFacade->items["mana"])
     {
         if(mana_ >= num)
         {

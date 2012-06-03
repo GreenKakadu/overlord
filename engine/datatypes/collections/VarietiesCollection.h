@@ -18,7 +18,7 @@ class  GameData;
 
 template <class T> class VarietiesCollection : public BasicVarietiesCollection {
   public:
-    VarietiesCollection(DataStorageHandler * handler) : BasicVarietiesCollection(handler){}
+    VarietiesCollection(DataStorageHandler * handler = 0, GameData *sample=0) : BasicVarietiesCollection(handler,sample){}
     ~VarietiesCollection(){/*clear();*/}
           T*            operator []  (long int        index);
           T*            operator []  (const string &tag);       

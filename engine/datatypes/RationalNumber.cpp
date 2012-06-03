@@ -16,6 +16,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "LineParser.h"
+#include "IntegerData.h"
+#include "StringData.h"
 using namespace std;
 
 
@@ -36,6 +38,22 @@ RationalNumber::RationalNumber(const RationalNumber & rational) : AbstractData()
   denominator_ = rational.getDenominator();
 }
 
+// creates instance of rational number with value of 1
+AbstractData * RationalNumber::createAbstractInstance()
+{
+   return new RationalNumber(1,1);
+}
+
+AbstractData * RationalNumber::loadInstance(Parser *parser)
+{
+    numenator_ = parser->getInteger();
+    denominator_ =parser->getInteger();
+    if(denominator_ ==0)
+    {
+        denominator_ = 1;
+    }
+    return this;
+}
 
 
 void RationalNumber::cancel_()
@@ -248,6 +266,21 @@ string RationalNumber::print()
     sprintf(buffer,"%d %d/%d",getValue(),numenator_ % denominator_,denominator_);// May use hand-made convertor itoa
       return string(buffer);
 
+}
+
+
+
+vector <AbstractData *> RationalNumber::aPrint()
+{
+vector <AbstractData *> v;
+v.push_back(new IntegerData(getValue()));
+if ((numenator_ % denominator_))
+{
+    v.push_back(new IntegerData(numenator_ % denominator_));
+    v.push_back(new StringData("/"));
+    v.push_back(new IntegerData(denominator_));
+}
+return v;
 }
 
 bool RationalNumber::load(Parser * parser)

@@ -23,11 +23,12 @@ typedef     vector <Rule *>::iterator RulesIterator;
 /** Defines interface for rules collections */
 class BasicRulesCollection : public BasicCollection{
 public:
-	  BasicRulesCollection(DataStorageHandler * handler):BasicCollection(handler){}
+    BasicRulesCollection(DataStorageHandler * handler =0, GameData *sample=0):BasicCollection(handler,sample){}
   virtual ~BasicRulesCollection();
-	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
-	        GameData* findByIndex      (const long int index, bool errorReportEnabled= true);
-          void          add          (GameData * /*const*/ newRule)   ;
+    GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
+    GameData* findByIndex      (const long int index, bool errorReportEnabled= true);
+    GameData* findByName        (const string &name, bool errorReportEnabled = true);
+          void          add          (GameData * /*const*/ newRule, bool isReportDuplication=false)   ;
           bool          isValidTag   (const string &tag)  ;//const;
           long int       getIndex     (const string &tag)  ;
 

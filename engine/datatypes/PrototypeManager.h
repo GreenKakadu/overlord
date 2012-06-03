@@ -21,9 +21,10 @@ class PrototypeManager
       PrototypeManager();
       ~PrototypeManager();
       GameData * findInRegistry ( const string& keyword) const ;
-      void addToRegistry (GameData  * object);
+      AbstractData * abstractFindInRegistry ( const string &keyword) const;
+void addToRegistry (AbstractData  * object);
     private:
-      vector <GameData *> registry;
+      vector <AbstractData *> registry;
 };
 extern PrototypeManager * prototypeManager;
 

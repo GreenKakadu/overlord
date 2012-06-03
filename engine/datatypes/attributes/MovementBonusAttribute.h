@@ -25,8 +25,11 @@ public:
 	~MovementBonusAttribute();
   STATUS     initialize      ( Parser *);
 	int getMovementBonus(MovementVariety * mode);
+  void save(ostream &out);
   void add( MovementBonusElement * data);
   void remove( MovementBonusElement * data);
+  bool isEmpty();
+      vector <AbstractArray>  aPrintReport();
     protected:
   vector <MovementBonusElement> movementBonuses_;
 };

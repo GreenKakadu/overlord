@@ -6,7 +6,8 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "IntegerData.h"
-extern string longtostr(long u);
+#include "LineParser.h"
+string longtostr(long u);
 
 /** returns name for use in reports and messages
  * (string)
@@ -18,9 +19,25 @@ string IntegerData::print()
 }
 
 
+// creates instance of integer data with value 0
+AbstractData * IntegerData::createAbstractInstance()
+{
+   return new IntegerData(0);
+}
+
+
+
+AbstractData *  IntegerData::loadInstance(Parser *parser)
+{
+   setValue(parser->getInteger());
+   return this;
+}
+
+
 
 /** returns integer in a form of parameter accepted by order */
 void      IntegerData::saveAsParameter (ostream &out)
 {
   out <<  " " << value_;
 }
+

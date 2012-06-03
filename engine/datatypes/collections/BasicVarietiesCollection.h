@@ -25,11 +25,11 @@ typedef     vector <Variety *>::iterator VarietiesIterator;
 /** Defines interface for rules collections */
 class BasicVarietiesCollection : public BasicCollection{
 public:
-	  BasicVarietiesCollection(DataStorageHandler * handler):BasicCollection(handler){}
+	  BasicVarietiesCollection(DataStorageHandler * handler = 0, GameData *sample=0):BasicCollection(handler,sample){}
   virtual ~BasicVarietiesCollection();
 	        GameData* findByTag        (const string &tag, bool errorReportEnabled = true);
 	        GameData* findByIndex      (const long int index, bool errorReportEnabled = true);
-          void          add          (GameData * /*const*/ newVariety)   ;
+          void          add          (GameData * /*const*/ newVariety, bool isReportDuplication=false)   ;
           bool          isValidTag   (const string &tag)  ;//const;
           long int       getIndex     (const string &tag)  ;
 

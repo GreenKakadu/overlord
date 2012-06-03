@@ -14,17 +14,22 @@
 #include "DataStorageHandler.h"
 extern string longtostr(long u);
 extern bool ciCharCompare(char c1, char c2);
-
+const  int BasicEntitiesCollection::incrementSize = 1000;
 //extern Entity * RIPplaceholder;
-BasicEntitiesCollection::BasicEntitiesCollection (DataStorageHandler * handler,
-                                          long int dimensions = 1000) : BasicCollection(handler)
+BasicEntitiesCollection::BasicEntitiesCollection (DataStorageHandler * handler, GameData *sample,
+                                          long int dimensions) : BasicCollection(handler,sample)
 {
+  dimensions_ =-1;
   redimention(dimensions);
   dimensions_ = dimensions;
   emptyPlaces_ = dimensions - 1;
+  prefix_=0;
   // prefix should be configured later in game configuration
   // meanwhile it will be equal to the first letter of keyword
-  prefix_ = 0;
+  if(sample)
+  {
+    prefix_ = (sample->getKeyword())[0];
+  }
   status = OK;
 }
 
@@ -44,11 +49,32 @@ GameData* BasicEntitiesCollection::findByTag (const string &tag, bool errorRepor
          return data_[index];
 
   if(errorReportEnabled)
-   cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName()) 
-           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+   cerr << "Error: Tag [" << tag << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
            << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
  return 0 ;
 }
+
+GameData* BasicEntitiesCollection::findByName (const string &name, bool errorReportEnabled)
+{
+    
+ EntitiesIterator iter;
+ for (iter = begin(); iter != end(); iter++)
+   {
+      if(*iter == 0)
+          continue;
+      if ((*iter) ->getName() == name)
+       return *iter;
+
+   }   
+  if(errorReportEnabled)
+   cerr << "Error: Name [" << name << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
+           << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
+ return 0 ;
+}
+
+
 
 
 
@@ -57,12 +83,12 @@ GameData* BasicEntitiesCollection::findByIndex (const long int index, bool error
 	if (index <= size())
          return data_[index];
   if(errorReportEnabled)
-  cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+  cerr << "Error: Entity array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }
 
 
-void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity)
+void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity, bool isReportDuplication)
 {
 // cout << "Adding " << newEntity->print()<<endl;
  long int index ;
@@ -70,15 +96,24 @@ void   BasicEntitiesCollection::add  ( GameData * /*const*/ newEntity)
 		{
 			prefix_ = (newEntity->getTag())[0];
 		}
- 	index = getIndex(newEntity->getTag());
+ 	index = extractIndex(newEntity->getTag());
 	if (status != OK)
 		{
-			cout << "GetIndex error while adding \n";
+			cout << "Index extraction error while adding "<<newEntity->getTag()<< " with prefix ["<<prefix_ <<"]"<<endl;
 			return;
 		}
-	 if (data_[index]  != 0 )
+         if (index >= dimensions_)
+	{
+           long int newSize = ((index /BasicEntitiesCollection::incrementSize)+1) * BasicEntitiesCollection::incrementSize;
+          redimention(newSize);
+         }
+
+         else if (data_[index]  != 0 )
    	{
-     	cerr << "Duplicated tag " << newEntity->getTag() <<endl;
+             if(isReportDuplication)
+             {
+                cerr << "Duplicated tag " << newEntity->getTag() <<endl;
+             }
 		status = IO_ERROR;
 		return;
    }
@@ -113,6 +148,8 @@ EntitiesIterator iter;
 
 void BasicEntitiesCollection::redimention (long int newSize)
 {
+  if(newSize <= dimensions_ )
+      return;
   data_.resize(newSize);
   emptyPlaces_ = emptyPlaces_ + (newSize - dimensions_);
 //  cout << dimensions_<< " - Reallocating memory to " <<newSize<<endl;// for test
@@ -121,98 +158,103 @@ void BasicEntitiesCollection::redimention (long int newSize)
 }
 
 /** This function checks that given string may be tag for this type of data */
+
 /** Note that for temporary names of new entities it will  false */
 bool BasicEntitiesCollection::checkDataType(const string &tag)
 {
-	if(prefix_ == 0)
-	{
-		return true; // check disabled
-	}
-
-  if (!isalpha (tag[0]) )
+    if (prefix_ == 0)
     {
-      return false;
+        return true; // check disabled
     }
- if ( (tag[0] & 0x1F) == (prefix_ & 0x1F) )// after throwing away all
-   //non-alpha  symbols this works as case-nonsensitive comparison of symbols
-    return true;
-  else
-    return false;
+
+    if (!isalpha(tag[0]))
+    {
+        return false;
+    }
+    if ((tag[0] & 0x1F) == (prefix_ & 0x1F))// after throwing away all
+        //non-alpha  symbols this works as case-nonsensitive comparison of symbols
+        return true;
+    else
+        return false;
 }
 
-
 /** Note: this method can also find Entity by it's temporary name */
-long  BasicEntitiesCollection::getIndex (const string &tag, bool errorReportEnabled)
+long BasicEntitiesCollection::getIndex(const string &tag, bool errorReportEnabled)
 {
- int i;
- int prefixLen=0;
- long int index;
+    long int index = extractIndex(tag, errorReportEnabled);
 
-	status = OK;
-
-	 if(prefix_ != 0)
-	{
-  		if (!isalpha (tag[0]) )
-    		{
-			if(errorReportEnabled)
-     			cerr << "Tag [" << tag << "] is invalid (non-alphabetical prefix) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
-				status = IO_ERROR;
-				return 0;
-    		}
- 		if ( (tag[0] & 0x1F) != (prefix_ & 0x1F) )// after throwing away all
-   //non-alpha  symbols this works as case-nonsensitive comparison of symbols
-		   {
-//				cout << "Tag "<< tag << " is invalid (wrong prefix: '" <<prefix_<<"' expected)\n";
-				status = IO_ERROR;
-				return 0;
-		    }
-		prefixLen=1;
-	}
-
-//  if ( ! ciStringCompareN(tag, gameConfig.getNewEntityPrefix(),gameConfig.getNewUnitPrefixSize() ) )
-//   {
-//     // New Unit tag
-//
-//    }
-
-  for (i=0; i< Parser::INTEGER_LENGTH; i++)
-   {
-     if (!isdigit (tag[i+prefixLen]) )  // Non-digit was found
-
-
-       break;
-
-     if (!tag[i+prefixLen])  // End of string
-       break;
-   }
-
- if ( i == 0 ) // No digits were found.
+    if (index >= dimensions_)
     {
-			if(errorReportEnabled)
-    cerr << "Tag [" << tag << "] is invalid (no  digits) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
-   // cerr << "Tag [" << tag << "] in collection " << this->getCollectionKeyword()<< " is invalid (no  digits)" <<endl;
-                        this->
- 				status = IO_ERROR;
-				return 0;
+        cerr << "Tag " << tag << " is invalid (too big index)" << endl;
+        status = IO_ERROR;
+        return 0;
     }
- if ( i >=  Parser::INTEGER_LENGTH  ) // More than maximum of digits were found.
+    else
+        return index;
+}
+
+/* this function doesn't check array dimensions */
+long BasicEntitiesCollection::extractIndex(const string &tag, bool errorReportEnabled)
+{
+    int i;
+    int prefixLen = 0;
+    long int index;
+    errorReportEnabled = true;
+    status = OK;
+
+    if (prefix_ != 0)
     {
-     			cerr << "Tag [" << tag << "] is invalid (too many digits) in "<< *(handler_->getInputFileName()) <<":"<<handler_->getInputLineNumber()<< "["<<getCollectionKeyword()<<"]"<<endl;
-      //cerr << "Tag " << tag << " is invalid (too many digits)" <<endl;
-				status = IO_ERROR;
-				return 0;
+        if (!isalpha(tag[0]))
+        {
+            if (errorReportEnabled)
+                cerr << "Tag [" << tag << "] is invalid (non-alphabetical prefix) in " << getStorageName() << ":" << getStorageLocator() << "[" << getCollectionKeyword() << "]" << endl;
+            status = IO_ERROR;
+            return 0;
+        }
+        if ((tag[0] & 0x1F) != (prefix_ & 0x1F))// after throwing away all
+            //non-alpha  symbols this works as case-nonsensitive comparison of symbols
+        {
+            //				cout << "Tag "<< tag << " is invalid (wrong prefix: '" <<prefix_<<"' expected)\n";
+            status = IO_ERROR;
+            return 0;
+        }
+        prefixLen = 1;
     }
 
- index = atoi (tag.c_str() +prefixLen);
+    //  if ( ! ciStringCompareN(tag, gameConfig.getNewEntityPrefix(),gameConfig.getNewUnitPrefixSize() ) )
+    //   {
+    //     // New Unit tag
+    //
+    //    }
 
- if (index >= dimensions_)
-	{
-     	cerr << "Tag " << tag << " is invalid (too big index)" <<endl;
-				status = IO_ERROR;
-				return 0;
-	}
- else
-      return index;
+    for (i = 0; i < Parser::INTEGER_LENGTH; i++)
+    {
+        if (!isdigit(tag[i + prefixLen])) // Non-digit was found
+            break;
+
+        if (!tag[i + prefixLen]) // End of string
+            break;
+    }
+
+    if (i == 0) // No digits were found.
+    {
+        if (errorReportEnabled)
+            cerr << "Tag [" << tag << "] is invalid (no  digits) in " << getStorageName() << ":" << getStorageLocator() << "[" << getCollectionKeyword() << "]" << endl;
+        // cerr << "Tag [" << tag << "] in collection " << this->getCollectionKeyword()<< " is invalid (no  digits)" <<endl;
+        this->status = IO_ERROR;
+        return 0;
+    }
+    if (i >= Parser::INTEGER_LENGTH) // More than maximum of digits were found.
+    {
+        cerr << "Tag [" << tag << "] is invalid (too many digits) in " << getStorageName() << ":" << getStorageLocator() << "[" << getCollectionKeyword() << "]" << endl;
+        //cerr << "Tag " << tag << " is invalid (too many digits)" <<endl;
+        status = IO_ERROR;
+        return 0;
+    }
+
+    index = atoi(tag.c_str() + prefixLen);
+
+    return index;
 }
 
 

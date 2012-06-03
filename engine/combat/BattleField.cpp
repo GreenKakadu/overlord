@@ -8,6 +8,7 @@
  ***************************************************************************/
 #include <algorithm>
 #include <cstdlib>
+#include "GameFacade.h"
 #include "BattleField.h"
 #include "TokenEntity.h"
 #include "BattleInstance.h"
@@ -58,13 +59,13 @@ BattleField::BattleField(CombatEngine * engine)
 			 // Determine side of field
 			if(j * 2 > maxRank_ )
 			{
-			 sectorNames[i][j] += "defender's " + (combatRanks[RANK_SIZE * 2 -j])->getName() + " ";
-			 sectorNames[i][j] += (combatFiles[FILE_SIZE - i])->getName();
+			 sectorNames[i][j] += "defender's " + (gameFacade->combatRanks[RANK_SIZE * 2 -j])->getName() + " ";
+			 sectorNames[i][j] += (gameFacade->combatFiles[FILE_SIZE - i])->getName();
 			}
 			else
 			{
-			 sectorNames[i][j] +=  "attacker's " + (combatRanks[j-1])->getName() + " ";
-			 sectorNames[i][j] += (combatFiles[i-1])->getName();
+			 sectorNames[i][j] +=  "attacker's " + (gameFacade->combatRanks[j-1])->getName() + " ";
+			 sectorNames[i][j] += (gameFacade->combatFiles[i-1])->getName();
 			}
 //		cout << "Size of units["<<i<<"]["<<j<<"]="<<(units[i][j]).size()<<endl;
 		}
@@ -908,24 +909,24 @@ void BattleField::addLoot(ItemRule * item, int number)
 
 
 
-void BattleField::addAttackerTitles(TitlesAttribute * titles)
+void BattleField::addAttackerTitles(TitlesAttribute * titlesToAdd)
 {
-  if(titles == 0)
+  if(titlesToAdd == 0)
     return;
-    for(TitleIterator iter = titles->getAll()->begin();
-	iter != titles->getAll()->end(); ++iter)
+    for(TitleIterator iter = titlesToAdd->getAll()->begin();
+	iter != titlesToAdd->getAll()->end(); ++iter)
   {
   	freeAttackerTitles_.push_back(*iter);
   }
 }
 
 
-void BattleField::addDefenderTitles(TitlesAttribute * titles)
+void BattleField::addDefenderTitles(TitlesAttribute * titlesToAdd)
 {
-  if(titles == 0)
+  if(titlesToAdd == 0)
     return;
-  for(TitleIterator iter = titles->getAll()->begin();
-	iter != titles->getAll()->end(); ++iter)
+  for(TitleIterator iter = titlesToAdd->getAll()->begin();
+	iter != titlesToAdd->getAll()->end(); ++iter)
   {
   	freeDefenderTitles_.push_back(*iter);
   }
@@ -1039,10 +1040,10 @@ void BattleField::reportLoot()
 }
 
 
-void BattleField::reclaimTitles(vector <TitleElement *> titles, vector <TokenEntity *> units, int chance)
+void BattleField::reclaimTitles(vector <TitleElement *> titlesToAdd, vector <TokenEntity *> units, int chance)
 {
 	UnitEntity * unit = 0;
-	for(TitleIterator iter = titles.begin(); iter != titles.end(); ++iter)
+	for(TitleIterator iter = titlesToAdd.begin(); iter != titlesToAdd.end(); ++iter)
 	{
 			if(Roll_1Dx(100) < chance)
 			{

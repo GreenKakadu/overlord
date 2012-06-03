@@ -16,6 +16,7 @@
 #include "CombatAttackMessage.h"
 #include "CombatReport.h"
 #include "BattleEntity.h"
+#include "CombatOrderLine.h"
 
 extern int Roll_1Dx(int n);
 extern string longtostr(long u);
@@ -43,7 +44,7 @@ SummonCombatAction::initialize(Parser *parser)
     if (parser->matchKeyword("SUMMONS"))
     {
         entity_ = new BattleEntity(sampleBattleEntity);
-        RaceRule * race = races[ parser->getWord()];
+        RaceRule * race = gameFacade->races[ parser->getWord()];
         if (race)
         {
             int figures = parser->getInteger();
@@ -64,6 +65,7 @@ SummonCombatAction::initialize(Parser *parser)
     {
           entity_->initialize(parser);
     }
+    //Prefix to provide initialization for summoned entity
     if (parser->matchKeyword("SUMMONED"))
     {
         entity_->initialize(parser);
@@ -85,6 +87,27 @@ SummonCombatAction::initialize(Parser *parser)
       }
     }
    return OK;
+
+}
+
+void SummonCombatAction::save(ostream &out)
+{
+    CombatActionStrategy::save(out);
+
+    if(entity_)
+    {
+        out<<"SUMMONS"<<" "<<entity_->getRace()->getTag()<<" "<<entity_->getFiguresNumber() <<endl;
+        entity_->save(out,"SUMMONED ");
+    }
+
+    if(randomPlace_)out<<"COMBAT "<< "PLACE"<<" "<<"random" <<endl;
+//    for(vector<CombatOrderLine*>::iterator iter =  (entity_->getCombatOrderList()).begin();
+//            iter != (entity_->getCombatOrderList()).end(); ++iter )
+//    {
+//       out<< "COMBAT_ORDER"<<" ";
+//       (*iter)->save(out);
+//    }
+
 
 }
 
@@ -149,4 +172,11 @@ void SummonCombatAction::performAction(BattleInstance * battleInstance, BattleTa
     //cout<<"===$$===> Summon: "<<summonedEntity->print()<<" Instance: "<<summonedEntity->getBattleInstantiation()<<endl;
 }
 
-
+void    SummonCombatAction::extractKnowledge (Entity * recipient, int parameter)
+{
+   CombatActionStrategy::extractKnowledge(recipient,parameter);
+  if(entity_)
+  {
+      entity_->extractAndAddKnowledge(recipient,parameter);
+  }
+}

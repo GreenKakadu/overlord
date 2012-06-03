@@ -36,7 +36,7 @@ EnchantCombatAction::initialize        ( Parser *parser )
   
   if (parser->matchKeyword ("GRANTS") )
   {
-    enchant_ = enchantments[parser->getWord()];
+    enchant_ = gameFacade->enchantments[parser->getWord()];
     duration_ =  parser->getInteger();
     
     if(duration_ == 0)
@@ -75,6 +75,21 @@ EnchantCombatAction::initialize        ( Parser *parser )
   
 }
 
+void EnchantCombatAction::save(ostream &out)
+{
+    CombatActionStrategy::save(out);
+    if(target_) out<<"COMBAT "<< "TARGET"<<" "<<target_->getTag() <<endl;
+    //if(action_)out<<"COMBAT "<< "EFFECT"<<" "<<action_->getTag() <<endl;
+    if(range_)out<<"COMBAT "<< "RANGE"<<" "<<range_ <<endl;
+    if(mana_)out<<"COMBAT "<<"USE_MANA"<<" "<< mana_<<endl;
+    for(vector <ItemElement *>::iterator iter =resources_.begin(); iter != resources_.end();++iter)
+    {
+      out<<"COMBAT "<<"CONSUME ";
+      (*iter)->save(out);
+    }
+    modifyingStats.save(out,"COMBAT BONUS ",0);
+    nonCumulativeStats.save(out,"COMBAT ",VERY_BIG_NUMBER);
+}
 
 // get all potential targets
 BattleTargets EnchantCombatAction::getPotentialTargets(BattleInstance * battleInstance, CombatReport * report)

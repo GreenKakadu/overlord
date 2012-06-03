@@ -8,6 +8,7 @@
 #include "MovementBonusAttribute.h"
 #include "MovementBonusElement.h"
 #include "MovementVariety.h"
+#include "StringData.h"
 
 MovementBonusAttribute::MovementBonusAttribute(){
 }
@@ -31,17 +32,29 @@ MovementBonusAttribute::initialize        ( Parser *parser )
    return OK;
 }
 
-
+void MovementBonusAttribute::save(ostream &out)
+{
+    for(vector <MovementBonusElement>::iterator iter =  movementBonuses_.begin();
+    iter != movementBonuses_.end(); ++iter)
+    {
+        out<<"MOVE_BONUS ";
+        (*iter).save(out);
+    }
+}
+bool MovementBonusAttribute::isEmpty()
+{
+    return movementBonuses_.empty();
+}
 
 int MovementBonusAttribute::getMovementBonus(MovementVariety * mode)
 {
-	for(MovementBonusIterator iter = movementBonuses_.begin();
-	iter != movementBonuses_.end(); ++iter)
-	{
-		if ( (*iter).getMovementMode() == mode)
-		return (*iter).getMovementBonusPoints();
-	}
-	return 0;
+    for(MovementBonusIterator iter = movementBonuses_.begin();
+    iter != movementBonuses_.end(); ++iter)
+    {
+        if ( (*iter).getMovementMode() == mode)
+            return (*iter).getMovementBonusPoints();
+    }
+    return 0;
 }
 
 
@@ -83,4 +96,22 @@ void MovementBonusAttribute::remove(MovementBonusElement * data)
          return;
         }
     }
+}
+vector <AbstractArray> MovementBonusAttribute::aPrintReport()
+{
+    vector <AbstractArray> out;
+    if(!movementBonuses_.empty())
+    {
+        vector <AbstractData *> v;
+        v.push_back(new StringData("Movement bonuses: "));
+         out.push_back(v);
+         for (MovementBonusIterator  iter = movementBonuses_.begin();
+           iter != movementBonuses_.end();  ++iter)
+           {
+             out.push_back((*iter).aPrintBonus());
+            }
+    }
+
+
+    return out;
 }

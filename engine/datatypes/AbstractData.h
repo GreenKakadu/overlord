@@ -12,11 +12,13 @@
 #include <string>
 #include <vector>
 #include <iostream>
+
 /**Abstract data class provides homogeneous interface for  using
    itnegers, strings and game objects as report and order parameters
   *@author Alex Dribin
   */
 using namespace std;
+class Parser;
 
 class AbstractData {
 public: 
@@ -28,6 +30,10 @@ public:
  */ 
         virtual vector <AbstractData *> aPrint();
 	AbstractData(){}
+   static        AbstractData * createByKeyword(const string &keyword);
+   static        AbstractData * loadByKeyword(const string &keyword, Parser *parser);
+   virtual AbstractData * createAbstractInstance();
+   virtual AbstractData * loadInstance(Parser *parser);
    virtual inline  string     getKeyword() const{ return "ABSTRACT";}
    virtual void saveAsParameter (ostream &){}
    virtual void clean(){}// selective Destructor.  For persistent objects it does nothing.
@@ -38,5 +44,7 @@ public:
 
    inline ostream& operator << (ostream& out,  AbstractData& data)
                                 { out<<data.print(); return out;}
+
+typedef vector <AbstractData *> AbstractArray;
 
 #endif

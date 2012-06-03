@@ -25,7 +25,7 @@ class GuardingRequest
 {
 public:
 GuardingRequest(TokenEntity * guard, OrderLine * orderId,
-	void (*funPtr)(const TokenEntity * guard, const bool result))
+	void (*funPtr)(const TokenEntity * guard, ORDER_STATUS result))
      {guard_ = guard; orderId_ = orderId; postGuardProcessing_ = funPtr;}
   virtual ~GuardingRequest(){}
   virtual void answerRequest(const ORDER_STATUS result);
@@ -36,7 +36,7 @@ GuardingRequest(TokenEntity * guard, OrderLine * orderId,
   virtual inline TokenEntity *  getGuard() const {return guard_;}
   virtual inline OrderLine *  getOrderId() const {return orderId_;}
 protected:
-  void (*postGuardProcessing_)(const TokenEntity * guard, const bool result);
+  void (*postGuardProcessing_)(const TokenEntity * guard, ORDER_STATUS result);
   TokenEntity * guard_;
   OrderLine * orderId_;
 

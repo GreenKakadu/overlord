@@ -47,7 +47,7 @@ PlagueEffectRule::PlagueEffectRule( const  PlagueEffectRule* prototype ) : Effec
      basicChance_ = 1;
      infectionEnchant_ =0;
      immunityEnchant_ =0;
-     illnessDuration_ = gameConfig.daysInMonth;
+     illnessDuration_ = gameFacade->getGameConfig()->daysInMonth;
 }
 
 
@@ -85,12 +85,12 @@ PlagueEffectRule::initialize        ( Parser *parser )
  	}
         if (parser->matchKeyword("INFECTION_ENCHANT"))
  	{
-           infectionEnchant_ = enchantments[parser->getWord()];
+           infectionEnchant_ = gameFacade->enchantments[parser->getWord()];
  	  return OK;
  	}
         if (parser->matchKeyword("IMMUNITY_ENCHANT"))
  	{
-           immunityEnchant_ = enchantments[parser->getWord()];
+           immunityEnchant_ = gameFacade->enchantments[parser->getWord()];
  	  return OK;
  	}
 
@@ -124,7 +124,19 @@ void PlagueEffectRule::postProcessData()
 
 void      PlagueEffectRule::save (ostream &out)
 {
-       // EffectEntity::save(out);
+       EffectRule::save(out);
+       if(maxLength_) out <<"LENGTH" <<" "<< maxLength_<<endl;
+       if(virality_) out <<"VIRALITY" <<" "<<virality_ <<endl;
+       if(lethality_) out <<"LETHALITY" <<" "<<lethality_ <<endl;
+       if(incubationPeriod_) out <<"INCUBATION_PERIOD" <<" "<<incubationPeriod_ <<endl;
+       if(infectionEnchant_)
+       {
+           out<<"INFECTION_ENCHANT"<<" "<< infectionEnchant_->getTag()<<endl;
+       }
+       if(immunityEnchant_)
+       {
+           out<<"IMMUNITY_ENCHANT"<<" "<< immunityEnchant_->getTag()<<endl;
+       }
 }
 
 
@@ -146,7 +158,7 @@ bool PlagueEffectRule::isToBeCreated(LocationEntity * location)
         return false; //Already has plague
     }
    ResourceElementIterator iter;
-    ItemRule * deads = items["dead"];
+    ItemRule * deads = gameFacade->items["dead"];
     int numDeads;
 
   for(iter = location->getResources().begin(); iter != location->getResources().end();iter++)
@@ -176,7 +188,7 @@ EffectEntity * PlagueEffectRule::createEffect(LocationEntity * location)
   EffectEntity  * newEffect   = dynamic_cast<EffectEntity *> (createByKeyword(entityKeyword_));
   if(newEffect)
   {
-    if(effects.addNew(newEffect) != OK)
+    if(gameFacade->effects.addNew(newEffect) != OK)
       {
         cout << "Failed to add new effect \n";
         return 0;
@@ -206,7 +218,7 @@ void PlagueEffectRule::dailyPreProcessEffect(EffectEntity * entity)
         {
             continue;
         }
-        if(Roll_1Dx(1000) <(getVirality() * 10) /gameConfig.daysInMonth)
+        if(Roll_1Dx(1000) <(getVirality() * 10) /gameFacade->getGameConfig()->daysInMonth)
         { // infect and add immunity (it would be etter to add immunity when infection expires but...)
         (*iter)->addEnchantment(new EnchantmentElement(infectionEnchant_,(incubationPeriod_ + illnessDuration_) * ((*iter)->getFiguresNumber())));
         (*iter)->addEnchantment(new EnchantmentElement(immunityEnchant_,VERY_BIG_NUMBER));
@@ -246,7 +258,7 @@ void PlagueEffectRule::reportEffectStart(EffectEntity * entity)
     assert(location);
     ReportMessage * report = new UnaryMessage(plagueStartReporter,location);
     vector<UnitEntity *> localUnits = location->unitsPresent();
-      cout << " ---:---> PlagueEffectRule adding report of plague at "<<location->print()<<endl;
+      cout << " ---:---> PlagueEffect report of plague at "<<location->print()<<endl;
     for(UnitIterator iter= localUnits.begin(); iter != localUnits.end(); ++iter )
     {
        //cout << " ---:---> PlagueEffectRule report of "<<(*iter)->print()<<endl;

@@ -10,11 +10,12 @@
 #include "MovementVariety.h"
 #include "Entity.h"
 
+
 SkillBonusComboAttribute::SkillBonusComboAttribute()
 {
- studyBonuses_ = SkillBonusAttribute("STUDY_BONUS", "Study bonuses");
- learningBonuses_ = SkillBonusAttribute("LEARNING_LEVEL_BONUS","Skill level bonuses");
- productionBonuses_ = SkillBonusAttribute("USE_BONUS","Production bonuses");
+ studyBonuses_ = SkillBonusAttribute("STUDY_BONUS", " Study bonuses");
+ learningBonuses_ = SkillBonusAttribute("LEARNING_LEVEL_BONUS"," Skill level bonuses");
+ productionBonuses_ = SkillBonusAttribute("USE_BONUS"," Production bonuses");
 }
 
 
@@ -36,6 +37,12 @@ SkillBonusComboAttribute::initialize        ( Parser *parser )
    return OK;
 }
 
+void SkillBonusComboAttribute::save(ostream &out)
+{
+    studyBonuses_.save(out);
+    learningBonuses_.save(out);
+    productionBonuses_.save(out);
+}
 
 
 int SkillBonusComboAttribute::getProductionBonus(SkillRule * skill)
@@ -55,6 +62,45 @@ int SkillBonusComboAttribute::getLearningBonus(SkillRule * skill)
 	return learningBonuses_.getSkillBonus(skill);
 }
 
+
+vector <AbstractArray>  SkillBonusComboAttribute::aPrintReport()
+{
+    vector <AbstractArray> out;
+
+
+    if(!studyBonuses_.isEmpty())
+    {
+        vector <AbstractArray> study = studyBonuses_.aPrintReport();
+        for ( vector<AbstractArray >::iterator iter = study.begin();
+        iter != study.end(); iter++)
+        {
+            out.push_back(*iter);
+
+        }
+    }
+
+    if(!learningBonuses_.isEmpty())
+    {
+        vector <AbstractArray> learning = learningBonuses_.aPrintReport();
+        for ( vector<AbstractArray >::iterator iter = learning.begin();
+        iter != learning.end(); iter++)
+        {
+            out.push_back(*iter);
+
+        }
+
+    }
+    if(!productionBonuses_.isEmpty())
+    {
+    vector <AbstractArray> product = productionBonuses_.aPrintReport();
+    for ( vector<AbstractArray >::iterator iter = product.begin();
+    iter != product.end(); iter++)
+    {
+        out.push_back(*iter);
+    }
+}
+    return out;
+}
 
 
 

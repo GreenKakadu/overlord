@@ -28,6 +28,10 @@ extern ReportPattern * skillLossReporter;
 //{
 //	entity_ = entity;
 //}
+SkillsAttribute::SkillsAttribute(SkillsAttribute &p)
+{
+  skills_ = p.skills_;
+}
 
 
 
@@ -41,30 +45,45 @@ SkillsAttribute::SkillsAttribute(vector <SkillElement > &skills)
 SkillsAttribute::~SkillsAttribute(){
 }
 
-
-
 STATUS
-SkillsAttribute::initialize        ( Parser *parser )
+SkillsAttribute::initialize(Parser *parser)
 {
 
-  if (parser->matchKeyword("SKILL"))
-	{
-    SkillElement * skill = SkillElement::readElement(parser);
-    if(skill != 0)
-        skills_.push_back(*skill);
-		return OK;
-	}
-  return OK;
+    if (parser->matchKeyword("SKILL"))
+    {
+        SkillElement * skill = SkillElement::readElement(parser);
+        if (skill != 0)
+        {
+            for (SkillIterator iter = skills_.begin(); iter != skills_.end(); iter++)
+            {
+                if ((*iter).getSkill() == skill->getSkill())
+                {
+                    return OK;
+                }
+            }
+            skills_.push_back(*skill);
+            return OK;
+        }
+        return OK;
+    }
+       return OK;
 }
-
-
 
 void SkillsAttribute::save(ostream &out)
 {
   for (SkillIterator iter = skills_.begin(); iter != skills_.end(); iter++)
     {
            out << "SKILL ";
-										(*iter).save(out);
+	  (*iter).save(out);
+    }
+}
+
+void SkillsAttribute::save(ostream &out, string prefix)
+{
+  for (SkillIterator iter = skills_.begin(); iter != skills_.end(); iter++)
+    {
+           out <<prefix<< "SKILL ";
+	  (*iter).save(out);
     }
 }
 
@@ -134,6 +153,20 @@ void SkillsAttribute::reportAllShort(ReportPrinter &out)
     }
   out <<". ";
 	return;
+}
+
+vector <AbstractArray>   SkillsAttribute::aPrint()
+{
+    vector <AbstractArray> out;
+    vector <AbstractData *> v;
+    for(SkillIterator iter = skills_.begin();
+            iter != skills_.end(); ++iter)
+    {
+        vector <AbstractData *> v = (*iter).aPrintSkill();
+        out.push_back(v);
+
+      }
+    return out;
 }
 
 
@@ -255,28 +288,26 @@ int SkillsAttribute::getSkillPoints(SkillRule  * const skill)
 
 }
 
-
-
-int SkillsAttribute::addSkill(SkillRule  * skill, int expPoints)
+int SkillsAttribute::addSkill(SkillRule * skill, int expPoints)
 {
-	SkillIterator iter;
-   int newLevel = 0;
+    SkillIterator iter;
+    int newLevel = 0;
 
-  for ( iter = skills_.begin(); iter != skills_.end(); iter++)
-		{
-					if( (*iter).getSkill() == skill)
-								{
-									 (*iter).setExpPoints((*iter).getExpPoints() + expPoints);
-                   newLevel = skill->getLevel((*iter).getExpPoints());
-//    cout <<skill->printTag()<< " Exp " << (*iter).getExpPoints()<<endl;
-								  break;
-								}
-		}
+    for (iter = skills_.begin(); iter != skills_.end(); iter++)
+    {
+        if ((*iter).getSkill() == skill)
+        {
+            (*iter).setExpPoints((*iter).getExpPoints() + expPoints);
+            newLevel = skill->getLevel((*iter).getExpPoints());
+            //    cout <<skill->printTag()<< " Exp " << (*iter).getExpPoints()<<endl;
+            break;
+        }
+    }
     if (iter == skills_.end())
-	      skills_.push_back(SkillElement(skill,expPoints));
-//    cout <<skill->printTag()<< " Old level " << oldLevel <<" new " << newLevel<<endl;
+        skills_.push_back(SkillElement(skill, expPoints));
+    //    cout <<skill->printTag()<< " Old level " << oldLevel <<" new " << newLevel<<endl;
 
-     return newLevel;
+    return newLevel;
 }
 
 
@@ -354,12 +385,13 @@ void SkillsAttribute::forgetSkill(SkillRule * skill, TokenEntity * entity)
       entity->addReport(new UnaryMessage(forgetReport,(*iter).getSkill()));
 			   // Skill loss may cause some items to be unequiped
 			   // or titles lost
-            (*iter).getSkill()->checkConditions(entity);
+            //(*iter).getSkill()->checkConditions(entity);
 			    skills_.erase(iter);
 			}
 			else
 			   ++iter;
 		}
+ entity->checkEquipmentConditions();
 }
 
 
@@ -385,7 +417,8 @@ void SkillsAttribute::proportionallyDiluteAll(int oldNumber, int newNumber,
       if( (*iter).getLevel() < oldLevel)
         {
   	        unit->addReport( new BinaryMessage(skillLossReporter, (*iter).getSkill(), new IntegerData((*iter).getLevel()) ));
-           (*iter).getSkill()->checkConditions(unit);
+           //(*iter).getSkill()->checkConditions(unit);
+           unit->checkEquipmentConditions();
         }
 		}
 }
@@ -401,3 +434,13 @@ void SkillsAttribute::addStats(EntityStatistics * stats)
     }
 }
 
+void SkillsAttribute::extractAndAddKnowledge(Entity * recipient, int parameter)
+{
+    	for (SkillIterator iter = skills_.begin();
+                  iter != skills_.end(); ++iter)
+		{
+            recipient->addSkillKnowledge((*iter).getSkill(), (*iter).getLevel());
+        }
+
+
+}

@@ -17,25 +17,31 @@
 #include "FactionEntity.h"
 #include "EntityStatistics.h"
 #include "BasicCondition.h"
-
+#include "BinaryMessage.h"
+extern ReportPattern *	unequipReporter;
 
 InventoryAttribute::InventoryAttribute(TokenEntity * entity)
 {
-	entity_ = entity;
-	if(entity == 0)
-		cerr << "creating InventoryAttribute with empty Entity"<<endl;
+    entity_ = entity;
+    if (entity == 0)
+        cerr << "creating InventoryAttribute with empty Entity" << endl;
 }
 
-
-
-void   InventoryAttribute::init(TokenEntity * entity)
+InventoryAttribute::InventoryAttribute(InventoryAttribute & p)
 {
-	entity_ = entity;
-	if(entity == 0)
-		cerr << "creating InventoryAttribute with empty Entity"<<endl;
+inventory_ = p.inventory_;
+entity_ = p.entity_;
 }
 
-InventoryAttribute::~InventoryAttribute(){
+void InventoryAttribute::init(TokenEntity * entity)
+{
+    entity_ = entity;
+    if (entity == 0)
+        cerr << "creating InventoryAttribute with empty Entity" << endl;
+}
+
+InventoryAttribute::~InventoryAttribute()
+{
 }
 
 
@@ -64,14 +70,21 @@ InventoryAttribute::initialize        ( Parser *parser )
   return OK;
 }
 
-
-
 void InventoryAttribute::save(ostream &out)
 {
-	for (InventoryIterator iter = inventory_.begin(); iter != inventory_.end(); iter++)
+    for (InventoryIterator iter = inventory_.begin(); iter != inventory_.end(); iter++)
     {
-           out << "ITEM ";
-										(*iter).save(out);
+        out << "ITEM ";
+        (*iter).save(out);
+    }
+}
+
+void InventoryAttribute::save(ostream &out, string prefix)
+{
+    for (InventoryIterator iter = inventory_.begin(); iter != inventory_.end(); iter++)
+    {
+        out <<prefix<< "ITEM ";
+        (*iter).save(out);
     }
 }
 
@@ -226,36 +239,56 @@ void InventoryAttribute::deleteElement(InventoryElement * element)
 /*
  * After  checks for equipability and skills do equip item
  */
-int InventoryAttribute::equipItem(ItemRule * item, int num)
-{
-  InventoryElement * itemFound = findItem(item);
-  if(!itemFound)
-				return 0;
+int InventoryAttribute::equipItem(ItemRule * item, int num) {
+	InventoryElement * itemFound = findItem(item);
+	if (!itemFound)
+		return 0;
 
-  int currentlyEquipedItems = itemFound->getEquipedNumber(); 																				;
+	int currentlyEquipedItems = itemFound->getEquipedNumber();
+	// Item may demand condition for being equiped.
+	BasicCondition * equipCondition = registerEquipCondition(item,currentlyEquipedItems,num);
+
 	if (num <= currentlyEquipedItems) // unequip
-			{
-				itemFound->setEquipedNumber(num);
-				return ( num - currentlyEquipedItems);
-			}
-// Item may demand skills for being equiped.
-  BasicCondition * equipCondition = item->demandsEquipCondition();
-  if(equipCondition )
-  {
-    if(!equipCondition->isSatisfied(entity_))
-      return 0;
-    }
-// Can't equip more than have
+	{
+		itemFound->setEquipedNumber(num);
+		return (num - currentlyEquipedItems);
+	}
+
+	// Can't equip more than have
 	if (num > itemFound->getItemNumber())
-			num = itemFound->getItemNumber();
-
-
+		num = itemFound->getItemNumber();
+	if (equipCondition)
+	{
+		if (!equipCondition->isSatisfied(entity_))
+		{
+			return 0;
+		}
+	}
 	itemFound->setEquipedNumber(num);
-							//		        item->applyEquipementEffects(this,num)
+	//		        item->applyEquipementEffects(this,num)
 	return (num - currentlyEquipedItems);
 }
 
 
+
+BasicCondition * InventoryAttribute::registerEquipCondition(ItemRule * item,
+		int currentlyEquipedItems, int num)
+{
+	BasicCondition * equipCondition = item->demandsEquipCondition();
+	if (equipCondition)
+	{
+		if (currentlyEquipedItems > 0 && num == 0)
+		{
+			removeEquipCondition(item);
+		}
+		if (currentlyEquipedItems == 0 && num > 0)
+		{
+
+			addEquipCondition(item);
+		}
+	}
+	return equipCondition;
+}
 
 /*
  * Add I tem to inventory if it was not there
@@ -413,8 +446,37 @@ int InventoryAttribute::getStudyBonus(SkillRule * skill)
   return bonus;
 }
 
+InventoryAttribute  InventoryAttribute::getObservableImage()
+{
 
+ InventoryAttribute  image(entity_);
+    for (InventoryIterator iter = inventory_.begin();
+            iter != inventory_.end(); ++iter)
+    {
+        if ((*iter).getItemType()->getWeight() == 0)
+        {
+            continue;
+        } else
+        {
+            image.add(*iter);
+        }
+    }
+   return image;
+}
 
+void InventoryAttribute::combineInventories(InventoryAttribute * inventory)
+{
+
+    for (InventoryIterator iter = inventory->getAll().begin();
+            iter != inventory->getAll().end(); ++iter)
+    {
+        if(!this->findItem((*iter).getItemType()))//Not found
+        {
+          this->add(*iter);
+        }
+    }
+
+}
 
 
 void InventoryAttribute::reportInventory(FactionEntity * faction, ReportPrinter &out)
@@ -462,6 +524,19 @@ void InventoryAttribute::reportPublicInventory(ReportPrinter &out, bool isMultip
  	out <<". ";
 }
 
+vector <AbstractArray>   InventoryAttribute::aPrint()
+{
+    vector <AbstractArray> out;
+    vector <AbstractData *> v;
+    for(InventoryIterator iter = inventory_.begin();
+            iter != inventory_.end(); ++iter)
+    {
+        vector <AbstractData *> v = (*iter).aPrintItem();
+        out.push_back(v);
+
+      }
+    return out;
+}
 
 
 int InventoryAttribute::getCapacity(int modeIndex)
@@ -577,4 +652,44 @@ void InventoryAttribute::updateSlotEquipement(EquipmentSlotVariety * slot, vecto
     
   }
   
+}
+void InventoryAttribute::extractAndAddKnowledge(Entity * recipient, int )
+{
+  for (InventoryIterator iter = inventory_.begin();
+  iter != inventory_.end(); ++iter)
+  {
+    recipient->addKnowledge((*iter).getItemType());
+  }
+}
+
+
+void InventoryAttribute::addEquipCondition(ItemRule * item)
+{
+	BasicCondition * equipCondition = item->demandsEquipCondition();
+	if (equipCondition)
+	{
+	equipConditions_[item] = equipCondition;
+	}
+}
+
+
+void InventoryAttribute::removeEquipCondition(ItemRule * item)
+{
+	equipConditions_.erase(item);
+}
+
+
+
+void InventoryAttribute::checkEquipmentConditions(TokenEntity * entity)
+{
+  map <ItemRule * , BasicCondition *>::iterator iter;
+  for(iter = equipConditions_.begin();iter != equipConditions_.end(); ++iter)
+  {
+	  if(!(*iter).second->isSatisfied(entity))
+	  {
+		  entity->equipItem((*iter).first,0);
+		  entity->addReport(new BinaryMessage(unequipReporter,entity , (*iter).first),0,0 );
+	  }
+
+    }
 }

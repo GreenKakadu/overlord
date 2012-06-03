@@ -535,7 +535,7 @@ void CombatManager::process()
     for (PillageRequestIterator iter  = pillageRequests_.begin();
     iter != pillageRequests_.end(); iter++)
     {
-      (*iter)->answerRequest(pillageShare * numPillagers / gameConfig.daysInMonth/ 100);
+      (*iter)->answerRequest(pillageShare * numPillagers / gameFacade->getGameConfig()->daysInMonth/ 100);
     }
   }
   pillageRequests_.clear();

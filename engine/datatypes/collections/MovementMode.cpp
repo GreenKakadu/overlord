@@ -6,6 +6,7 @@
     email                : Alex.Dribin@gmail.com
  ***************************************************************************/
 #include "MovementMode.h"
+#include "GameFacade.h"
 
 //template <class T> MovementMode<T>::MovementMode()
 //{
@@ -32,9 +33,9 @@
 template <class T> int MovementMode<T>::getModeIndex(const MovementVariety * mode)
 {
     int i;
-    for( i = 0; i< movementModes.size();i++)
+    for( i = 0; i< gameFacade->movementModes.size();i++)
     {
-       if(movementModes[i] == mode)
+       if(gameFacade->movementModes[i] == mode)
         return i;
     }
       return -1;

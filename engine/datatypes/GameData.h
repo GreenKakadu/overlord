@@ -10,8 +10,7 @@
 #ifndef GAME_DATA_H
 #define GAME_DATA_H
 #include "OverlordTypes.h"
-#include "BasicData.h"
-#include "LineParser.h"
+#include "AbstractData.h"
 #include "DataStorageHandler.h"
 using namespace std;
 
@@ -21,7 +20,7 @@ class PrototypeManager;
   *@author Alex Dribin
   */
 
-class GameData : public BasicData
+class GameData : public AbstractData
 {
     public:
                     GameData (const string & keyword, GameData * parent );
@@ -30,10 +29,23 @@ class GameData : public BasicData
    virtual         ~GameData ( ){}
 
    static        GameData * createByKeyword(const string &keyword);
+   AbstractData * createAbstractInstance();
    virtual GameData * createInstanceOfSelf ();
+   AbstractData *  loadInstance(Parser *parser);
+          string   getTag()          const;
+  inline  string   getName()         const { return name_;}
+          string   getDescription()  const;
+  inline  void     setTag          ( const string  &tag) {  tag_ = tag;}
+  inline  void     setName         ( const string  &name){ name_ = name;}
+  inline  void     setDescription  ( const string  &description){ description_ = description;}
+          void     saveAsParameter (ostream &out);
+          string   printTag() const;
+  virtual string   print() /*const*/;
+
      bool isDescendantFrom  (GameData * object);
    virtual STATUS     initialize ( Parser *parser );
    virtual void       save (ostream &out);
+   virtual void save(ostream &out, string prefix);
    static  void       staticInitialization (){}
 
    inline  string     getKeyword() const{ return keyword_;}
@@ -47,7 +59,12 @@ class GameData : public BasicData
     protected:
            string   keyword_;
            GameData * parent_;
-    private:
+  static const string l_bracket;
+  static const string r_bracket;
+           string   tag_;                //unigue object identifier
+           string   name_;               //name of the object
+           string   description_;        //description of the object
+private:
 
 };
 

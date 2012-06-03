@@ -21,7 +21,7 @@ class  GameData;
 
 template <class T> class EntitiesCollection : public BasicEntitiesCollection {
   public:
-    EntitiesCollection(DataStorageHandler * handler, long int dimensions = 1000);
+    EntitiesCollection(DataStorageHandler * handler = 0, GameData *sample=0, long int dimensions = 1000);
     ~EntitiesCollection(){	/*clear();*/}
     T* operator []       (long int        index);
     T* operator []       (const string &tag);       

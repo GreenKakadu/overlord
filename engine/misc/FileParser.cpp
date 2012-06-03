@@ -45,7 +45,7 @@ FileParser::FileParser (const char * filename)
 	else
 		{
  			status = IO_ERROR;
-			cerr << "Can't open file " << filename << endl;
+			cerr << "Can't open file " << filename <<" "<<status<< endl;
 		}
 	lineNumber_ = 0;
         filename_ = string(filename);
@@ -95,7 +95,7 @@ void FileParser::getLine()
    input_ = buffer_;
    lineNumber_++;
 int i;
-	i = streamInput_->gcount();
+	i = (int)(streamInput_->gcount());
   if(i<2)
     return;
 	if ( buffer_[i-2] == '\r')
@@ -122,7 +122,7 @@ void FileParser::setPosition ( long int  position )
 
 long int  FileParser::getPosition()
 {
-  return streamInput_->tellg();
+  return (long int)(streamInput_->tellg());
 }
 
 

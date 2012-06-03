@@ -6,6 +6,7 @@
  */
 
 #include "CreatePortalAction.h"
+#include "GameFacade.h"
 #include "Entity.h"
 #include "LocationEntity.h"
 #include "DirectionVariety.h"
@@ -40,7 +41,7 @@ CreatePortalAction::initialize(Parser *parser)
 
     if (parser->matchKeyword("DESTINATION"))
     {
-        LocationEntity * loc = locations[parser->getWord()];
+        LocationEntity * loc = gameFacade->locations[parser->getWord()];
         if (loc)
         {
             destinations_.push_back(loc);
@@ -53,7 +54,7 @@ CreatePortalAction::initialize(Parser *parser)
 
 ACTION_RESULT CreatePortalAction::carryOut(Entity * entity, AbstractData * parameter, int value)
 {
-    DirectionVariety * portal = directions["PORTAL"];
+    DirectionVariety * portal = gameFacade->directions["PORTAL"];
     TokenEntity * mage = dynamic_cast<TokenEntity *> (entity);
     assert(mage);
     LocationEntity * currentLocation = mage->getLocation();

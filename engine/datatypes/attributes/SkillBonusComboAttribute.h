@@ -24,11 +24,13 @@ public:
 	SkillBonusComboAttribute();
 	~SkillBonusComboAttribute();
   STATUS     initialize      ( Parser *);
-  ostream& report(ostream &out);
+   void save(ostream &out);
+ ostream& report(ostream &out);
   void extractKnowledge (Entity * recipient, int parameter);
   int getProductionBonus(SkillRule * skill);
   int getStudyBonus(SkillRule * skill);
   int getLearningBonus(SkillRule * skill);
+    vector <AbstractArray>  aPrintReport();
     protected:
   SkillBonusAttribute productionBonuses_;
   SkillBonusAttribute studyBonuses_;// affect study time

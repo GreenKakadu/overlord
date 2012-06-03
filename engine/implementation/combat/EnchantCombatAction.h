@@ -23,12 +23,13 @@ public:
       EnchantCombatAction ( const string & keyword, GameData * parent):
 				 CombatActionStrategy(keyword, parent){}
       EnchantCombatAction ( const EnchantCombatAction * prototype ):
-				 CombatActionStrategy(prototype){nextCombatAction_ = false;}
+				 CombatActionStrategy(prototype){nextCombatAction_ = false;secondaryCombatAction_ =0;}
 		 ~EnchantCombatAction(){}
       GameData * createInstanceOfSelf();
        BattleTargets getPotentialTargets(BattleInstance * battleInstance,
 																		 CombatReport * report);
       STATUS initialize        ( Parser *parser );
+        virtual void save(ostream &out);
 	void		performAction(BattleInstance * battleInstance, BattleTargets & 		potentialTargets, CombatReport * report);
 	protected:
 		int duration_;

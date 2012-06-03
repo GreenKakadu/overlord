@@ -30,6 +30,10 @@ TitlesAttribute::TitlesAttribute(vector <TitleElement *> &titles)
 	titles_ = titles;
 }
 
+TitlesAttribute::TitlesAttribute(TitlesAttribute & p)
+{
+    titles_ = p.titles_;
+}
 
 
 TitlesAttribute::~TitlesAttribute(){
@@ -80,10 +84,50 @@ void TitlesAttribute::reportAll(FactionEntity * faction, ostream &out)
     }
 }
 
+vector <AbstractArray> TitlesAttribute::aPrintAll()
+{
+    vector <AbstractArray> out;
+  //vector <AbstractData *> out;
+  //cout<<" Titles: "<<titles_.size()<<endl;
+  for( TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+     {
+      vector <AbstractData *> v = (*iter)->TitleElement::aPrint();
+      out.push_back(v);
+//      cout<<" Elements to print: "<<v.size()<<endl;
+//      for( vector <AbstractData *>::iterator iter1 = v.begin(); iter1 != v.end(); ++iter1)
+//         {
+//                out.push_back(*iter1);
+//         }
+//      out.push_back(new StringData(" "));
+    }
+  return out;
+}
+
+vector <AbstractData *> TitlesAttribute::aPrintUnitTitles()
+{
+  vector <AbstractData *> out;
+  //cout<<" Titles: "<<titles_.size()<<endl;
+  for( TitleIterator iter = titles_.begin(); iter != titles_.end(); ++iter)
+     {
+      vector <AbstractData *> v = (*iter)->TitleElement::unitPrint();
+     // cout<<" Elements to print: "<<v.size()<<endl;
+      for( vector <AbstractData *>::iterator iter1 = v.begin(); iter1 != v.end(); ++iter1)
+         {
+                out.push_back(*iter1);
+         }
+      out.push_back(new StringData(" "));
+    }
+  return out;
+}
+
 
 void TitlesAttribute::addTitle(TitleElement * title)
 {
-  titles_.push_back(title);
+  TitleIterator iter = find(titles_.begin(), titles_.end(), title);
+  if(iter == titles_.end())
+  {
+    titles_.push_back(title);
+  }
 }
 
 

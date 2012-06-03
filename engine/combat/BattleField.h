@@ -38,6 +38,10 @@ BattleTargetElement(BattleInstance * instance, BATTLE_DIRECTION battleDirection,
 										 int range)
 	{instance_ = instance; battleDirection_ = battleDirection; range_ = range;}
 ~BattleTargetElement(){}
+friend      bool operator == (const BattleTargetElement& leftArgument, const BattleTargetElement& rightArgument)
+{
+	return(leftArgument.instance_ == rightArgument.instance_);
+}
 BattleInstance * instance_;
 BATTLE_DIRECTION battleDirection_;
 int range_;

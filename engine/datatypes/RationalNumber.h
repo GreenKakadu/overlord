@@ -30,6 +30,8 @@ public:
 	RationalNumber(int numenator = 0, int denominator = 1);
 	RationalNumber(const RationalNumber & rational);
 	~RationalNumber();
+          AbstractData * createAbstractInstance();
+  AbstractData * loadInstance(Parser *parser);
   inline void clean(){ delete this;}
   friend const RationalNumber operator + (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
   friend const RationalNumber operator - (const RationalNumber& leftArgument, const RationalNumber& rightArgument);
@@ -56,7 +58,9 @@ public:
   string print();
   static int findGCD(int x, int y);
   void save(ostream & out);
+  inline  string     getKeyword() const{ return "RATIONAL";}
   bool load(Parser * parser);
+  vector <AbstractData *> aPrint();
   bool isEmpty();
 private:
   void cancel_();

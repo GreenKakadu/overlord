@@ -30,7 +30,9 @@ public:
 	~EnchantmentAttribute();
   STATUS     initialize      ( Parser *);
   void save(ostream &out);
+  void save(ostream &out, string prefix);
   ostream& report(ostream &out);
+      vector <AbstractArray>   aPrint();
   void add(EnchantmentElement * data);
   void remove(EnchantmentElement * data);
   void removeAll();
@@ -45,6 +47,7 @@ public:
          int getMovementBonus(MovementVariety *    movingMode);
    EnchantmentElement * has(EnchantmentElement * data);
   EnchantmentElement * findAndDo(EnchantmentElement * data, EnchantmentElement * (*toDo) ());
+      inline bool empty()  {return dataCollection_.empty();}
     protected:
   vector <EnchantmentElement> dataCollection_;
 };

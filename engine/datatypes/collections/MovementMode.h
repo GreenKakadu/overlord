@@ -10,10 +10,10 @@
 #define MOVEMENT_MODE_H
 #include <vector>
 #include <string>
+#include "GameFacade.h"
 #include "MovementVariety.h"
 #include "VarietiesCollection.h"
 
-extern VarietiesCollection <MovementVariety> movementModes;
 
 template <class T> class MovementMode : public vector < T>  {
 public:
@@ -33,9 +33,9 @@ protected:
 template <class T> T&  MovementMode<T>::operator [] (const string &tag)
 {
 	int i;
- for (i = 0; i < movementModes.size(); i++)
+ for (i = 0; i < gameFacade->movementModes.size(); i++)
    {
-      if ( movementModes[i] ->getTag() == tag)
+      if ( gameFacade->movementModes[i] ->getTag() == tag)
        return  *(this->begin()+ i);
 
    }
@@ -48,7 +48,7 @@ template <class T> T&  MovementMode<T>::operator [] (const string &tag)
 
 template <class T> T&  MovementMode<T>::operator [] (const int index)
 {
-    if (index < movementModes.size())
+    if (index < gameFacade->movementModes.size())
        return  *(MovementMode<T>::begin()+ index);
 
 
@@ -62,9 +62,9 @@ template <class T> T&  MovementMode<T>::operator [] (const int index)
 template <class T> T&  MovementMode<T>::operator [] (const MovementVariety * mode)
 {
 	int i;
- for (i = 0; i < movementModes.size(); i++)
+ for (i = 0; i < gameFacade->movementModes.size(); i++)
    {
-      if ( movementModes[i] == mode)
+      if ( gameFacade->movementModes[i] == mode)
        return  *(MovementMode<T>::begin()+ i);
 
    }

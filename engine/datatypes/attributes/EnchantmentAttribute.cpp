@@ -12,6 +12,7 @@
  *  modify it under the terms of the BSD License.                       *
  *                                                                                            *
  ***************************************************************************/
+#include "GameFacade.h"
 #include "EnchantmentAttribute.h"
 #include "EnchantmentElement.h"
 #include "RulesCollection.h"
@@ -19,7 +20,6 @@
 #include "EntityStatistics.h"
 #include "entities/Entity.h"
 
-extern RulesCollection <EnchantmentRule>    enchantments;
 extern ofstream combatReportFile;
 
 EnchantmentAttribute::EnchantmentAttribute(){
@@ -37,7 +37,7 @@ EnchantmentAttribute::initialize        ( Parser *parser )
 
   if (parser->matchKeyword ("FX_EFFECT") )
     {
-      EnchantmentRule * enchantment = enchantments[parser->getWord()];
+      EnchantmentRule * enchantment = gameFacade->enchantments[parser->getWord()];
       int number = parser->getInteger();
       if( (enchantment == 0) || (number == 0))
           return OK;
@@ -72,6 +72,17 @@ void EnchantmentAttribute::save(ostream &out)
 
 
 
+void EnchantmentAttribute::save(ostream &out, string prefix)
+{
+  for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
+    iter != dataCollection_.end();  ++iter)
+    {
+      out <<prefix<< "FX_EFFECT " <<  ((*iter).getRule())->getTag() << " " << (*iter).getParameter1()<<endl;
+    }
+}
+
+
+
 ostream&  EnchantmentAttribute::report(ostream &out)
 {
   for (EnchantmentAttributesIterator  iter = dataCollection_.begin();
@@ -81,6 +92,20 @@ ostream&  EnchantmentAttribute::report(ostream &out)
       ((*iter).getRule())->report(out,(*iter).getParameter1());
     }
   return out;
+}
+
+vector <AbstractArray>   EnchantmentAttribute::aPrint()
+{
+    vector <AbstractArray> out;
+    vector <AbstractData *> v;
+    for(EnchantmentAttributesIterator iter = dataCollection_.begin();
+            iter != dataCollection_.end(); ++iter)
+    {
+        vector <AbstractData *> v = (*iter).aPrintEnchant();
+        out.push_back(v);
+
+      }
+    return out;
 }
 
 

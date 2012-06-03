@@ -44,8 +44,8 @@ ACTION_RESULT  BuryActionRule::carryOut(Entity * entity, AbstractData * paramete
   assert(location);
 
   //Convert value dead to bones
-    ItemRule * deads = items["dead"];
-    ItemRule * bones = items["bone"];
+    ItemRule * deads = gameFacade->items["dead"];
+    ItemRule * bones = gameFacade->items["bone"];
     int wasBodies = location->getAvailableResource(deads).roundDown();
     int wasBones = location->getAvailableResource(bones).roundDown();
     RationalNumber burnBodies(value,1);

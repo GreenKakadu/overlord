@@ -23,7 +23,7 @@ template <class T> T* VarietiesCollection <T>::operator [] (long int index)
 	if (index <= size())
          return dynamic_cast< T*>(data_[index]);
 //	 return dynamic_cast< T*>(*(begin() + index) );
- cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+ cerr << "Error: variety array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }
 

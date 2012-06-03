@@ -28,8 +28,8 @@ VarietiesIterator iter;
 
   if(errorReportEnabled)
 
-   cerr << "Error: Tag [" << tag << "] ("<<*(handler_->getInputFileName())
-           <<":"<<handler_->getInputLineNumber() <<") was not found in "
+   cerr << "Error: Tag [" << tag << "] ("<<getStorageName()
+           <<":"<<getStorageLocator() <<") was not found in "
            << "["<<getCollectionKeyword()<<"]"<<" collection"<<endl;
    return 0 ;
 }
@@ -38,11 +38,11 @@ GameData* BasicVarietiesCollection::findByIndex (const  long int index, bool err
 	if ( index <= size())
          return data_[index];
   if(errorReportEnabled)
- cerr << "Error: Array index (" << index << ") is out of array dimensions!\n";
+ cerr << "Error: BasicVarieties array index (" << index << ") is out of array dimensions!\n";
  return 0 ;
 }
 
-void   BasicVarietiesCollection::add  ( GameData * /*const*/ newVariety)
+void   BasicVarietiesCollection::add  ( GameData * /*const*/ newVariety, bool)
 {
   data_.push_back ( dynamic_cast< Variety*> (newVariety) );
 //  vector <Variety *>::iterator iter = data_.end() - 1;
