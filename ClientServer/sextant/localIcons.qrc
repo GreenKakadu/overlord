@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>icons/border_all.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/sextant.png</file>
+        <file>icons/Castle.png</file>
+    </qresource>
+</RCC>

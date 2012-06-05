@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>images/fileprint.png</file>
+        <file>images/globe.png</file>
+        <file>images/load.png</file>
+        <file>images/target.png</file>
+        <file>images/zoomin.png</file>
+        <file>images/zoomout.png</file>
+        <file>images/scroll_texture.png</file>
+        <file>images/gold-coins.png</file>
+        <file>images/scroll-pattern.png</file>
+        <file>images/Green-Ivy-Scrolls.png</file>
+        <file>images/bread.png</file>
+    </qresource>
+</RCC>

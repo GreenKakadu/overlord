@@ -1,0 +1,36 @@
+These are files containing code of alpha version of Client and Server applications for use with  games based on Overlord engine
+Version 0.6
+Date 04-jun-2012
+
+                
+		1. Functionality.
+
+Server provides all basic functionality.
+
+This version of client supports game report data browsing (combat browsing is still not implemented). 
+Order writing functionality is in the process of implementation and provided only for some orders. 
+Turn processing prediction is not implemented.
+Combat simulation is not implemented.
+
+
+		
+		2. Compillation and building
+
+	"qmake PbmServer.pro" or "qmake Sextant.pro"  then "make"
+
+	executable files are "Sextant" and "PbmServer"
+ 	You need engine code for Sextant.
+			
+	Code is cross-platform. It needs QT ver >= 4.0 
+	You may need to set flags NOLRAND48 (if no lrand48 function)  or GCC_OLD (if GCC version is lower than 3.4) 
+		
+		
+		
+		3. Using Client
+		
+To start using client one needs to load game data:
+
+Menu: Game->"Open Game" and select game configuration file (like Overlord.config") which contains information about location of game gata (rules, units, locations files, etc)		
+
+
+

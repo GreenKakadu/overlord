@@ -1,0 +1,21 @@
+Basic Installation
+==================
+
+   These are generic installation instructions.
+
+You should have QT version 4.0 or higher installed on your system.
+If you have no QT you can take it from http://qt.nokia.com/downloads
+
+  1. Variable "ENGINE_DIR" in Sextant.pro should point to the directory on your computer  with Overlord engine code.
+
+  2. `cd' to the directory containing the package's source code (PbmServer or sextant).
+
+  3. call "qmake PbmServer.pro" or "qmake Sextant.pro"  then "make"
+
+     This should produce binaries named "PbmServer" or "Sextant"
+
+.
+
+
+
+

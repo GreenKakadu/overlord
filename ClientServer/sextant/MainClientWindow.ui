@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainClientWindow</class>
+ <widget class="QMainWindow" name="MainClientWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1086</width>
+    <height>1086</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainClientWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QPlainTextEdit" name="logWindow">
+    <property name="geometry">
+     <rect>
+      <x>13</x>
+      <y>3</y>
+      <width>571</width>
+      <height>311</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1086</width>
+     <height>24</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionConnect"/>
+    <addaction name="actionSend"/>
+    <addaction name="actionReceive"/>
+    <addaction name="actionReceive_report_for_turn"/>
+    <addaction name="separator"/>
+    <addaction name="actionConfiguration"/>
+    <addaction name="actionQuit"/>
+    <addaction name="actionImport_Report"/>
+   </widget>
+   <widget class="QMenu" name="menuVeiw">
+    <property name="title">
+     <string>Veiw</string>
+    </property>
+    <addaction name="actionMap"/>
+    <addaction name="actionLocation"/>
+    <addaction name="actionUnit"/>
+    <addaction name="actionFaction"/>
+    <addaction name="actionCombat"/>
+   </widget>
+   <widget class="QMenu" name="menuGame">
+    <property name="title">
+     <string>Game</string>
+    </property>
+    <addaction name="actionOpenGame"/>
+    <addaction name="actionClose"/>
+    <addaction name="actionSave"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuVeiw"/>
+   <addaction name="menuGame"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+     <horstretch>4</horstretch>
+     <verstretch>4</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="windowTitle">
+    <string>toolbar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::TopToolBarArea</set>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>48</width>
+     <height>48</height>
+    </size>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionOpen"/>
+   <addaction name="actionConnect"/>
+   <addaction name="actionSend"/>
+   <addaction name="actionReceive"/>
+   <addaction name="actionReceive_report_for_turn"/>
+   <addaction name="actionConfiguration"/>
+   <addaction name="actionQuit"/>
+   <addaction name="actionMap"/>
+   <addaction name="actionLocation"/>
+   <addaction name="actionUnit"/>
+   <addaction name="actionFaction"/>
+   <addaction name="actionCombat"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset>
+     <normalon>:/new/prefix1/icons/Folder.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Select Orders</string>
+   </property>
+   <property name="toolTip">
+    <string>Select Orders File</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset>
+     <normalon>:/new/prefix1/icons/Standby.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionConnect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../PbmCommon/icons.qrc">
+     <normaloff>:/new/prefix1/icons/Web.png</normaloff>
+     <normalon>:/new/prefix1/icons/Cancel.png</normalon>:/new/prefix1/icons/Web.png</iconset>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+   <property name="toolTip">
+    <string>Connect to Server</string>
+   </property>
+  </action>
+  <action name="actionConfiguration">
+   <property name="icon">
+    <iconset>
+     <normalon>:/new/prefix1/icons/Tools.png</normalon>
+    </iconset>
+   </property>
+   <property name="text">
+    <string>Configuration</string>
+   </property>
+  </action>
+  <action name="actionSend">
+   <property name="icon">
+    <iconset resource="../../PbmCommon/icons.qrc">
+     <normaloff>:/new/prefix1/icons/Mail.png</normaloff>:/new/prefix1/icons/Mail.png</iconset>
+   </property>
+   <property name="text">
+    <string>Send</string>
+   </property>
+   <property name="toolTip">
+    <string>Send orders to Server</string>
+   </property>
+  </action>
+  <action name="actionReceive">
+   <property name="icon">
+    <iconset resource="../../PbmCommon/icons.qrc">
+     <normaloff>:/new/prefix1/icons/Download.png</normaloff>:/new/prefix1/icons/Download.png</iconset>
+   </property>
+   <property name="text">
+    <string>Receive report from Server</string>
+   </property>
+   <property name="toolTip">
+    <string>Receive report from Server</string>
+   </property>
+  </action>
+  <action name="actionReceive_report_for_turn">
+   <property name="icon">
+    <iconset resource="../../PbmCommon/icons.qrc">
+     <normaloff>:/new/prefix1/icons/At.png</normaloff>:/new/prefix1/icons/At.png</iconset>
+   </property>
+   <property name="text">
+    <string>Receive report for turn...</string>
+   </property>
+  </action>
+  <action name="actionMap">
+   <property name="text">
+    <string>Map</string>
+   </property>
+  </action>
+  <action name="actionLocation">
+   <property name="text">
+    <string>Location</string>
+   </property>
+  </action>
+  <action name="actionUnit">
+   <property name="text">
+    <string>Unit</string>
+   </property>
+  </action>
+  <action name="actionFaction">
+   <property name="text">
+    <string>Faction</string>
+   </property>
+  </action>
+  <action name="actionCombat">
+   <property name="text">
+    <string>Combat</string>
+   </property>
+  </action>
+  <action name="actionOpenGame">
+   <property name="text">
+    <string>Open new game</string>
+   </property>
+   <property name="toolTip">
+    <string>Open Game</string>
+   </property>
+  </action>
+  <action name="actionClose">
+   <property name="text">
+    <string>Close Game</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save Game</string>
+   </property>
+  </action>
+  <action name="actionImport_Report">
+   <property name="text">
+    <string>Import Report</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../../PbmCommon/icons.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainClientWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>299</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>closeAll()</slot>
+ </slots>
+</ui>
