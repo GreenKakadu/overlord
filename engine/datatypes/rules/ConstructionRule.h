@@ -41,6 +41,7 @@ public:
       ConstructionRule ( const ConstructionRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
       virtual void save(ostream &out);
+      void cleanAttributes();
       GameData * createInstanceOfSelf();
 	   ~ConstructionRule();
               ConstructionEntity * startConstruction(UnitEntity * unit);

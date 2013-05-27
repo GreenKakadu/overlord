@@ -25,7 +25,7 @@ extern ReportPattern *	AtReporter;
 StanceOrder * instantiateStanceOrder = new StanceOrder();
 
 StanceOrder::StanceOrder(){
-  keyword_ = "Stance";
+  keyword_ = "stance";
   registerOrder_();
   description = string("STANCE  faction-id |unit-id stance \n") +
   "Immediate, one-shot.  Modifies your diplomatic stance toward a faction or unit.\n" +

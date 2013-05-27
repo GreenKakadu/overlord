@@ -33,6 +33,7 @@ public:
       ~EnchantmentRule (){}
       virtual STATUS     initialize      ( Parser *parser);
       virtual void save(ostream &out);
+      void cleanAttributes();
       inline string getPluralName() const{return pluralName_;}
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);

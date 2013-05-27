@@ -34,6 +34,7 @@ public:
   virtual STATUS     initialize      ( Parser *);
   virtual void save(ostream &out);
   virtual ostream& report(ostream &out);
+  virtual void clean() {}
 //  virtual void add(AbstractData * data);
 //  virtual void remove(AbstractData * data);
 //  virtual bool has(AbstractData * data);

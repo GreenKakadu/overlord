@@ -25,6 +25,7 @@ public:
       ItemRule ( const ItemRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
       void save(ostream &out);
+      void cleanAttributes();
       GameData * createInstanceOfSelf();
   inline string getPluralName() const{return pluralName_;}
     void printDescription(ReportPrinter & out);

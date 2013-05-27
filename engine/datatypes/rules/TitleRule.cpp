@@ -104,6 +104,13 @@ void TitleRule::save(ostream &out)
 }
 
 
+void TitleRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+        skillBonuses_.clean();
+}
+
+
 void TitleRule::printDescription(ReportPrinter & out)
 {
    out << print()<< ": "<< getDescription()<<". ";

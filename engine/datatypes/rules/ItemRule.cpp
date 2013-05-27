@@ -256,6 +256,13 @@ void ItemRule::save(ostream &out)
 }
 
 
+void ItemRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+      skillBonuses_.clean();
+}
+
+
 void    ItemRule::extractKnowledge (Entity * recipient, int parameter)
 {
 //    if(this==items["adam"])

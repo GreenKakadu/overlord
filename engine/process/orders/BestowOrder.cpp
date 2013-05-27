@@ -31,7 +31,7 @@ extern ReportPattern * receiveTitleReporter;
 BestowOrder * instantiateBestowOrder = new BestowOrder();
 
 BestowOrder::BestowOrder(){
-  keyword_ = "Bestow";
+  keyword_ = "bestow";
   registerOrder_();
   description = string("BESTOW title-tag location-id unit-id \n") +
   "Immediate, leader only, one-shot.  Executes as soon as the designated unit is\n" +

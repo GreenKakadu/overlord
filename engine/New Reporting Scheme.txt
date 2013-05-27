@@ -1,0 +1,145 @@
+Client-Server model reporting scheme.
+
+In Client-Server scheme Server each turn for each faction generates "projection" of the game world.  This projection contains subset of the gameworld data that is visible for this faction. As gameworld consists from ruleset (.rules files) and game data (.dat files) gameworld projection also consists from the projection of ruleset (rules that are known tho this faction) and projection of gamedata that consists from images of gamedata objects as they seen by this faction.  Projection of the ruleset is just incomplete ruleset but projection of the gameworld consists from object images, that are not identical to original gameworld objects.
+
+
+Each faction keeps list of visited on this turn locations. It contains Location images as they seen by faction.
+It should also have thisDayVisitedLocations containing pointers to locations visited on this turn. It should be cleared at the end of day.
+Locations are added to thisDayVisitedLocations list with FactionEntity::addVisitedLocation
+It actually checks either location is in the list. If no -  pointer to location is added to the list.
+At the end of day: 
+- For each location in thisDayVisitedLocations determine local observation. Location may have no unit (and no observation - then skip it)
+- create complete image of this location and put it into visited Locations list. If image from previous day exist - replace it. (delete old)
+This includes creation of complete images of all (visible) Tokens (Units, Constructions and Effects) at this location.
+
+
+
+created with LocationEntity::createVisitedImage. This image has no list of Tokens (Units, Constructions and Effects) present at the location. This is because it may be difficult to determine their visibility at this point. To determine visibility we should have the list of all observers (units) present at the location. This list we have at the end of day.
+
+
+image creation with observation as a parameter.
+
+
+Image creation 
+updating
+storage
+
+Types of images: Faction, Tokens, Location, Events
+
+Faction. Contains only name and tag (but may be some more later - blazon icon?)
+Own faction treated separately.(no neew to update etc.)
+Factions are stored in  TurnReport::knownFactions_
+When new TokenImage added, (TurnReport::addFactionImage(FactionEntity * faction)) searching for faction in knownFactions_. If found - updated (rewrited) FactionEntity::updateImage(FactionEntity * data) and returned.
+If not found - created new image (FactionEntity::createFactionImage(FactionEntity * data), added to TurnReport::knownFactions_ and returned. (may save on rewriting by checking timestamp)
+
+TokenImage. Contains info dependent on observation of referrent. Allies and exposed units - special case.
+Own Tokens treated separatelly.
+Stored in TurnReport:       TurnReport::observedUnits_;
+			    TurnReport::observedConstructions_;
+			    TurnReport::observedEffects_;
+Adding: 
+TurnReport::addUnitImage(UnitEntity * unit)
+TurnReport::addConstructionImage(ConstructionEntity * construction)
+TurnReport::addEffectImage(EffectEntity * effect)
+
+Every day at postprocessing stage 
+ FactionEntity::dailyImageProcessing()
+go througth all visited on this turn locations (pointers to real location, not images)
+For each location
+LocationEntity::produceDailyImages(FactionEntity * faction)
+- calculate observation
+
+
+go througth all visited on this turn locations (pointers to real location, not images) 
+and througth all Tokens(pointers to real tokens, not images) present there. 
+For each token, search in collection of images for correspondent image. 
+If it is not present - create image and add it to collection.
+If it exists - update it with data from real location (mainly rewrite, no new image created). 
+ (need to know faction of faction receiving report (it is in TurnReport) and local faction observation.
+Anyway insert pointer to this token image to Location list of Tokens.
+
+LocationImage.
+Stored in TurnReport
+     TurnReport::discoveredLocations_;
+    TurnReport::visitedLocations_;
+Adding: Faction keeps temporary visitedOnThisDay list of locations. 
+        Every day at postprocessing stage these locations will be added to list of location images in TurnReport. 
+Adding: First search. If not found - create image and add. If found - update existing image.
+CreateImage: Create unpopulated visitedLocationImage 
+             get local observation.
+             populate. while populating add Tokens (Tokens are adding Factions)
+	    
+
+Updating: Information about Entities present should be rewrited if new info (with higher timestamp is available). Otherwise it should be merged. Resources should be allways merged.
+
+
+
+write create Image and updateImage functions for Tokens 
+
+change MakeAlliedImage and makeObservedImage  (image, source) to image->fillAlliedImage(source)
+Check LocationImage generation. 
+
+Events.
+
+There are simple atomic Events and complex composite Events.
+Example of simple atomic Event: "UnitA  gives 3 swords to UnitB"
+Example of complex composite Event: combat report, trial report, each consisting from many atomic events.
+
+
+Events Processing:
+
+(1) When something happens Event is created with Event::createNewEvent(eventOrigin, EventType(string) , orderID, eventParameters).
+  eventOrigin - where Event happened. It may be location or special entity (gameEntity) that holds global events.
+  EventType, - type of event (like "giving something to somebody")
+  orderID - id of order that caused to creation of  this event if any
+  eventParameters   parameters of this specific event (like UnitA,  3 swords, UnitB )
+When Event created it is allways added to origin  (here is special case when the same event like "UnitA  can't give 3 swords to UnitB"
+ may be generted several times during the same day. Such duplicates will be filtered out on the stage of adding event to origin).
+Events added Entity::addEvent(Event * event, OrderLine *  orderId) as eventElements (consisting from the pair Event, OrderId) to Entity::eventRecords_
+Also Event may be explicitly added to involved participants.
+
+(2) At the end of day Events from collected eventRecords_ will be transfered to Entity::collectedEvents_ and eventRecords_ cleared.
+This is done in FactionEntity::dailyEventProcessing()
+
+
+(3) Entities that could be witnesses of Events will try to extract EventImages from their location.
+  This is done in FactionEntity::dailyImageProcessing() that calls TurnReport::addLocationImage(...) that calls 
+LocationEntity::createVisitedLocationImage(...). 
+Observable Events are part of observable Location Image and location image will contain event images in collectedEvents_
+
+
+
+
+
+
+
+
+Conditions:
+
+Condition has parameter par and bool function isSatisfied(agent, target)
+
+Condition types:
+
+- observation (par): agent.obse > target.stea + par
+- stance   stance of agent to target > par
+- skill agent has skillLevel  par 
+- item agent has itemElement  par 
+- item equipped agent has item  par equipped
+- location agent is at (unique) location par
+- terrain agent is at terrain par
+- construction agent is in the building of type  par
+- building agent is in the (unique) building   par 
+
+
+
+
+Conditional Equipement. 
+
+Some items may require conditions to equip. If then this condition stops being satisfied (due to some events) they should be unequipped.
+In inventory make registry equipmentConditions. <Basic Condition>
+addToRegistry/removeFromRegistry (condition) when some item requiring condition equipped/unequipped
+InventoryAttribute::checkConditions method (TokenEntity *unit) that will try all conditions and call unequip if failed
+
+
+nescesary
+

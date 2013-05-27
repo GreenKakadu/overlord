@@ -132,6 +132,13 @@ movementBonuses_.save(out);
 }
 
 
+void TerrainRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+        skillBonuses_.clean();
+}
+
+
 int TerrainRule::getTravelTime(MovementVariety * mode)
 {
 

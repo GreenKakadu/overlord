@@ -32,6 +32,7 @@ public:
       RaceRule ( const RaceRule * prototype );
       virtual STATUS     initialize      ( Parser *parser);
       virtual void save(ostream &out);
+      void cleanAttributes();
       GameData * createInstanceOfSelf();
   int getEquipCapacity( EquipmentSlotVariety * type);
   inline string getPluralName() const{return pluralName_;}

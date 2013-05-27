@@ -44,6 +44,13 @@ void SkillBonusComboAttribute::save(ostream &out)
     productionBonuses_.save(out);
 }
 
+void SkillBonusComboAttribute::clean()
+{
+   studyBonuses_.clean(); 
+   learningBonuses_.clean();
+   productionBonuses_.clean();
+}
+
 
 int SkillBonusComboAttribute::getProductionBonus(SkillRule * skill)
 {

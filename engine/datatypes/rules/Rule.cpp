@@ -52,6 +52,15 @@ void Rule::save(ostream &out)
 
 }
 
+
+
+void Rule::cleanAttributes()
+{
+    movementBonuses_.clean();
+}
+
+
+
 string Rule::getCollectionKeyword()
 {
   return gameFacade->getDataManipulator()->getRuleCollectionKeyword(getTag());

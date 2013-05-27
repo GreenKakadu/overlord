@@ -12,7 +12,7 @@
 #include "FactionEntity.h"
 #include "EntitiesCollection.h"
 extern string longtostr(long u);
-
+int GameConfig::ENTITY_PREFIX_LENGTH = 1;
 GameConfig::GameConfig()
 {
 		unitsFile_          = string("units.dat");
@@ -413,14 +413,14 @@ bool GameConfig::isNewEntityName(const string &tag, FactionEntity * faction)
 	//
   if(factionTagSize == string::npos)
    {
-//     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
+     //cerr <<  "["<<newEntityPrefix_<<"] not found in tag string ["<<tag<<"] isNewEntityName"<<endl;
     return false;
     }
      string tempTag = tag.substr(0,factionTagSize);
      faction = dynamic_cast<FactionEntity *>(gameFacade->factions.findByTag(tempTag,false));
      if(gameFacade->factions.isValidTag(tempTag) )
    		 return true;
-//    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";
+    cout << "Faction "<<tag.substr(0,factionTagSize)<< " not found\n";
   return false;
 }
 
@@ -445,7 +445,7 @@ char GameConfig::getEntityTypePrefix(const string &tag)
 	//
   if(factionTagSize == string::npos)
    {
-     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string\n";
+     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string["<<tag<<"] getEntityTypePrefix"<<endl;
     return 0;
    }
   if(factionTagSize + newEntityPrefix_.length() > tag.length())
@@ -462,3 +462,61 @@ char GameConfig::getEntityTypePrefix(const string &tag)
 	 return 0;
 }
 
+
+// 1 - is hardcoded length of entity pefix ('U' for units, 'L' for locations etc)
+
+// Returns numerical part of newEntity identifier
+// 1 - is hardcoded length of entity pefix ('U' for units, 'L' for locations etc)
+int GameConfig::getNewEntitySuffix(const string &temporaryName)
+{
+  string::size_type factionTagSize = temporaryName.find(newEntityPrefix_,0);
+    //
+  if(factionTagSize == string::npos)
+   {
+     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string["<<temporaryName<<"] getNewEntitySuffix"<<endl;
+    return 0;
+   }
+  if(factionTagSize + newEntityPrefix_.length() + GameConfig::ENTITY_PREFIX_LENGTH > temporaryName.length())
+    {
+     cerr <<  "["<<newEntityPrefix_<<"] contains no entity identifier\n";
+        return 0;
+    }
+
+
+   string str = temporaryName.substr(factionTagSize + newEntityPrefix_.length() + GameConfig::ENTITY_PREFIX_LENGTH );
+   if(str.length()==0)
+   {
+       return 0;
+   }
+
+  // cout <<"GameConfig::getNewEntitySuffix "<<temporaryName<<" = "<< factionTagSize<< " + ["<<newEntityPrefix_<<"] "<< newEntityPrefix_.length()<< " + "<<GameConfig::ENTITY_PREFIX_LENGTH <<" ->"<<str<<endl;
+     int id= std::stoi(str);
+     return id;
+}
+
+
+
+// Changes numerical part of newEntity identifier
+void GameConfig::setNewEntitySuffix(string &temporaryName, int suffix)
+{
+  string::size_type factionTagSize = temporaryName.find(newEntityPrefix_,0);
+    //
+  if(factionTagSize == string::npos)
+   {
+     cerr <<  "["<<newEntityPrefix_<<"] not found in tag string["<<temporaryName<<"] setNewEntitySuffix"<<endl;
+    return;
+   }
+  if(factionTagSize + newEntityPrefix_.length() + GameConfig::ENTITY_PREFIX_LENGTH > temporaryName.length())
+    {
+     cerr <<  "["<<newEntityPrefix_<<"] contains no entity identifier\n";
+        return;
+    }
+ string::size_type preSize = factionTagSize + newEntityPrefix_.length() + GameConfig::ENTITY_PREFIX_LENGTH;
+ string::size_type suffixSize = temporaryName.size() - preSize;
+ string suffixStr =  to_string(suffix);
+ temporaryName.replace(preSize,suffixSize,suffixStr);
+
+
+  // cout <<"GameConfig::getNewEntitySuffix "<<temporaryName<<" = "<< factionTagSize<< " + ["<<newEntityPrefix_<<"] "<< newEntityPrefix_.length()<< " + "<<GameConfig::ENTITY_PREFIX_LENGTH <<" ->"<<str<<endl;
+     return ;
+}

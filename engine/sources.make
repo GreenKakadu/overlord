@@ -95,6 +95,7 @@ ENGINE_SOURCES =  GameFacade.cpp \
           datatypes/entities/FactionEntity.cpp \
           datatypes/entities/LocationEntity.cpp \
           datatypes/entities/UnitEntity.cpp \
+          datatypes/entities/UnknownUnitEntity.cpp \
           datatypes/events/Event.cpp \
           datatypes/misc/BasicExit.cpp \
           datatypes/misc/EntityStatistics.cpp \

@@ -21,7 +21,7 @@
 extern bool testMode;
 
 #ifndef VERSION
-  #define VERSION "1.1"
+  #define VERSION "1.1.1"
 #endif
 string GameConfig::version = VERSION;
 GameFacade * gameFacade = 0;

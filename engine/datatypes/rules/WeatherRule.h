@@ -28,6 +28,7 @@ class  WeatherRule : public Rule
       ~WeatherRule (){}
       virtual STATUS     initialize      ( Parser *parser);
       virtual void save(ostream &out);
+      void cleanAttributes();
       GameData * createInstanceOfSelf();
       void printDescription(ReportPrinter & out);
       vector <AbstractData *> aPrint();

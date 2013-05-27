@@ -51,6 +51,7 @@ public:
     virtual ~GameFacade();
     bool loadConfiguration(string gameGonfigFile);
     bool prepareGame();
+    bool saveData(char * suffix);
     int getGameTurn();
     inline int getCurrentDay(){return currentDay_;}
     inline void setCurrentDay(int day){currentDay_ = day;}

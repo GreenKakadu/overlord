@@ -46,6 +46,7 @@ public:
    vector <AbstractData *> unitPrint();
    void produceReport(ostream & out);
    static TitleElement  * readElement (Parser * parser);
+   static TitleElement  * readPrintedElement (Parser * parser);
    bool contest(UnitEntity * contender);
    void activateClaimingEffects();
    void desactivateClaimingEffects();

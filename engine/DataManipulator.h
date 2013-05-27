@@ -24,7 +24,7 @@ public:
   DataManipulator();
   ~DataManipulator();
   STATUS load();
-  STATUS save();
+  STATUS save(char * suffix = ".new");
   void init();
   void clear();
   void printAllData();

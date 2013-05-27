@@ -28,6 +28,7 @@ public:
   void save(ostream &out);
   void add( MovementBonusElement * data);
   void remove( MovementBonusElement * data);
+  void clean();
   bool isEmpty();
       vector <AbstractArray>  aPrintReport();
     protected:

@@ -192,6 +192,13 @@ void RaceRule::save(ostream &out)
 }
 
 
+void RaceRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+      skillBonuses_.clean();
+}
+
+
 /*
 * Returns number of items that may be equiped in this category.
 */

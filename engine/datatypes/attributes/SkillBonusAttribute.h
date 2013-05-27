@@ -30,6 +30,7 @@ public:
 	int getSkillBonus(SkillRule * skill);
   void add( BonusElement * data);
   void save(ostream &out);
+  void clean();
   bool isEmpty();
   vector <AbstractArray>  aPrintReport();
   ostream& report(ostream &out);

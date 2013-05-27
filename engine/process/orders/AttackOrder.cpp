@@ -27,7 +27,7 @@ extern ReportPattern *	ownConstructionAttackReporter;
 AttackOrder * instantiateAttackOrder = new AttackOrder();
 
 AttackOrder::AttackOrder(){
-  keyword_ = "Attack";
+  keyword_ = "attack";
   registerOrder_();
   description = string("ATTACK [ unit-id|faction-id|structure-id ] \n") +
   "Full-day.  This order executes and completes when the designated unit, any\n" +

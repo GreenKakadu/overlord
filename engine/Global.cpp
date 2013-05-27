@@ -8,6 +8,10 @@
  ***************************************************************************/
 #include "Global.h"
 #include "DataStorageHandler.h"
+#ifndef WINGETCWD
+#include <unistd.h>
+#endif
+
 
 
 

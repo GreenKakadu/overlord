@@ -136,6 +136,13 @@ void SkillBonusAttribute::remove(BonusElement * data)
 
 
 
+void SkillBonusAttribute::clean()
+{
+   skillBonuses_.clear();
+}
+
+
+
 void    SkillBonusAttribute::extractKnowledge (Entity * recipient, int parameter)
 {
   for(vector <BonusElement>::iterator iter = skillBonuses_.begin();

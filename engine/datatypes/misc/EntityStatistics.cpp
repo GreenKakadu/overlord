@@ -101,7 +101,7 @@ STATUS EntityStatistics::initialize(Parser * parser)
                 damageType_ = FIRE;
                 return OK;
             }
-            if (parser->matchKeyword("VOID"))
+            if (parser->matchKeyword("VOID_DAMAGE"))
             {
                 damageType_ = VOID_DAMAGE;
                 return OK;

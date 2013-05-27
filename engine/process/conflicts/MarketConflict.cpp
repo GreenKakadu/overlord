@@ -134,7 +134,7 @@ void MarketConflict::resolve (vector  <BasicCompetitiveRequest *> & currentList)
     finalPrice = calculateFinalPrice(buyOffers,sellOffers);
 //    cout << "Final price for "<< buyMax->getType()->print()<<" is "<< finalPrice<<endl;
   }
-  // Distribute goods, answering reports and calculating total (for selliing only)
+  // Distribute goods, answering reports and calculating total (for selling only)
    int buyAmount = mayBuyByPrice(buyOffers,finalPrice);
    int sellAmount = maySellByPrice(sellOffers,finalPrice);
    int finalAmount =  MIN(buyAmount,sellAmount);

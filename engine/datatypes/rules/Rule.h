@@ -25,6 +25,7 @@ public:
                                             GameData(keyword, parent) {}
     virtual STATUS initialize(Parser *parser);
     virtual     void      save (ostream &out);
+    virtual void cleanAttributes();
     string getCollectionKeyword();
 //    void bindCondition(BasicCondition * condition);
 //    void checkConditions(Entity * entity);

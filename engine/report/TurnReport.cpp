@@ -573,7 +573,10 @@ STATUS TurnReport::initialize()
 //                          cout<<"<==================== initializing hero..."<<endl;
 //                      }
  //                 currentKnowledge_ = dynamic_cast<Rule *>(collection->findByTag(parser_->getWord(),false));
-
+                      if(currentKnowledge_) // wipe data before initialization
+                      {
+                         currentKnowledge_->cleanAttributes(); 
+                      }
                }
                }
                 if(currentKnowledge_)
@@ -583,7 +586,11 @@ STATUS TurnReport::initialize()
 
               break;
         }
-        case SKILL_KNOWLEDGE_SECTION:
+        case SKILL_KNOWLEDGE_SECTION: 
+            // Element was created in load() and placed to skillKnowledge_ collection,
+            // SkillRule was added to skills collection if necessary.
+            // without relation to that in initialize() new skill element created and 
+            // skillRule (in rules collection) initialized.
         {
             if (parser_->matchKeyword("SKILL_ELEMENT"))
             {
@@ -597,7 +604,6 @@ STATUS TurnReport::initialize()
 //                {
 //                    cout<<"<== reading skill element"<<skill->getTag()<<" "<<currentLevel<<endl;
 //                }
-               // skill->initLevel(currentLevel);// TEmp. <---------------------------TEMP
                 if (parser_->matchKeyword("LEVEL"))
                 {
                     if (currentLevel >SkillRule::getMaxSkillLevel())
@@ -1089,7 +1095,7 @@ UnitEntity * TurnReport::addUnitImage(UnitEntity * unitToAdd, int observation)
 }
 
 ConstructionEntity * TurnReport::addConstructionImage(
-                                                      ConstructionEntity * constructionToAdd, int observation)
+                      ConstructionEntity * constructionToAdd, int observation)
 {
     if (constructionToAdd)
     {

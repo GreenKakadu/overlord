@@ -48,11 +48,11 @@ class LocationEntity : public Entity  {
       LocationEntity ( const LocationEntity * prototype );
       ~LocationEntity (){}
       STATUS  initialize      ( Parser *parser );
-       void      save (ostream &out);
+       void   save (ostream &out);
       GameData * createInstanceOfSelf();
       void    preprocessData();
       void    postProcessData();
-      void      postPostProcessData();
+      void    postPostProcessData();
       void    dailyUpdate();
 // Static configuration parameters for economic model
       static const int migrationFactor;

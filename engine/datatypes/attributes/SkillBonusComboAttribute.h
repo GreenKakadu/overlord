@@ -25,6 +25,7 @@ public:
 	~SkillBonusComboAttribute();
   STATUS     initialize      ( Parser *);
    void save(ostream &out);
+   void clean();
  ostream& report(ostream &out);
   void extractKnowledge (Entity * recipient, int parameter);
   int getProductionBonus(SkillRule * skill);

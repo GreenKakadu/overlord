@@ -265,6 +265,11 @@ void ConstructionRule::save(ostream &out)
     movementBonuses_.save(out);
 }
 
+void ConstructionRule::cleanAttributes()
+{
+       Rule::cleanAttributes();
+   skillBonuses_.clean();
+}
 
 
 ConstructionEntity * ConstructionRule::startConstruction(UnitEntity * unit)

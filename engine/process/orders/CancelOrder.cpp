@@ -27,7 +27,7 @@ const unsigned CancelOrder::CANNOT_CANCEL_OWN_REPORT_FLAG = 0x01;
 const unsigned CancelOrder::CANNOT_CANCEL_REPORT_FLAG = 0x02;
 
 CancelOrder::CancelOrder(){
-  keyword_ = "Cancel";
+  keyword_ = "cancel";
   registerOrder_();
   description = string("CANCEL title-tag location-id \n") +
   "Immediate, title holder only.  Executes as soon as the unit is at the\n" +

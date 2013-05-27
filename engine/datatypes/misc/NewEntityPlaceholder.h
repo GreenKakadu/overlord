@@ -30,7 +30,8 @@ class TokenEntity;
 class NewEntityPlaceholder : public AbstractData  {
 public: 
 	NewEntityPlaceholder(const string& name);
-	~NewEntityPlaceholder(){cout << "newPlaceholder destroyed "<<endl;}
+    ~NewEntityPlaceholder(){}
+       string print(){return temporaryName_;}
   inline Entity * getRealEntity() {return entity_;}
   inline TokenEntity * getTemporaryEntity() {return temporaryEntity_;}
   inline void     setRealEntity(Entity * entity) {entity_ = entity;}

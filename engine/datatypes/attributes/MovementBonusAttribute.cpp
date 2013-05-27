@@ -97,6 +97,16 @@ void MovementBonusAttribute::remove(MovementBonusElement * data)
         }
     }
 }
+
+
+
+void MovementBonusAttribute::clean()
+{
+   movementBonuses_.clear(); 
+}
+
+
+
 vector <AbstractArray> MovementBonusAttribute::aPrintReport()
 {
     vector <AbstractArray> out;

@@ -94,7 +94,7 @@ LocationEntity::LocationEntity ( const LocationEntity * prototype ) : Entity(pro
   landFree_ = landTotal_;
   migration_ =0;
   population_ =0;
-  optima_ =100;
+  optima_ = 0;// Default value
   economy_ = 0;//100; // Default value
 	nextWeather_ = 0;
 	wages_ = 0;
@@ -747,7 +747,7 @@ LocationEntity::save(ostream &out)
   if(nextWeather_) out << "WEATHER "<< nextWeather_->getTag()<<endl;
   if(getLegalOwner()) out << "OWNER " << owner_->getTag()<<" "<<getTitleLocation()->getTag()<<endl;
 //  if(getGuard()) out << "GUARD " << guard_->getTag()<<endl;
-  if(optima_) out << "OPTIMA " << optima_<<endl;
+  if(optima_ ) out << "OPTIMA " << optima_<<endl;
   if(population_) out << "POPULATION " << population_<<endl;
   if(wages_) out << "WAGES " << wages_<<endl;
   if(landPrice_)  out << "LANDPRICE " << landPrice_ <<endl;
@@ -763,7 +763,8 @@ LocationEntity::save(ostream &out)
   for ( resourceIter = resources_.begin(); resourceIter != resources_.end(); resourceIter++)
     {
           out << "RESOURCES ";
-           (*resourceIter)->save(out);
+ //          (*resourceIter)->save(out);
+           (*resourceIter)->storeElement(out); // Does not save second parameter of the element
     }
   skillBonuses_.save(out);
 /*  for (BonusIterator bonusIter = skillBonuses_.begin(); bonusIter != skillBonuses_.end(); bonusIter++)

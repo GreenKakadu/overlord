@@ -26,7 +26,7 @@ extern ReportPattern * privateYieldTitleReporter;
 YieldOrder * instantiateYieldOrder = new YieldOrder();
 
 YieldOrder::YieldOrder(){
-  keyword_ = "Yield";
+  keyword_ = "yield";
   registerOrder_();
   description = string("YIELD title-tag location-id \n") +
   "Immediate, leader only, one-shot.  Executes if the unit holds a title.\n" +

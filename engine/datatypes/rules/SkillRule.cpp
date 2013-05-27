@@ -168,6 +168,13 @@ void SkillRule::initLevel_ (int level)
 
 
 
+void SkillRule::cleanAttributes()
+{
+   Rule::cleanAttributes();
+   skillBonuses_->clean();
+}
+
+
 STATUS SkillRule::dataConsistencyCheck()
 {
   postInit();

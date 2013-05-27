@@ -33,6 +33,7 @@ public:
       virtual STATUS     initialize      ( Parser *parser);
       virtual STATUS initializeLevel     ( Parser *parser, int level );
       virtual void save(ostream &out);
+      void cleanAttributes();
       void saveLevel(ostream &out, int level, bool isExtended = false);
       GameData * createInstanceOfSelf();
       STATUS dataConsistencyCheck();

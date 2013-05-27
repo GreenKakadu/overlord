@@ -56,6 +56,7 @@ ENGINE_HEADERS =    GameConfig.h \
     $${ENGINE_DIR}/datatypes/rules/ConstructionRule.h \
     $${ENGINE_DIR}/datatypes/rules/ActionRule.h \
     $${ENGINE_DIR}/datatypes/entities/UnitEntity.h \
+    $${ENGINE_DIR}/datatypes/entities/UnknownUnitEntity.h \
     $${ENGINE_DIR}/datatypes/entities/TokenEntity.h \
     $${ENGINE_DIR}/datatypes/entities/LocationEntity.h \
     $${ENGINE_DIR}/datatypes/entities/FactionEntity.h \

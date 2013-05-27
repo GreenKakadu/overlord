@@ -92,6 +92,25 @@ bool GameFacade::prepareGame()
 
     return true;
 }
+
+
+// Create a new copy of all Rules, Varieties and data files with extention .new
+// 
+bool GameFacade::saveData(char * suffix)
+{
+ if(getDataManipulator()->save(suffix) == OK)
+ {
+return true;
+ }
+ else
+     return false;
+}
+
+
+
+
+
+
 bool GameFacade::isUnknownParameter(AbstractData * data)
 {
   Entity * entity = dynamic_cast<Entity *> (data);

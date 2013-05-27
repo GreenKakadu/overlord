@@ -1984,6 +1984,7 @@ void TokenEntity::setCombatSettings()
   
   void TokenEntity::addOrder(string newOrder)
   {
+  //    cout<< "TokenEntity::addOrder "<< newOrder<<endl;
     Parser parser = Parser(newOrder);
     if(parser.matchKeyword("COMBAT_ORDER"))
     {

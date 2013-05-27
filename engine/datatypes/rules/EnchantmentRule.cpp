@@ -122,6 +122,15 @@ void EnchantmentRule::save(ostream &out)
 }
 
 
+
+void EnchantmentRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+      skillBonuses_.clean();
+}
+
+
+
 void EnchantmentRule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";

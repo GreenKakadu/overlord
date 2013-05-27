@@ -108,6 +108,13 @@ void SeasonRule::save(ostream &out)
 
 
 
+void SeasonRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+        skillBonuses_.clean();
+}
+
+
 void SeasonRule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";

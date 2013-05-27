@@ -20,7 +20,7 @@ extern ReportPattern *	AtReporter;
 ForgetOrder * instantiateForgetOrder = new ForgetOrder();
 
 ForgetOrder::ForgetOrder(){
-  keyword_ = "Forget";
+  keyword_ = "forget";
   registerOrder_();
   description = string("FORGET skill-tag \n") +
   "Immediate, one-shot.  Executes if the unit has any experience in the specified\n" +

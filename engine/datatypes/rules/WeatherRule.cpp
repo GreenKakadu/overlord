@@ -51,6 +51,13 @@ void WeatherRule::save(ostream &out)
 }
 
 
+void WeatherRule::cleanAttributes()
+{
+      Rule::cleanAttributes();
+        skillBonuses_.clean();
+}
+
+
 void WeatherRule::printDescription(ReportPrinter & out)
 {
     out << print()<< ": "<< getDescription()<<".";

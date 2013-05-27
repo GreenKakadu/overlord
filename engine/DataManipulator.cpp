@@ -298,7 +298,7 @@ void DataManipulator::createFileIfNotExist(string  * fileName, GameData * sample
 /*
  *
  */
-STATUS DataManipulator::save()
+STATUS DataManipulator::save(char * suffix)
 {
   EntitiesCollectionIterator iter;
   reportlist.open("reportlist.new");
@@ -309,7 +309,7 @@ STATUS DataManipulator::save()
          cerr<<"ERROR: entitiesCollection with undefined storage handler"<<endl;
          continue;
      }
-      (*iter) ->getStorageHandler()->save();
+      (*iter) ->getStorageHandler()->save(suffix);
    }
 
  for (RulesCollectionIterator ruleIter = gameFacade->ruleIndex.getAllRules().begin();
@@ -320,10 +320,10 @@ STATUS DataManipulator::save()
          cerr<<"ERROR: ruleCollection with undefined storage handler"<<endl;
          continue;
      }
-      (*ruleIter)->getStorageHandler()->save();
+      (*ruleIter)->getStorageHandler()->save(suffix);
 
    }
- gameFacade->events.getStorageHandler()->save();
+ gameFacade->events.getStorageHandler()->save(suffix);
    reportlist.close();
  return OK;
 }

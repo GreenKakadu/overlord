@@ -107,6 +107,32 @@ void TitleElement::produceReport(ostream & out)
   out<<endl;
 }
 
+TitleElement  * TitleElement::readPrintedElement (Parser * parser)
+{
+    string str =parser->getText();
+    TitleRule * title =0;
+    LocationEntity * location=0;
+ // get substring before "of"
+    unsigned pos0 = str.find(" of ");
+    string titleName = string(str,0,pos0);
+// get location
+     pos0 = str.find_first_of('[');
+    unsigned pos1 = str.find(']');
+    string locationTag = string(str,pos0,pos1);
+
+
+     GameData * data = gameFacade->getDataManipulator()->findGameDataByName(titleName);
+     if(data)
+     {
+        title = dynamic_cast<TitleRule *>(data);
+     }
+     location   = gameFacade->locations[locationTag];
+
+        if(( title == 0 ) || (location == 0) )
+          return 0;
+        else
+        return new TitleElement(title, location,0);
+}
 
 
 TitleElement  * TitleElement::readElement (Parser * parser)

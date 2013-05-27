@@ -49,7 +49,7 @@ public:
 //==    inline string getVersion() const{ return version_;}
    string getServerName() const;
   /** No descriptions */
-
+static int ENTITY_PREFIX_LENGTH;
   static string version;
 // Entities
   string * getUnitsFile() ;
@@ -89,7 +89,9 @@ public:
   string  getDeadline() {return deadline_;}
         bool isNPCFaction(FactionEntity * faction);
         char getEntityTypePrefix(const string &tag);
+        int getNewEntitySuffix(const string &temporaryName);
   inline string getNewEntityPrefix() const {return newEntityPrefix_;}
+  void setNewEntitySuffix(string &temporaryName, int suffix);
   inline int getNewEntityPrefixSize() const {return newEntityPrefix_.size();}
          bool isNewEntityName(const string &tag, FactionEntity * faction = 0);
    inline bool      isInitialized(){return isInitialized_;}
