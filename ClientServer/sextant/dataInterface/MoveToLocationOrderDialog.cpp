@@ -21,10 +21,17 @@ OrderWindow * MoveToLocationOrderDialog::show(TokenEntity * token, OrderLine * o
     GameData * data =0;
     GameData * destination=0;
     LocationEntity * location;
+    OrderWindow * orderWindow = 0;
 
    destination  = view->getSelectedLocation();    
-    
-     OrderWindow * orderWindow = this->prepareWindow(token,order,view,"Move");
+   if(command == ExtendedCommand::MARCH)
+   {
+      orderWindow = this->prepareWindow(token,order,view,"March");
+   }
+   else
+   {
+     orderWindow = this->prepareWindow(token,order,view,"Move");
+   }
      if(orderWindow==0)
      {
          return 0;

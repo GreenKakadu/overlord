@@ -11,6 +11,7 @@
 #include "ViewManager.h"
 #include "LocationEntity.h"
 #include "UnitEntity.h"
+#include "FactionEntity.h"
 #include "ClickableLabel.h"
 // BESTOW title-tag location-id unit-id 
 
@@ -21,11 +22,14 @@ OrderWindow * BestowTitleOrderDialog::show(TokenEntity * token,
      OrderLine * order, ViewManager * view, ExtendedCommand extendedCommandFlag)
 {
     TitleRule * data=0;
-    TitleElement * title;
+    TitleElement * title=0;
     LocationEntity * location=0;
     UnitEntity * targetUnit = 0;
 
-    data = dynamic_cast<TitleRule *>(view->getActiveData());
+    data       = dynamic_cast<TitleRule *>(view->getActiveData());// active data may be Title or target unit
+    targetUnit = dynamic_cast<UnitEntity *>(view->getActiveData());
+
+
     location = dynamic_cast<LocationEntity *>(view->getSelectedLocation()); 
             if((data)&&(location))
             {
@@ -69,15 +73,10 @@ OrderWindow * BestowTitleOrderDialog::show(TokenEntity * token,
               title = new TitleElement(data,location,0);  
             }
      }
-     
-     if(title)
-     {
-        titleCB_ = new OvlElementComboBox(title);  
-     }
-     else
-            {
-                 cerr<<"ERROR: wrong  title definition in order for "<<token <<endl;  
-            }
+
+
+     titleCB_ = new OvlElementComboBox(title);// title may be 0
+
 
      if(!isNewOrder_ && params.size() >= 3)
      {
@@ -90,36 +89,54 @@ OrderWindow * BestowTitleOrderDialog::show(TokenEntity * token,
      }
      
 
-       unitCB_ = new OvlComboBox(targetUnit);
+       unitCB_ = new OvlComboBox(targetUnit);// <- here should be TitleElement // Why?
 
-  // Add items to ComboBoxes and add widgets     
-    orderWindow->addWidget(titleCB_); 
+  // Add items to ComboBoxes and add widgets
+
+
     vector < TitleElement *> * titles =   unit->getTitlesAttribute()->getAll();
-    for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
+   for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
     {
-        if((*iter)->getTitle() != data || (*iter)->getTitleLocation() != location ) // Already added
+        if((*iter)->getTitle() != data || (*iter)->getTitleLocation() != location ) // Already added // Not added
         {
            titleCB_->addGameItem ((*iter));
         }
     }
-       
+      orderWindow->addWidget(titleCB_);
       ClickableLabel * l2 = new ClickableLabel(" to ");
      orderWindow->addWidget(l2);    
 // Add items to ComboBoxes and add widgets     
-    orderWindow->addWidget(unitCB_); 
-//    vector < TitleElement *> * titles =   unit->getTitlesAttribute()->getAll();
-    for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
-    {
-        if((*iter)->getTitle() != data) // Already added
-        {
-           unitCB_->addGameItem ((*iter)->getTitle());
-        }
-    }
+
+////    vector < TitleElement *> * titles =   unit->getTitlesAttribute()->getAll();
+//    for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
+//    {
+//        if((*iter)->getTitle() != data) // Already added
+//        {
+//           unitCB_->addGameItem ((*iter)->getTitle());
+//        }
+//    }
     
 
   
-
-
+    // get list of all units here, starting from own
+    vector <UnitEntity *> units = unit->getLocation()->unitsPresent();
+    for (vector <UnitEntity *>::iterator iter = units.begin(); iter != units.end(); ++iter)
+    {
+        if ((*iter)->getFaction() == unit->getFaction())
+        {
+            unitCB_->addGameItem((*iter));
+        }
+    }
+    //  Now Allies
+    for (vector <UnitEntity *>::iterator iter = units.begin(); iter != units.end(); ++iter)
+    {
+        if (((*iter)->getFaction() != unit->getFaction()) &&
+                (unit->getFaction()->stanceAtLeast((*iter)->getFaction(), friendlyStance)))
+        {
+            unitCB_->addGameItem((*iter));
+        }
+    }
+orderWindow->addWidget(unitCB_);
 
 
 
@@ -152,8 +169,8 @@ OrderLine * BestowTitleOrderDialog::getOrderLine()
     {
       unitTag = unit->getTag();  
     }    
-    s <<keyword_<<" "<<titleTag<<" "<<locationTag<<" "<<unitTag<<endl;
-    
+    s <<getKeyword()<<" "<<titleTag<<" "<<locationTag<<" "<<unitTag<<endl;
+    //cout<<s.str()<<endl;
     return updateOrderLine(s.str());   
 }
 

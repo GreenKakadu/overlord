@@ -18,17 +18,19 @@ class TokenEntity;
 class OrderLine;
 
 enum class ExtendedCommand {
-  DEFAULT      = 0,
-  BUY          = 1,
-  SELL         = 2,
-  MARCH      = 3,
-  GIVE         = 4,
-  ACCEPT          = 5,
-  EQUIP        = 6,
-  UNEQUIP      = 7,
+  DEFAULT       = 0,
+  BUY           = 1,
+  SELL          = 2,
+  MARCH         = 3,
+  GIVE          = 4,
+  ACCEPT        = 5,
+  EQUIP         = 6,
+  UNEQUIP       = 7,
   EJECT         = 8,
   STACK         = 9,
-  PROMOTE         = 10,
+  PROMOTE       = 10,
+  EXIT          = 11,
+  FORGET     = 12,
   EXTENDED_COMMAND_END      = 99
 };
 typedef enum ExtendedCommand EXTENDED_COMMAND;

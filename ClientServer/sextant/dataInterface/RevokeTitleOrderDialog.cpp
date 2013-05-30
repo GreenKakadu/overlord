@@ -1,18 +1,11 @@
-/*
- * File:   ReleaseTitleOrderDialog.cpp
- * Author: alex
- * 
- * Created on May 1, 2012, 11:48 AM
- */
 #include <sstream>
-#include "ReleaseTitleOrderDialog.h"
+#include "RevokeTitleOrderDialog.h"
 #include "TitleRule.h"
 #include "ViewManager.h"
 #include "LocationEntity.h"
 #include "UnitEntity.h"
-// YIELD title-tag location-id 
-// CANCEL title-tag location-id 
-OrderWindow * ReleaseTitleOrderDialog::show(TokenEntity * token, 
+// CANCEL title-tag location-id
+OrderWindow * RevokeTitleOrderDialog::show(TokenEntity * token,
      OrderLine * order, ViewManager * view, ExtendedCommand extendedCommandFlag)
 {
     TitleRule * data=0;
@@ -32,15 +25,15 @@ OrderWindow * ReleaseTitleOrderDialog::show(TokenEntity * token,
             }
 
 
-    
-     OrderWindow * orderWindow = this->prepareWindow(token,order,view,"Release");
+
+     OrderWindow * orderWindow = this->prepareWindow(token,order,view,"Revoke");
      if(orderWindow==0)
      {
          return 0;
      }
-    
 
-// for existing order determine parameters      
+
+// for existing order determine parameters
      if(!isNewOrder_ && params.size() >= 2)
      {
             data = dynamic_cast<TitleRule *>(params[0]);
@@ -72,15 +65,8 @@ OrderWindow * ReleaseTitleOrderDialog::show(TokenEntity * token,
             {
                  cerr<<"ERROR: wrong  title definition in order for "<<token <<endl;
             }
-  // Add items to ComboBoxes and add widgets
-     vector < TitleElement *> * titles =   unit->getTitlesAttribute()->getAll();
-    for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
-     {
-         if((*iter)->getTitle() != data || (*iter)->getTitleLocation() != location ) // Already added // Not added
-         {
-            CB_->addGameItem ((*iter));
-         }
-     }
+  // Do not add any items to ComboBox
+
       orderWindow->addWidget(CB_);
       showWindow(orderWindow);
       return orderWindow;
@@ -88,7 +74,7 @@ OrderWindow * ReleaseTitleOrderDialog::show(TokenEntity * token,
 
 
 
-OrderLine * ReleaseTitleOrderDialog::getOrderLine()
+OrderLine * RevokeTitleOrderDialog::getOrderLine()
 {
     stringstream s;
     string titleTag;
@@ -106,6 +92,5 @@ OrderLine * ReleaseTitleOrderDialog::getOrderLine()
       }
     }
     s <<getKeyword()<<" "<<titleTag<<" "<<locationTag<<endl;
-    return updateOrderLine(s.str());   
+    return updateOrderLine(s.str());
 }
-

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OrderDialog.cpp
  * Author: alex
  * 
@@ -14,11 +14,20 @@
 #include "BuyItemOrderDialog.h"
 #include "OathOrderDialog.h"
 #include "UnitOrderDialog.h"
+#include "AttackOrderDialog.h"
 #include "MoveToLocationOrderDialog.h"
 #include "ClaimTitleOrderDialog.h"
 #include "ReleaseTitleOrderDialog.h"
+#include "RevokeTitleOrderDialog.h"
+#include "RecruitOrderDialog.h"
 #include "BestowTitleOrderDialog.h"
 #include "EquipItemOrderDialog.h"
+#include "EnterConstructionOrderDialog.h"
+#include "StanceOrderDialog.h"
+#include "TargetOrderDialog.h"
+#include "LearnSkillOrderDialog.h"
+#include "TeachOrderDialog.h"
+
 extern OrderPrototypesCollection  * orderPrototypesCollection;
 vector<OrderDialog *> OrderDialog::orderDialogRegister;
 // all specific orders instantiations should be here  after orderDialogRegister
@@ -26,6 +35,7 @@ GiveItemOrderDialog sampleGiveItemOrderWindow("give");
 UseSkillOrderDialog sampleUseSkillOrderWindow("use");
 BuyItemOrderDialog sampleBuyItemOrderWindow("buy");
 OathOrderDialog sampleOathOrderWindow("oath");
+StanceOrderDialog sampleStanceOrderWindow("stance");
 MoveToLocationOrderDialog sampleMoveToLocationOrderWindow("move");
 // for future use// UseItemOrderDialog sampleUseItemOrderDialog("use");
 
@@ -35,37 +45,34 @@ MoveToLocationOrderDialog sampleMoveToLocationOrderWindow("move");
  
 // GetItemOrderDialog sampleGetItemOrderDialog("get");
 // SwapItemOrderDialog sampleSwapItemOrderDialog("swap");       
-// LearnSkillOrderDialog sampleLearnSkillOrderDialog("study");        
-// TeachSkillOrderDialog sampleTeachSkillOrderDialog("teach");        
-UseSkillOrderDialog sampleForgetSkillOrderWindow("forget");
+LearnSkillOrderDialog sampleLearnSkillOrderDialog("study");        
+TeachOrderDialog sampleTeachOrderDialog("teach");        
+LearnSkillOrderDialog sampleForgetSkillOrderWindow("forget");
       
-// RecruitOrderDialog  sampleRecruitOrderDialog("recruit");           
+ RecruitOrderDialog  sampleRecruitOrderDialog("recruit");
  ClaimTitleOrderDialog sampleClaimTitleOrderDialog("claim");       
  ReleaseTitleOrderDialog sampleReleaseTitleOrderDialog("yield");       
  BestowTitleOrderDialog sampleBestowTitleOrderDialog("bestow");       
-// RevokeTitleOrderDialog sampleRevokeTitleOrderDialog("cancel");        
-UnitOrderDialog sampleAcceptUnitOrderDialog("accept");       
-// AttackUnitOrderDialog sampleAttackUnitOrderDialog("attack");       
-// BestowUnitOrderDialog sampleBestowUnitOrderDialog("bestow");       
-UnitOrderDialog sampleEjectUnitOrderDialog("eject");       
-// GetFromUnitOrderDialog sampleGetFromUnitOrderDialog("get");       
-// GiveToUnitOrderDialog sampleGiveToUnitOrderDialog("give");              
+ RevokeTitleOrderDialog sampleRevokeTitleOrderDialog("cancel");
+ UnitOrderDialog sampleAcceptUnitOrderDialog("accept");
+ AttackOrderDialog sampleAttackOrderDialog("attack");
+ UnitOrderDialog sampleEjectUnitOrderDialog("eject");
+// GetFromUnitOrderDialog sampleGetFromUnitOrderDialog("get");                    
 UnitOrderDialog samplePromoteUnitOrderDialog("promote");       
 UnitOrderDialog sampleStackToUnitOrderDialog("stack");       
-// StanceToUnitOrderDialog sampleStanceToUnitOrderDialog("stance");       
+    
 // SwapWithUnitOrderDialog sampleSwapWithUnitOrderDialog("swap");       
 // TeachUnitOrderDialog sampleTeachUnitOrderDialog("teach");       
-// TargetUnitOrderDialog sampleTargetUnitOrderDialog("target");             
-// AttackConstructionOrderDialog sampleAttackConstructionOrderDialog("attack");       
-// EnterConstructionOrderDialog sampleEnterConstructionOrderDialog("enter");       
-// ExitConstructionOrderDialog sampleExitConstructionOrderDialog("exit");       
-// TargetConstructionOrderDialog sampleTargetConstructionOrderDialog("target");       
+TargetOrderDialog sampleTargetOrderDialog("target");             
+
+EnterConstructionOrderDialog sampleEnterConstructionOrderDialog("enter");       
+UnitOrderDialog  sampleExitConstructionOrderDialog("exit");
+     
 // BuildConstructionOrderDialog sampleBuildConstructionOrderDialog("build");            
-// AttackLocationOrderDialog sampleAttackLocationOrderDialog("attack");             
+           
 MoveToLocationOrderDialog sampleMarchToLocationOrderWindow("march");      
 // CaravanToLocationOrderDialog  sampleCaravanToLocationOrderDialog("caravan");       
-// TargetLocationOrderDialog sampleTargetLocationOrderDialog("target");           
-// StanceOrderDialog sampleStanceOrderDialog("stance");       
+      
 
 
 //OrderDialog::OrderDialog() {
@@ -236,6 +243,7 @@ OrderLine * OrderDialog::updateOrderLine(string s)
     else
     {
         this->rewriteOrder(orderLine);
+        cout<<"OrderDialog::rewriteOrder"<<endl;
     }
     return orderLine; 
 }

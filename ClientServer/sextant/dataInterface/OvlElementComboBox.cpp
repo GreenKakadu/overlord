@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   OvlElementComboBox.cpp
  * Author: alex
  * 
@@ -32,13 +32,14 @@ void OvlElementComboBox::addGameItem (AbstractData * item, bool showTag)
   int size;
   QString string;
 
-  if(showTag)
-  {
+//  if(showTag)
+//  {
       string = item->print().c_str(); 
-  }
+//  }
 //  else
 //  {
-//    string = item->getName().c_str();  
+
+//    string = item->getName().c_str();
 //  }
   size =string.size(); 
   addItem(string);

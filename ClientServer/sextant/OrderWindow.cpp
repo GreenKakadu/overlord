@@ -83,7 +83,7 @@ void OrderWindow::closeWin()
     OrderLine * order = dialog_->getOrderLine();
     if(order)
     {
-        //order->printOrderLine(cout);
+        order->printOrderLine(cout);
        order->save(cout);
     }
     cout<<endl;

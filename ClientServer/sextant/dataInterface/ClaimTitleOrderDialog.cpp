@@ -66,7 +66,7 @@ OrderWindow * ClaimTitleOrderDialog::show(TokenEntity * token,
        }
 
   // Add items to ComboBoxes and add widgets     
-    orderWindow->addWidget(CB_); 
+    //orderWindow->addWidget(CB_);
   vector < TitleElement *> * titles =   token->getLocation()->getTitles().getAll();
     for( vector < TitleElement *>::iterator iter =  titles->begin(); iter != titles->end(); ++iter)
     {

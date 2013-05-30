@@ -454,7 +454,7 @@ void ViewManager::showEditOrderDialog(OrderLine * order)
  
  void ViewManager::forgetSkillSignalHandler(AbstractData*) //Temp
 {
-      OrderWindow::showOrderWindow(tokenSelected_,"forget",this); 
+      OrderWindow::showOrderWindow(tokenSelected_,"forget",this, ExtendedCommand::FORGET); 
      popupMenuWindow->doClose();
  }
 
@@ -899,7 +899,7 @@ void ViewManager::showConstructionPopupMenu(AbstractData * data)
                  // this is vessel
              }
              // set active item
-             tokenSelected_ = building;
+  //           tokenSelected_ = building;
             popupMenuWindow = new PopupMenuWindow(0,Qt::ToolTip);
              popupMenuWindow->clean();
              // Create buttons
@@ -951,14 +951,14 @@ void ViewManager::enterConstructionSignalHandler(AbstractData*)
 void ViewManager::exitConstructionSignalHandler(AbstractData*)
 {
 
-     OrderWindow::showOrderWindow(tokenSelected_,"exit",this); 
+     OrderWindow::showOrderWindow(tokenSelected_,"exit",this,ExtendedCommand::EXIT);
      emit closePopupMenu();     
      return;
  }
 void ViewManager::targetConstructionSignalHandler(AbstractData*)
 {
 
-     OrderWindow::showOrderWindow(tokenSelected_,"target",this); 
+     OrderWindow::showOrderWindow(tokenSelected_,"target",this);
      emit closePopupMenu();     
      return;
  }
@@ -1070,17 +1070,21 @@ void ViewManager::showFactionPopupMenu(AbstractData * data)
              popupMenuWindow = new PopupMenuWindow(0,Qt::ToolTip);
              popupMenuWindow->clean();
              // Create buttons
-          ClickableLabel * l1 = popupMenuWindow->addMenuItem("Stance to");
-          ClickableLabel * l2 = popupMenuWindow->addMenuItem("Oath to");
+          ClickableLabel * l1 = popupMenuWindow->addMenuItem("Attack");
+          ClickableLabel * l2 = popupMenuWindow->addMenuItem("Stance to");
+          ClickableLabel * l3 = popupMenuWindow->addMenuItem("Oath to");
          ::setCustomStyle(l1,BLUE_COLOR);
          ::setCustomStyle(l2,BLUE_COLOR);
+         ::setCustomStyle(l3,BLUE_COLOR);
             
              connect(this,SIGNAL(closePopupMenu()),popupMenuWindow,SLOT(doClose()));            
              // Connect handlers
-          connect(l1,SIGNAL(leftClicked(AbstractData*)),
+          connect(l2,SIGNAL(leftClicked(AbstractData*)),
                          this,SLOT(stanceSignalHandler(AbstractData*)));
-         connect(l2,SIGNAL(leftClicked(AbstractData*)),
+         connect(l3,SIGNAL(leftClicked(AbstractData*)),
                          this,SLOT(oathSignalHandler(AbstractData*)));
+         connect(l1,SIGNAL(leftClicked(AbstractData*)),
+                         this,SLOT(attackFactionSignalHandler(AbstractData*)));
             
              
              popupMenuWindow->setMyLayout();
@@ -1089,6 +1093,13 @@ void ViewManager::showFactionPopupMenu(AbstractData * data)
          }
      }
 }
+void ViewManager::attackFactionSignalHandler(AbstractData*)
+{
+
+     OrderWindow::showOrderWindow(tokenSelected_,"attack",this); 
+     emit closePopupMenu();     
+     return;
+ }
 void ViewManager::stanceSignalHandler(AbstractData*)
 {
 

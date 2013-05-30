@@ -109,7 +109,8 @@ public slots:
       void marchToLocationSignalHandler(AbstractData*);       
       void caravanToLocationSignalHandler(AbstractData*);       
       void targetLocationSignalHandler(AbstractData*);       
-// Faction menu      
+// Faction menu  
+      void attackFactionSignalHandler(AbstractData*);
       void stanceSignalHandler(AbstractData*);       
       void oathSignalHandler(AbstractData*);       
         // Selected objects

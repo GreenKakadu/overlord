@@ -7,7 +7,7 @@
 #ifndef RELEASE_TITLE_ORDERDIALOG_H
 #define	RELEASE_TITLE_ORDERDIALOG_H
 #include "OrderDialog.h"
-#include "OvlComboBox.h"
+#include "OvlElementComboBox.h"
 class ReleaseTitleOrderDialog : public OrderDialog{
 public:
     ReleaseTitleOrderDialog(string keyword): OrderDialog(keyword){}
@@ -16,7 +16,7 @@ public:
                      ViewManager * view, ExtendedCommand extendedCommandFlag);
     virtual OrderLine * getOrderLine();
 private:
-OvlComboBox * CB_;
+OvlElementComboBox * CB_;
 };
 
 #endif	/* RELEASE_TITLE_ORDERDIALOG_H */

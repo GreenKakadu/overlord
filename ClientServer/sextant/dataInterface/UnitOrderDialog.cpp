@@ -24,11 +24,6 @@ OrderWindow * UnitOrderDialog::show(TokenEntity * token, OrderLine * order, View
     GameData * unit=0;
     string commandName;
     unit = view->getActiveData();
-    UnitEntity * currentUnit = dynamic_cast<UnitEntity *>(token);
-    if(currentUnit==0)
-    {
-        return 0;
-    }
         if(order)
     {
         if(order->getOrderPrototype()->getKeyword() == "accept")
@@ -47,7 +42,11 @@ OrderWindow * UnitOrderDialog::show(TokenEntity * token, OrderLine * order, View
         {
           command = ExtendedCommand::PROMOTE;
         }
-   }
+        if(order->getOrderPrototype()->getKeyword() == "exit")
+       {
+         command = ExtendedCommand::EXIT;
+       }
+     }
  
     switch(command)
     {
@@ -71,6 +70,11 @@ OrderWindow * UnitOrderDialog::show(TokenEntity * token, OrderLine * order, View
            commandName = "Promote"; 
             break;
        }
+    case ExtendedCommand::EXIT :
+   {
+      commandName = "Exit";
+       break;
+  }
    }
     
      OrderWindow * orderWindow = this->prepareWindow(token,order,view,commandName);
@@ -78,8 +82,17 @@ OrderWindow * UnitOrderDialog::show(TokenEntity * token, OrderLine * order, View
      {
          return 0;
      }
-    
-     
+     if(command == ExtendedCommand::EXIT)
+     {
+         showWindow(orderWindow);
+         return orderWindow;
+     }
+     UnitEntity * currentUnit = dynamic_cast<UnitEntity *>(token);
+     if(currentUnit==0)
+     {
+         return 0;
+     }
+
 // for existing order determine parameters      
      if(!isNewOrder_ && params.size() >= 1)
      {
@@ -167,12 +180,14 @@ OrderLine * UnitOrderDialog::getOrderLine()
 {
     stringstream s;
     string unitTag;
-    
+    if(unitCB_)
+    {
     GameData * unit = unitCB_->getCurrentItem();
     if(unit)
     {
       unitTag = unit->getTag();  
-    }    
+    }
+    }
     s <<keyword_ <<" "<<unitTag <<endl;
     return updateOrderLine(s.str());   
 }

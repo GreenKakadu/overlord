@@ -12,8 +12,7 @@
 #include "ViewManager.h"
 #include "ClickableLabel.h"
 //
-//        USE skill-tag [target] [num of products]
-//   
+//        USE      skill-tag    [target] [num of products]
 // 
 OrderWindow * UseSkillOrderDialog::show(TokenEntity * token, OrderLine * order, ViewManager * view, ExtendedCommand command)
 {

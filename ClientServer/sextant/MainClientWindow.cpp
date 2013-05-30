@@ -52,7 +52,7 @@ MainClientWindow::MainClientWindow(QWidget *parent)
     fileDialog = new QFileDialog(this);
     fileDialogGame = new QFileDialog(this);
     fileDialogImport = new QFileDialog(this);
-    fileDialogImport->setNameFilter("Game configuration files (*.config)");
+    fileDialogImport->setNameFilter("Turn report files (*.report)");
     conectionLed = new Led();
     sendLed = new Led();
     receiveLed = new Led();
@@ -872,8 +872,13 @@ void MainClientWindow::reportImport(QString name)
           << " does not match current game (" << gameName_.toStdString() << ")" << endl;
       return;
     }
+    // Save old DB
+  gameFacade->saveData(".old");
    cout << "    Loading turn report... "  << endl;
           turnReport->load();           // Read Digital Report phase 1
    cout << "    Initializing turn report... "  << endl;
            turnReport->initialize();     // Read Digital Report phase 2
+   // Save new DB
+           gameFacade->saveData(".newData");
+
 }
