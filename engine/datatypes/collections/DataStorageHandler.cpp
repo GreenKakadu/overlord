@@ -221,13 +221,13 @@ GameData * DataStorageHandler::loadGameData(Parser * parser, string tag, string 
     return 0;
 }
 
-STATUS DataStorageHandler::save()
+STATUS DataStorageHandler::save(const char *suffix)
 {
   time_t rawtime;
   long int i;
 
   cout << "Saving data for "<< collectionKeyword_  <<endl;
-  ofstream outfile ((*filename_ + ".new").c_str());
+  ofstream outfile ((*filename_ + suffix).c_str());
  //  cout << "TEST DataStorageHandler::save filename_: "<< *filename_<<endl;
   outfile << "# Overlord  data " <<endl;
   time ( &rawtime );

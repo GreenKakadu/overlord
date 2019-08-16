@@ -298,7 +298,7 @@ void DataManipulator::createFileIfNotExist(string  * fileName, GameData * sample
 /*
  *
  */
-STATUS DataManipulator::save(char * suffix)
+STATUS DataManipulator::save(const char * suffix)
 {
   EntitiesCollectionIterator iter;
   reportlist.open("reportlist.new");
