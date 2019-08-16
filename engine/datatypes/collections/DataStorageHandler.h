@@ -28,7 +28,7 @@ public:
   STATUS open();
   STATUS close();
   STATUS load();
-  STATUS save();
+  STATUS save(const char *suffix);
 	void define();
   STATUS initializeData();
   void printCollection();

@@ -763,8 +763,8 @@ LocationEntity::save(ostream &out)
   for ( resourceIter = resources_.begin(); resourceIter != resources_.end(); resourceIter++)
     {
           out << "RESOURCES ";
- //          (*resourceIter)->save(out);
-           (*resourceIter)->storeElement(out); // Does not save second parameter of the element
+           (*resourceIter)->save(out);
+  //         (*resourceIter)->storeElement(out); // Does not save second parameter of the element
     }
   skillBonuses_.save(out);
 /*  for (BonusIterator bonusIter = skillBonuses_.begin(); bonusIter != skillBonuses_.end(); bonusIter++)
